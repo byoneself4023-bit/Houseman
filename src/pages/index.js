@@ -1,0 +1,17 @@
+export { DashboardPage } from './DashboardPage';
+export { BuildingDetailPage } from './BuildingDetailPage';
+export { BuildingsPage } from './BuildingsPage';
+export { TenantsPage } from './TenantsPage';
+export { VacancyPage } from './VacancyPage';
+export { StaffPage } from './StaffPage';
+export { CollectionPage } from './CollectionPage';
+export { ASPage } from './ASPage';
+export { PatrolPage } from './PatrolPage';
+export { UtilityBillingPage } from './UtilityBillingPage';
+export { TransactionPage } from './TransactionPage';
+export { ParkingPage } from './ParkingPage';
+export { CalendarPage } from './CalendarPage';
+export { HomepagePage } from './HomepagePage';
+export { OwnerDashboard } from './OwnerDashboard';
+export { SettlementPage } from './SettlementPage';
+export { PastTenantsPage } from './PastTenantsPage';
