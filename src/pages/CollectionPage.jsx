@@ -45,7 +45,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
   const isMobile = useIsMobile();
   const [historyTarget, setHistoryTarget] = useState(null);
   const [commentTarget, setCommentTarget] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(40);
+  const [visibleCount, setVisibleCount] = useState(100);
   const [commentText, setCommentText] = useState("");
   const [viewMode, setViewMode] = useState("table");
   const [electricCut, setElectricCut] = useLocalStorage("hm_electricCut", {});
@@ -181,7 +181,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     return sorted.filter(t => electricCut[rk(t)] === statusFilter);
   }, [allMyTenants, filterCollector, buildingSearch, statusFilter, electricCut, sortMode, roomBalances]);
 
-  useEffect(() => { setVisibleCount(40); }, [filterCollector, buildingSearch, statusFilter]);
+  useEffect(() => { setVisibleCount(100); }, [filterCollector, buildingSearch, statusFilter]);
   const visibleFinal = useMemo(() => filteredFinal.slice(0, visibleCount), [filteredFinal, visibleCount]);
 
   const addComment = (key, tenant) => {

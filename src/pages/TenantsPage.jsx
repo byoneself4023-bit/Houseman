@@ -227,8 +227,8 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
     return a.room.localeCompare(b.room, undefined, { numeric: true });
   }), [myTenants, search, typeFilter, buildingOrder]);
 
-  const [visibleCount, setVisibleCount] = useState(40);
-  useEffect(() => { setVisibleCount(40); }, [search, typeFilter]);
+  const [visibleCount, setVisibleCount] = useState(100);
+  useEffect(() => { setVisibleCount(100); }, [search, typeFilter]);
   const visibleFiltered = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   const doAction = () => {
@@ -1999,7 +1999,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       )}
       {visibleCount < filtered.length && (
         <div style={{ textAlign: "center", padding: "16px 0" }}>
-          <button onClick={() => setVisibleCount(v => v + 40)}
+          <button onClick={() => setVisibleCount(v => v + 100)}
             style={{ padding: "10px 32px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: "#5F6577" }}>
             더보기 ({filtered.length - visibleCount}명 남음)
           </button>
