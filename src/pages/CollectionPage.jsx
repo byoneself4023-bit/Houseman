@@ -30,8 +30,9 @@ const getBillingSlots = (t, buildingAccounts, allBuildings) => {
   return [{ label: "①", amount: rent + mgmt }];
 };
 
-export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [] }) => {
+export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [], billingHistory = [] }) => {
   const isMobile = useIsMobile();
+  const [historyTarget, setHistoryTarget] = useState(null); // 청구 이력 팝업 대상
   const [commentTarget, setCommentTarget] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [viewMode, setViewMode] = useState("table");
@@ -141,8 +142,69 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
   };
 
   // ===== 렌더링 =====
+  // 청구 이력 데이터
+  const historyData = useMemo(() => {
+    if (!historyTarget) return [];
+    const key = rk(historyTarget);
+    return billingHistory
+      .filter(h => `${h.building}_${h.room}` === key)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [historyTarget, billingHistory]);
+
   return (
     <div>
+      {/* 청구 이력 팝업 */}
+      {historyTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+          onClick={() => setHistoryTarget(null)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 520, width: "100%", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 800 }}>{historyTarget.building} {historyTarget.room}호</div>
+                <div style={{ fontSize: 13, color: "#5F6577", marginTop: 2 }}>{historyTarget.name} · {historyTarget.phone}</div>
+              </div>
+              <div onClick={() => setHistoryTarget(null)} style={{ cursor: "pointer", fontSize: 18, color: "#8F95A3", padding: "4px 8px" }}>✕</div>
+            </div>
+            <div style={{ display: "flex", gap: 12, marginBottom: 16, padding: "12px 16px", background: "#F8FAFC", borderRadius: 10 }}>
+              <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ fontSize: 10, color: "#8F95A3" }}>보증금</div>
+                <div style={{ fontSize: 14, fontWeight: 800 }}>{fmt(historyTarget.deposit)}</div>
+              </div>
+              <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ fontSize: 10, color: "#8F95A3" }}>월세</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#2563EB" }}>{fmt(historyTarget.rent)}</div>
+              </div>
+              <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ fontSize: 10, color: "#8F95A3" }}>관리비</div>
+                <div style={{ fontSize: 14, fontWeight: 800 }}>{fmt(historyTarget.mgmt)}</div>
+              </div>
+              <div style={{ textAlign: "center", flex: 1 }}>
+                <div style={{ fontSize: 10, color: "#8F95A3" }}>잔액</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: roomBalances[rk(historyTarget)] > 0 ? "#DC2626" : "#059669" }}>{fmt(roomBalances[rk(historyTarget)] || 0)}</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>청구 이력</div>
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {historyData.length === 0 ? (
+                <div style={{ padding: "32px 0", textAlign: "center", color: "#B0B5C1", fontSize: 13 }}>청구 이력이 없습니다</div>
+              ) : historyData.map((h, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, marginBottom: 4, background: i % 2 === 0 ? "#F9FAFB" : "#fff" }}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600 }}>{h.date}</div>
+                    <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>{h.type || "청구"} {h.cat || ""}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: h.amount >= 0 ? "#DC2626" : "#059669" }}>{h.amount >= 0 ? "+" : ""}{fmt(h.amount)}원</div>
+                    {h.paid !== undefined && <div style={{ fontSize: 10, color: h.paid ? "#059669" : "#DC2626", fontWeight: 600 }}>{h.paid ? "납부완료" : "미납"}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setHistoryTarget(null)} style={{ marginTop: 16, padding: "12px", borderRadius: 10, border: "none", background: "#1A1D23", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>닫기</button>
+          </div>
+        </div>
+      )}
+
       <SectionTitle sub={filterCollector === "전체" ? "수금 관리" : `${filterCollector} 전담 · ${filteredFinal.length}명`}>💰 수금 관리</SectionTitle>
 
       {/* 상단 탭 */}
@@ -238,7 +300,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                   const roomComments = comments[key] || [];
                   const days = getDaysSinceDue(t);
                   return (
-                    <Card key={i} style={{ padding: "10px 12px", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
+                    <Card key={i} onClick={() => setHistoryTarget(t)} style={{ padding: "10px 12px", cursor: "pointer", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                         <div>
                           <span style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호</span>
@@ -333,7 +395,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                     const isOpen = commentTarget === key;
                     return (
                       <React.Fragment key={i}>
-                        <tr style={{ borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (getDaysSinceDue(t) >= -6 && getDaysSinceDue(t) < 0) ? "#FFF5F5" : "transparent" }}>
+                        <tr onClick={() => setHistoryTarget(t)} style={{ cursor: "pointer", borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (getDaysSinceDue(t) >= -6 && getDaysSinceDue(t) < 0) ? "#FFF5F5" : "transparent" }}>
                           <td style={{ padding: "10px 6px", textAlign: "center" }}>
                             <div onClick={() => setElectricCut(prev => {
                               const cur = prev[key];

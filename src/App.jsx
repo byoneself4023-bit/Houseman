@@ -451,10 +451,8 @@ www.houseman.co.kr
     // 재계약관리: 일반임대·근생만, 묵시적갱신 포함 3개월 이내
     const now = new Date();
     const renewalTypes = new Set(["일반임대", "근생"]);
-    const renewedRooms = JSON.parse(localStorage.getItem("hm_renewedRooms") || "{}");
     const renewalCount = (activeTenants || []).filter(t => {
       if (!t.expiry || !t.name || t.name === "퇴실") return false;
-      if (renewedRooms[`${t.building}_${t.room}`]) return false;
       const rt = t.type || getRoomType(t.building, t.room);
       if (!renewalTypes.has(rt)) return false;
       const exp = new Date(t.expiry);
@@ -493,7 +491,7 @@ www.houseman.co.kr
       case "pastTenants": return <PastTenantsPage myBuildings={myBuildings} pastTenantsData={pastTenantsData} activeTenants={activeTenants} />;
       case "renewal": return <RenewalPage myBuildings={myBuildings} activeTenants={activeTenants} />;
       case "contracts": return <VacancyPage myBuildings={myBuildings} calendarEvts={calendarEvts} setCalendarEvts={setCalendarEvts} setPage={setPage} setPendingContract={setPendingContract} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} buildingData={buildingData} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} />;
-      case "collection": return <CollectionPage myBuildings={myBuildings} roomBalances={roomBalances} activeTenants={activeTenants} lateFeeOverrides={lateFeeOverrides} setLateFeeOverrides={setLateFeeOverrides} buildingAccounts={buildingAccounts} allBuildings={allBuildings} />;
+      case "collection": return <CollectionPage myBuildings={myBuildings} roomBalances={roomBalances} activeTenants={activeTenants} lateFeeOverrides={lateFeeOverrides} setLateFeeOverrides={setLateFeeOverrides} buildingAccounts={buildingAccounts} allBuildings={allBuildings} billingHistory={billingHistory} />;
       case "billing": return <UtilityBillingPage billingMode="unified" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
       case "utility-fixed": return <UtilityBillingPage billingMode="fixed" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
       case "utility-variable": return <UtilityBillingPage billingMode="variable" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
