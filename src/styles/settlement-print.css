@@ -1,0 +1,430 @@
+/* ============================================
+   A4 정산서 인쇄용 스타일
+   A4: 210mm × 297mm
+   ============================================ */
+
+/* === 오버레이 (전체화면 미리보기) === */
+.stl-print-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  background: #4b5563;
+  overflow-y: auto;
+}
+
+/* === 상단 툴바 === */
+.stl-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: #1f2937;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.stl-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stl-toolbar-right {
+  display: flex;
+  gap: 8px;
+}
+.stl-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.stl-btn:hover { opacity: 0.85; }
+.stl-btn-back {
+  background: #4b5563;
+  color: #fff;
+}
+.stl-btn-print {
+  background: #3b82f6;
+  color: #fff;
+}
+.stl-btn-excel {
+  background: #059669;
+  color: #fff;
+}
+
+/* === 페이지 컨테이너 === */
+.stl-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 24px;
+  min-height: calc(100vh - 52px);
+}
+
+/* === A4 페이지 === */
+.stl-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 18mm 16mm 22mm;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  box-sizing: border-box;
+  font-family: 'Pretendard', 'Malgun Gothic', '맑은 고딕', sans-serif;
+  color: #111;
+  font-size: 10pt;
+  line-height: 1.6;
+  position: relative;
+}
+
+/* === 갑지 헤더 === */
+.stl-header {
+  text-align: center;
+  margin-bottom: 10mm;
+  padding-bottom: 6mm;
+  border-bottom: 3px double #333;
+}
+.stl-logo {
+  font-size: 9pt;
+  color: #888;
+  letter-spacing: 3px;
+  margin-bottom: 3mm;
+}
+.stl-title {
+  font-size: 22pt;
+  font-weight: 800;
+  color: #111;
+  letter-spacing: 2px;
+  margin-bottom: 2mm;
+}
+.stl-subtitle {
+  font-size: 12pt;
+  color: #555;
+  font-weight: 500;
+}
+
+/* === 건물 정보 박스 === */
+.stl-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2mm 8mm;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 4mm 5mm;
+  margin-bottom: 8mm;
+  font-size: 9.5pt;
+}
+.stl-info-item {
+  display: flex;
+  padding: 1.5mm 0;
+  border-bottom: 1px dotted #e0e0e0;
+}
+.stl-info-item:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+.stl-info-label {
+  width: 22mm;
+  color: #666;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.stl-info-value {
+  font-weight: 500;
+  color: #222;
+}
+
+/* === 비고/메모 === */
+.stl-note {
+  font-size: 9pt;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 2.5mm 4mm;
+  border-radius: 3px;
+  margin-bottom: 5mm;
+  border-left: 3px solid #f59e0b;
+}
+
+/* === 정산 요약 테이블 (갑지) === */
+.stl-sum-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 5mm 0;
+  font-size: 10pt;
+}
+.stl-sum-table th,
+.stl-sum-table td {
+  border: 1px solid #bbb;
+  padding: 3mm 4mm;
+}
+.stl-sum-table thead th {
+  background: #f0f0f0;
+  font-weight: 700;
+  text-align: center;
+  font-size: 9.5pt;
+  color: #333;
+}
+.stl-sum-table td.no {
+  text-align: center;
+  width: 10mm;
+  color: #666;
+}
+.stl-sum-table td.label {
+  font-weight: 500;
+}
+.stl-sum-table td.amt {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  width: 42mm;
+  font-weight: 500;
+}
+.stl-sum-table tr.total td {
+  border-top: 2.5px solid #333;
+  background: #e8f0fe;
+  font-weight: 800;
+  font-size: 11pt;
+}
+
+/* === 최종 정산금 박스 === */
+.stl-final {
+  text-align: center;
+  margin: 8mm 0;
+  padding: 5mm 4mm;
+  border: 2.5px solid #1e40af;
+  border-radius: 5px;
+  background: #eff6ff;
+}
+.stl-final-dir {
+  font-size: 10pt;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 2mm;
+}
+.stl-final-amt {
+  font-size: 20pt;
+  font-weight: 800;
+  color: #1e40af;
+}
+.stl-final-kr {
+  font-size: 9.5pt;
+  color: #3b82f6;
+  margin-top: 1mm;
+}
+
+/* === 정산계좌 박스 === */
+.stl-acct {
+  border: 1.5px solid #2563eb;
+  border-radius: 4px;
+  padding: 3.5mm 5mm;
+  margin: 5mm 0;
+  background: #f0f7ff;
+}
+.stl-acct-title {
+  font-size: 9pt;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 1.5mm;
+}
+.stl-acct-info {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #1e3a5f;
+}
+
+/* === 서명 영역 === */
+.stl-sign {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 12mm;
+}
+.stl-sign-date {
+  font-size: 9pt;
+  color: #666;
+}
+.stl-sign-boxes {
+  display: flex;
+  gap: 6mm;
+}
+.stl-sign-box {
+  text-align: center;
+}
+.stl-sign-stamp {
+  border: 1px solid #bbb;
+  width: 20mm;
+  height: 20mm;
+  margin-bottom: 1.5mm;
+  background: #fafafa;
+}
+.stl-sign-label {
+  font-size: 8pt;
+  color: #666;
+}
+
+/* === 푸터 === */
+.stl-footer {
+  position: absolute;
+  bottom: 14mm;
+  left: 16mm;
+  right: 16mm;
+  text-align: center;
+  font-size: 9pt;
+  color: #999;
+  border-top: 1px solid #ddd;
+  padding-top: 2.5mm;
+}
+
+/* === 상세내역 섹션 제목 === */
+.stl-sec-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: #222;
+  margin: 6mm 0 2.5mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 2px solid #333;
+}
+
+/* === 상세 테이블 === */
+.stl-dtl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  margin: 2mm 0 4mm;
+}
+.stl-dtl-table th,
+.stl-dtl-table td {
+  border: 1px solid #d0d0d0;
+  padding: 1.8mm 2.5mm;
+}
+.stl-dtl-table thead th {
+  background: #f5f5f5;
+  font-weight: 700;
+  text-align: center;
+  font-size: 8pt;
+  white-space: nowrap;
+  color: #444;
+}
+.stl-dtl-table td.c { text-align: center; }
+.stl-dtl-table td.r {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.stl-dtl-table td.b { font-weight: 700; }
+.stl-dtl-table td.neg { color: #dc2626; }
+.stl-dtl-table tr.sub td {
+  background: #f0f4f8;
+  font-weight: 700;
+  border-top: 1.5px solid #999;
+}
+
+/* 빈 데이터 */
+.stl-empty {
+  padding: 4mm;
+  text-align: center;
+  color: #999;
+  font-size: 9pt;
+  border: 1px dashed #ccc;
+  border-radius: 3px;
+  margin: 2mm 0;
+}
+
+/* === 미납 정보 === */
+.stl-delinq {
+  margin: 3mm 0;
+  padding: 2.5mm 4mm;
+  border: 1px solid #fca5a5;
+  border-radius: 3px;
+  background: #fef2f2;
+  font-size: 9pt;
+  color: #991b1b;
+}
+
+/* === 참고 합계 박스 === */
+.stl-ref {
+  margin-top: 5mm;
+  padding: 3mm 4mm;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  background: #f9fafb;
+  font-size: 9pt;
+}
+.stl-ref-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1mm 0;
+}
+.stl-ref-label { color: #6b7280; }
+.stl-ref-value { font-weight: 600; color: #111; }
+
+/* ============================================
+   @media print — A4 인쇄 설정
+   ============================================ */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* 사이드바, 네비게이션 등 숨기기 */
+  body > * {
+    visibility: hidden !important;
+    position: absolute !important;
+  }
+
+  .stl-print-overlay,
+  .stl-print-overlay * {
+    visibility: visible !important;
+    position: static !important;
+  }
+
+  .stl-print-overlay {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  /* 툴바 숨기기 */
+  .stl-toolbar {
+    display: none !important;
+  }
+
+  .stl-pages {
+    padding: 0;
+    gap: 0;
+  }
+
+  .stl-page {
+    box-shadow: none;
+    padding: 0;
+    width: 100%;
+    min-height: auto;
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+
+  .stl-page:last-child {
+    page-break-after: auto;
+  }
+
+  .stl-footer {
+    position: static;
+    margin-top: 10mm;
+  }
+
+  /* 링크 색상 제거 */
+  a { color: inherit !important; text-decoration: none !important; }
+}

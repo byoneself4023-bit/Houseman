@@ -1,17 +1,27 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { calendarEvents as defaultEvents, buildingFloors } from '../data';
 import { buildings } from '../data';
+import { getRoomType } from '../config';
 import { useIsMobile } from '../utils';
 import { matchKorean } from '../utils/koreanSearch';
 import { Card, SectionTitle, StatusBadge } from '../components';
 import { PhotoDropZone } from '../components/PhotoDropZone';
 import { inputStyle } from '../components/Field';
 
+// 현재 단계 깜빡임 애니메이션
+const blinkStyle = document.getElementById("hm-blink-style") || (() => {
+  const s = document.createElement("style");
+  s.id = "hm-blink-style";
+  s.textContent = `@keyframes hm-blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }`;
+  document.head.appendChild(s);
+  return s;
+})();
+
 const TYPE_COLORS = { 계약: "#3B82F6", 퇴실: "#EF4444", 휴무: "#8B5CF6" };
 const TYPE_BG = { 계약: "#EFF6FF", 퇴실: "#FEF2F2", 휴무: "#F5F3FF" };
 const TYPE_BORDER = { 계약: "#BFDBFE", 퇴실: "#FECACA", 휴무: "#DDD6FE" };
 const TYPE_ICON = { 계약: "📦", 퇴실: "🚪", 휴무: "🏖️" };
-const BUILDING_NAMES = buildings.map(b => b.name);
+const STATIC_BUILDING_NAMES = buildings.map(b => b.name);
 
 const MSG_TEMPLATES = {
   "기본": (e) => [
@@ -88,8 +98,15 @@ const fillBuildingContractMsg = (template, e) => {
   return msg;
 };
 
-export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, activeVacancies = [], setActiveVacancies, activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, setPage, setPendingMoveout, buildingData = {} }) => {
+export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, activeVacancies = [], setActiveVacancies, activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, setPage, setPendingMoveout, setPendingContract, buildingData = {} }) => {
   const isMobile = useIsMobile();
+  const BUILDING_NAMES = useMemo(() => {
+    const set = new Set(STATIC_BUILDING_NAMES);
+    Object.keys(buildingFloors).forEach(n => set.add(n));
+    activeTenants.forEach(t => t.building && set.add(t.building));
+    activeVacancies.forEach(v => v.building && set.add(v.building));
+    return [...set].sort();
+  }, [activeTenants, activeVacancies]);
   const calendarEvents = propEvents || defaultEvents;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [filter, setFilter] = useState("전체");
@@ -107,11 +124,15 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
   const [photoModalTenant, setPhotoModalTenant] = useState(null);
   const [checkPhotoModalTenant, setCheckPhotoModalTenant] = useState(null);
   const [compareData, setCompareData] = useState(null); // { building, room, moveInCheckPhotos, moveOutPhotos }
+  const [moveOutMsgModal, setMoveOutMsgModal] = useState(null); // { ev, text }
+
   const [zoomPhoto, setZoomPhoto] = useState(null); // { photos: [], index: number, zoom: number }
   const [dragEventIndex, setDragEventIndex] = useState(null);
   const [dropTargetDay, setDropTargetDay] = useState(null);
   const [editEvent, setEditEvent] = useState(null); // { idx, evt, edits }
   const [breakReport, setBreakReport] = useState(null); // { ev, owners, msgText } 계약파기 건물주보고
+  const [contractReport, setContractReport] = useState(null); // { ev, owners, msgText } 계약 건물주보고
+  const [moveOutOwnerReport, setMoveOutOwnerReport] = useState(null); // { ev, owners, msgText } 퇴실 건물주연락
   const openEditEvent = (evt) => {
     const idx = calendarEvents.indexOf(evt);
     if (idx < 0 || !setEvents) return;
@@ -130,6 +151,34 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date();
   const isToday = (d) => today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+
+  // 자동 정리: 완료된 계약 삭제 + 임차인 없는 퇴실 삭제
+  useEffect(() => {
+    if (!setEvents || activeTenants.length === 0) return;
+    const toRemove = calendarEvents.filter(ev => {
+      if (ev.type === "계약" && ev.building && ev.room) {
+        return activeTenants.some(t => t.building === ev.building && String(t.room) === String(ev.room));
+      }
+      if (ev.type === "퇴실" && ev.building && ev.room) {
+        const hk = `${ev.building}_${ev.room}`;
+        const pastRecords = pastTenantsData[hk] || [];
+        const hasTenant = activeTenants.some(t => t.building === ev.building && String(t.room) === String(ev.room));
+        // 임차인이 있으면 유지 (아직 퇴실정산 안 됨)
+        if (hasTenant) return false;
+        // 퇴실정산 이력이 없으면 삭제 (잘못 등록된 건)
+        if (pastRecords.length === 0) return true;
+        // 퇴실정산 완료됐어도 입주체크사진이 없으면 유지
+        const lastRecord = pastRecords[pastRecords.length - 1];
+        const hasCheckPhotos = (lastRecord.moveOutCheckPhotos || []).some(p => p && p.startsWith("data:image/"));
+        return hasCheckPhotos;
+      }
+      return false;
+    });
+    if (toRemove.length > 0) {
+      const removeSet = new Set(toRemove);
+      setEvents(prev => prev.filter(ev => !removeSet.has(ev)));
+    }
+  }, [activeTenants]);
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -206,7 +255,8 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       {/* 계약현황 — 캘린더 등록 계약건 */}
       {(() => {
         const contractEvts = calendarEvents
-          .filter(ev => ev.type === "계약" && ev.building && ev.room);
+          .filter(ev => ev.type === "계약" && ev.building && ev.room)
+          .filter(ev => !activeTenants.some(t => t.building === ev.building && String(t.room) === String(ev.room)));
         if (contractEvts.length === 0) return null;
         return (
           <Card style={{ marginBottom: 16, border: "2px solid #3B82F6", background: "#EFF6FF" }}>
@@ -214,30 +264,118 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
               <span style={{ fontSize: 16 }}>📦</span>
               <div style={{ fontSize: 13, fontWeight: 800, color: "#3B82F6" }}>계약현황 <span style={{ fontWeight: 600, fontSize: 11, color: "#8F95A3" }}>({contractEvts.length}건)</span></div>
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid #BFDBFE" }}>
-                  {["계약일","건물명","호실","입주일","보증금","월세","관리비","부동산","연락처",""].map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {contractEvts.map((ev, i) => (
-                  <tr key={i} style={{ borderBottom: "1px solid #DBEAFE" }}
-                    onDoubleClick={() => openEditEvent(ev)}
-                    onMouseEnter={e => { e.currentTarget.style.background = "#F0F7FF"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-                    <td style={{ padding: "8px 10px", fontWeight: 700, color: "#3B82F6" }}>{ev.date}</td>
-                    <td style={{ padding: "8px 10px", fontWeight: 700 }}>{ev.building}</td>
-                    <td style={{ padding: "8px 10px" }}>{ev.room}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 11, color: "#059669", fontWeight: 600 }}>{ev.moveIn || "—"}</td>
-                    <td style={{ padding: "8px 10px" }}>{ev.deposit ?? "—"}</td>
-                    <td style={{ padding: "8px 10px" }}>{ev.rent ?? "—"}</td>
-                    <td style={{ padding: "8px 10px" }}>{ev.mgmt || "—"}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{ev.broker || "—"}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{ev.brokerPhone || "—"}</td>
-                    <td style={{ padding: "8px 6px", textAlign: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {contractEvts.map((ev, i) => {
+                const cSteps = [
+                  { label: "계약금확인", done: !!ev.depositConfirmed },
+                  { label: "건물주보고", done: !!ev.reported },
+                  { label: "잔금확인", done: !!ev.balanceConfirmed },
+                  { label: "계약서입력", done: false },
+                ];
+                const cDone = cSteps.filter(s => s.done).length;
+                const allDone = cDone === cSteps.length;
+                // 현재 단계 (첫 번째 미완료 항목)
+                const currentStep = cSteps.findIndex(s => !s.done);
+                return (
+                  <div key={i} style={{ background: allDone ? "#F9FAFB" : "#fff", border: allDone ? "1px solid #D1D5DB" : "1px solid #BFDBFE", borderRadius: 10, overflow: "hidden", filter: allDone ? "grayscale(1)" : "none", opacity: allDone ? 0.7 : 1, transition: "all 0.3s" }}
+                    onDoubleClick={() => openEditEvent(ev)}>
+                    {/* 스텝 인디케이터 */}
+                    <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #EFF6FF, #F8FAFF)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #BFDBFE", display: "flex", alignItems: "center", gap: 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#3B82F6", marginRight: 12, whiteSpace: "nowrap" }}>{ev.building} {ev.room}호</div>
+                      <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                        {cSteps.map((step, si) => {
+                          const isActive = si === currentStep;
+                          const stepDone = step.done;
+                          return (
+                            <div key={si} style={{ display: "flex", alignItems: "center", flex: 1 }}>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 56 }}>
+                                <div style={{
+                                  width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: 11, fontWeight: 800,
+                                  background: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#fff" : "#E5E7EB",
+                                  color: stepDone ? "#fff" : isActive ? "#3B82F6" : "#9CA3AF",
+                                  border: isActive && !stepDone ? "2px solid #3B82F6" : "2px solid transparent",
+                                  boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(59,130,246,0.2)" : "none",
+                                  animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                                  transition: "all 0.3s"
+                                }}>
+                                  {stepDone ? "✓" : si + 1}
+                                </div>
+                                <span style={{ fontSize: 9, fontWeight: stepDone || isActive ? 700 : 500, color: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#1D4ED8" : "#9CA3AF", whiteSpace: "nowrap", animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none" }}>{step.label}</span>
+                              </div>
+                              {si < cSteps.length - 1 && (
+                                <div style={{ flex: 1, height: 2, background: stepDone ? (allDone ? "#D1D5DB" : "#3B82F6") : "#E5E7EB", margin: "0 4px", marginBottom: 16, borderRadius: 1, transition: "background 0.3s" }} />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {/* 액션 버튼 행 */}
+                    <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      {/* 계약금 확인 */}
+                      <span onClick={() => {
+                        if (ev.depositConfirmed) return;
+                        setEvents(prev => prev.map(e => e === ev ? { ...e, depositConfirmed: true } : e));
+                      }}
+                        style={{ fontSize: 10, fontWeight: 700, color: ev.depositConfirmed ? "#9CA3AF" : "#0369A1", padding: "4px 10px", borderRadius: 6, border: ev.depositConfirmed ? "1px solid #D1D5DB" : "1px solid #BAE6FD", background: ev.depositConfirmed ? "#F3F4F6" : "#F0F9FF", cursor: ev.depositConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.depositConfirmed ? "line-through" : "none" }}>
+                        {ev.depositConfirmed ? "✔ 계약금확인" : "계약금 확인"}
+                      </span>
+                      {/* 건물주보고 */}
+                      <span onClick={() => {
+                        if (ev.reported) return;
+                        if (!ev.depositConfirmed) return alert("계약금 확인이 완료되어야 건물주보고가 가능합니다.");
+                        const bd = buildingData[ev.building] || {};
+                        const bf = buildingFloors[ev.building] || {};
+                        const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name
+                          ? bd.owners
+                          : [{ name: bf.owner || "", phone: bf.phone || "" }];
+                        const ownerName = owners[0]?.name || "건물주";
+                        const msgLines = [
+                          `[${ev.building} ${ev.room}호 계약 보고]`,
+                          ``,
+                          `안녕하세요, ${ownerName}건물주님.`,
+                          `${ev.building} ${ev.room}호 계약이 진행되었습니다.`,
+                          ``,
+                          `▪ 보증금: ${ev.deposit ?? 0}만원`,
+                          `▪ 월세: ${ev.rent ?? 0}만원`,
+                          ev.mgmt ? `▪ 관리비: ${ev.mgmt}만원` : null,
+                          `▪ 입주일: ${ev.moveIn || ev.date || "-"}`,
+                          ev.expiry ? `▪ 만기일: ${ev.expiry}` : null,
+                          ev.broker ? `▪ 부동산: ${ev.broker}` : null,
+                          ``,
+                          `감사합니다.`,
+                          `- 하우스맨 드림`,
+                        ].filter(Boolean);
+                        setContractReport({ ev, owners, msgText: msgLines.join("\n") });
+                      }}
+                        style={{ fontSize: 10, fontWeight: 700, color: ev.reported ? "#9CA3AF" : "#7C3AED", padding: "4px 10px", borderRadius: 6, border: ev.reported ? "1px solid #D1D5DB" : "1px solid #DDD6FE", background: ev.reported ? "#F3F4F6" : "#F5F3FF", cursor: ev.reported ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.reported ? "line-through" : "none" }}>
+                        {ev.reported ? "✔ 건물주보고" : "건물주보고"}
+                      </span>
+                      {/* 잔금확인 */}
+                      <span onClick={() => {
+                        if (ev.balanceConfirmed) return;
+                        if (!ev.reported) return alert("건물주보고가 완료되어야 잔금확인이 가능합니다.");
+                        setEvents(prev => prev.map(e => e === ev ? { ...e, balanceConfirmed: true } : e));
+                      }}
+                        style={{ fontSize: 10, fontWeight: 700, color: ev.balanceConfirmed ? "#9CA3AF" : "#059669", padding: "4px 10px", borderRadius: 6, border: ev.balanceConfirmed ? "1px solid #D1D5DB" : "1px solid #A7F3D0", background: ev.balanceConfirmed ? "#F3F4F6" : "#ECFDF5", cursor: ev.balanceConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.balanceConfirmed ? "line-through" : "none" }}>
+                        {ev.balanceConfirmed ? "✔ 잔금확인" : "잔금확인"}
+                      </span>
+                      {/* 계약서입력 */}
+                      {setPendingContract && setPage && (
+                        <span onClick={() => {
+                          if (!ev.reported) return alert("건물주보고가 완료되어야 계약서입력이 가능합니다.");
+                          const vacancy = activeVacancies.find(v => v.building === ev.building && String(v.room) === String(ev.room));
+                          setPendingContract({ ...ev, vacancyData: vacancy || {} });
+                          setEvents?.(prev => prev.filter(e => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
+                          setPage("tenants");
+                        }}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#92400E", padding: "4px 10px", borderRadius: 6, border: "1px solid #FDE68A", background: "#FEF3C7", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          계약서입력 →
+                        </span>
+                      )}
+                      <div style={{ marginLeft: "auto" }} />
+                      {/* 계약파기 */}
                       {setEvents && (
                         <span onClick={() => {
                           const bf = buildingFloors[ev.building] || {};
@@ -260,22 +398,19 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                             `감사합니다.`,
                             `- 하우스맨 드림`,
                           ].filter(Boolean);
-                          // 캘린더에서 계약 삭제
                           setEvents(prev => prev.filter(e => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
-                          // 공실 상태 홍보중으로 복원
                           setActiveVacancies?.(prev => prev.map(v => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
-                          // 건물주 보고 모달 열기
                           setBreakReport({ ev, owners, msgText: msgLines.join("\n") });
                         }}
-                          style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", padding: "3px 8px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", padding: "4px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", cursor: "pointer", whiteSpace: "nowrap" }}>
                           계약파기
                         </span>
                       )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </Card>
         );
       })()}
@@ -297,8 +432,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
             const hasCheckPhotos = tenant
               ? (tenant.moveOutCheckPhotos && tenant.moveOutCheckPhotos.length > 0)
               : !!(pastInfo && pastInfo.moveOutCheckPhotos && pastInfo.moveOutCheckPhotos.length > 0);
-            // 퇴실사진 + 입주체크사진 + 퇴실처리 3개 모두 완료 → 숨김
-            if (hasPhotos && hasCheckPhotos && settled) return null;
+            const allDone = hasPhotos && hasCheckPhotos && settled;
             // tenant가 이미 퇴실확정되어 activeTenants에 없는 경우, pastInfo로 모달용 객체 생성
             const tenantForModal = tenant || {
               building: ev.building, room: ev.room,
@@ -309,96 +443,179 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
               moveInCheckPhotos: pastInfo?.moveInCheckPhotos || [],
               _isPastTenant: true
             };
-            return { ...ev, tenant, tenantForModal, settled, pastInfo, hasPhotos, hasCheckPhotos };
+            return { ...ev, _origEvent: ev, tenant, tenantForModal, settled, pastInfo, hasPhotos, hasCheckPhotos, allDone };
           })
           .filter(Boolean);
-        if (moveOutEvts.length === 0) return null;
+        const activeMoveOutEvts = moveOutEvts.filter(ev => !ev.allDone);
+        if (activeMoveOutEvts.length === 0) return null;
         return (
           <Card style={{ marginBottom: 16, border: "2px solid #DC2626", background: "#FEF2F2" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 16 }}>🚪</span>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>퇴실현황 <span style={{ fontWeight: 600, fontSize: 11, color: "#8F95A3" }}>({moveOutEvts.length}건)</span></div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>퇴실현황 <span style={{ fontWeight: 600, fontSize: 11, color: "#8F95A3" }}>({activeMoveOutEvts.length}건)</span></div>
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid #FECACA" }}>
-                  {["퇴실일","건물명","호실","입주자","연락처","","사진비교","퇴실사진","입주체크사진","퇴실정산서"].map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", textAlign: i >= 6 ? "center" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {moveOutEvts.map((ev, i) => {
-                  const t = ev.tenant;
-                  const tm = ev.tenantForModal;
-                  return (
-                    <tr key={i} style={{ borderBottom: "1px solid #FEE2E2", cursor: "pointer" }}
-                      onDoubleClick={() => { if (setEvents) openEditEvent(ev); }}
-                      onMouseEnter={e => { e.currentTarget.style.background = "#FFF5F5"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-                      <td style={{ padding: "8px 10px", fontWeight: 700, color: "#DC2626" }}>{ev.date}</td>
-                      <td style={{ padding: "8px 10px", fontWeight: 700 }}>{ev.building}</td>
-                      <td style={{ padding: "8px 10px" }}>{ev.room}</td>
-                      <td style={{ padding: "8px 10px", fontWeight: 700 }}>{ev.name || (t ? t.name : ev.pastInfo ? ev.pastInfo.name : "—")}</td>
-                      <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>
-                        {t ? t.phone : ev.pastInfo ? ev.pastInfo.phone : "—"}
-                      </td>
-                      <td style={{ padding: "4px 6px", textAlign: "center" }}>
-                        {t && setPage && ev.hasPhotos && !ev.settled && (
-                          <span onClick={() => { setPendingMoveout?.({ building: ev.building, room: ev.room }); setPage("tenants"); }}
-                            style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "3px 8px", borderRadius: 5, background: "#DC2626", cursor: "pointer", whiteSpace: "nowrap" }}>
-                            퇴실정산서 →
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {activeMoveOutEvts.map((ev, i) => {
+                const t = ev.tenant;
+                const tm = ev.tenantForModal;
+                const evRoomType = getRoomType(ev.building, ev.room);
+                const needsOwnerReport = evRoomType === "일반임대" || evRoomType === "근생";
+                const mSteps = [
+                  { label: "퇴실문자", done: !!ev.moveOutMsg },
+                  { label: "비밀번호", done: !!ev.doorPassword },
+                  { label: "퇴실사진", done: ev.hasPhotos },
+                  { label: "정산서", done: ev.settled },
+                  ...(needsOwnerReport ? [{ label: "건물주연락", done: !!ev.ownerReported }] : []),
+                  { label: "입주체크사진", done: ev.hasCheckPhotos },
+                ];
+                const mDone = mSteps.filter(s => s.done).length;
+                const allDone = mDone === mSteps.length;
+                const currentStep = mSteps.findIndex(s => !s.done);
+                return (
+                  <div key={i} style={{ background: allDone ? "#F9FAFB" : "#fff", border: allDone ? "1px solid #D1D5DB" : "1px solid #FECACA", borderRadius: 10, overflow: "hidden", filter: allDone ? "grayscale(1)" : "none", opacity: allDone ? 0.7 : 1, transition: "all 0.3s" }}
+                    onDoubleClick={() => { if (setEvents) openEditEvent(ev); }}>
+                    {/* 스텝 인디케이터 */}
+                    <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #FEF2F2, #FFF8F8)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #FECACA", display: "flex", alignItems: "center", gap: 0 }}>
+                      <div style={{ display: "flex", flexDirection: "column", marginRight: 12, whiteSpace: "nowrap" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#DC2626" }}>{ev.building} {ev.room}호</span>
+                        <span style={{ fontSize: 9, color: allDone ? "#B0B5C1" : "#8F95A3" }}>{ev.date} · {ev.name || (t ? t.name : ev.pastInfo?.name || "—")}</span>
+                      </div>
+                      <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                        {mSteps.map((step, si) => {
+                          const isActive = si === currentStep;
+                          const stepDone = step.done;
+                          return (
+                            <div key={si} style={{ display: "flex", alignItems: "center", flex: 1 }}>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 52 }}>
+                                <div style={{
+                                  width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: 11, fontWeight: 800,
+                                  background: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#fff" : "#E5E7EB",
+                                  color: stepDone ? "#fff" : isActive ? "#DC2626" : "#9CA3AF",
+                                  border: isActive && !stepDone ? "2px solid #DC2626" : "2px solid transparent",
+                                  boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(220,38,38,0.2)" : "none",
+                                  animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                                  transition: "all 0.3s"
+                                }}>
+                                  {stepDone ? "✓" : si + 1}
+                                </div>
+                                <span style={{ fontSize: 9, fontWeight: stepDone || isActive ? 700 : 500, color: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#B91C1C" : "#9CA3AF", whiteSpace: "nowrap", animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none" }}>{step.label}</span>
+                              </div>
+                              {si < mSteps.length - 1 && (
+                                <div style={{ flex: 1, height: 2, background: stepDone ? (allDone ? "#D1D5DB" : "#DC2626") : "#E5E7EB", margin: "0 2px", marginBottom: 16, borderRadius: 1, transition: "background 0.3s" }} />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {/* 액션 버튼 행 */}
+                    <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      {/* 퇴실문자 */}
+                      {ev.moveOutMsg ? (
+                        <span onClick={(e) => { e.stopPropagation(); setMoveOutMsgModal({ ev, text: ev.moveOutMsg }); }}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>✔ 퇴실문자</span>
+                      ) : (
+                        <span onClick={(e) => { e.stopPropagation(); setMoveOutMsgModal({ ev, text: "" }); }}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#F59E0B", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          📩 퇴실문자
+                        </span>
+                      )}
+                      {/* 비밀번호 */}
+                      {ev.doorPassword ? (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", textDecoration: "line-through" }}>✔ 비번 {ev.doorPassword}</span>
+                      ) : (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#C4C7CF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>비밀번호 —</span>
+                      )}
+                      {/* 퇴실사진 */}
+                      {ev.hasPhotos ? (
+                        <span onClick={() => setPhotoModalTenant(tm)}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>✔ 퇴실사진</span>
+                      ) : (
+                        <span onClick={() => setPhotoModalTenant(tm)}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#DC2626", cursor: "pointer" }}>
+                          📷 퇴실사진
+                        </span>
+                      )}
+                      {/* 건물주연락 (일반임대/근생만) */}
+                      {needsOwnerReport && (
+                        ev.ownerReported ? (
+                          <span onClick={() => {
+                            const bd = buildingData[ev.building] || {};
+                            const bf = buildingFloors[ev.building] || {};
+                            const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name ? bd.owners : [{ name: bf.owner || "", phone: bf.phone || "" }];
+                            setMoveOutOwnerReport({ ev, owners, msgText: ev.ownerReportMsg || "" });
+                          }}
+                            style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>✔ 건물주연락</span>
+                        ) : (
+                          <span onClick={() => {
+                            if (!ev.settled) return alert("정산서가 완료되어야 건물주연락이 가능합니다.");
+                            const bd = buildingData[ev.building] || {};
+                            const bf = buildingFloors[ev.building] || {};
+                            const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name ? bd.owners : [{ name: bf.owner || "", phone: bf.phone || "" }];
+                            const ownerName = owners[0]?.name || "건물주";
+                            const hk = `${ev.building}_${ev.room}`;
+                            const pastRecs = pastTenantsData[hk] || [];
+                            const lastRec = Array.isArray(pastRecs) ? pastRecs[pastRecs.length - 1] : null;
+                            const deposit = lastRec?.deposit || t?.deposit || 0;
+                            const rent = lastRec?.rent || t?.rent || 0;
+                            const refundTotal = lastRec?.refundTotal ?? "";
+                            const msgLines = [
+                              `[${ev.building} ${ev.room}호 퇴실정산 안내]`,
+                              ``,
+                              `안녕하세요, ${ownerName}건물주님.`,
+                              `${ev.building} ${ev.room}호 퇴실정산이 완료되었습니다.`,
+                              ``,
+                              `▪ 세입자: ${ev.name || t?.name || lastRec?.name || "—"}`,
+                              `▪ 퇴실일: ${ev.date || "—"}`,
+                              `▪ 보증금: ${deposit ? deposit.toLocaleString() + "원" : "—"}`,
+                              `▪ 월세: ${rent ? rent.toLocaleString() + "원" : "—"}`,
+                              refundTotal !== "" ? `▪ 정산금: ${Number(refundTotal).toLocaleString()}원` : null,
+                              ``,
+                              `감사합니다.`,
+                              `- 하우스맨 드림`,
+                            ].filter(Boolean);
+                            setMoveOutOwnerReport({ ev, owners, msgText: msgLines.join("\n") });
+                          }}
+                            style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#7C3AED", cursor: "pointer", whiteSpace: "nowrap" }}>
+                            📞 건물주연락
                           </span>
-                        )}
-                      </td>
+                        )
+                      )}
+                      {/* 입주체크사진 */}
+                      {ev.hasCheckPhotos ? (
+                        <span onClick={() => setCheckPhotoModalTenant(tm)}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>✔ 입주체크사진</span>
+                      ) : (
+                        <span onClick={() => setCheckPhotoModalTenant(tm)}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#F59E0B", cursor: "pointer" }}>
+                          📷 입주체크사진
+                        </span>
+                      )}
                       {/* 사진비교 */}
-                      <td style={{ padding: "8px 6px", textAlign: "center" }}>
-                        <span onClick={ev.hasPhotos ? () => setCompareData({ building: ev.building, room: ev.room, moveInCheckPhotos: tm.moveInCheckPhotos || [], moveOutPhotos: tm.moveOutPhotos || [] }) : undefined}
-                          style={{ fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 6, whiteSpace: "nowrap",
-                            ...(ev.hasPhotos
-                              ? { color: "#6366F1", background: "#EEF2FF", border: "1px solid #C7D2FE", cursor: "pointer" }
-                              : { color: "#C4C7CF", background: "#F3F4F6", cursor: "default" })
-                          }}>
+                      {ev.hasPhotos && (
+                        <span onClick={() => setCompareData({ building: ev.building, room: ev.room, moveInCheckPhotos: tm.moveInCheckPhotos || [], moveOutPhotos: tm.moveOutPhotos || [] })}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", padding: "4px 10px", borderRadius: 6, border: "1px solid #C7D2FE", background: "#EEF2FF", cursor: "pointer" }}>
                           🔍 비교
                         </span>
-                      </td>
-                      {/* 퇴실사진 */}
-                      <td style={{ padding: "8px 6px", textAlign: "center" }}>
-                        {ev.hasPhotos ? (
-                          <span onClick={() => setPhotoModalTenant(tm)}
-                            style={{ fontSize: 11, fontWeight: 700, color: "#059669", padding: "2px 10px", borderRadius: 4, background: "#D1FAE5", cursor: "pointer" }}>✅ 완료</span>
-                        ) : (
-                          <span onClick={() => setPhotoModalTenant(tm)}
-                            style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#DC2626", cursor: "pointer" }}>
-                            📷 등록
-                          </span>
-                        )}
-                      </td>
-                      {/* 입주체크사진 */}
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
-                        {ev.hasCheckPhotos ? (
-                          <span onClick={() => setCheckPhotoModalTenant(tm)}
-                            style={{ fontSize: 11, fontWeight: 700, color: "#059669", padding: "2px 10px", borderRadius: 4, background: "#D1FAE5", cursor: "pointer" }}>✅ 완료</span>
-                        ) : (
-                          <span onClick={() => setCheckPhotoModalTenant(tm)}
-                            style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#F59E0B", cursor: "pointer" }}>
-                            📷 등록
-                          </span>
-                        )}
-                      </td>
-                      {/* 퇴실정산서 */}
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
-                        {ev.settled ? (
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#059669", padding: "2px 10px", borderRadius: 4, background: "#D1FAE5" }}>✅ 완료</span>
-                        ) : (
-                          <span style={{ fontSize: 11, fontWeight: 600, color: "#9CA3AF", padding: "2px 10px", borderRadius: 4, background: "#F3F4F6" }}>대기</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      )}
+                      <div style={{ marginLeft: "auto" }} />
+                      {/* 퇴실정산서 (맨 오른쪽) */}
+                      {ev.settled ? (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", textDecoration: "line-through" }}>✔ 정산완료</span>
+                      ) : t && setPage && ev.hasPhotos ? (
+                        <span onClick={() => { setPendingMoveout?.({ building: ev.building, room: ev.room }); setPage("tenants"); }}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#DC2626", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          정산서 →
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>정산 대기</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </Card>
         );
       })()}
@@ -702,6 +919,8 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
             <button onClick={() => {
               if (!formDate) return alert("퇴실일을 선택하세요");
               if (!formBuilding || !formRoom) return alert("건물, 호실을 입력하세요");
+              const hasTenant = activeTenants.some(t => t.building === formBuilding && String(t.room) === String(formRoom));
+              if (!hasTenant) return alert(`${formBuilding} ${formRoom}호에 등록된 임차인이 없습니다.\n임차인이 있는 호실만 퇴실등록이 가능합니다.`);
               const isVacant = activeVacancies.some(v => v.building === formBuilding && String(v.room) === String(formRoom));
               if (isVacant) return alert("해당 호실은 공실관리에 등록된 호실입니다.\n공실에는 퇴실등록을 할 수 없습니다.");
               const now = new Date();
@@ -775,6 +994,9 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
               </div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
                 {evt.building} {evt.room}호 → {evt.broker || "부동산"} ({evt.brokerPhone || "-"})
+              </div>
+              <div style={{ fontSize: 11, color: "#FDE68A", marginTop: 6, fontWeight: 600 }}>
+                부동산에 보내는 계약 메시지입니다.
               </div>
             </div>
 
@@ -862,7 +1084,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                   return (
                     <button key={btn.type} onClick={() => {
                       if (isActive) { setShowForm(false); }
-                      else { setShowForm(true); setFormType(btn.type); setSelectedVacancy(null); setVacancyEdits({}); setFormDate(selectedDay ? `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}` : ""); setFormBuilding(""); setFormRoom(""); setFormName(""); }
+                      else { setShowForm(true); setFormType(btn.type); setSelectedVacancy(null); setVacancyEdits({}); setFormDate(selectedDay ? `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}` : new Date().toISOString().slice(0, 10)); setFormBuilding(""); setFormRoom(""); setFormName(""); }
                     }}
                       style={{ padding: "6px 12px", borderRadius: 8, border: isActive ? `2px solid ${btn.bg}` : "1px solid #E0E3E9", background: isActive ? "#fff" : btn.bg, color: isActive ? btn.bg : "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                       {isActive ? "✕ 닫기" : btn.label}
@@ -1016,29 +1238,29 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
 
           {/* Upcoming Events */}
           <Card style={{ padding: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>📋 이번 달 전체 일정</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", marginBottom: 8 }}>📋 이번 달 전체 일정</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, maxHeight: 600, overflowY: "auto" }}>
               {filteredMonthEvents.sort((a, b) => a.date.localeCompare(b.date)).map((evt, i) => (
                 <div key={i} onClick={() => setSelectedDay(parseInt(evt.date.split("-")[2]))}
                   onDoubleClick={() => { if (setEvents) openEditEvent(evt); }}
-                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 7, cursor: "pointer", transition: "background 0.1s", border: "1px solid #F0F2F5" }}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 8px", borderRadius: 5, cursor: "pointer", transition: "background 0.1s", border: "1px solid #F0F2F5" }}
                   onMouseEnter={e => e.currentTarget.style.background = "#F9FAFB"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                  <div style={{ width: 36, textAlign: "center", flexShrink: 0 }}>
-                    <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23" }}>{parseInt(evt.date.split("-")[2])}</div>
-                    <div style={{ fontSize: 9, color: "#B0B5C1" }}>{month + 1}월</div>
+                  <div style={{ width: 26, textAlign: "center", flexShrink: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", lineHeight: 1.2 }}>{parseInt(evt.date.split("-")[2])}</div>
+                    <div style={{ fontSize: 8, color: "#B0B5C1" }}>{month + 1}월</div>
                   </div>
-                  <div style={{ width: 3, height: 28, borderRadius: 2, background: TYPE_COLORS[evt.type], flexShrink: 0 }} />
+                  <div style={{ width: 2, height: 20, borderRadius: 2, background: TYPE_COLORS[evt.type], flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11.5, fontWeight: 700, color: "#1A1D23", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#1A1D23", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {TYPE_ICON[evt.type]} {evt.type === "휴무" ? `${evt.name} 휴무` : `${evt.building} ${evt.room}${evt.type}`}
                     </div>
-                    {evt.building && <div style={{ fontSize: 10, color: "#8F95A3" }}>{evt.name}</div>}
+                    {evt.building && <div style={{ fontSize: 9, color: "#8F95A3", lineHeight: 1.2 }}>{evt.name}</div>}
                   </div>
-                  <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: TYPE_BG[evt.type], color: TYPE_COLORS[evt.type], flexShrink: 0 }}>{evt.type}</span>
+                  <span style={{ fontSize: 9, fontWeight: 600, padding: "1px 6px", borderRadius: 3, background: TYPE_BG[evt.type], color: TYPE_COLORS[evt.type], flexShrink: 0 }}>{evt.type}</span>
                   {setEvents && (
                     <button onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }}
-                      style={{ padding: "2px 8px", borderRadius: 4, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 9, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
+                      style={{ padding: "1px 6px", borderRadius: 3, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 8, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
                       수정
                     </button>
                   )}
@@ -1049,66 +1271,6 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
         </div>
       </div>
 
-      {/* Registration List — newest first */}
-      <Card style={{ padding: 16, marginTop: 20 }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 14 }}>📋 등록 일정 리스트</div>
-        {filteredMonthEvents.length === 0 ? (
-          <div style={{ padding: "24px 0", textAlign: "center", color: "#B0B5C1", fontSize: 13 }}>등록된 일정이 없습니다</div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {[...filteredMonthEvents].sort((a, b) => b.date.localeCompare(a.date)).map((evt, i) => (
-              <div key={i} onClick={() => setSelectedDay(parseInt(evt.date.split("-")[2]))}
-                onDoubleClick={() => { if (setEvents) openEditEvent(evt); }}
-                style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 8, cursor: "pointer", transition: "background 0.1s", border: "1px solid #F0F2F5" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#F9FAFB"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                <div style={{ width: 44, textAlign: "center", flexShrink: 0 }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>{parseInt(evt.date.split("-")[2])}</div>
-                  <div style={{ fontSize: 9, color: "#B0B5C1" }}>{month + 1}월</div>
-                </div>
-                <div style={{ width: 3, height: 32, borderRadius: 2, background: TYPE_COLORS[evt.type], flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {TYPE_ICON[evt.type]} {evt.type === "휴무" ? `${evt.name} 휴무` : `${evt.building} ${evt.room}호 ${evt.type}`}
-                  </div>
-                  {evt.type === "계약" && evt.deposit != null && (
-                    <div style={{ display: "flex", gap: 6, marginTop: 2, fontSize: 10, color: "#3B82F6", flexWrap: "wrap" }}>
-                      <span>보증금 {evt.deposit}</span><span>월세 {evt.rent}</span>{evt.mgmt > 0 && <span>관리 {evt.mgmt}</span>}
-                      {evt.moveIn && <span style={{ color: "#059669" }}>입주 {evt.moveIn}</span>}
-                      {evt.expiry && <span style={{ color: "#DC2626" }}>만기 {evt.expiry}</span>}
-                      {evt.broker && <span style={{ color: "#6B7280" }}>· 🏠 {evt.broker}{evt.brokerPhone ? ` ${evt.brokerPhone}` : ""}</span>}
-                    </div>
-                  )}
-                  <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
-                    {evt.registeredBy && <span style={{ fontSize: 10, color: "#6B7280" }}>등록: {evt.registeredBy}</span>}
-                    {evt.registeredAt && <span style={{ fontSize: 10, color: "#B0B5C1" }}>{evt.registeredAt}</span>}
-                  </div>
-                </div>
-                <div style={{ fontSize: 11, color: "#8F95A3", flexShrink: 0, marginRight: 4 }}>{evt.date}</div>
-                <span style={{ fontSize: 10.5, fontWeight: 600, padding: "3px 10px", borderRadius: 5, background: TYPE_BG[evt.type], color: TYPE_COLORS[evt.type], flexShrink: 0 }}>{evt.type}</span>
-                {evt.type === "계약" && (
-                  <button onClick={(e) => { e.stopPropagation(); openSendModal(evt); }}
-                    style={{ padding: "3px 10px", borderRadius: 5, border: "1.5px solid #10B981", background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
-                    📤 전송
-                  </button>
-                )}
-                {setEvents && (
-                  <button onClick={(e) => { e.stopPropagation(); openEditEvent(evt); }}
-                    style={{ padding: "3px 10px", borderRadius: 5, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
-                    수정
-                  </button>
-                )}
-                {setEvents && (
-                  <button onClick={(e) => { e.stopPropagation(); const idx = calendarEvents.indexOf(evt); if (idx > -1) setEvents(prev => prev.filter((_, j) => j !== idx)); }}
-                    style={{ padding: "3px 10px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
 
       {/* 퇴실사진 등록 모달 */}
       {photoModalTenant && (
@@ -1361,63 +1523,204 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
         );
       })()}
 
-      {/* 사진비교 모달 — 입주체크사진(시작) vs 퇴실사진(끝) */}
-      {compareData && (
+      {/* 퇴실문자 입력 모달 */}
+      {moveOutMsgModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center" }}
-          onClick={() => setCompareData(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: "90%", maxWidth: 900, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
-            onClick={e => e.stopPropagation()}>
+          onClick={() => setMoveOutMsgModal(null)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, width: 480, maxWidth: "90vw", maxHeight: "80vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
-              <button onClick={() => setCompareData(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📩 퇴실문자 — {moveOutMsgModal.ev.building} {moveOutMsgModal.ev.room}호</div>
+              <button onClick={() => setMoveOutMsgModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
             </div>
-            <div style={{ display: "flex", gap: 16 }}>
-              {/* 왼쪽: 입주체크사진 (시작) */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#F59E0B", marginBottom: 8, padding: "4px 10px", borderRadius: 6, background: "#FFFBEB", textAlign: "center" }}>
-                  📋 입주체크사진 (시작) — {compareData.moveInCheckPhotos.length}장
-                </div>
-                {compareData.moveInCheckPhotos.length === 0 ? (
-                  <div style={{ padding: 24, textAlign: "center", color: "#9CA3AF", fontSize: 12, background: "#F9FAFB", borderRadius: 8 }}>등록된 사진 없음</div>
-                ) : (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-                    {compareData.moveInCheckPhotos.map((p, i) => (
-                      <div key={i} onClick={() => setZoomPhoto({ photos: compareData.moveInCheckPhotos, index: i, zoom: 1 })} style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid #FDE68A", aspectRatio: "1" }}>
-                        <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {/* 가운데 화살표 */}
-              <div style={{ display: "flex", alignItems: "center", fontSize: 24, color: "#9CA3AF", flexShrink: 0 }}>→</div>
-              {/* 오른쪽: 퇴실사진 (끝) */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#DC2626", marginBottom: 8, padding: "4px 10px", borderRadius: 6, background: "#FEF2F2", textAlign: "center" }}>
-                  🚪 퇴실사진 (끝) — {compareData.moveOutPhotos.length}장
-                </div>
-                {compareData.moveOutPhotos.length === 0 ? (
-                  <div style={{ padding: 24, textAlign: "center", color: "#9CA3AF", fontSize: 12, background: "#F9FAFB", borderRadius: 8 }}>등록된 사진 없음</div>
-                ) : (
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-                    {compareData.moveOutPhotos.map((p, i) => (
-                      <div key={i} onClick={() => setZoomPhoto({ photos: compareData.moveOutPhotos, index: i, zoom: 1 })} style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid #FECACA", aspectRatio: "1" }}>
-                        <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div style={{ textAlign: "right", marginTop: 16 }}>
-              <button onClick={() => setCompareData(null)}
-                style={{ padding: "8px 24px", borderRadius: 8, border: "none", background: "#6366F1", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
-                닫기
+            <textarea
+              value={moveOutMsgModal.text}
+              onChange={e => setMoveOutMsgModal(prev => ({ ...prev, text: e.target.value }))}
+              placeholder="수령한 퇴실문자 내용을 입력하세요..."
+              style={{ width: "100%", minHeight: 180, padding: "12px 14px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, lineHeight: 1.7, resize: "vertical", fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+            />
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+              {moveOutMsgModal.ev.moveOutMsg && (
+                <button onClick={() => {
+                  const orig = moveOutMsgModal.ev._origEvent;
+                  const idx = calendarEvents.indexOf(orig);
+                  if (idx > -1 && setEvents) setEvents(prev => prev.map((evt, j) => j === idx ? { ...evt, moveOutMsg: "" } : evt));
+                  setMoveOutMsgModal(null);
+                }}
+                  style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                  삭제
+                </button>
+              )}
+              <button onClick={() => setMoveOutMsgModal(null)}
+                style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                취소
+              </button>
+              <button onClick={() => {
+                const orig = moveOutMsgModal.ev._origEvent;
+                const idx = calendarEvents.indexOf(orig);
+                const txt = moveOutMsgModal.text;
+                // 비밀번호 자동 추출
+                const pwMatch = txt.match(/비밀번호\s*[:\-]?\s*([#*\d]+)/i) || txt.match(/호실비번\s*[:\-]?\s*([#*\d]+)/i) || txt.match(/비번\s*[:\-]?\s*([#*\d]+)/i) || txt.match(/pw\s*[:\-]?\s*([#*\d]+)/i);
+                const pw = pwMatch ? pwMatch[1] : undefined;
+                if (idx > -1 && setEvents) setEvents(prev => prev.map((evt, j) => j === idx ? { ...evt, moveOutMsg: txt, ...(pw ? { doorPassword: pw } : {}) } : evt));
+                setMoveOutMsgModal(null);
+              }}
+                style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #3B82F6", background: "#3B82F6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                저장
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* 사진비교 모달 — 입주체크사진(시작) vs 퇴실사진(끝) */}
+      {compareData && (() => {
+        const leftPhotos = compareData.moveInCheckPhotos || [];
+        const rightPhotos = compareData.moveOutPhotos || [];
+        const cmpLeft = compareData._leftIdx ?? null;
+        const cmpRight = compareData._rightIdx ?? null;
+        const cmpLeftZoom = compareData._leftZoom ?? 1;
+        const cmpRightZoom = compareData._rightZoom ?? 1;
+        const cmpLeftPos = compareData._leftPos ?? { x: 0, y: 0 };
+        const cmpRightPos = compareData._rightPos ?? { x: 0, y: 0 };
+        const isCompareMode = cmpLeft !== null || cmpRight !== null;
+        const updateCmp = (patch) => setCompareData(prev => ({ ...prev, ...patch }));
+        return (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.85)", display: "flex", flexDirection: "column" }}
+          onClick={() => setCompareData(null)}>
+          <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}
+            onClick={e => e.stopPropagation()}>
+            {/* 헤더 */}
+            <div style={{ padding: "12px 24px", background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {isCompareMode && (
+                  <button onClick={() => updateCmp({ _leftIdx: null, _rightIdx: null, _leftZoom: 1, _rightZoom: 1, _leftPos: { x: 0, y: 0 }, _rightPos: { x: 0, y: 0 } })}
+                    style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid rgba(255,255,255,.3)", background: "rgba(255,255,255,.1)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                    목록으로
+                  </button>
+                )}
+                <button onClick={() => setCompareData(null)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff" }}>✕</button>
+              </div>
+            </div>
+
+            {/* 본문: 좌우 반반 */}
+            <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+              {/* 왼쪽: 입주체크사진 */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: "2px solid rgba(255,255,255,.15)" }}>
+                <div style={{ padding: "8px 16px", background: "rgba(245,158,11,.15)", textAlign: "center", flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#FCD34D" }}>📋 입주체크사진 (입주 시) — {leftPhotos.length}장</span>
+                </div>
+                <div style={{ flex: 1, overflow: "auto", padding: cmpLeft !== null ? 0 : 12 }}>
+                  {cmpLeft !== null && leftPhotos[cmpLeft] ? (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", cursor: "grab", position: "relative" }}
+                      onWheel={e => {
+                        e.stopPropagation();
+                        const delta = e.deltaY > 0 ? -0.15 : 0.15;
+                        updateCmp({ _leftZoom: Math.max(0.3, Math.min(8, cmpLeftZoom + delta)) });
+                      }}
+                      onMouseDown={e => {
+                        if (cmpLeftZoom <= 1) return;
+                        e.preventDefault();
+                        const startX = e.clientX - cmpLeftPos.x;
+                        const startY = e.clientY - cmpLeftPos.y;
+                        const onMove = (me) => updateCmp({ _leftPos: { x: me.clientX - startX, y: me.clientY - startY } });
+                        const onUp = () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+                        window.addEventListener("mousemove", onMove);
+                        window.addEventListener("mouseup", onUp);
+                      }}>
+                      <img src={typeof leftPhotos[cmpLeft] === "string" ? leftPhotos[cmpLeft] : URL.createObjectURL(leftPhotos[cmpLeft])} alt=""
+                        style={{ maxWidth: "100%", maxHeight: "100%", transform: `scale(${cmpLeftZoom}) translate(${cmpLeftPos.x / cmpLeftZoom}px, ${cmpLeftPos.y / cmpLeftZoom}px)`, transition: "transform 0.1s ease-out", objectFit: "contain" }}
+                        draggable={false} />
+                      {/* 네비게이션 */}
+                      {cmpLeft > 0 && (
+                        <button onClick={() => updateCmp({ _leftIdx: cmpLeft - 1, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
+                          style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
+                      )}
+                      {cmpLeft < leftPhotos.length - 1 && (
+                        <button onClick={() => updateCmp({ _leftIdx: cmpLeft + 1, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
+                          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>›</button>
+                      )}
+                      <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
+                        {cmpLeft + 1}/{leftPhotos.length} {cmpLeftZoom !== 1 && `· ${Math.round(cmpLeftZoom * 100)}%`}
+                      </div>
+                    </div>
+                  ) : leftPhotos.length === 0 ? (
+                    <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>등록된 사진 없음</div>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                      {leftPhotos.map((p, i) => (
+                        <div key={i} onClick={() => updateCmp({ _leftIdx: i, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
+                          style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(253,224,71,.4)", aspectRatio: "1", background: "#111" }}>
+                          <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 오른쪽: 퇴실사진 */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ padding: "8px 16px", background: "rgba(220,38,38,.15)", textAlign: "center", flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#FCA5A5" }}>🚪 퇴실사진 (퇴실 시) — {rightPhotos.length}장</span>
+                </div>
+                <div style={{ flex: 1, overflow: "auto", padding: cmpRight !== null ? 0 : 12 }}>
+                  {cmpRight !== null && rightPhotos[cmpRight] ? (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", cursor: "grab", position: "relative" }}
+                      onWheel={e => {
+                        e.stopPropagation();
+                        const delta = e.deltaY > 0 ? -0.15 : 0.15;
+                        updateCmp({ _rightZoom: Math.max(0.3, Math.min(8, cmpRightZoom + delta)) });
+                      }}
+                      onMouseDown={e => {
+                        if (cmpRightZoom <= 1) return;
+                        e.preventDefault();
+                        const startX = e.clientX - cmpRightPos.x;
+                        const startY = e.clientY - cmpRightPos.y;
+                        const onMove = (me) => updateCmp({ _rightPos: { x: me.clientX - startX, y: me.clientY - startY } });
+                        const onUp = () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+                        window.addEventListener("mousemove", onMove);
+                        window.addEventListener("mouseup", onUp);
+                      }}>
+                      <img src={typeof rightPhotos[cmpRight] === "string" ? rightPhotos[cmpRight] : URL.createObjectURL(rightPhotos[cmpRight])} alt=""
+                        style={{ maxWidth: "100%", maxHeight: "100%", transform: `scale(${cmpRightZoom}) translate(${cmpRightPos.x / cmpRightZoom}px, ${cmpRightPos.y / cmpRightZoom}px)`, transition: "transform 0.1s ease-out", objectFit: "contain" }}
+                        draggable={false} />
+                      {cmpRight > 0 && (
+                        <button onClick={() => updateCmp({ _rightIdx: cmpRight - 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
+                          style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
+                      )}
+                      {cmpRight < rightPhotos.length - 1 && (
+                        <button onClick={() => updateCmp({ _rightIdx: cmpRight + 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
+                          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>›</button>
+                      )}
+                      <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
+                        {cmpRight + 1}/{rightPhotos.length} {cmpRightZoom !== 1 && `· ${Math.round(cmpRightZoom * 100)}%`}
+                      </div>
+                    </div>
+                  ) : rightPhotos.length === 0 ? (
+                    <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>등록된 사진 없음</div>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                      {rightPhotos.map((p, i) => (
+                        <div key={i} onClick={() => updateCmp({ _rightIdx: i, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
+                          style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(254,202,202,.4)", aspectRatio: "1", background: "#111" }}>
+                          <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 하단 안내 */}
+            <div style={{ padding: "8px 24px", background: "rgba(0,0,0,.6)", textAlign: "center", flexShrink: 0 }}>
+              <span style={{ color: "rgba(255,255,255,.5)", fontSize: 11 }}>사진 클릭하여 확대 · 스크롤로 줌 · 드래그로 이동 · ESC 닫기</span>
+            </div>
+          </div>
+        </div>
+        );
+      })()}
 
       {/* 사진 확대 모달 — 스크롤 줌 + 좌우 방향키 */}
       {zoomPhoto && (() => {
@@ -1478,6 +1781,130 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
           </div>
         );
       })()}
+      {/* 계약 건물주보고 모달 */}
+      {contractReport && (() => {
+        const { ev, owners, msgText } = contractReport;
+        const ownerPhone = owners[0]?.phone || "";
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setContractReport(null)}>
+            <div onClick={e => e.stopPropagation()}
+              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>📩 건물주 보고 — {ev.building} {ev.room}호</span>
+                <button onClick={() => setContractReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+                {owners.map((o, oi) => (
+                  <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
+                    <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
+                    <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", marginBottom: 6 }}>💬 전송 내용</div>
+                <textarea id="contract-report-msg" defaultValue={msgText} rows={14}
+                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => {
+                  const msg = document.getElementById("contract-report-msg")?.value || msgText;
+                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
+                  setEvents?.(prev => prev.map(e => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
+                  setContractReport(null);
+                }}
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  📱 문자 보내기
+                </button>
+                <button onClick={() => {
+                  const msg = document.getElementById("contract-report-msg")?.value || msgText;
+                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
+                  setEvents?.(prev => prev.map(e => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
+                  setContractReport(null);
+                }}
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  💬 카카오톡
+                </button>
+                <button onClick={() => {
+                  const msg = document.getElementById("contract-report-msg")?.value || msgText;
+                  navigator.clipboard.writeText(msg);
+                  setEvents?.(prev => prev.map(e => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
+                  alert("메시지가 클립보드에 복사되었습니다.");
+                }}
+                  style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  📋 복사
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+      {/* 퇴실 건물주연락 모달 */}
+      {moveOutOwnerReport && (() => {
+        const { ev, owners, msgText } = moveOutOwnerReport;
+        const ownerPhone = owners[0]?.phone || "";
+        return (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setMoveOutOwnerReport(null)}>
+            <div onClick={e => e.stopPropagation()}
+              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>📞 퇴실 건물주연락 — {ev.building} {ev.room}호</span>
+                <button onClick={() => setMoveOutOwnerReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+                {owners.map((o, oi) => (
+                  <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
+                    <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
+                    <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💬 퇴실정산 내용</div>
+                <textarea id="moveout-owner-msg" defaultValue={msgText} rows={14}
+                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => {
+                  const msg = document.getElementById("moveout-owner-msg")?.value || msgText;
+                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
+                  setEvents?.(prev => prev.map(e => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
+                  setMoveOutOwnerReport(null);
+                }}
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  📱 문자 보내기
+                </button>
+                <button onClick={() => {
+                  const msg = document.getElementById("moveout-owner-msg")?.value || msgText;
+                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
+                  setEvents?.(prev => prev.map(e => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
+                  setMoveOutOwnerReport(null);
+                }}
+                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  💬 카카오톡
+                </button>
+                <button onClick={() => {
+                  const msg = document.getElementById("moveout-owner-msg")?.value || msgText;
+                  navigator.clipboard.writeText(msg);
+                  setEvents?.(prev => prev.map(e => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
+                  alert("메시지가 클립보드에 복사되었습니다.");
+                }}
+                  style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  📋 복사
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
       {/* 계약파기 건물주보고 모달 */}
       {breakReport && (() => {
         const { ev, owners, msgText } = breakReport;
@@ -1500,10 +1927,22 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                   </div>
                 ))}
               </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💰 계약금 (만원)</div>
+                <input id="break-deposit-amt" type="number" placeholder="계약금 입력"
+                  onChange={e => {
+                    const amt = e.target.value;
+                    const ta = document.getElementById("break-report-msg");
+                    if (ta) {
+                      ta.value = ta.value.replace(/※ 계약금.*입금 후 파기 건입니다\./, `※ 계약금 ${amt ? amt + "만원 " : ""}입금 후 파기 건입니다.`);
+                    }
+                  }}
+                  style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #FECACA", fontSize: 12, fontFamily: "inherit", background: "#FEF2F2", boxSizing: "border-box" }} />
+              </div>
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💬 전송 내용</div>
                 <textarea id="break-report-msg" defaultValue={msgText} rows={14}
-                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6 }} />
+                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => {

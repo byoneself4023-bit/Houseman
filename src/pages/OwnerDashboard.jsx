@@ -1,18 +1,23 @@
-import { useState } from 'react';
-import { buildings, asItems, ownerBuildings, recentTx } from '../data';
+import { useState, useMemo } from 'react';
+import { buildings, asItems as staticAsItems, ownerBuildings, recentTx } from '../data';
 import { patrolBuildings, patrolRecords } from '../data/patrolData';
 import { useIsMobile, fmt } from '../utils';
+import { useLocalStorage } from '../utils/useLocalStorage';
 import { Card, SectionTitle, Table, StatusBadge } from '../components';
 
 export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => {
   const isMobile = useIsMobile();
   const myBuildings = ownerBuildings["owner"] || [];
   const myBldgData = buildings.filter(b => myBuildings.includes(b.name));
+  const [savedPatrolRecords] = useLocalStorage("hm_patrolRecords", []);
+  const allPatrolRecords = useMemo(() => [...patrolRecords, ...savedPatrolRecords].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id), [savedPatrolRecords]);
+  const [localAsItems, setLocalAsItems] = useLocalStorage("hm_asItems", []);
+  const allAsItems = useMemo(() => [...staticAsItems, ...localAsItems], [localAsItems]);
   const myTenants = activeTenants.filter(t => myBuildings.includes(t.building));
   const myOverdue = myTenants.filter(t => t.overdue > 0);
   const myTotalOverdue = myOverdue.reduce((s, t) => s + t.overdue, 0);
   const myVacancies = activeVacancies.filter(v => myBuildings.includes(v.building));
-  const myAS = asItems.filter(a => myBuildings.includes(a.building));
+  const myAS = allAsItems.filter(a => myBuildings.includes(a.building));
   const myTx = recentTx.filter(t => myBuildings.includes(t.building));
   const totalRooms = myBldgData.reduce((s, b) => s + b.rooms, 0);
   const totalOccupied = myBldgData.reduce((s, b) => s + b.occupied, 0);
@@ -20,6 +25,31 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
 
   const [selectedBldg, setSelectedBldg] = useState(myBuildings[0] || "");
   const [expandedPatrol, setExpandedPatrol] = useState(null);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Pending approvals across all buildings
+  const pendingApprovals = myAS.filter(a => a.ownerApproval === "pending");
+
+  // Handle owner approval/rejection
+  const handleApproval = (asId, decision) => {
+    setLocalAsItems(prev => prev.map(item => {
+      if (item.id !== asId) return item;
+      const actionLabel = decision === "approved" ? "건물주승인" : "건물주반려";
+      const noteText = decision === "approved" ? "건물주가 승인했습니다" : "건물주가 반려했습니다";
+      return {
+        ...item,
+        ownerApproval: decision,
+        steps: [...(item.steps || []), { date: today, action: actionLabel, note: noteText }],
+        actions: [...(item.actions || []), { step: actionLabel, date: today, by: "건물주" }],
+      };
+    }));
+  };
+
+  // AS cost breakdown for selected building
+  const asCostPaid = myAS.filter(a => a.building === selectedBldg && a.paid === "유상").reduce((s, a) => s + (a.cost || 0), 0);
+  const asCostFree = myAS.filter(a => a.building === selectedBldg && a.paid === "무상" && (a.cost || 0) > 0).reduce((s, a) => s + (a.cost || 0), 0);
+  const asTotalCost = myAS.filter(a => a.building === selectedBldg).reduce((s, a) => s + (a.cost || 0), 0);
 
   const filteredTenants = myTenants.filter(t => t.building === selectedBldg);
   const filteredOverdue = myOverdue.filter(t => t.building === selectedBldg);
@@ -42,7 +72,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
         {myBuildings.map(name => {
           const bldg = buildings.find(b => b.name === name);
           const active = selectedBldg === name;
-          const vc = vacancies.filter(v => v.building === name).length;
+          const vc = activeVacancies.filter(v => v.building === name).length;
           return (
             <div key={name} onClick={() => setSelectedBldg(name)}
               style={{
@@ -85,6 +115,52 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
           </Card>
         ))}
       </div>
+
+      {/* Pending Approvals (across all buildings) */}
+      {pendingApprovals.length > 0 && (
+        <Card style={{ marginBottom: 16, border: "2px solid #FDE68A", background: "#FFFDF5" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#D97706", letterSpacing: "0.05em" }}>📩 승인 대기 AS ({pendingApprovals.length}건)</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {pendingApprovals.map((a, i) => (
+              <div key={a.id || i} style={{ padding: "14px 16px", borderRadius: 12, background: "#fff", border: "1px solid #FDE68A" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23" }}>{a.building} {a.room}호</span>
+                    <StatusBadge status={a.status} />
+                  </div>
+                  <span style={{ fontSize: 11, color: "#B0B5C1" }}>{a.date}</span>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1D23", marginBottom: 4 }}>{a.content || a.title}</div>
+                <div style={{ fontSize: 12, color: "#5F6577", marginBottom: 8, lineHeight: 1.5 }}>{a.detail || a.desc}</div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                  {(a.estimatedCost || 0) > 0 && (
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "#FEF2F2", color: "#DC2626" }}>
+                      예상비용 {fmt(a.estimatedCost)}원
+                    </span>
+                  )}
+                  {a.vendor && (
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "#F3F4F6", color: "#5F6577" }}>
+                      업체: {a.vendor}
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => handleApproval(a.id, "approved")}
+                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    ✅ 승인
+                  </button>
+                  <button onClick={() => handleApproval(a.id, "rejected")}
+                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    ❌ 반려
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Overdue */}
       {filteredOverdue.length > 0 && (
@@ -129,6 +205,31 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
         </Card>
       )}
 
+      {/* AS 현황 */}
+      <Card style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", letterSpacing: "0.05em" }}>🔧 AS 현황 · {selectedBldg}</div>
+          {asTotalCost > 0 && (
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>총 {fmt(asTotalCost)}원</span>
+          )}
+        </div>
+        {/* Cost breakdown */}
+        {asTotalCost > 0 && (
+          <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#FEF2F2", textAlign: "center", border: "1px solid #FECACA" }}>
+              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>유상 (세입자부담)</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#DC2626" }}>{fmt(asCostPaid)}원</div>
+              <div style={{ fontSize: 10, color: "#DC2626" }}>{filteredAS.filter(a => a.paid === "유상").length}건</div>
+            </div>
+            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#ECFDF5", textAlign: "center", border: "1px solid #A7F3D0" }}>
+              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>무상 (건물주부담)</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#059669" }}>{fmt(asCostFree)}원</div>
+              <div style={{ fontSize: 10, color: "#059669" }}>{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
+            </div>
+          </div>
+        )}
+      </Card>
+
       {/* AS History */}
       {filteredAS.length > 0 && (
         <Card style={{ marginBottom: 16 }}>
@@ -152,9 +253,21 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                     {a.paid}{a.cost > 0 ? ` ${fmt(a.cost)}원` : ""}
                   </span>
                 </div>
+                {/* Approval badge */}
+                {a.ownerApproval && (
+                  <div style={{ marginBottom: 6 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4,
+                      background: a.ownerApproval === "pending" ? "#FFFBEB" : a.ownerApproval === "approved" ? "#ECFDF5" : "#FEF2F2",
+                      color: a.ownerApproval === "pending" ? "#D97706" : a.ownerApproval === "approved" ? "#059669" : "#DC2626",
+                    }}>
+                      {a.ownerApproval === "pending" ? "승인대기" : a.ownerApproval === "approved" ? "승인완료" : "반려"}
+                    </span>
+                  </div>
+                )}
                 {/* Content */}
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1D23", marginBottom: 4 }}>{a.content}</div>
-                <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 10 }}>{a.detail}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1D23", marginBottom: 4 }}>{a.content || a.title}</div>
+                <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 10 }}>{a.detail || a.desc}</div>
                 {/* Timeline */}
                 {a.steps && a.steps.length > 0 && (
                   <div style={{ padding: "12px", background: "#fff", borderRadius: 10, border: "1px solid #E8ECF0" }}>
@@ -180,17 +293,52 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                     {a.photoAfter && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, background: "#ECFDF5", color: "#059669" }}>📷 수리 후</span>}
                   </div>
                 )}
-                <div style={{ fontSize: 10, color: "#B0B5C1", marginTop: 8 }}>접수일 {a.date} · 담당 {a.assignee} · {a.category}{a.vendor ? ` · ${a.vendor}` : ""}</div>
+                <div style={{ fontSize: 10, color: "#B0B5C1", marginTop: 8 }}>접수일 {a.date} · 담당 {a.assignee} · {a.category || "기타"}{a.vendor ? ` · ${a.vendor}` : ""}</div>
               </div>
             ))}
           </div>
         </Card>
       )}
 
+      {/* 최근 순회 요약 (모든 건물) */}
+      <Card style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: "#7C3AED", letterSpacing: "0.05em", marginBottom: 10 }}>🚶 최근 순회</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {myBuildings.map(bName => {
+            const latestRec = allPatrolRecords.find(r => r.building === bName);
+            const bldgP = patrolBuildings.find(p => p.building === bName);
+            if (!latestRec && !bldgP) return null;
+            return (
+              <div key={bName} onClick={() => setSelectedBldg(bName)}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, cursor: "pointer",
+                  background: latestRec?.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${latestRec?.status === "이상발견" ? "#FECACA" : "#E8ECF0"}`,
+                  transition: "background 0.1s" }}
+                onMouseEnter={e => e.currentTarget.style.background = latestRec?.status === "이상발견" ? "#FEE2E2" : "#F0F2F5"}
+                onMouseLeave={e => e.currentTarget.style.background = latestRec?.status === "이상발견" ? "#FEF2F2" : "#F8FAFC"}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23" }}>{bName}</span>
+                  {latestRec && (
+                    <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4,
+                      background: latestRec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5",
+                      color: latestRec.status === "이상발견" ? "#DC2626" : "#059669" }}>
+                      {latestRec.status}
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 11, color: "#8F95A3" }}>{latestRec ? latestRec.date.slice(5) : "미순회"}</span>
+                  <span style={{ color: "#B0B5C1" }}>›</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
       {/* Patrol Report */}
       {(() => {
         const bldgPatrol = patrolBuildings.find(p => p.building === selectedBldg);
-        const bldgRecords = patrolRecords.filter(r => r.building === selectedBldg);
+        const bldgRecords = allPatrolRecords.filter(r => r.building === selectedBldg);
         if (!bldgPatrol && bldgRecords.length === 0) return null;
         const interval = bldgPatrol ? Math.floor(28 / bldgPatrol.freq) : 14;
         return (
@@ -243,6 +391,18 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                     {expandedPatrol !== i && <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{rec.comment}</div>}
                     {expandedPatrol === i && (
                       <div style={{ marginTop: 8, padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
+                        {rec.checklist && rec.checklist.length > 0 && (
+                          <div style={{ marginBottom: 8 }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 4 }}>시설 점검 결과</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                              {rec.checklist.map((c, ci) => (
+                                <span key={ci} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: c.status === "이상" ? "#FEE2E2" : "#D1FAE5", color: c.status === "이상" ? "#DC2626" : "#059669", fontWeight: 600 }}>
+                                  {c.status === "정상" ? "✅" : "⚠"} {c.item}{c.comment ? `: ${c.comment}` : ""}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         <div style={{ fontSize: 12, color: "#1A1D23", lineHeight: 1.8, marginBottom: 8 }}>{rec.comment}</div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           {rec.photos.map((p, pi) => (

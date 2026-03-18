@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { buildings as staticBuildings, tenants, calendarEvents as initialCalendarEvents, pastTenants as staticPastTenants, vacancies as staticVacancies, buildingFloors, defaultSettlementExpenses } from './data';
 
 // Config
-import { roomTypeVerRef } from './config/roomType';
+import { roomTypeVerRef, getRoomType } from './config/roomType';
 import { viewModes, menuSections, menuItems } from './config/navigation';
 import { staffRoles, initialStaffMembers } from './config/staff';
 
@@ -12,8 +12,8 @@ import { staffRoles, initialStaffMembers } from './config/staff';
 import { useIsMobile } from './utils/useIsMobile';
 import { getStaffBuildings } from './utils/helpers';
 
-// Pages — DashboardPage eager (initial route), rest lazy
-import { DashboardPage } from './pages/DashboardPage';
+// Pages — SettlementPage eager, rest lazy
+import { SettlementPage } from './pages/SettlementPage';
 
 const BuildingDetailPage = React.lazy(() => import('./pages/BuildingDetailPage').then(m => ({ default: m.BuildingDetailPage })));
 const BuildingsPage = React.lazy(() => import('./pages/BuildingsPage').then(m => ({ default: m.BuildingsPage })));
@@ -28,9 +28,20 @@ const TransactionPage = React.lazy(() => import('./pages/TransactionPage').then(
 const ParkingPage = React.lazy(() => import('./pages/ParkingPage').then(m => ({ default: m.ParkingPage })));
 const CalendarPage = React.lazy(() => import('./pages/CalendarPage').then(m => ({ default: m.CalendarPage })));
 const HomepagePage = React.lazy(() => import('./pages/HomepagePage').then(m => ({ default: m.HomepagePage })));
+const HomepageEditPage = React.lazy(() => import('./pages/HomepageEditPage').then(m => ({ default: m.HomepageEditPage })));
 const OwnerDashboard = React.lazy(() => import('./pages/OwnerDashboard').then(m => ({ default: m.OwnerDashboard })));
-const SettlementPage = React.lazy(() => import('./pages/SettlementPage').then(m => ({ default: m.SettlementPage })));
+// SettlementPage는 상단에서 직접 import
 const PastTenantsPage = React.lazy(() => import('./pages/PastTenantsPage').then(m => ({ default: m.PastTenantsPage })));
+const RenewalPage = React.lazy(() => import('./pages/RenewalPage').then(m => ({ default: m.RenewalPage })));
+const DataUploadPage = React.lazy(() => import('./pages/DataUploadPage').then(m => ({ default: m.DataUploadPage })));
+const CashBookPage = React.lazy(() => import('./pages/CashBookPage').then(m => ({ default: m.CashBookPage })));
+const PayrollPage = React.lazy(() => import('./pages/PayrollPage').then(m => ({ default: m.PayrollPage })));
+const TaskDriverPage = React.lazy(() => import('./pages/TaskDriverPage').then(m => ({ default: m.TaskDriverPage })));
+const ProfitDashboardPage = React.lazy(() => import('./pages/ProfitDashboardPage').then(m => ({ default: m.ProfitDashboardPage })));
+
+const RouteSchedulePage = React.lazy(() => import('./pages/RouteSchedulePage').then(m => ({ default: m.RouteSchedulePage })));
+
+
 
 // localStorage 헬퍼 — 키 이름: appData (단일 객체로 통합)
 const APP_DATA_KEY = "appData";
@@ -50,9 +61,10 @@ const loadLS = (key, fallback) => { try { return _appCache[key] !== undefined ? 
 const saveLS = (key, value) => { try { _appCache[key] = value; saveAppData(_appCache); } catch { /* ignore */ } };
 
 export default function App() {
-  const [page, setPage] = useState("dashboard");
+  const [page, setPage] = useState("calendar");
   const [role, setRole] = useState("admin");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [time, setTime] = useState(new Date());
   const [loggedInId, setLoggedInId] = useState(null);
@@ -74,11 +86,49 @@ export default function App() {
     return init;
   };
   const [roomBalances, setRoomBalances] = useState(() => loadLS("hm_roomBalances", defaultBalances()));
-  const [billingHistory, setBillingHistory] = useState(() => loadLS("hm_billingHistory", []));
+  const [billingHistory, setBillingHistory] = useState(() => loadLS("hm_billingHistory", [
+    { id: 1, date: "2025-06-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 15520, gas: 12340, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1847860 },
+    { id: 2, date: "2025-07-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 18930, gas: 8760, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1847690 },
+    { id: 3, date: "2025-08-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 42820, gas: 5410, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1868230 },
+    { id: 4, date: "2025-09-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 38650, gas: 7230, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1865880 },
+    { id: 5, date: "2025-10-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 24280, gas: 15890, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1860170 },
+    { id: 6, date: "2025-11-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 19740, gas: 38840, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1878580 },
+    { id: 7, date: "2025-12-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 16890, gas: 95630, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1932520 },
+    { id: 8, date: "2026-01-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 15520, gas: 247280, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 82500 }, total: 2165300 },
+    { id: 9, date: "2026-02-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 21350, gas: 198450, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 2039800 },
+    { id: 10, date: "2026-03-21", building: "제이앤제이", room: "301", name: "차민철", items: { rent: 1650000, mgmt: 120000, elec: 15520, gas: 142670, water: 25000, cable: 25000, prevUnpaid: 0, lateFee: 0, asRepair: 0 }, total: 1978190 },
+  ]));
   const [transactions, setTransactions] = useState(() => loadLS("hm_transactions", [
     { id: 1, date: "2026-02-20", type: "입금", building: "스타빌", room: "403", name: "송예준", amount: 300000, method: "계좌이체", note: "분납" },
-    { id: 2, date: "2026-02-21", type: "입금", building: "W하우스", room: "503", name: "김현우", amount: 300000, method: "계좌이체", note: "분납" },
-    { id: 3, date: "2026-02-22", type: "입금", building: "모던라이프", room: "501", name: "이보람", amount: 1000000, method: "계좌이체", note: "" },
+    { id: 2, date: "2026-02-21", type: "입금", building: "스타빌", room: "102", name: "주여울", amount: 730000, method: "계좌이체", note: "" },
+    { id: 3, date: "2026-02-22", type: "입금", building: "아페이론", room: "101", name: "한유진", amount: 1280000, method: "계좌이체", note: "" },
+    { id: 4, date: "2026-02-23", type: "입금", building: "스타빌", room: "201", name: "이지현", amount: 710000, method: "계좌이체", note: "" },
+    { id: 5, date: "2026-02-24", type: "입금", building: "아페이론", room: "102", name: "신현식", amount: 1350000, method: "계좌이체", note: "" },
+    { id: 6, date: "2026-02-25", type: "입금", building: "제이앤제이", room: "201", name: "박정미", amount: 1400000, method: "계좌이체", note: "" },
+    { id: 7, date: "2026-02-25", type: "입금", building: "스타빌", room: "301", name: "박성윤", amount: 780000, method: "계좌이체", note: "" },
+    { id: 8, date: "2026-02-26", type: "입금", building: "아페이론", room: "104", name: "김도경", amount: 1400000, method: "계좌이체", note: "" },
+    { id: 9, date: "2026-02-26", type: "입금", building: "스타빌", room: "303", name: "김세아", amount: 780000, method: "계좌이체", note: "" },
+    { id: 10, date: "2026-02-27", type: "입금", building: "제이앤제이", room: "301", name: "차민철", amount: 1770000, method: "계좌이체", note: "" },
+    { id: 11, date: "2026-02-27", type: "입금", building: "스타빌", room: "402", name: "김혜서", amount: 830000, method: "계좌이체", note: "" },
+    { id: 12, date: "2026-02-28", type: "입금", building: "아페이론", room: "105", name: "김태오", amount: 1330000, method: "계좌이체", note: "" },
+    { id: 13, date: "2026-02-28", type: "입금", building: "스타빌", room: "103", name: "정은혜", amount: 680000, method: "계좌이체", note: "" },
+    { id: 14, date: "2026-03-01", type: "입금", building: "제이앤제이", room: "401", name: "박유하", amount: 2100000, method: "계좌이체", note: "" },
+    { id: 15, date: "2026-03-01", type: "입금", building: "스타빌", room: "205", name: "김소희", amount: 780000, method: "계좌이체", note: "" },
+    { id: 16, date: "2026-03-02", type: "입금", building: "아페이론", room: "201", name: "박유빈", amount: 1280000, method: "계좌이체", note: "" },
+    { id: 17, date: "2026-03-02", type: "입금", building: "스타빌", room: "302", name: "홍윤미", amount: 710000, method: "계좌이체", note: "" },
+    { id: 18, date: "2026-03-03", type: "입금", building: "아페이론", room: "204", name: "권영우", amount: 1300000, method: "계좌이체", note: "" },
+    { id: 19, date: "2026-03-03", type: "입금", building: "스타빌", room: "401", name: "박유림", amount: 780000, method: "계좌이체", note: "" },
+    { id: 20, date: "2026-03-04", type: "입금", building: "스타빌", room: "105", name: "황현호", amount: 730000, method: "계좌이체", note: "" },
+    { id: 21, date: "2026-03-04", type: "입금", building: "아페이론", room: "103", name: "김지은", amount: 500000, method: "계좌이체", note: "분납" },
+    { id: 22, date: "2026-03-05", type: "입금", building: "스타빌", room: "405", name: "고영희", amount: 780000, method: "계좌이체", note: "" },
+    { id: 23, date: "2026-03-05", type: "입금", building: "아페이론", room: "205", name: "정현민", amount: 1280000, method: "계좌이체", note: "" },
+    { id: 24, date: "2026-03-06", type: "입금", building: "제이앤제이", room: "B01", name: "윤슬기", amount: 720000, method: "계좌이체", note: "" },
+    { id: 25, date: "2026-03-06", type: "입금", building: "스타빌", room: "202", name: "이지람", amount: 400000, method: "계좌이체", note: "분납" },
+    { id: 26, date: "2026-03-07", type: "입금", building: "스타빌", room: "203", name: "김성호", amount: 780000, method: "계좌이체", note: "" },
+    { id: 27, date: "2026-03-10", type: "입금", building: "아페이론", room: "203", name: "이준우", amount: 700000, method: "계좌이체", note: "분납" },
+    { id: 28, date: "2026-03-12", type: "입금", building: "스타빌", room: "305", name: "박현진", amount: 500000, method: "계좌이체", note: "분납" },
+    { id: 29, date: "2026-03-14", type: "입금", building: "스타빌", room: "403", name: "송예준", amount: 400000, method: "계좌이체", note: "분납" },
+    { id: 30, date: "2026-03-15", type: "입금", building: "아페이론", room: "101", name: "한유진", amount: 1280000, method: "계좌이체", note: "3월분" },
   ]));
   const [billingConfirmed, setBillingConfirmed] = useState(() => loadLS("hm_billingConfirmed", {}));
   const [billingSent, setBillingSent] = useState(() => loadLS("hm_billingSent", {}));
@@ -88,12 +138,14 @@ export default function App() {
   const [customBuildings, setCustomBuildings] = useState(() => loadLS("hm_customBuildings", []));
   const [allBuildings, setAllBuildings] = useState(() => loadLS("hm_allBuildings", [...staticBuildings]));
   const [buildingData, setBuildingData] = useState(() => loadLS("hm_buildingData", {}));
+  const [lateFeeOverrides, setLateFeeOverrides] = useState(() => loadLS("hm_lateFeeOverrides", {}));
   const [pendingContract, setPendingContract] = useState(null);
   const [pendingMoveout, setPendingMoveout] = useState(null);
   const [activeTenants, setActiveTenants] = useState(() => loadLS("hm_activeTenants", [...tenants]));
   const [pastTenantsData, setPastTenantsData] = useState(() => loadLS("hm_pastTenantsData", { ...staticPastTenants }));
   const [activeVacancies, setActiveVacancies] = useState(() => loadLS("hm_activeVacancies", [...staticVacancies]));
   const [settlementExpenses, setSettlementExpenses] = useState(() => loadLS("hm_settlementExpenses", defaultSettlementExpenses));
+  const [cashbookEntries, setCashbookEntries] = useState(() => loadLS("hm_cashbookEntries", []));
 
   // localStorage 자동 저장
   useEffect(() => { saveLS("hm_roomBalances", roomBalances); }, [roomBalances]);
@@ -108,9 +160,11 @@ export default function App() {
   useEffect(() => { saveLS("hm_allBuildings", allBuildings); }, [allBuildings]);
   useEffect(() => { saveLS("hm_buildingData", buildingData); }, [buildingData]);
   useEffect(() => { saveLS("hm_activeTenants", activeTenants); }, [activeTenants]);
+  useEffect(() => { saveLS("hm_lateFeeOverrides", lateFeeOverrides); }, [lateFeeOverrides]);
   useEffect(() => { saveLS("hm_pastTenantsData", pastTenantsData); }, [pastTenantsData]);
   useEffect(() => { saveLS("hm_activeVacancies", activeVacancies); }, [activeVacancies]);
   useEffect(() => { saveLS("hm_settlementExpenses", settlementExpenses); }, [settlementExpenses]);
+  useEffect(() => { saveLS("hm_cashbookEntries", cashbookEntries); }, [cashbookEntries]);
 
   // 마이그레이션: 기존 localStorage 임차인 데이터에 moveIn 필드가 없으면 정적 데이터에서 병합
   useEffect(() => {
@@ -134,6 +188,20 @@ export default function App() {
         missing.forEach(k => { next[k] = staticPastTenants[k]; });
         return next;
       });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 마이그레이션: buildingFloors에 정의된 건물이 allBuildings에 없으면 자동 추가
+  useEffect(() => {
+    const existingNames = new Set(allBuildings.map(b => b.name));
+    const missing = Object.keys(buildingFloors).filter(name => !existingNames.has(name));
+    if (missing.length > 0) {
+      const newBuildings = missing.map(name => {
+        const bf = buildingFloors[name];
+        const rooms = bf.floors ? Object.values(bf.floors).flat().length : 0;
+        return { name, rooms, occupied: 0, type: "단기", feeType: "pct", fee: bf.fee || 0, fixedFee: 0, special: null, parkingTotal: 0 };
+      });
+      setAllBuildings(prev => [...prev, ...newBuildings]);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -196,7 +264,7 @@ export default function App() {
 
       // 담당자 기본값
       if (!bd.managers) {
-        p.managers = { internal: "", external: "", collection: "", marketing: "", general: "" };
+        p.managers = { internal: "", external: "", collection: "", contract: "", general: "" };
         needPatch = true;
       }
 
@@ -258,6 +326,15 @@ www.houseman.co.kr
     setBillingHistory(prev => [...prev, { id: prev.length + 1, date: new Date().toISOString().slice(0, 10), building, room, name, items, total }]);
   };
 
+  // 출납 내역 추가 함수
+  const addCashbookEntry = (entry) => {
+    setCashbookEntries(prev => {
+      // 중복 방지 (같은 sourceId가 이미 있으면 스킵)
+      if (entry.sourceId && prev.some(e => e.sourceId === entry.sourceId)) return prev;
+      return [...prev, { id: Date.now() + Math.random(), status: "대기", sentAt: null, direction: "출금", ...entry }];
+    });
+  };
+
   // 입금 처리 함수
   const addDeposit = (building, room, name, amount, method, note) => {
     const key = `${building}_${room}`;
@@ -271,7 +348,7 @@ www.houseman.co.kr
   }, []);
 
   useEffect(() => {
-    if (role === "owner") setPage("dashboard");
+    if (role === "owner") setPage("calendar");
     else if (role === "cleaning") setPage("calendar");
     else if (role === "homepage") setPage("homepage");
   }, [role]);
@@ -290,7 +367,7 @@ www.houseman.co.kr
 
   const handleLogout = () => {
     setLoggedInId(null);
-    setPage("dashboard");
+    setPage("calendar");
     setRole("admin");
     setSelectedBuilding(null);
   };
@@ -360,7 +437,40 @@ www.houseman.co.kr
   const currentMode = viewModes.find(r => r.id === role) || viewModes[0];
   const currentStaff = initialStaffMembers.find(s => s.id === loggedInId);
   const isGeneral = currentStaff?.roles.includes("general");
-  const myBuildings = getStaffBuildings(currentStaff);
+  const myBuildings = isGeneral ? allBuildings.map(b => b.name) : getStaffBuildings(currentStaff);
+
+  // 메뉴 알림 뱃지 카운트
+  const menuBadges = (() => {
+    const badges = {};
+    // 입퇴실일정: 퇴실/계약(입주) 이벤트가 있으면 뱃지 표시
+    const pendingCalendar = (calendarEvts || []).filter(ev => {
+      if (!ev.building || !ev.room) return false;
+      return ev.type === "계약" || ev.type === "퇴실";
+    }).length;
+    if (pendingCalendar > 0) badges["calendar"] = pendingCalendar;
+    // 재계약관리: 일반임대·근생만, 묵시적갱신 포함 3개월 이내
+    const now = new Date();
+    const renewalTypes = new Set(["일반임대", "근생"]);
+    const renewedRooms = JSON.parse(localStorage.getItem("hm_renewedRooms") || "{}");
+    const renewalCount = (activeTenants || []).filter(t => {
+      if (!t.expiry || !t.name || t.name === "퇴실") return false;
+      if (renewedRooms[`${t.building}_${t.room}`]) return false;
+      const rt = t.type || getRoomType(t.building, t.room);
+      if (!renewalTypes.has(rt)) return false;
+      const exp = new Date(t.expiry);
+      if (isNaN(exp.getTime())) return false;
+      let diff = Math.floor((exp - now) / 86400000);
+      if (diff < 0) {
+        const thisYear = now.getFullYear();
+        let next = new Date(thisYear, exp.getMonth(), exp.getDate());
+        if (next < now) next = new Date(thisYear + 1, exp.getMonth(), exp.getDate());
+        diff = Math.ceil((next - now) / 86400000);
+      }
+      return diff <= 90;
+    }).length;
+    if (renewalCount > 0) badges["renewal"] = renewalCount;
+    return badges;
+  })();
 
   const renderPage = () => {
     if (role === "owner") {
@@ -368,42 +478,53 @@ www.houseman.co.kr
     }
     if (role === "cleaning") {
       if (page === "patrol") return <PatrolPage myBuildings={myBuildings} buildingData={buildingData} />;
-      return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} buildingData={buildingData} />;
+      return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} setPendingContract={setPendingContract} buildingData={buildingData} />;
     }
     if (role === "homepage") {
-      return <HomepagePage buildingData={buildingData} activeVacancies={activeVacancies} />;
+      return <HomepagePage buildingData={buildingData} activeVacancies={activeVacancies} isAdmin={role === "admin"} />;
     }
     if (page === "buildings" && selectedBuilding) {
       return <BuildingDetailPage buildingName={selectedBuilding} onBack={() => setSelectedBuilding(null)} buildingAccounts={buildingAccounts} setBuildingAccounts={setBuildingAccounts} customBuildings={customBuildings} allBuildings={allBuildings} setAllBuildings={setAllBuildings} buildingData={buildingData} setBuildingData={setBuildingData} activeTenants={activeTenants} activeVacancies={activeVacancies} pastTenantsData={pastTenantsData} />;
     }
     switch (page) {
-      case "dashboard": return <DashboardPage setPage={setPage} role={role} myBuildings={myBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} calendarEvts={calendarEvts} />;
       case "staff": return <StaffPage />;
       case "buildings": return <BuildingsPage onSelectBuilding={(name) => setSelectedBuilding(name)} myBuildings={myBuildings} customBuildings={customBuildings} setCustomBuildings={setCustomBuildings} allBuildings={allBuildings} setAllBuildings={setAllBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} />;
-      case "tenants": return <TenantsPage myBuildings={myBuildings} parkingInfo={parkingInfo} setParkingInfo={setParkingInfo} pendingContract={pendingContract} setPendingContract={setPendingContract} pendingMoveout={pendingMoveout} setPendingMoveout={setPendingMoveout} buildingAccounts={buildingAccounts} allBuildings={allBuildings} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} calendarEvts={calendarEvts} />;
+      case "tenants": return <TenantsPage myBuildings={myBuildings} parkingInfo={parkingInfo} setParkingInfo={setParkingInfo} pendingContract={pendingContract} setPendingContract={setPendingContract} pendingMoveout={pendingMoveout} setPendingMoveout={setPendingMoveout} buildingAccounts={buildingAccounts} allBuildings={allBuildings} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} calendarEvts={calendarEvts} setCalendarEvts={setCalendarEvts} billingHistory={billingHistory} roomBalances={roomBalances} lateFeeOverrides={lateFeeOverrides} buildingData={buildingData} />;
       case "pastTenants": return <PastTenantsPage myBuildings={myBuildings} pastTenantsData={pastTenantsData} activeTenants={activeTenants} />;
+      case "renewal": return <RenewalPage myBuildings={myBuildings} activeTenants={activeTenants} />;
       case "contracts": return <VacancyPage myBuildings={myBuildings} calendarEvts={calendarEvts} setCalendarEvts={setCalendarEvts} setPage={setPage} setPendingContract={setPendingContract} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} buildingData={buildingData} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} />;
-      case "collection": return <CollectionPage myBuildings={myBuildings} roomBalances={roomBalances} activeTenants={activeTenants} />;
-      case "utility": return <UtilityBillingPage myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} />;
+      case "collection": return <CollectionPage myBuildings={myBuildings} roomBalances={roomBalances} activeTenants={activeTenants} lateFeeOverrides={lateFeeOverrides} setLateFeeOverrides={setLateFeeOverrides} buildingAccounts={buildingAccounts} allBuildings={allBuildings} />;
+      case "billing": return <UtilityBillingPage billingMode="unified" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
+      case "utility-fixed": return <UtilityBillingPage billingMode="fixed" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
+      case "utility-variable": return <UtilityBillingPage billingMode="variable" myBuildings={myBuildings} activeTenants={activeTenants} addBilling={addBilling} billingConfirmed={billingConfirmed} setBillingConfirmed={setBillingConfirmed} billingSent={billingSent} setBillingSent={setBillingSent} roomBalances={roomBalances} billingHistory={billingHistory} buildingData={buildingData} />;
       case "transactions": return <TransactionPage myBuildings={myBuildings} activeTenants={activeTenants} transactions={transactions} addDeposit={addDeposit} roomBalances={roomBalances} />;
       case "parking": return <ParkingPage myBuildings={myBuildings} activeTenants={activeTenants} parkingInfo={parkingInfo} setParkingInfo={setParkingInfo} />;
       case "as": return <ASPage myBuildings={myBuildings} />;
-      case "calendar": return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} buildingData={buildingData} />;
+      case "calendar": return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} setPendingContract={setPendingContract} buildingData={buildingData} />;
       case "patrol": return <PatrolPage myBuildings={myBuildings} buildingData={buildingData} />;
-      case "settlement": return <SettlementPage myBuildings={myBuildings} activeTenants={activeTenants} transactions={transactions} settlementExpenses={settlementExpenses} setSettlementExpenses={setSettlementExpenses} buildingData={buildingData} />;
-      default: return <DashboardPage setPage={setPage} role={role} myBuildings={myBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} calendarEvts={calendarEvts} />;
+      case "settlement": return <SettlementPage myBuildings={myBuildings} activeTenants={activeTenants} transactions={transactions} settlementExpenses={settlementExpenses} setSettlementExpenses={setSettlementExpenses} buildingData={buildingData} pastTenantsData={pastTenantsData} addCashbookEntry={addCashbookEntry} />;
+      case "cashbook": return <CashBookPage cashbookEntries={cashbookEntries} setCashbookEntries={setCashbookEntries} buildingData={buildingData} />;
+      case "payroll": return <PayrollPage />;
+      case "task-driver": return <TaskDriverPage myBuildings={myBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} calendarEvts={calendarEvts} buildingData={buildingData} settlementExpenses={settlementExpenses} roomBalances={roomBalances} billingHistory={billingHistory} pastTenantsData={pastTenantsData} currentStaff={currentStaff} />;
+      case "profit-dashboard": return <ProfitDashboardPage myBuildings={myBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} settlementExpenses={settlementExpenses} buildingData={buildingData} allBuildings={allBuildings} />;
+
+      case "route-schedule": return <RouteSchedulePage myBuildings={myBuildings} buildingData={buildingData} activeTenants={activeTenants} />;
+
+
+      case "data-upload": return <DataUploadPage allBuildings={allBuildings} setAllBuildings={setAllBuildings} buildingData={buildingData} setBuildingData={setBuildingData} activeTenants={activeTenants} setActiveTenants={setActiveTenants} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} />;
+      case "homepage-edit": return <HomepageEditPage />;
+      default: return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} setPendingContract={setPendingContract} buildingData={buildingData} />;
     }
   };
 
   // Mobile tab config (subset of menus)
   const mobileTabs = role === "admin" ? [
-    { id: "dashboard", icon: "🏠", label: "홈" },
+    { id: "task-driver", icon: "✅", label: "할일" },
+    ...(loggedInId === 1 ? [{ id: "profit-dashboard", icon: "📊", label: "수익" }] : []),
     { id: "tenants", icon: "👤", label: "임차인" },
     { id: "collection", icon: "💰", label: "수금" },
     { id: "as", icon: "🔧", label: "AS" },
-    { id: "patrol", icon: "🔍", label: "순회" },
   ] : role === "owner" ? [
-    { id: "dashboard", icon: "🏠", label: "현황" },
   ] : role === "cleaning" ? [
     { id: "calendar", icon: "📅", label: "일정" },
     { id: "patrol", icon: "🚶", label: "순회" },
@@ -454,14 +575,7 @@ www.houseman.co.kr
             </div>
           )}
           <nav style={{ flex: 1, padding: "8px 8px", overflowY: "auto" }}>
-            {role === "owner" ? [{ id: "dashboard", icon: "🏠", label: "내 건물 현황" }].map(m => {
-              const active = page === m.id;
-              return <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 9, cursor: "pointer", background: active ? "#2A3352" : "transparent" }}>
-                <span style={{ fontSize: 17 }}>{m.icon}</span>
-                {sidebarOpen && <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{m.label}</span>}
-              </div>;
-            }) : role === "cleaning" ? [{ id: "calendar", icon: "📅", label: "계약/퇴실 일정" }, { id: "patrol", icon: "🚶", label: "순회 관리" }].map(m => {
+            {role === "owner" ? null : role === "cleaning" ? [{ id: "calendar", icon: "📅", label: "계약/퇴실 일정" }, { id: "patrol", icon: "🚶", label: "순회 관리" }].map(m => {
               const active = page === m.id;
               return <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
                 style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 9, cursor: "pointer", background: active ? "#2A3352" : "transparent" }}>
@@ -474,11 +588,41 @@ www.houseman.co.kr
                 <span style={{ fontSize: 17 }}>{m.icon}</span>
                 {sidebarOpen && <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{m.label}</span>}
               </div>
-            )) : menuSections.map(sec => (
+            )) : menuSections.map(sec => {
+              if (sec.section === "설정") {
+                return (
+                  <div key={sec.section}>
+                    <div onClick={() => setSettingsOpen(!settingsOpen)}
+                      style={{ display: "flex", alignItems: "center", justifyContent: sidebarOpen ? "space-between" : "center", padding: sidebarOpen ? "12px 12px 4px" : "9px 8px", cursor: "pointer" }}>
+                      {sidebarOpen ? (
+                        <>
+                          <span style={{ fontSize: 9, fontWeight: 700, color: "#4B5563", letterSpacing: "0.1em", textTransform: "uppercase" }}>{sec.section}</span>
+                          <span style={{ fontSize: 10, color: "#4B5563", transition: "transform 0.2s", transform: settingsOpen ? "rotate(180deg)" : "none" }}>▼</span>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: 16 }}>⚙️</span>
+                      )}
+                    </div>
+                    {settingsOpen && sec.items.filter(m => m.id !== "profit-dashboard" || loggedInId === 1).map(m => {
+                      const active = page === m.id;
+                      return (
+                        <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
+                          style={{ display: "flex", alignItems: "center", gap: 10, padding: sidebarOpen ? "9px 12px" : "9px 8px", borderRadius: 9, marginBottom: 1, cursor: "pointer", background: active ? "#2A3352" : "transparent", transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center" }}
+                          onMouseEnter={e => !active && (e.currentTarget.style.background = "#22273A")}
+                          onMouseLeave={e => !active && (e.currentTarget.style.background = "transparent")}>
+                          <span style={{ fontSize: 16, flexShrink: 0 }}>{m.icon}</span>
+                          {sidebarOpen && <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#9CA3B0", whiteSpace: "nowrap" }}>{m.label}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              }
+              return (
               <div key={sec.section}>
                 {sidebarOpen && <div style={{ fontSize: 9, fontWeight: 700, color: "#4B5563", letterSpacing: "0.1em", padding: "12px 12px 4px", textTransform: "uppercase" }}>{sec.section}</div>}
                 {!sidebarOpen && <div style={{ borderBottom: "1px solid #2A2F42", margin: "6px 8px" }} />}
-                {sec.items.map(m => {
+                {sec.items.filter(m => m.id !== "profit-dashboard" || loggedInId === 1).map(m => {
                   const active = page === m.id;
                   return (
                     <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
@@ -487,12 +631,18 @@ www.houseman.co.kr
                       onMouseLeave={e => !active && (e.currentTarget.style.background = "transparent")}>
                       <span style={{ fontSize: 16, flexShrink: 0 }}>{m.icon}</span>
                       {sidebarOpen && <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#9CA3B0", whiteSpace: "nowrap" }}>{m.label}</span>}
-                      {active && sidebarOpen && <div style={{ marginLeft: "auto", width: 5, height: 5, borderRadius: "50%", background: "#3B82F6" }} />}
+                      {menuBadges[m.id] > 0 && (
+                        <span style={{ marginLeft: "auto", minWidth: 18, height: 18, borderRadius: 9, background: "#EF4444", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px", flexShrink: 0 }}>
+                          {menuBadges[m.id]}
+                        </span>
+                      )}
+                      {active && sidebarOpen && !menuBadges[m.id] && <div style={{ marginLeft: "auto", width: 5, height: 5, borderRadius: "50%", background: "#3B82F6" }} />}
                     </div>
                   );
                 })}
               </div>
-            ))}
+            );
+            })}
           </nav>
           <div style={{ padding: "12px", borderTop: "1px solid #2A2F42" }}>
             <div onClick={() => setSidebarOpen(!sidebarOpen)}

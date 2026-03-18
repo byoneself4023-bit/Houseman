@@ -11,6 +11,47 @@ export const pastTenants = {
     { name: "김태희", phone: "010-4444-8888", moveIn: "2023-07-01", moveOut: "2025-06-30", deposit: 650000, rent: 600000, reason: "만기퇴실", settlement: "정산완료" },
     { name: "오세진", phone: "010-6666-9999", moveIn: "2022-01-01", moveOut: "2023-06-15", deposit: 600000, rent: 550000, reason: "만기전퇴실", settlement: "위약금 발생" },
   ],
+  // ── 2026년 3월 퇴실 (정산서 테스트용) ──
+  "스타빌_405": [{
+    name: "고영희", phone: "010-7570-5846",
+    moveIn: "2025-09-15", moveOut: "2026-03-15", expiry: "2026-03-15",
+    deposit: 750000, rent: 700000, mgmt: 80000, roomType: "단기",
+    reason: "만기퇴실", settlement: "정산완료", settlementDate: "2026-03-15",
+    // 일할계산: 15일/31일 (3월 1일~15일 거주)
+    daysInMonth: 31, usedDays: 15, startDay: 1,
+    rentProRata: 338710, mgmtProRata: 38710,
+    // 퇴실 공제
+    cleanFee: 110000,
+    elecReading: 42000, gasReading: 35000, waterReading: 8000,
+    damageFee: 0, damageDesc: "",
+    penalty7: 0, penaltyReason: "",
+    // 예치금 반환
+    depositReturn: 750000,
+    totalDeduct: 195000,
+    finalRefund: 555000,
+    // 중개수수료 (입주 시 발생했던)
+    brokerageFee: 350000,
+  }],
+  "스타빌_301_2": [{
+    name: "박성윤", phone: "010-4998-6676",
+    moveIn: "2025-09-15", moveOut: "2026-03-10", expiry: "2026-03-15",
+    deposit: 700000, rent: 700000, mgmt: 80000, roomType: "단기",
+    reason: "조기퇴실", settlement: "정산완료", settlementDate: "2026-03-10",
+    // 일할계산: 10일/31일 (3월 1일~10일 거주)
+    daysInMonth: 31, usedDays: 10, startDay: 1,
+    rentProRata: 225806, mgmtProRata: 25806,
+    // 퇴실 공제
+    cleanFee: 110000,
+    elecReading: 38000, gasReading: 28000, waterReading: 5000,
+    damageFee: 50000, damageDesc: "벽면 훼손 (입주사진 대비)",
+    // 위약금: 7일치 월세+관리비 = (700000+80000)/31*7 ≈ 175,806
+    penalty7: 175806, penaltyReason: "조기퇴실 (만기 03-15, 퇴실 03-10)",
+    // 예치금 반환
+    depositReturn: 700000,
+    totalDeduct: 406806,
+    finalRefund: 293194,
+    brokerageFee: 0,
+  }],
   "제이앤제이_101": [
     { name: "정수빈", phone: "010-2222-3333", moveIn: "2024-01-01", moveOut: "2025-07-31", deposit: 10000000, rent: 1100000, reason: "만기퇴실", settlement: "정산완료" },
   ],

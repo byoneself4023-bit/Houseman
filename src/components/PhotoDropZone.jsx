@@ -1,33 +1,16 @@
 import { useRef } from 'react';
 import { useIsMobile } from '../utils';
 
-const compressImage = (file, maxDim = 1200, quality = 0.6) => new Promise((resolve) => {
+const readFileOriginal = (file) => new Promise((resolve) => {
   const reader = new FileReader();
   reader.onerror = () => resolve(null);
-  reader.onload = () => {
-    const img = new Image();
-    img.onload = () => {
-      let { width: w, height: h } = img;
-      if (w > maxDim || h > maxDim) {
-        const ratio = Math.min(maxDim / w, maxDim / h);
-        w = Math.round(w * ratio);
-        h = Math.round(h * ratio);
-      }
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL("image/jpeg", quality));
-    };
-    img.onerror = () => resolve(null);
-    img.src = reader.result;
-  };
+  reader.onload = () => resolve(reader.result);
   reader.readAsDataURL(file);
 });
 
 const readFilesAsDataURLs = (files, max) => {
   const targets = Array.from(files).filter(f => f.type.startsWith("image/")).slice(0, max);
-  return Promise.all(targets.map(f => compressImage(f))).then(results => results.filter(Boolean));
+  return Promise.all(targets.map(f => readFileOriginal(f))).then(results => results.filter(Boolean));
 };
 
 export const PhotoDropZone = ({ photos = [], maxPhotos = 30, label = "사진", color = "#8B5CF6", onAdd, onRemove, onZoom }) => {

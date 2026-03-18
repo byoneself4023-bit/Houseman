@@ -1,22 +1,43 @@
 import React, { useState, useMemo } from 'react';
-import { buildings } from '../data';
+import { buildings, billingTypeMap } from '../data';
 import { getRoomType, collectionAssigneeMap, initialStaffMembers } from '../config';
 
 import { useIsMobile, fmt } from '../utils';
 import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, Table, StatusBadge } from '../components';
+import { Card, SectionTitle, Table, StatusBadge, DunningTemplateSettings } from '../components';
 import { useLocalStorage } from '../utils/useLocalStorage';
 
 const rk = (t) => `${t.building}_${t.room}`;
 
-export const CollectionPage = ({ myBuildings = [], activeTenants = [] }) => {
+// 계좌 모드별 청구 분할 계산
+const getBillingSlots = (t, buildingAccounts, allBuildings) => {
+  const bldg = allBuildings.find(b => b.name === t.building);
+  const bTypes = (bldg?.type || "단기").split("+").map(s => s.trim());
+  const roomType = getRoomType(t.building, t.room);
+  const roomAcctType = roomType === "기업시설관리" ? "관리사무소" : roomType;
+  const typeIdx = bTypes.findIndex(bt => (bt === "기업시설관리" ? "관리사무소" : bt) === roomAcctType);
+  const suffix = typeIdx >= 0 ? String(typeIdx + 1) : "1";
+  const bAccts = buildingAccounts[t.building] || {};
+  const roomKey = `${t.building}_${t.room}`;
+  const roomOverride = buildingAccounts[roomKey];
+  const mode = roomOverride?.mode || bAccts[`mode${suffix}`] || "";
+  const rent = t.rent || 0;
+  const mgmt = t.mgmt || 0;
+  if (mode === "houseman" || mode === "hm_owner1" || mode === "gs1") return [{ label: "①", amount: rent + mgmt }];
+  if (mode === "owner1" || mode === "gs2a") return [{ label: "①", amount: rent }, { label: "②", amount: mgmt }];
+  if (mode === "owner2" || mode === "gs2b") return [{ label: "①", amount: rent + mgmt }, { label: "②", amount: 0 }];
+  if (mode === "gs3") return [{ label: "①", amount: rent }, { label: "②", amount: mgmt }, { label: "③", amount: 0 }];
+  return [{ label: "①", amount: rent + mgmt }];
+};
+
+export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [] }) => {
   const isMobile = useIsMobile();
   const [commentTarget, setCommentTarget] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [viewMode, setViewMode] = useState("table");
   const [electricCut, setElectricCut] = useLocalStorage("hm_electricCut", {});
-  const [commentFilter, setCommentFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
+  const [sortMode, setSortMode] = useState("연체일순");
   const [filterCollector, setFilterCollector] = useState("전체");
   const [buildingSearch, setBuildingSearch] = useState("");
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
@@ -46,6 +67,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [] }) => {
     "리트코하우스_606": [{ date: "2026-02-23", tenant: "문열매", text: "2/25까지 완납하라함" }],
   });
 
+
   // due is "M/D" format → extract day as rent day
   const getDueDay = (t) => parseInt(t.due.split("/")[1]);
   const _now = new Date();
@@ -54,12 +76,34 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [] }) => {
   const getDaysSinceDue = (t) => {
     const dueDay = getDueDay(t);
     let diff = today - dueDay;
-    if (diff < -daysInMonth / 2) diff += daysInMonth; // wrapped from prev month
-    return diff; // positive = overdue, negative = upcoming
+    if (diff < -daysInMonth / 2) diff += daysInMonth;
+    return diff;
   };
 
-  const calcLateFee = (t) => t.overdueDays >= 5 ? Math.round(t.rent * 0.05) : 0;
+  const getBalance = (t) => roomBalances[rk(t)] || 0;
+  const calcLateFee = (t) => {
+    const balance = getBalance(t);
+    if (balance <= 0) return 0;
+    const daysSince = getDaysSinceDue(t);
+    if (daysSince < 5) return 0;
+    const key = rk(t);
+    const override = lateFeeOverrides[key];
+    if (override?.type === "exclude") return 0;
+    const baseFee = Math.round((t.rent || 0) * 0.05);
+    if (override?.type === "discount") return Math.max(0, baseFee - (override.amount || 0));
+    return baseFee;
+  };
   const calcBill = (t) => t.rent + t.mgmt + calcLateFee(t);
+
+  const setFeeOverride = (key, type, amount) => {
+    if (!setLateFeeOverrides) return;
+    if (!type) {
+      setLateFeeOverrides(prev => { const next = { ...prev }; delete next[key]; return next; });
+    } else {
+      setLateFeeOverrides(prev => ({ ...prev, [key]: { type, amount: amount || 0, date: new Date().toISOString().slice(0, 10) } }));
+    }
+  };
+
   const filteredFinal = useMemo(() => {
     const baseTenants = filterCollector === "전체"
       ? allMyTenants.filter(t => getRoomType(t.building, t.room) === "단기")
@@ -67,282 +111,332 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [] }) => {
     const filteredByBuilding = buildingSearch
       ? baseTenants.filter(t => matchKorean(t.building, buildingSearch))
       : baseTenants;
-
-    // Filter: show only those whose due day passed or within 2 days before
     const filteredVisible = filteredByBuilding.filter(t => getDaysSinceDue(t) >= -2);
-
-    // Sort: 1) prevUnpaid highest 2) has billing 3) due day overdue longest
+    const getRisk = (t) => {
+      const days = getDaysSinceDue(t);
+      const balance = getBalance(t);
+      const total = (t.rent || 0) + (t.mgmt || 0);
+      if (total <= 0 || balance <= 0) return days;
+      const paid = total - balance;
+      const dailyRate = total / 30;
+      const daysCovered = dailyRate > 0 ? paid / dailyRate : 0;
+      return days - daysCovered;
+    };
     const sorted = [...filteredVisible].sort((a, b) => {
-      if (b.prevUnpaid !== a.prevUnpaid) return b.prevUnpaid - a.prevUnpaid;
-      const aBill = calcBill(a) > 0 ? 1 : 0;
-      const bBill = calcBill(b) > 0 ? 1 : 0;
-      if (bBill !== aBill) return bBill - aBill;
+      const balA = getBalance(a), balB = getBalance(b);
+      if ((balA > 0) !== (balB > 0)) return balB > 0 ? 1 : -1;
+      if (sortMode === "위험도순") return getRisk(b) - getRisk(a);
       return getDaysSinceDue(b) - getDaysSinceDue(a);
     });
     if (statusFilter === "전체") return sorted;
-    if (statusFilter === "연체") return sorted.filter(t => t.prevUnpaid > 0 || t.overdueDays > 0);
+    if (statusFilter === "연체") return sorted.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0);
     return sorted.filter(t => electricCut[rk(t)] === statusFilter);
-  }, [allMyTenants, filterCollector, buildingSearch, statusFilter, electricCut]);
+  }, [allMyTenants, filterCollector, buildingSearch, statusFilter, electricCut, sortMode, roomBalances]);
 
   const addComment = (key, tenant) => {
     if (!commentText.trim()) return;
-    setComments(prev => ({ ...prev, [key]: [{ date: "2026-02-22", tenant, text: commentText.trim() }, ...(prev[key] || [])] }));
+    setComments(prev => ({ ...prev, [key]: [{ date: new Date().toISOString().slice(0, 10), tenant, text: commentText.trim() }, ...(prev[key] || [])] }));
     setCommentText("");
     setCommentTarget(null);
   };
 
-  const allComments = Object.entries(comments).flatMap(([key, cmts]) => {
-    const [bld, rm] = key.split("_");
-    return cmts.map(c => ({ ...c, building: bld, room: rm, key }));
-  }).sort((a, b) => b.date.localeCompare(a.date));
-  const filteredComments = commentFilter ? allComments.filter(c => c.building.includes(commentFilter) || c.room.includes(commentFilter) || c.tenant.includes(commentFilter)) : allComments;
-
+  // ===== 렌더링 =====
   return (
     <div>
-      <SectionTitle sub={filterCollector === "전체" ? "단기 임차인 수금 현황" : `${filterCollector} 전담 · ${filteredFinal.length}명`}>💰 수금 관리</SectionTitle>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-          {collectors.map(c => (
-            <button key={c} onClick={() => { setFilterCollector(c); setViewMode("table"); }}
-              style={{ padding: "8px 18px", borderRadius: 8, border: filterCollector === c && viewMode === "table" ? "2px solid #F59E0B" : "1.5px solid #E0E3E9", background: filterCollector === c && viewMode === "table" ? (c === "전체" ? "#1A1D23" : "#F59E0B") : "#fff", color: filterCollector === c && viewMode === "table" ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
-              {c} {c !== "전체" && <span style={{ fontSize: 10, opacity: 0.7 }}>({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
-            </button>
-          ))}
-        </div>
-        <button onClick={() => setViewMode(viewMode === "comments" ? "table" : "comments")}
-          style={{ padding: "8px 16px", borderRadius: 8, border: viewMode === "comments" ? "2px solid #7C3AED" : "1.5px solid #E0E3E9", background: viewMode === "comments" ? "#7C3AED" : "#fff", color: viewMode === "comments" ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
-          📝 코멘트 모아보기 {allComments.length > 0 && <span style={{ background: viewMode === "comments" ? "rgba(255,255,255,0.3)" : "#EFF6FF", color: viewMode === "comments" ? "#fff" : "#3B82F6", padding: "1px 7px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>{allComments.length}</span>}
-        </button>
+      <SectionTitle sub={filterCollector === "전체" ? "수금 관리" : `${filterCollector} 전담 · ${filteredFinal.length}명`}>💰 수금 관리</SectionTitle>
+
+      {/* 상단 탭 */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+        {[
+          { key: "table", label: "💰 수금 테이블" },
+          { key: "settings", label: "⚙ 독촉 설정" },
+        ].map(tab => (
+          <button key={tab.key} onClick={() => setViewMode(tab.key)}
+            style={{
+              padding: "10px 20px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+              border: viewMode === tab.key ? "2px solid #3B82F6" : "1.5px solid #E0E3E9",
+              background: viewMode === tab.key ? "#EFF6FF" : "#fff",
+              color: viewMode === tab.key ? "#2563EB" : "#5F6577",
+              fontWeight: viewMode === tab.key ? 800 : 600, fontSize: 13,
+            }}>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* 건물 검색 */}
-      {viewMode === "table" && (
-        <div style={{ marginBottom: 12 }}>
-          <input value={buildingSearch} onChange={e => setBuildingSearch(e.target.value)}
-            placeholder="건물명 검색 (초성 가능)..."
-            style={{ width: isMobile ? "100%" : 280, padding: "9px 14px", borderRadius: 10, border: "1px solid #E0E3E9", fontSize: 13, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
-        </div>
-      )}
+      {viewMode === "settings" && <DunningTemplateSettings />}
 
-      {/* 상태 필터 */}
-      {viewMode === "table" && (
-        <div style={{ display: "flex", gap: 6, marginBottom: 16, alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, marginRight: 4 }}>조치 필터:</span>
-          {(() => {
-            const danCount = filteredFinal.filter(t => electricCut[rk(t)] === "단전").length;
-            const warnCount = filteredFinal.filter(t => electricCut[rk(t)] === "위험").length;
-            const overdueCount = filteredFinal.filter(t => t.prevUnpaid > 0 || t.overdueDays > 0).length;
-            return [
-              { id: "전체", label: `전체 (${filteredFinal.length})`, bg: "#F3F4F6", activeBg: "#1A1D23", activeColor: "#fff", color: "#5F6577", border: "#E0E3E9", activeBorder: "#1A1D23" },
-              { id: "단전", label: `⚡ 단전 (${danCount})`, bg: "#FFF1F2", activeBg: "#DC2626", activeColor: "#fff", color: "#DC2626", border: "#FECACA", activeBorder: "#DC2626" },
-              { id: "위험", label: `⚠ 위험 (${warnCount})`, bg: "#FFFBEB", activeBg: "#F59E0B", activeColor: "#fff", color: "#B45309", border: "#FDE68A", activeBorder: "#F59E0B" },
-              { id: "연체", label: `🚨 연체 (${overdueCount})`, bg: "#FEF2F2", activeBg: "#EA580C", activeColor: "#fff", color: "#EA580C", border: "#FED7AA", activeBorder: "#EA580C" },
-            ].map(f => (
-              <button key={f.id} onClick={() => setStatusFilter(f.id)}
-                style={{ padding: "6px 14px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
-                  background: statusFilter === f.id ? f.activeBg : f.bg,
-                  color: statusFilter === f.id ? f.activeColor : f.color,
-                  border: `1.5px solid ${statusFilter === f.id ? f.activeBorder : f.border}` }}>
-                {f.label}
+      {viewMode === "table" && <>
+      {/* 수금담당 필터 */}
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 12 }}>
+            {collectors.map(c => (
+              <button key={c} onClick={() => setFilterCollector(c)}
+                style={{ padding: "8px 18px", borderRadius: 8, border: filterCollector === c ? "2px solid #F59E0B" : "1.5px solid #E0E3E9", background: filterCollector === c ? (c === "전체" ? "#1A1D23" : "#F59E0B") : "#fff", color: filterCollector === c ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                {c} {c !== "전체" && <span style={{ fontSize: 10, opacity: 0.7 }}>({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
               </button>
-            ));
-          })()}
-        </div>
-      )}
-
-      {viewMode === "comments" ? (
-        <div>
-          <div style={{ marginBottom: 12 }}>
-            <input value={commentFilter} onChange={e => setCommentFilter(e.target.value)}
-              placeholder="건물명, 호수, 이름으로 검색..."
-              style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", outline: "none" }} />
+            ))}
           </div>
-          {filteredComments.length === 0 ? (
-            <div style={{ padding: 40, textAlign: "center", color: "#B0B5C1", fontSize: 13 }}>코멘트가 없습니다</div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {filteredComments.map((c, i) => (
-                <Card key={i} style={{ padding: "12px 16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontWeight: 800, fontSize: 13, color: "#1A1D23" }}>{c.building} {c.room}</span>
-                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: c.tenant.includes("(전)") ? "#F3E8FF" : "#F3F4F6", color: c.tenant.includes("(전)") ? "#7C3AED" : "#5F6577", fontWeight: 600 }}>{c.tenant}</span>
-                    </div>
-                    <span style={{ fontSize: 11, color: "#8F95A3" }}>{c.date}</span>
-                  </div>
-                  <div style={{ fontSize: 13, color: "#3D4251", lineHeight: 1.5 }}>{c.text}</div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <Card style={{ overflow: "auto" }}>
-          {statusFilter !== "전체" && (
-            <div style={{ padding: "8px 14px", marginBottom: 10, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between",
-              background: statusFilter === "단전" ? "#FFF1F2" : statusFilter === "위험" ? "#FFFBEB" : "#FEF2F2",
-              border: `1px solid ${statusFilter === "단전" ? "#FECACA" : statusFilter === "위험" ? "#FDE68A" : "#FED7AA"}` }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: statusFilter === "단전" ? "#DC2626" : statusFilter === "위험" ? "#B45309" : "#EA580C" }}>
-                {statusFilter === "단전" ? "⚡" : statusFilter === "위험" ? "⚠" : "🚨"} {statusFilter} 필터 적용 중 · {filteredFinal.length}건
-              </span>
-              <button onClick={() => setStatusFilter("전체")} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, fontWeight: 700, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>필터 해제</button>
-            </div>
-          )}
-          {isMobile ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {filteredFinal.length === 0 ? (
-                <div style={{ padding: "40px 0", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>해당 조건의 임차인이 없습니다</div>
-              ) : filteredFinal.map((t, i) => {
-                const key = rk(t);
-                const lateFee = calcLateFee(t);
-                const bill = calcBill(t);
-                const roomComments = comments[key] || [];
-                const days = getDaysSinceDue(t);
-                return (
-                  <Card key={i} style={{ padding: "10px 12px", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : t.prevUnpaid > 0 ? "#FEF2F2" : "transparent" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                      <div>
-                        <span style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23", marginLeft: 6 }}>{t.name}</span>
-                      </div>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: lateFee > 0 ? "#DC2626" : "#1A1D23" }}>{fmt(bill)}원</span>
-                    </div>
-                    <div style={{ fontSize: 11, color: "#5F6577", marginBottom: 4 }}>
-                      월세 {fmt(t.rent)} · 관리비 {fmt(t.mgmt)} · 보증금 {fmt(t.deposit)}
-                    </div>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                      {t.prevUnpaid > 0 && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>미납 {fmt(t.prevUnpaid)}</span>}
-                      {lateFee > 0 && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>연체료 {fmt(lateFee)}</span>}
-                      <span style={{ fontSize: 10, fontWeight: days > 5 ? 700 : 500, color: days > 5 ? "#DC2626" : days > 0 ? "#EA580C" : "#8F95A3" }}>{days > 0 ? `+${days}일` : days < 0 ? `D${days}` : "오늘"}</span>
-                      {electricCut[key] && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: electricCut[key] === "단전" ? "#DC2626" : "#F59E0B", color: "#fff" }}>{electricCut[key]}</span>}
-                      <a href={`tel:${t.phone}`} style={{ fontSize: 10, color: "#3B82F6", marginLeft: "auto" }}>📞 {t.phone}</a>
-                    </div>
-                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                      <button onClick={() => { setCommentTarget(commentTarget === key ? null : key); setCommentText(""); }}
-                        style={{ flex: 1, padding: "6px", borderRadius: 6, border: "1px solid #E0E3E9", background: roomComments.length > 0 ? "#EFF6FF" : "#fff", fontSize: 11, fontWeight: 600, color: "#3B82F6", cursor: "pointer", fontFamily: "inherit" }}>
-                        💬 코멘트{roomComments.length > 0 ? ` (${roomComments.length})` : ""}
-                      </button>
-                      <button onClick={() => setElectricCut(prev => { const cur = prev[key]; return { ...prev, [key]: !cur ? "위험" : cur === "위험" ? "단전" : undefined }; })}
-                        style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, fontWeight: 600, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
-                        ⚡ 조치
-                      </button>
-                    </div>
-                    {commentTarget === key && (
-                      <div style={{ marginTop: 8, padding: "8px", background: "#F8FAFC", borderRadius: 8 }}>
-                        <div style={{ display: "flex", gap: 6, marginBottom: roomComments.length > 0 ? 8 : 0 }}>
-                          <input value={commentText} onChange={e => setCommentText(e.target.value)}
-                            onKeyDown={e => e.key === "Enter" && addComment(key, t.name)}
-                            placeholder="코멘트 입력..." style={{ flex: 1, padding: "6px 10px", borderRadius: 6, border: "1px solid #D1D5DB", fontSize: 11, fontFamily: "inherit" }} />
-                          <button onClick={() => addComment(key, t.name)} style={{ padding: "6px 12px", borderRadius: 6, background: "#3B82F6", border: "none", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>저장</button>
+
+          {/* 건물 검색 */}
+          <div style={{ marginBottom: 12 }}>
+            <input value={buildingSearch} onChange={e => setBuildingSearch(e.target.value)}
+              placeholder="건물명 검색 (초성 가능)..."
+              style={{ width: isMobile ? "100%" : 280, padding: "9px 14px", borderRadius: 10, border: "1px solid #E0E3E9", fontSize: 13, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
+          </div>
+
+          {/* 정렬 & 상태 필터 */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, marginRight: 4 }}>정렬:</span>
+            {["연체일순", "위험도순"].map(m => (
+              <button key={m} onClick={() => setSortMode(m)}
+                style={{ padding: "6px 12px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                  background: sortMode === m ? "#1E40AF" : "#EFF6FF", color: sortMode === m ? "#fff" : "#2563EB",
+                  border: `1.5px solid ${sortMode === m ? "#1E40AF" : "#BFDBFE"}` }}>
+                {m === "연체일순" ? "📅 연체일순" : "⚡ 위험도순"}
+              </button>
+            ))}
+            <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, marginLeft: 8, marginRight: 4 }}>조치 필터:</span>
+            {(() => {
+              const danCount = filteredFinal.filter(t => electricCut[rk(t)] === "단전").length;
+              const warnCount = filteredFinal.filter(t => electricCut[rk(t)] === "위험").length;
+              const overdueCount = filteredFinal.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0).length;
+              return [
+                { id: "전체", label: `전체 (${filteredFinal.length})`, bg: "#F3F4F6", activeBg: "#1A1D23", activeColor: "#fff", color: "#5F6577", border: "#E0E3E9", activeBorder: "#1A1D23" },
+                { id: "단전", label: `⚡ 단전 (${danCount})`, bg: "#FFF1F2", activeBg: "#DC2626", activeColor: "#fff", color: "#DC2626", border: "#FECACA", activeBorder: "#DC2626" },
+                { id: "위험", label: `⚠ 위험 (${warnCount})`, bg: "#FFFBEB", activeBg: "#F59E0B", activeColor: "#fff", color: "#B45309", border: "#FDE68A", activeBorder: "#F59E0B" },
+                { id: "연체", label: `🚨 연체 (${overdueCount})`, bg: "#FEF2F2", activeBg: "#EA580C", activeColor: "#fff", color: "#EA580C", border: "#FED7AA", activeBorder: "#EA580C" },
+              ].map(f => (
+                <button key={f.id} onClick={() => setStatusFilter(f.id)}
+                  style={{ padding: "6px 14px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                    background: statusFilter === f.id ? f.activeBg : f.bg, color: statusFilter === f.id ? f.activeColor : f.color,
+                    border: `1.5px solid ${statusFilter === f.id ? f.activeBorder : f.border}` }}>
+                  {f.label}
+                </button>
+              ));
+            })()}
+          </div>
+
+          <Card style={{ overflow: "auto" }}>
+            {statusFilter !== "전체" && (
+              <div style={{ padding: "8px 14px", marginBottom: 10, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between",
+                background: statusFilter === "단전" ? "#FFF1F2" : statusFilter === "위험" ? "#FFFBEB" : "#FEF2F2",
+                border: `1px solid ${statusFilter === "단전" ? "#FECACA" : statusFilter === "위험" ? "#FDE68A" : "#FED7AA"}` }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: statusFilter === "단전" ? "#DC2626" : statusFilter === "위험" ? "#B45309" : "#EA580C" }}>
+                  {statusFilter === "단전" ? "⚡" : statusFilter === "위험" ? "⚠" : "🚨"} {statusFilter} 필터 적용 중 · {filteredFinal.length}건
+                </span>
+                <button onClick={() => setStatusFilter("전체")} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, fontWeight: 700, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>필터 해제</button>
+              </div>
+            )}
+            {isMobile ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {filteredFinal.length === 0 ? (
+                  <div style={{ padding: "40px 0", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>해당 조건의 임차인이 없습니다</div>
+                ) : filteredFinal.map((t, i) => {
+                  const key = rk(t);
+                  const lateFee = calcLateFee(t);
+                  const bill = calcBill(t);
+                  const roomComments = comments[key] || [];
+                  const days = getDaysSinceDue(t);
+                  return (
+                    <Card key={i} style={{ padding: "10px 12px", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                        <div>
+                          <span style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23", marginLeft: 6 }}>{t.name}</span>
                         </div>
-                        {roomComments.map((c, ci) => (
-                          <div key={ci} style={{ padding: "6px 8px", background: "#fff", borderRadius: 4, border: "1px solid #E8ECF0", marginBottom: 4, fontSize: 11 }}>
-                            <span style={{ fontWeight: 700, color: "#1A1D23" }}>{c.date}</span> <span style={{ color: "#8F95A3" }}>{c.tenant}</span> — {c.text}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
-                {["조치","건물명","호수","이름","연락처","만기일","예치금","월세","관리비","전월미납","입주일","당월청구액",""].map((h, i) => (
-                  <th key={i} style={{ padding: "10px 8px", textAlign: i >= 6 ? "right" : i === 0 ? "center" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFinal.length === 0 ? (
-                <tr><td colSpan={13} style={{ padding: "40px 20px", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>
-                  {statusFilter === "단전" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "위험" ? "⚠ 위험 처리된 임차인이 없습니다" : "🚨 연체 임차인이 없습니다"}
-                </td></tr>
-              ) : filteredFinal.map((t, i) => {
-                const key = rk(t);
-                const lateFee = calcLateFee(t);
-                const bill = calcBill(t);
-                const roomComments = comments[key] || [];
-                const isOpen = commentTarget === key;
-                return (
-                  <React.Fragment key={i}>
-                    <tr style={{ borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : t.prevUnpaid > 0 ? "#FEF2F2" : t.overdueDays >= 5 ? "#FFFBEB" : "transparent" }}>
-                      <td style={{ padding: "10px 6px", textAlign: "center" }}>
-                        <div onClick={() => setElectricCut(prev => {
-                          const cur = prev[key];
-                          const next = !cur ? "위험" : cur === "위험" ? "단전" : null;
-                          return { ...prev, [key]: next || undefined };
-                        })}
-                          style={{ width: 44, height: 24, borderRadius: 6, margin: "0 auto", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, transition: "all 0.15s",
-                            background: electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#F3F4F6",
-                            color: electricCut[key] ? "#fff" : "#B0B5C1",
-                            border: `1.5px solid ${electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#D1D5DB"}` }}>
-                          {electricCut[key] === "단전" ? "단전" : electricCut[key] === "위험" ? "위험" : "—"}
-                        </div>
-                      </td>
-                      <td style={{ padding: "10px 8px", fontWeight: 700 }}>{t.building}</td>
-                      <td style={{ padding: "10px 8px" }}>{t.room}</td>
-                      <td style={{ padding: "10px 8px", fontWeight: 700 }}>{t.name}</td>
-                      <td style={{ padding: "10px 8px" }}><a href={`tel:${t.phone}`} style={{ color: "#3B82F6", textDecoration: "none" }}>{t.phone}</a></td>
-                      <td style={{ padding: "10px 8px" }}>{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp - new Date()) / 86400000); return <span style={{ color: diff < 30 ? "#DC2626" : diff < 90 ? "#EA580C" : "#5F6577", fontWeight: diff < 30 ? 800 : 600 }}>{t.expiry.slice(2)}{diff < 30 ? ` (${diff}일)` : ""}</span>; })()}</td>
-                      <td style={{ padding: "10px 8px", textAlign: "right" }}>{fmt(t.deposit)}</td>
-                      <td style={{ padding: "10px 8px", textAlign: "right" }}>{fmt(t.rent)}</td>
-                      <td style={{ padding: "10px 8px", textAlign: "right", color: t.mgmt > 0 ? "#1A1D23" : "#B0B5C1" }}>{t.mgmt > 0 ? fmt(t.mgmt) : "—"}</td>
-                      <td style={{ padding: "10px 8px", textAlign: "right" }}>{t.prevUnpaid > 0 ? <span style={{ fontWeight: 700, color: "#DC2626" }}>{fmt(t.prevUnpaid)}</span> : <span style={{ color: "#B0B5C1" }}>—</span>}</td>
-                      <td style={{ padding: "10px 8px", textAlign: "right" }}>
-                        {(() => { const days = getDaysSinceDue(t); const dueDay = getDueDay(t); return <span style={{ fontSize: 12, fontWeight: days > 0 ? 700 : 600, color: days > 5 ? "#DC2626" : days > 0 ? "#EA580C" : "#5F6577" }}>{dueDay}일{days > 0 ? ` (+${days})` : days < 0 ? ` (D${days})` : " (오늘)"}</span>; })()}
-                      </td>
-                      <td style={{ padding: "10px 8px", textAlign: "right" }}>
-                        <span style={{ fontWeight: 800, color: lateFee > 0 ? "#DC2626" : "#1A1D23", fontSize: 13 }}>{fmt(bill)}</span>
-                        {lateFee > 0 && <div style={{ fontSize: 9, color: "#DC2626" }}>연체료 {fmt(lateFee)} 포함</div>}
-                      </td>
-                      <td style={{ padding: "10px 8px", textAlign: "center" }}>
-                        <button onClick={() => { setCommentTarget(isOpen ? null : key); setCommentText(""); }}
-                          style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #E0E3E9", background: roomComments.length > 0 ? "#EFF6FF" : "#fff", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 600, color: "#3B82F6" }}>
-                          💬{roomComments.length > 0 ? ` ${roomComments.length}` : ""}
-                        </button>
-                      </td>
-                    </tr>
-                    {isOpen && (
-                      <tr><td colSpan={13} style={{ padding: 0 }}>
-                        <div style={{ padding: "12px 16px", background: "#F8FAFC", borderBottom: "2px solid #E0E3E9" }}>
-                          <div style={{ display: "flex", gap: 8, marginBottom: roomComments.length > 0 ? 12 : 0 }}>
-                            <input value={commentText} onChange={e => setCommentText(e.target.value)}
-                              onKeyDown={e => e.key === "Enter" && addComment(key, t.name)}
-                              placeholder={`${t.building} ${t.room} 수금 코멘트 입력...`}
-                              style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "1.5px solid #D1D5DB", fontSize: 12, fontFamily: "inherit", outline: "none" }} />
-                            <button onClick={() => addComment(key, t.name)}
-                              style={{ padding: "8px 16px", borderRadius: 8, background: "#3B82F6", border: "none", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>저장</button>
-                          </div>
-                          {roomComments.length > 0 && (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 2 }}>📋 {t.building} {t.room} 호실 코멘트 이력 (임차인 변경 포함)</div>
-                              {roomComments.map((c, ci) => (
-                                <div key={ci} style={{ display: "flex", gap: 10, padding: "8px 10px", background: "#fff", borderRadius: 6, border: "1px solid #E8ECF0" }}>
-                                  <div style={{ flexShrink: 0, minWidth: 80 }}>
-                                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1A1D23" }}>{c.date}</div>
-                                    <div style={{ fontSize: 10, color: c.tenant === t.name ? "#3B82F6" : "#9333EA", fontWeight: 600 }}>
-                                      {c.tenant}{c.tenant !== t.name && !c.tenant.includes("(전)") ? " (이전)" : ""}
-                                    </div>
-                                  </div>
-                                  <div style={{ fontSize: 12, color: "#3D4251", lineHeight: 1.5 }}>{c.text}</div>
-                                </div>
+                        {(() => {
+                          const slots = getBillingSlots(t, buildingAccounts, allBuildings);
+                          const colors = ["#EA580C", "#92400E", "#2563EB"];
+                          return slots.length > 1 ? (
+                            <div style={{ textAlign: "right" }}>
+                              {slots.map((s, si) => (
+                                <div key={si} style={{ fontSize: 11, color: colors[si], fontWeight: 700 }}>{s.label}{fmt(s.amount)}</div>
                               ))}
                             </div>
-                          )}
+                          ) : (
+                            <span style={{ fontSize: 14, fontWeight: 800, color: lateFee > 0 ? "#DC2626" : "#1A1D23" }}>{fmt(bill)}원</span>
+                          );
+                        })()}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#5F6577", marginBottom: 4 }}>
+                        월세 {fmt(t.rent)} · 관리비 {fmt(t.mgmt)} · 보증금 {fmt(t.deposit)}
+                      </div>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                        {getBalance(t) > 0 && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>미납 {fmt(getBalance(t))}</span>}
+                        {lateFee > 0 && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>연체료 {fmt(lateFee)}</span>}
+                        {lateFeeOverrides[key]?.type === "exclude" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#ECFDF5", color: "#059669" }}>연체료 제외</span>}
+                        {lateFeeOverrides[key]?.type === "discount" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB" }}>할인 {fmt(lateFeeOverrides[key].amount)}</span>}
+                        <span style={{ fontSize: 10, fontWeight: days > 5 ? 700 : 500, color: days > 5 ? "#DC2626" : days > 0 ? "#EA580C" : "#8F95A3" }}>{days > 0 ? `+${days}일` : days < 0 ? `D${days}` : "오늘"}</span>
+                        {electricCut[key] && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: electricCut[key] === "단전" ? "#DC2626" : "#F59E0B", color: "#fff" }}>{electricCut[key]}</span>}
+                        <a href={`tel:${t.phone}`} style={{ fontSize: 10, color: "#3B82F6", marginLeft: "auto" }}>📞 {t.phone}</a>
+                      </div>
+                      <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                        <button onClick={() => { setCommentTarget(commentTarget === key ? null : key); setCommentText(""); }}
+                          style={{ flex: 1, padding: "6px", borderRadius: 6, border: "1px solid #E0E3E9", background: roomComments.length > 0 ? "#EFF6FF" : "#fff", fontSize: 11, fontWeight: 600, color: "#3B82F6", cursor: "pointer", fontFamily: "inherit" }}>
+                          💬 코멘트{roomComments.length > 0 ? ` (${roomComments.length})` : ""}
+                        </button>
+                        <button onClick={() => setElectricCut(prev => { const cur = prev[key]; return { ...prev, [key]: !cur ? "위험" : cur === "위험" ? "단전" : undefined }; })}
+                          style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, fontWeight: 600, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
+                          ⚡ 조치
+                        </button>
+                        {days >= 5 && getRoomType(t.building, t.room) === "단기" && (
+                          <button onClick={() => {
+                            const cur = lateFeeOverrides[key]?.type;
+                            if (!cur) setFeeOverride(key, "exclude");
+                            else if (cur === "exclude") setFeeOverride(key, "discount", Math.round((t.rent || 0) * 0.025));
+                            else setFeeOverride(key, null);
+                          }}
+                            style={{ padding: "6px 10px", borderRadius: 6, border: `1px solid ${lateFeeOverrides[key]?.type === "exclude" ? "#059669" : lateFeeOverrides[key]?.type === "discount" ? "#2563EB" : "#E0E3E9"}`,
+                              background: lateFeeOverrides[key]?.type === "exclude" ? "#ECFDF5" : lateFeeOverrides[key]?.type === "discount" ? "#EFF6FF" : "#fff",
+                              fontSize: 11, fontWeight: 600, color: lateFeeOverrides[key]?.type === "exclude" ? "#059669" : lateFeeOverrides[key]?.type === "discount" ? "#2563EB" : "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
+                            {lateFeeOverrides[key]?.type === "exclude" ? "제외중" : lateFeeOverrides[key]?.type === "discount" ? "할인중" : "연체료"}
+                          </button>
+                        )}
+                      </div>
+                      {commentTarget === key && (
+                        <div style={{ marginTop: 8, padding: "8px", background: "#F8FAFC", borderRadius: 8 }}>
+                          <div style={{ display: "flex", gap: 6, marginBottom: roomComments.length > 0 ? 8 : 0 }}>
+                            <input value={commentText} onChange={e => setCommentText(e.target.value)}
+                              onKeyDown={e => e.key === "Enter" && addComment(key, t.name)}
+                              placeholder="코멘트 입력..." style={{ flex: 1, padding: "6px 10px", borderRadius: 6, border: "1px solid #D1D5DB", fontSize: 11, fontFamily: "inherit" }} />
+                            <button onClick={() => addComment(key, t.name)} style={{ padding: "6px 12px", borderRadius: 6, background: "#3B82F6", border: "none", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>저장</button>
+                          </div>
+                          {roomComments.map((c, ci) => (
+                            <div key={ci} style={{ padding: "6px 8px", background: "#fff", borderRadius: 4, border: "1px solid #E8ECF0", marginBottom: 4, fontSize: 11 }}>
+                              <span style={{ fontWeight: 700, color: "#1A1D23" }}>{c.date}</span> <span style={{ color: "#8F95A3" }}>{c.tenant}</span> — {c.text}
+                            </div>
+                          ))}
                         </div>
-                      </td></tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-          )}
-        </Card>
-      )}
+                      )}
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+                    {["조치","건물","호수","이름","연락처","만기일","예치금","월세","관리비","미납","납부일","청구①","청구②","청구③","연체료",""].map((h, i) => (
+                      <th key={i} style={{ padding: i >= 11 && i <= 13 ? "8px 10px" : "8px 4px", textAlign: "center", fontSize: 10, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredFinal.length === 0 ? (
+                    <tr><td colSpan={16} style={{ padding: "40px 20px", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>
+                      {statusFilter === "단전" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "위험" ? "⚠ 위험 처리된 임차인이 없습니다" : "해당 조건의 임차인이 없습니다"}
+                    </td></tr>
+                  ) : filteredFinal.map((t, i) => {
+                    const key = rk(t);
+                    const lateFee = calcLateFee(t);
+                    const roomComments = comments[key] || [];
+                    const isOpen = commentTarget === key;
+                    return (
+                      <React.Fragment key={i}>
+                        <tr style={{ borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (getDaysSinceDue(t) >= -6 && getDaysSinceDue(t) < 0) ? "#FFF5F5" : "transparent" }}>
+                          <td style={{ padding: "10px 6px", textAlign: "center" }}>
+                            <div onClick={() => setElectricCut(prev => {
+                              const cur = prev[key];
+                              const next = !cur ? "위험" : cur === "위험" ? "단전" : null;
+                              return { ...prev, [key]: next || undefined };
+                            })}
+                              style={{ width: 44, height: 24, borderRadius: 6, margin: "0 auto", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, transition: "all 0.15s",
+                                background: electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#F3F4F6",
+                                color: electricCut[key] ? "#fff" : "#B0B5C1",
+                                border: `1.5px solid ${electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#D1D5DB"}` }}>
+                              {electricCut[key] === "단전" ? "단전" : electricCut[key] === "위험" ? "위험" : "—"}
+                            </div>
+                          </td>
+                          <td style={{ padding: "8px 4px", fontWeight: 700, fontSize: 11 }}>{t.building}</td>
+                          <td style={{ padding: "8px 4px", fontSize: 11 }}>{t.room}</td>
+                          <td style={{ padding: "8px 4px", fontWeight: 700, fontSize: 11, maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "…" : t.name}</td>
+                          <td style={{ padding: "8px 4px", fontSize: 10 }}><a href={`tel:${t.phone}`} style={{ color: "#3B82F6", textDecoration: "none" }}>{t.phone}</a></td>
+                          <td style={{ padding: "8px 4px", fontSize: 10 }}>{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp - new Date()) / 86400000); return <span style={{ color: diff > 0 ? "#DC2626" : "#1A1D23", fontWeight: 600 }}>{t.expiry.slice(2)}</span>; })()}</td>
+                          <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>{fmt(t.deposit)}</td>
+                          <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>{fmt(t.rent)}</td>
+                          <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11, color: t.mgmt > 0 ? "#1A1D23" : "#B0B5C1" }}>{t.mgmt > 0 ? fmt(t.mgmt) : "—"}</td>
+                          <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>{getBalance(t) > 0 ? <span style={{ fontWeight: 700, color: "#DC2626" }}>{fmt(getBalance(t))}</span> : <span style={{ color: "#B0B5C1" }}>—</span>}</td>
+                          <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>
+                            {(() => { const dueDay = getDueDay(t); const elapsed = getDaysSinceDue(t); return <><span style={{ fontWeight: 600, color: "#5F6577" }}>{dueDay}일</span>{elapsed > 0 && <span style={{ fontSize: 9, color: "#DC2626", fontWeight: 700 }}> +{elapsed}</span>}{elapsed === 0 && <span style={{ fontSize: 9, color: "#F59E0B", fontWeight: 700 }}> D</span>}</>; })()}
+                          </td>
+                          {(() => {
+                            const slots = getBillingSlots(t, buildingAccounts, allBuildings);
+                            const colors = ["#EA580C", "#92400E", "#2563EB"];
+                            return [0, 1, 2].map(si => (
+                              <td key={si} style={{ padding: "8px 10px", textAlign: "right", fontSize: 11 }}>
+                                {slots[si] ? <span style={{ fontWeight: 700, color: colors[si] }}>{fmt(slots[si].amount)}</span> : <span style={{ color: "#D1D5DB" }}>—</span>}
+                              </td>
+                            ));
+                          })()}
+                          <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                            {(() => {
+                              const days = getDaysSinceDue(t);
+                              const isShortTerm = getRoomType(t.building, t.room) === "단기";
+                              const override = lateFeeOverrides[key];
+                              if (days < 5 || !isShortTerm) return <span style={{ color: "#B0B5C1", fontSize: 11 }}>—</span>;
+                              return (
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                                  {lateFee > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "#DC2626" }}>{fmt(lateFee)}</span>}
+                                  <button onClick={() => {
+                                    if (!override) setFeeOverride(key, "exclude");
+                                    else if (override.type === "exclude") setFeeOverride(key, "discount", Math.round((t.rent || 0) * 0.025));
+                                    else setFeeOverride(key, null);
+                                  }}
+                                    style={{ padding: "2px 8px", borderRadius: 4, border: `1px solid ${override?.type === "exclude" ? "#059669" : override?.type === "discount" ? "#2563EB" : "#D1D5DB"}`,
+                                      background: override?.type === "exclude" ? "#ECFDF5" : override?.type === "discount" ? "#EFF6FF" : "#F9FAFB",
+                                      fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                                      color: override?.type === "exclude" ? "#059669" : override?.type === "discount" ? "#2563EB" : "#8F95A3" }}>
+                                    {override?.type === "exclude" ? "제외" : override?.type === "discount" ? `할인 ${fmt(override.amount)}` : "5%적용"}
+                                  </button>
+                                </div>
+                              );
+                            })()}
+                          </td>
+                          <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                            <button onClick={() => { setCommentTarget(isOpen ? null : key); setCommentText(""); }}
+                              style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #E0E3E9", background: roomComments.length > 0 ? "#EFF6FF" : "#fff", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 600, color: "#3B82F6" }}>
+                              💬{roomComments.length > 0 ? ` ${roomComments.length}` : ""}
+                            </button>
+                          </td>
+                        </tr>
+                        {isOpen && (
+                          <tr><td colSpan={16} style={{ padding: 0 }}>
+                            <div style={{ padding: "12px 16px", background: "#F8FAFC", borderBottom: "2px solid #E0E3E9" }}>
+                              <div style={{ display: "flex", gap: 8, marginBottom: roomComments.length > 0 ? 12 : 0 }}>
+                                <input value={commentText} onChange={e => setCommentText(e.target.value)}
+                                  onKeyDown={e => e.key === "Enter" && addComment(key, t.name)}
+                                  placeholder={`${t.building} ${t.room} 수금 코멘트 입력...`}
+                                  style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "1.5px solid #D1D5DB", fontSize: 12, fontFamily: "inherit", outline: "none" }} />
+                                <button onClick={() => addComment(key, t.name)}
+                                  style={{ padding: "8px 16px", borderRadius: 8, background: "#3B82F6", border: "none", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>저장</button>
+                              </div>
+                              {roomComments.length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                  <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 2 }}>📋 {t.building} {t.room} 호실 코멘트 이력</div>
+                                  {roomComments.map((c, ci) => (
+                                    <div key={ci} style={{ display: "flex", gap: 10, padding: "8px 10px", background: "#fff", borderRadius: 6, border: "1px solid #E8ECF0" }}>
+                                      <div style={{ flexShrink: 0, minWidth: 80 }}>
+                                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1A1D23" }}>{c.date}</div>
+                                        <div style={{ fontSize: 10, color: c.tenant === t.name ? "#3B82F6" : "#9333EA", fontWeight: 600 }}>
+                                          {c.tenant}{c.tenant !== t.name && !c.tenant.includes("(전)") ? " (이전)" : ""}
+                                        </div>
+                                      </div>
+                                      <div style={{ fontSize: 12, color: "#3D4251", lineHeight: 1.5 }}>{c.text}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </td></tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </Card>
+      </>}
     </div>
   );
 };

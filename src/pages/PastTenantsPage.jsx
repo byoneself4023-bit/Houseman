@@ -363,10 +363,11 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                     </div>
 
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>사용 기간</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.moveIn || "-"}</div></div>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.expiry || "-"}</div></div>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 700, color: "#DC2626", textAlign: "center" }}>{r.moveOut}</div></div>
+                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>사용기간</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#EFF6FF", fontSize: 12, fontWeight: 700, color: "#2563EB", textAlign: "center" }}>{r.usagePeriod || (() => { if (!r.moveIn || !r.moveOut) return "-"; const a = new Date(r.moveIn), b = new Date(r.moveOut); let m = (b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); let d = b.getDate()-a.getDate(); if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();} return `${m}개월 ${d}일`; })()}</div></div>
                     </div>
 
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>계약 정보</div>
@@ -432,7 +433,7 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                   {/* Right - 정산 계산 */}
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>정산 내역</div>
-                    <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>기산일: {r.startDay}일 · 일할기준: {r.daysInMonth}일 · 사용일수: {r.usedDays}일</div>
+                    <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>기산일: {r.startDay}일 · 월 일수: {r.daysInMonth}일 · 당월 사용: {r.usedDays}일</div>
 
                     {/* 반환 */}
                     <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #BBF7D0" }}>

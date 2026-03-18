@@ -9,16 +9,21 @@ export const expenseCategories = [
 ];
 
 export const defaultSettlementExpenses = [
+  // 스타빌 3월
+  { id: 101, month: "2026-03", building: "스타빌", room: "", category: "utility", desc: "공용전기 (3월)", amount: 142000, date: "2026-03-31" },
+  { id: 102, month: "2026-03", building: "스타빌", room: "", category: "cleaning", desc: "건물 청소비 (3월)", amount: 220000, date: "2026-03-31" },
+  { id: 103, month: "2026-03", building: "스타빌", room: "201", category: "repair", desc: "201호 수전 교체", amount: 85000, date: "2026-03-12" },
+  { id: 104, month: "2026-03", building: "스타빌", room: "", category: "utility", desc: "KT 인터넷 (3월)", amount: 55000, date: "2026-03-25" },
   // 스타빌 2월
-  { id: 1, month: "2026-02", building: "스타빌", category: "repair", desc: "403호 수도꼭지 교체", amount: 85000 },
-  { id: 2, month: "2026-02", building: "스타빌", category: "utility", desc: "공용전기 (2월)", amount: 127000 },
-  { id: 3, month: "2026-02", building: "스타빌", category: "cleaning", desc: "건물 청소비 (2월)", amount: 220000 },
+  { id: 1, month: "2026-02", building: "스타빌", category: "repair", desc: "403호 수도꼭지 교체", amount: 85000, date: "2026-02-06" },
+  { id: 2, month: "2026-02", building: "스타빌", category: "utility", desc: "공용전기 (2월)", amount: 127000, date: "2026-02-28" },
+  { id: 3, month: "2026-02", building: "스타빌", category: "cleaning", desc: "건물 청소비 (2월)", amount: 220000, date: "2026-02-28" },
   // 아페이론 2월
-  { id: 4, month: "2026-02", building: "아페이론", category: "repair", desc: "102호 보일러 수리", amount: 350000 },
-  { id: 5, month: "2026-02", building: "아페이론", category: "utility", desc: "공용전기 (2월)", amount: 95000 },
-  { id: 6, month: "2026-02", building: "아페이론", category: "cleaning", desc: "건물 청소비 (2월)", amount: 180000 },
+  { id: 4, month: "2026-02", building: "아페이론", category: "repair", desc: "102호 보일러 수리", amount: 350000, date: "2026-02-10" },
+  { id: 5, month: "2026-02", building: "아페이론", category: "utility", desc: "공용전기 (2월)", amount: 95000, date: "2026-02-28" },
+  { id: 6, month: "2026-02", building: "아페이론", category: "cleaning", desc: "건물 청소비 (2월)", amount: 180000, date: "2026-02-28" },
   // 스타빌 1월
-  { id: 7, month: "2026-01", building: "스타빌", category: "repair", desc: "301호 도어락 교체", amount: 120000 },
-  { id: 8, month: "2026-01", building: "스타빌", category: "utility", desc: "공용전기 (1월)", amount: 115000 },
-  { id: 9, month: "2026-01", building: "스타빌", category: "cleaning", desc: "건물 청소비 (1월)", amount: 220000 },
+  { id: 7, month: "2026-01", building: "스타빌", category: "repair", desc: "301호 도어락 교체", amount: 120000, date: "2026-01-15" },
+  { id: 8, month: "2026-01", building: "스타빌", category: "utility", desc: "공용전기 (1월)", amount: 115000, date: "2026-01-31" },
+  { id: 9, month: "2026-01", building: "스타빌", category: "cleaning", desc: "건물 청소비 (1월)", amount: 220000, date: "2026-01-31" },
 ];

@@ -12,6 +12,7 @@ export const StatusBadge = ({ status, label }) => {
     높음: { bg: "#FEF2F2", color: "#DC2626", border: "#FECACA" },
     보통: { bg: "#FFF7ED", color: "#EA580C", border: "#FED7AA" },
     낮음: { bg: "#F0F4FF", color: "#6366F1", border: "#C7D2FE" },
+    임차인연결: { bg: "#FFFBEB", color: "#B45309", border: "#FDE68A" },
   };
   const s = map[status] || map["정상"];
   return (

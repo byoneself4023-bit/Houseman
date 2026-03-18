@@ -6,3 +6,5 @@ export { Table } from './Table';
 export { PhotoDropZone } from './PhotoDropZone';
 export { ContractDropZone } from './ContractDropZone';
 export { Field, inputStyle } from './Field';
+export { DunningTemplateSettings } from './DunningTemplateSettings';
+export { SettlementPrintView } from './SettlementPrintView';

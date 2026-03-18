@@ -18,7 +18,7 @@ const initialRegForm = {
   feeType: "pct", fee: "", fixedFee: "",
   owners: [{ name: "", phone: "", ssn: "", address: "", settlement: "" }],
   startDate: "", approvalDate: "", entrancePw: "",
-  internalMgr: "", externalMgr: "", collectionMgr: "", marketingMgr: "", generalMgr: "",
+  internalMgr: "", externalMgr: "", collectionMgr: "", contractMgr: "", generalMgr: "",
   penaltyOwner: "건물주", vatType: "포함", standardLease: "사용",
   memo: "", cctvCount: "", parkingTotal: "", roadAddress: "",
   email: "",
@@ -355,7 +355,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                 { key: "internalMgr", role: "internal" },
                 { key: "externalMgr", role: "external" },
                 { key: "collectionMgr", role: "collection" },
-                { key: "marketingMgr", role: "marketing" },
+                { key: "contractMgr", role: "contract" },
                 { key: "generalMgr", role: "general" },
               ].filter(m => regForm[m.key]);
               return mgrs.length > 0 && (
@@ -702,7 +702,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                     { key: "internalMgr", role: "internal" },
                     { key: "externalMgr", role: "external" },
                     { key: "collectionMgr", role: "collection" },
-                    { key: "marketingMgr", role: "marketing" },
+                    { key: "contractMgr", role: "contract" },
                     { key: "generalMgr", role: "general" },
                   ].map(m => {
                     const sr = staffRoles.find(r => r.id === m.role);
@@ -1179,7 +1179,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
 
                         {/* 👤 호실 담당자 오버라이드 */}
                         {(() => {
-                          const mgrKeyMap = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", marketing: "marketingMgr", general: "generalMgr" };
+                          const mgrKeyMap = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
                           return (
                             <div style={{ marginTop: 14, padding: "10px 14px", background: "#F0F4FF", borderRadius: 10, border: "1px solid #BFDBFE" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>

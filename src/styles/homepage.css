@@ -1,0 +1,294 @@
+/* ═══ HOUSEMAN Homepage — 2026 Final Polish ═══ */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+.hm-page {
+  --clr-red: #c8161d;
+  --clr-dark-red: #9f0810;
+  --clr-black: #1d1d1f;
+  --clr-white: #fff;
+  --clr-bg: #f5f5f7;
+  --clr-border: #e5e5ea;
+  --clr-text: #1d1d1f;
+  --clr-muted: #86868b;
+  --clr-light: #6e6e73;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --tran: 0.35s var(--ease-out);
+  --tran-fast: 0.2s var(--ease-out);
+  --tran-slow: 0.7s var(--ease-out);
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: var(--clr-text);
+  font-feature-settings: 'ss01', 'ss02';
+}
+
+/* ─── NAV ─── */
+.hm-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  transition: all 0.5s var(--ease-out);
+}
+.hm-nav::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 70%, transparent 100%);
+  transition: opacity 0.5s var(--ease-out); opacity: 1; pointer-events: none;
+}
+.hm-nav.scrolled::before { opacity: 0; }
+.hm-nav.scrolled {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 0.5px 0 rgba(0,0,0,0.08);
+}
+.hm-nav-inner {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hm-nav-link {
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  transition: opacity var(--tran-fast); text-decoration: none;
+  letter-spacing: -0.01em;
+  position: relative;
+}
+.hm-nav-link::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1.5px; background: currentColor;
+  transform: scaleX(0); transform-origin: right;
+  transition: transform 0.4s var(--ease-out);
+}
+.hm-nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+.hm-nav-link:hover { opacity: 0.7; }
+
+/* ─── HERO BANNER ─── */
+.hm-hero-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  will-change: opacity, transform;
+}
+.hm-hero-slide.active {
+  opacity: 1; transition: opacity 1.4s ease-in-out;
+  animation: heroZoom 10s ease-out forwards;
+}
+.hm-hero-slide.inactive {
+  opacity: 0; transition: opacity 1.4s ease-in-out;
+  transform: scale(1);
+}
+@keyframes heroZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+.hm-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.55) 100%);
+}
+.hm-hero-indicator {
+  width: 10px; height: 10px; border-radius: 50%; cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.5);
+  background: transparent;
+  transition: all 0.4s var(--ease-out);
+}
+.hm-hero-indicator.active {
+  background: #fff; border-color: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+
+/* ─── SCROLL REVEAL — staggered, smooth ─── */
+.hm-reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+.hm-reveal.visible { opacity: 1; transform: none; }
+.hm-reveal-scale {
+  opacity: 0; transform: scale(0.97) translateY(12px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+.hm-reveal-scale.visible { opacity: 1; transform: none; }
+
+/* ─── SERVICE BLOCKS ─── */
+.hm-svc-block {
+  border-radius: 24px; overflow: hidden;
+  transition: box-shadow var(--tran-slow), transform var(--tran);
+  cursor: pointer;
+}
+.hm-svc-block:hover {
+  box-shadow: 0 24px 64px rgba(0,0,0,0.07);
+  transform: translateY(-3px);
+}
+.hm-svc-block img { transition: transform 1s var(--ease-out); }
+.hm-svc-block:hover img { transform: scale(1.05); }
+
+/* Feature cards */
+.hm-feature-card {
+  background: var(--clr-bg); border: 1px solid rgba(0,0,0,0.03);
+  border-radius: 20px;
+  transition: all var(--tran);
+}
+.hm-feature-card:hover {
+  background: var(--clr-white);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.05);
+  transform: translateY(-3px);
+}
+
+/* ─── VACANCY CARDS ─── */
+.hm-vacancy-card {
+  background: #fff; border: 1px solid var(--clr-border);
+  border-radius: 20px; overflow: hidden;
+  transition: all var(--tran); cursor: pointer;
+}
+.hm-vacancy-card:hover {
+  border-color: transparent;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.07);
+  transform: translateY(-5px);
+}
+.hm-vacancy-card img { transition: transform 0.8s var(--ease-out); }
+.hm-vacancy-card:hover img { transform: scale(1.04); }
+
+/* ─── BLOG CARDS ─── */
+.hm-blog-card {
+  background: var(--clr-bg); border: 1px solid rgba(0,0,0,0.03);
+  border-radius: 20px; overflow: hidden;
+  transition: all var(--tran); cursor: pointer;
+}
+.hm-blog-card:hover {
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.05);
+  transform: translateY(-3px);
+}
+.hm-blog-card img { transition: transform 0.8s var(--ease-out); }
+.hm-blog-card:hover img { transform: scale(1.03); }
+
+/* ─── FLOATING BUTTONS ─── */
+.hm-float-wrap {
+  position: fixed; right: 24px; z-index: 999;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+.hm-float-wrap.hidden { opacity: 0; transform: translateY(24px); pointer-events: none; }
+.hm-float-wrap.visible { opacity: 1; transform: none; }
+.hm-float-btn {
+  width: 54px; height: 54px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  transition: transform var(--tran-fast), box-shadow var(--tran-fast);
+}
+.hm-float-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+}
+
+/* ─── BUTTONS ─── */
+.hm-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 600; text-decoration: none; letter-spacing: -0.01em;
+  border-radius: 980px; border: none; font-family: inherit;
+  transition: all var(--tran-fast); cursor: pointer;
+}
+.hm-btn:hover { transform: scale(1.04); }
+.hm-btn:active { transform: scale(0.98); }
+.hm-btn-filled {
+  padding: 14px 32px; font-size: 17px;
+  background: var(--clr-red); color: #fff;
+}
+.hm-btn-filled:hover { box-shadow: 0 8px 24px rgba(200,22,29,0.25); }
+.hm-btn-outline {
+  padding: 13px 31px; font-size: 17px;
+  background: transparent; color: var(--clr-red);
+  border: 1.5px solid var(--clr-red);
+}
+.hm-btn-outline:hover { background: var(--clr-red); color: #fff; }
+.hm-btn-dark {
+  padding: 14px 32px; font-size: 17px;
+  background: var(--clr-black); color: #fff;
+}
+.hm-btn-dark:hover { box-shadow: 0 8px 24px rgba(29,29,31,0.2); }
+
+/* ─── TYPOGRAPHY ─── */
+.hm-eyebrow {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--clr-red);
+}
+.hm-headline {
+  font-weight: 700; letter-spacing: -0.035em; line-height: 1.12;
+  word-break: keep-all;
+}
+.hm-body {
+  font-weight: 400; letter-spacing: -0.01em; line-height: 1.72;
+  color: var(--clr-light); word-break: keep-all;
+}
+.hm-stat-num { font-weight: 700; letter-spacing: -0.04em; }
+.hm-stat-label { font-size: 14px; color: var(--clr-muted); margin-top: 6px; letter-spacing: -0.01em; }
+
+/* ─── FOOTER ─── */
+.hm-sns-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--clr-bg); border: 1px solid var(--clr-border);
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--tran-fast); text-decoration: none;
+}
+.hm-sns-btn:hover {
+  background: var(--clr-black); border-color: var(--clr-black);
+  transform: scale(1.08);
+}
+.hm-sns-btn:hover img { filter: brightness(0) invert(1); }
+.hm-sns-btn img { width: 20px; height: 20px; transition: filter var(--tran-fast); }
+
+/* ─── About title red line animation ─── */
+@keyframes lineGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.hm-title-line {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--clr-red);
+  transform-origin: top;
+  animation: lineGrow 0.8s var(--ease-out) 0.3s both;
+}
+.hm-reveal .hm-title-line { animation: none; transform: scaleY(0); }
+.hm-reveal.visible .hm-title-line { animation: lineGrow 0.8s var(--ease-out) 0.3s both; }
+
+/* ─── DIVIDER ─── */
+.hm-divider { height: 1px; background: var(--clr-border); border: none; margin: 0; }
+
+/* ─── SECTION BG ─── */
+.hm-section-gray { background: var(--clr-bg); }
+
+/* ─── SVC CARD (features) ─── */
+.hm-svc-card {
+  background: var(--clr-bg); border: 1px solid rgba(0,0,0,0.03);
+  border-radius: 20px;
+  transition: all var(--tran);
+}
+.hm-svc-card:hover {
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.05);
+  transform: translateY(-3px);
+}
+.hm-svc-icon {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: transform 0.4s var(--ease-out);
+}
+.hm-svc-card:hover .hm-svc-icon { transform: scale(1.1) rotate(-3deg); }
+
+/* ─── MOBILE ─── */
+@media (max-width: 768px) {
+  .hm-float-wrap { right: 16px; }
+  .hm-float-btn { width: 48px; height: 48px; }
+  .hm-nav-link::after { display: none; }
+}
+
+html { scroll-behavior: smooth; }
+.hm-page ::selection { background: rgba(200,22,29,0.12); color: var(--clr-black); }
+
+/* ─── Smooth page load ─── */
+@keyframes pageIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.hm-page { animation: pageIn 0.6s ease-out; }

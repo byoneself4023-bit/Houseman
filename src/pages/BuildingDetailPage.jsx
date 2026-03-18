@@ -1,5 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { asItems, billingConfig, buildingFloors, roomMasterData } from '../data';
+
+class BuildingDetailErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) return (
+      <div style={{ padding: 24 }}>
+        <div style={{ padding: 20, background: "#FEF2F2", border: "2px solid #FECACA", borderRadius: 12 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#DC2626", marginBottom: 8 }}>페이지 렌더링 오류</div>
+          <pre style={{ fontSize: 12, color: "#991B1B", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{this.state.error.message}</pre>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 12, padding: "8px 16px", borderRadius: 8, border: "none", background: "#DC2626", color: "#fff", fontWeight: 700, cursor: "pointer" }}>다시 시도</button>
+        </div>
+      </div>
+    );
+    return this.props.children;
+  }
+}
 import { getRoomType, changeRoomType, collectionAssigneeMap, staffRoles, initialStaffMembers } from '../config';
 import { useLocalStorage } from '../utils/useLocalStorage';
 import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '../config/accountConfig';
@@ -28,11 +45,19 @@ const statusStyle = (status) => {
   }
 };
 
-export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}, setBuildingAccounts, customBuildings = [], allBuildings = [], setAllBuildings, buildingData = {}, setBuildingData, activeTenants = [], activeVacancies = [], pastTenantsData = {} }) => {
+export const BuildingDetailPage = (props) => (
+  <BuildingDetailErrorBoundary>
+    <BuildingDetailPageInner {...props} />
+  </BuildingDetailErrorBoundary>
+);
+
+const BuildingDetailPageInner = ({ buildingName, onBack, buildingAccounts = {}, setBuildingAccounts, customBuildings = [], allBuildings = [], setAllBuildings, buildingData = {}, setBuildingData, activeTenants = [], activeVacancies = [], pastTenantsData = {} }) => {
   const isMobile = useIsMobile();
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
-  const bldg = allBuildings.find(b => b.name === buildingName) || customBuildings.find(b => b.name === buildingName);
+  const [depositNames, setDepositNames] = useLocalStorage("hm_depositNames", {});
   const rawDetail = buildingFloors[buildingName];
+  const bldg = allBuildings.find(b => b.name === buildingName) || customBuildings.find(b => b.name === buildingName)
+    || (rawDetail ? { name: buildingName, rooms: rawDetail.floors ? Object.values(rawDetail.floors).flat().length : 0, occupied: 0, type: "단기", feeType: "pct", fee: rawDetail.fee || 0, fixedFee: 0, special: null, parkingTotal: 0 } : null);
   const customDetail = (!rawDetail && bldg?._custom && bldg._regForm) ? (() => {
     const floors = {};
     bldg._regForm.roomList.forEach(r => {
@@ -97,15 +122,23 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
   const setDetailFeeType = (v) => { _setDetailFeeType(v); updateBD({ feeType: v }); };
   const [bdFeeValue, _setBdFeeValue] = useState(saved.feeValue ?? (bldg?.feeType === "pct" ? (bldg.fee * 100) + "%" : bldg?.fixedFee ? bldg.fixedFee.toLocaleString() : ""));
   const setBdFeeValue = (v) => { _setBdFeeValue(v); updateBD({ feeValue: v }); };
-  const [bdPenaltyOwner, _setBdPenaltyOwner] = useState(saved.penaltyOwner ?? "건물주");
+  const [bdPenaltyOwner, _setBdPenaltyOwner] = useState(saved.penaltyOwner ?? "하우스맨");
   const setBdPenaltyOwner = (v) => { _setBdPenaltyOwner(v); updateBD({ penaltyOwner: v }); };
+  // 정산일 (최대 3회, 각각 날짜)
+  const [bdSettlementDates, _setBdSettlementDates] = useState(saved.settlementDates ?? ["말일"]);
+  const setBdSettlementDates = (v) => { _setBdSettlementDates(v); updateBD({ settlementDates: v }); };
+  const addSettlementDate = () => { if (bdSettlementDates.length < 3) setBdSettlementDates([...bdSettlementDates, "말일"]); };
+  const removeSettlementDate = (idx) => { if (bdSettlementDates.length > 1) setBdSettlementDates(bdSettlementDates.filter((_, i) => i !== idx)); };
+  const updateSettlementDate = (idx, val) => { const u = [...bdSettlementDates]; u[idx] = val; setBdSettlementDates(u); };
   const [bdVatType, _setBdVatType] = useState(saved.vatType ?? "포함");
   const setBdVatType = (v) => { _setBdVatType(v); updateBD({ vatType: v }); };
+  const [bdMgmtType, _setBdMgmtType] = useState(saved.mgmtType ?? "변동관리비");
+  const setBdMgmtType = (v) => { _setBdMgmtType(v); updateBD({ mgmtType: v }); };
   const [bdStandardLease, _setBdStandardLease] = useState(saved.standardLease ?? "사용");
   const setBdStandardLease = (v) => { _setBdStandardLease(v); updateBD({ standardLease: v }); };
   const [bdVisitCycle, _setBdVisitCycle] = useState(saved.visitCycle ?? "월1회");
   const setBdVisitCycle = (v) => { _setBdVisitCycle(v); updateBD({ visitCycle: v }); };
-  const [buildingMgrs, _setBuildingMgrs] = useState(saved.managers ?? { internal: "", external: "", collection: "", marketing: "", general: "" });
+  const [buildingMgrs, _setBuildingMgrs] = useState(saved.managers ?? { internal: "", external: "", collection: "", contract: "", general: "" });
   const setBuildingMgrs = (v) => { _setBuildingMgrs(v); updateBD({ managers: v }); };
   const setBldgMgr = (roleId, val) => { const u = { ...buildingMgrs, [roleId]: val }; setBuildingMgrs(u); };
 
@@ -124,6 +157,12 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
   // 건물 특이사항 (영속)
   const [bdNotes, _setBdNotes] = useState(saved.notes ?? "");
   const setBdNotes = (v) => { _setBdNotes(v); updateBD({ notes: v }); };
+
+  // 시설 체크리스트 (영속)
+  const DEFAULT_CHECKLIST = ["복도 조명", "옥상 배수구", "CCTV 작동", "소방시설", "주차장"];
+  const [bdFacilityChecklist, _setBdFacilityChecklist] = useState(saved.facilityChecklist ?? DEFAULT_CHECKLIST);
+  const setBdFacilityChecklist = (v) => { _setBdFacilityChecklist(v); updateBD({ facilityChecklist: v }); };
+  const [newChecklistItem, setNewChecklistItem] = useState("");
 
   // UI-only state (비영속)
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -144,6 +183,7 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
   const [sec3Open, setSec3Open] = useState(false);
   const [sec4Open, setSec4Open] = useState(false);
   const [sec5Open, setSec5Open] = useState(false);
+  const [sec6Open, setSec6Open] = useState(false);
   const [secAcctOpen, setSecAcctOpen] = useState(false);
   const [bldgAcctType, setBldgAcctType] = useState("단기");
   const [notesEdit, setNotesEdit] = useState(false);
@@ -563,7 +603,7 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
             </div>
           </div>
           {/* 수수료 & 계약조건 */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: detailBuildingTypes.includes("단기") ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
             <div>
               <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수수료 유형</div>
               <select value={detailFeeType} onChange={e => setDetailFeeType(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
@@ -588,6 +628,64 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
               </select>
             </div>
           </div>
+          {/* 정산일 */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <span style={{ fontSize: 9, color: "#8F95A3" }}>정산일 ({bdSettlementDates.length}회/월)</span>
+              {bdSettlementDates.length < 3 && (
+                <button onClick={addSettlementDate} style={{ fontSize: 9, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>+ 추가</button>
+              )}
+            </div>
+            {detailBuildingTypes.includes("근생") && !detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") ? (
+              <div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
+                  <div style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, background: "#F3F4F6", color: "#6B7280", flex: 1 }}>정산기간: 1일 ~ 말일 (고정)</div>
+                </div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 10, color: "#8F95A3", minWidth: 50 }}>정산일</span>
+                  <select value={bdSettlementDates[0] === "5" || bdSettlementDates[0] === 5 ? "5" : "1"} onChange={e => setBdSettlementDates([e.target.value])} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer", flex: 1 }}>
+                    <option value="1">매월 1일</option>
+                    <option value="5">매월 5일</option>
+                  </select>
+                  <span style={{ fontSize: 9, color: "#F59E0B", fontWeight: 600, whiteSpace: "nowrap" }}>* 토/일/공휴일 → 다음 영업일</span>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {bdSettlementDates.map((d, i) => (
+                  <div key={i} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <span style={{ fontSize: 10, color: "#8F95A3", minWidth: 30, fontWeight: 600 }}>{i + 1}차</span>
+                    <select value={d} onChange={e => updateSettlementDate(i, e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer", flex: 1 }}>
+                      {[...Array(28).keys()].map(n => <option key={n + 1} value={String(n + 1)}>{n + 1}일</option>)}
+                      <option value="말일">말일</option>
+                    </select>
+                    {bdSettlementDates.length > 1 && (
+                      <button onClick={() => removeSettlementDate(i)} style={{ padding: "2px 8px", background: "none", border: "1px solid #FECACA", borderRadius: 4, color: "#DC2626", cursor: "pointer", fontSize: 11, fontFamily: "inherit" }}>✕</button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* 관리비 유형 */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+            <div>
+              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비 유형</div>
+              {detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생") ? (
+                <div style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, background: "#F3F4F6", color: "#6B7280" }}>변동관리비 (단기 고정)</div>
+              ) : (
+                <select value={bdMgmtType} onChange={e => setBdMgmtType(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+                  <option value="고정관리비">고정관리비</option>
+                  <option value="변동관리비">변동관리비</option>
+                </select>
+              )}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", paddingTop: 14 }}>
+              <span style={{ fontSize: 10, color: bdMgmtType === "고정관리비" || (detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생")) ? "#6B7280" : "#2563EB", fontWeight: 600 }}>
+                {(detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생")) ? "💡 단기는 변동관리비 고정" : bdMgmtType === "고정관리비" ? "💡 매월 동일한 관리비 청구" : "💡 공과금 기반 변동 청구"}
+              </span>
+            </div>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
             {(detailBuildingTypes.includes("단기") || detailBuildingTypes.includes("일반임대")) && <div>
               <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>표준임대차</div>
@@ -596,7 +694,7 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
               </select>
             </div>}
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>🚶 순회주기</div>
+              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>순회주기</div>
               <select value={bdVisitCycle} onChange={e => setBdVisitCycle(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
                 {["월4회", "월3회", "월2회", "월1회"].map(o => <option key={o}>{o}</option>)}
               </select>
@@ -784,6 +882,43 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
         }
       </Card>
 
+      {/* ── Section 6: 시설 체크리스트 ── */}
+      <Card style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec6Open ? 12 : 0 }}>
+          <div onClick={() => setSec6Open(!sec6Open)} style={{ cursor: "pointer", flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>✅ 시설 체크리스트</div>
+            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>순회 시 점검할 시설 항목 관리 · {bdFacilityChecklist.length}개 항목</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span onClick={() => setSec6Open(!sec6Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec6Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+          </div>
+        </div>
+        {sec6Open && <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+            {bdFacilityChecklist.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", minWidth: 20 }}>{i + 1}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1D23" }}>{item}</span>
+                </div>
+                <button onClick={() => setBdFacilityChecklist(bdFacilityChecklist.filter((_, idx) => idx !== i))}
+                  style={{ width: 24, height: 24, borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, fontFamily: "inherit" }}>✕</button>
+              </div>
+            ))}
+            {bdFacilityChecklist.length === 0 && (
+              <div style={{ padding: "16px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>체크리스트 항목이 없습니다</div>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={newChecklistItem} onChange={e => setNewChecklistItem(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && newChecklistItem.trim()) { setBdFacilityChecklist([...bdFacilityChecklist, newChecklistItem.trim()]); setNewChecklistItem(""); } }}
+              placeholder="새 점검 항목 입력..." style={{ ...inputStyle, flex: 1, padding: "8px 12px", fontSize: 12 }} />
+            <button onClick={() => { if (newChecklistItem.trim()) { setBdFacilityChecklist([...bdFacilityChecklist, newChecklistItem.trim()]); setNewChecklistItem(""); } }}
+              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+ 추가</button>
+          </div>
+        </div>}
+      </Card>
+
       {/* ── 미리보기 모달 ── */}
       {showDetailPreview && (() => {
         const previewAcctTypes = detailBuildingTypes.map(t => t === "기업시설관리" ? "관리사무소" : t);
@@ -893,6 +1028,7 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
                     {[
                       { l: "수수료", v: bldg.feeType === "pct" ? `${(bldg.fee * 100)}%` : (bldg.fixedFee ? `${bldg.fixedFee.toLocaleString()}원` : "") },
                       { l: "수수료 유형", v: bldg.feeType === "pct" ? "수수료율" : "정액제" },
+                      { l: "관리비 유형", v: bdMgmtType || "변동관리비" },
                       { l: "관리시작일", v: detail.start },
                     ].filter(x => x.v).map((x, i) => (
                       <div key={i} style={{ padding: "4px 0", borderBottom: "1px solid #F3F4F6" }}>
@@ -960,18 +1096,20 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
                       <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📷 퇴실자 사진 ({pastKeys.length}건)</div>
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 6 }}>
                         {pastKeys.slice(0, 6).map(k => {
-                          const records = pastTenantsData[k];
+                          const rawRec = pastTenantsData[k];
+                          const records = Array.isArray(rawRec) ? rawRec : [rawRec].filter(Boolean);
+                          if (records.length === 0) return null;
                           const last = records[records.length - 1];
                           const room = k.split("_")[1];
                           return (
                             <div key={k} style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", cursor: "pointer" }}
                               onClick={() => setPhotoViewTarget({ key: k, room, records })}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: 13, fontWeight: 800 }}>{room}호 {last.name}</span>
-                                <span style={{ fontSize: 9, color: "#8F95A3" }}>{last.moveOut || ""}</span>
+                                <span style={{ fontSize: 13, fontWeight: 800 }}>{room}호 {last?.name}</span>
+                                <span style={{ fontSize: 9, color: "#8F95A3" }}>{last?.moveOut || ""}</span>
                               </div>
                               <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>
-                                입주 {(last.moveInPhotos||[]).length}장 · 퇴실 {(last.moveOutPhotos||[]).length}장
+                                입주 {(last?.moveInPhotos||[]).length}장 · 퇴실 {(last?.moveOutPhotos||[]).length}장
                               </div>
                             </div>
                           );
@@ -1464,6 +1602,26 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
                 );
               })()}
 
+              {/* 입금확인 이름 (뱅크다 자동매칭용) */}
+              {(() => {
+                const depKey = `${buildingName}_${selectedRoom}`;
+                const currentDepName = depositNames[depKey] || "";
+                return (
+                  <div style={{ marginTop: 14, padding: "10px 14px", background: "#FDF4FF", borderRadius: 10, border: "1px solid #E9D5FF" }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: "#7C3AED", marginBottom: 6 }}>🏦 입금확인 이름 <span style={{ fontSize: 9, fontWeight: 500, color: "#8F95A3" }}>이 이름으로 입금 시 자동 100% 매칭</span></div>
+                    {roomEditMode ? (
+                      <input value={currentDepName} onChange={e => setDepositNames(prev => ({ ...prev, [depKey]: e.target.value }))}
+                        placeholder="입금자명 입력 (예: 건물호실조합, 회사명 등)"
+                        style={{ ...inputStyle, padding: "6px 10px", fontSize: 11, width: "100%" }} />
+                    ) : (
+                      <div style={{ fontSize: 11, fontWeight: 600, color: currentDepName ? "#7C3AED" : "#B0B5C1", padding: "4px 6px", background: "#fff", borderRadius: 5, border: "1px solid #E9D5FF" }}>
+                        {currentDepName || "미설정"}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* 호실별 담당자 오버라이드 */}
               {(() => {
                 return (
@@ -1631,6 +1789,37 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
               );
             })()}
 
+            {/* 계약(재계약) 이력 */}
+            {(() => {
+              const historyKey = `${buildingName}_${selectedRoom}`;
+              const records = (pastTenantsData[historyKey] || []).filter(r => r.reason === "재계약");
+              if (records.length === 0) return null;
+              return (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#2563EB", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #BFDBFE", display: "flex", alignItems: "center", gap: 6 }}>
+                    📋 재계약 이력 <span style={{ fontSize: 10, fontWeight: 500, color: "#8F95A3" }}>{records.length}건</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {records.map((rec, i) => (
+                      <div key={i} style={{ padding: "8px 12px", borderRadius: 8, background: "#F0F9FF", border: "1px solid #BFDBFE" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                          <span style={{ fontSize: 11, fontWeight: 700 }}>{rec.name}</span>
+                          <span style={{ fontSize: 10, color: "#8F95A3" }}>재계약일: {rec.renewedAt || "—"}</span>
+                        </div>
+                        <div style={{ display: "flex", gap: 12, fontSize: 10, color: "#5F6577", flexWrap: "wrap" }}>
+                          <span>입주: {rec.moveIn || "—"}</span>
+                          <span>만기: {rec.expiry || rec.moveOut || "—"}</span>
+                          <span>보증금: {(rec.deposit || 0).toLocaleString()}원</span>
+                          <span>월세: {(rec.rent || 0).toLocaleString()}원</span>
+                          {rec.mgmt > 0 && <span>관리비: {(rec.mgmt || 0).toLocaleString()}원</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Room Delete Confirmation */}
             {roomDeleteStep > 0 && (
               <div style={{ marginTop: 16, padding: "16px 20px", borderRadius: 12, border: "2px solid #FECACA", background: "#FEF2F2" }}>
@@ -1685,19 +1874,21 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
               </thead>
               <tbody>
                 {pastKeys.map(k => {
-                  const records = pastTenantsData[k];
+                  const rawRecords = pastTenantsData[k];
+                  const records = Array.isArray(rawRecords) ? rawRecords : [rawRecords].filter(Boolean);
+                  if (records.length === 0) return null;
                   const last = records[records.length - 1];
                   const room = k.split("_")[1];
-                  const miCount = (last.moveInPhotos || []).length;
-                  const mcCount = (last.moveInCheckPhotos || []).length;
-                  const moCount = (last.moveOutPhotos || []).length;
+                  const miCount = (last?.moveInPhotos || []).length;
+                  const mcCount = (last?.moveInCheckPhotos || []).length;
+                  const moCount = (last?.moveOutPhotos || []).length;
                   return (
                     <tr key={k} style={{ borderBottom: "1px solid #F0F2F5" }}
                       onMouseEnter={e => e.currentTarget.style.background = "#F9FAFB"}
                       onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                       <td style={{ padding: "8px 10px", fontWeight: 700 }}>{room}호</td>
-                      <td style={{ padding: "8px 10px" }}>{last.name}</td>
-                      <td style={{ padding: "8px 10px", fontSize: 11, color: "#DC2626" }}>{last.moveOut || "—"}</td>
+                      <td style={{ padding: "8px 10px" }}>{last?.name}</td>
+                      <td style={{ padding: "8px 10px", fontSize: 11, color: "#DC2626" }}>{last?.moveOut || "—"}</td>
                       <td style={{ padding: "8px 10px", textAlign: "center" }}>
                         {miCount > 0 ? (
                           <span style={{ fontSize: 11, fontWeight: 700, color: "#059669", padding: "2px 8px", borderRadius: 4, background: "#D1FAE5" }}>🏠 {miCount}장</span>
@@ -1754,11 +1945,13 @@ export const BuildingDetailPage = ({ buildingName, onBack, buildingAccounts = {}
       )}
       {/* 퇴실자 사진 보기 팝업 */}
       {photoViewTarget && (() => {
-        const { room, records } = photoViewTarget;
+        const { room, records: rawRec } = photoViewTarget;
+        const records = Array.isArray(rawRec) ? rawRec : [rawRec].filter(Boolean);
+        if (records.length === 0) return null;
         const last = records[records.length - 1];
-        const miPhotos = last.moveInPhotos || [];
-        const mcPhotos = last.moveInCheckPhotos || [];
-        const moPhotos = last.moveOutPhotos || [];
+        const miPhotos = last?.moveInPhotos || [];
+        const mcPhotos = last?.moveInCheckPhotos || [];
+        const moPhotos = last?.moveOutPhotos || [];
         const renderPhoto = (src, idx, icon) => (
           <div key={idx} style={{ aspectRatio: "1", borderRadius: 8, border: "1.5px solid #E0E3E9", overflow: "hidden", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (

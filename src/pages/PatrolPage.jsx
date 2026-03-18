@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { patrolBuildings, patrolRecords } from '../data/patrolData';
 import { useIsMobile } from '../utils';
 import { matchKorean } from '../utils/koreanSearch';
@@ -6,24 +6,47 @@ import { Card, SectionTitle, StatusBadge, PhotoDropZone } from '../components';
 import { initialStaffMembers } from '../config';
 import { useLocalStorage } from '../utils/useLocalStorage';
 
+const DEFAULT_CHECKLIST = ["복도 조명", "옥상 배수구", "CCTV 작동", "소방시설", "주차장"];
+
 export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
   const isMobile = useIsMobile();
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [filterAssignee, setFilterAssignee] = useState("전체");
   const [patrolPhotos, setPatrolPhotos] = useLocalStorage("hm_patrolPhotos", []);
+  const [savedPatrolRecords, setSavedPatrolRecords] = useLocalStorage("hm_patrolRecords", []);
+
+  // New patrol form state
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [formBuilding, setFormBuilding] = useState("");
+  const [formChecklist, setFormChecklist] = useState([]);
+  const [formComment, setFormComment] = useState("");
+  const [formPhotos, setFormPhotos] = useState([]);
+  const [formAssignee, setFormAssignee] = useState("");
 
   const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+
+  // Merge static and localStorage records
+  const allRecords = useMemo(() => {
+    const merged = [...patrolRecords, ...savedPatrolRecords];
+    return merged.sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+  }, [savedPatrolRecords]);
 
   // 건물호실정보의 순회주기 + 담당자 설정 반영 (buildingData 우선, 없으면 기본값 월1회)
   const parseCycleFreq = (cycle) => { const m = cycle?.match(/월(\d+)회/); return m ? parseInt(m[1]) : 1; };
   const rawPatrol = myBuildings.length > 0 ? patrolBuildings.filter(b => myBuildings.includes(b.building)) : patrolBuildings;
   const myPatrolBuildings = rawPatrol.map(b => {
     const bd = buildingData[b.building];
+    // Include saved records in done count
+    const savedForBuilding = savedPatrolRecords.filter(r => r.building === b.building && r.date.startsWith(today.toISOString().slice(0, 7)));
     return {
       ...b,
       freq: parseCycleFreq(bd?.visitCycle),
       assignee: bd?.managers?.external || b.assignee,
+      doneCount: b.doneCount + savedForBuilding.length,
+      lastDate: savedForBuilding.length > 0 ? savedForBuilding[0].date : b.lastDate,
+      lastStatus: savedForBuilding.length > 0 ? savedForBuilding[0].status : b.lastStatus,
     };
   });
 
@@ -52,6 +75,45 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
     return days > interval;
   });
 
+  // Initialize new patrol form
+  const openNewForm = (buildingName) => {
+    const bd = buildingData[buildingName];
+    const checklist = bd?.facilityChecklist || DEFAULT_CHECKLIST;
+    setFormBuilding(buildingName || (myPatrolBuildings[0]?.building || ""));
+    setFormChecklist(checklist.map(item => ({ item, status: "정상", comment: "" })));
+    setFormComment("");
+    setFormPhotos([]);
+    setFormAssignee(bd?.managers?.external || myPatrolBuildings.find(p => p.building === buildingName)?.assignee || externalStaff[0] || "");
+    setShowNewForm(true);
+  };
+
+  const updateFormBuilding = (name) => {
+    const bd = buildingData[name];
+    const checklist = bd?.facilityChecklist || DEFAULT_CHECKLIST;
+    setFormBuilding(name);
+    setFormChecklist(checklist.map(item => ({ item, status: "정상", comment: "" })));
+    setFormAssignee(bd?.managers?.external || myPatrolBuildings.find(p => p.building === name)?.assignee || externalStaff[0] || "");
+  };
+
+  const savePatrolRecord = () => {
+    if (!formBuilding) { alert("건물을 선택해주세요."); return; }
+    const hasIssue = formChecklist.some(c => c.status === "이상");
+    const record = {
+      id: Date.now(),
+      building: formBuilding,
+      date: todayStr,
+      assignee: formAssignee,
+      checklist: formChecklist.map(c => c.status === "이상" ? { item: c.item, status: c.status, comment: c.comment } : { item: c.item, status: c.status }),
+      comment: formComment || (hasIssue ? "이상 항목 발견" : "전체 정상 확인"),
+      photos: formPhotos,
+      status: hasIssue ? "이상발견" : "정상",
+    };
+    setSavedPatrolRecords(prev => [record, ...prev]);
+    setShowNewForm(false);
+    setPatrolPhotos([]);
+    alert(`[${formBuilding}] 순회 기록이 저장되었습니다.`);
+  };
+
   // Detail view
   if (selectedRecord) {
     const rec = selectedRecord;
@@ -69,6 +131,24 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
             </div>
             <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 6, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
           </div>
+
+          {/* Checklist details */}
+          {rec.checklist && rec.checklist.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 8 }}>✅ 시설 점검 결과</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {rec.checklist.map((c, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 8, background: c.status === "이상" ? "#FEF2F2" : "#F0FDF4", border: `1px solid ${c.status === "이상" ? "#FECACA" : "#BBF7D0"}` }}>
+                    <span style={{ fontSize: 14 }}>{c.status === "정상" ? "✅" : "⚠️"}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", flex: 1 }}>{c.item}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: c.status === "이상" ? "#DC2626" : "#059669" }}>{c.status}</span>
+                    {c.comment && <span style={{ fontSize: 11, color: "#DC2626", marginLeft: 4 }}>· {c.comment}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div style={{ padding: "14px 16px", background: "#F8FAFC", borderRadius: 10, border: "1px solid #E8ECF0", marginBottom: 16 }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 6 }}>📝 순회 코멘트</div>
             <div style={{ fontSize: 13, color: "#1A1D23", lineHeight: 1.8 }}>{rec.comment}</div>
@@ -81,11 +161,114 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
     );
   }
 
+  // New patrol form
+  if (showNewForm) {
+    const buildingOptions = myPatrolBuildings.map(b => b.building);
+    return (
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setShowNewForm(false)}>
+          <span style={{ fontSize: 20 }}>←</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>순회 목록으로</span>
+        </div>
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 16, paddingBottom: 10, borderBottom: "2px solid #E8ECF0" }}>🚶 새 순회 기록</div>
+
+          {/* Building selector */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>건물 선택</div>
+            <select value={formBuilding} onChange={e => updateFormBuilding(e.target.value)}
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", outline: "none", cursor: "pointer", background: "#fff" }}>
+              {buildingOptions.map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Assignee */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>담당자</div>
+            <select value={formAssignee} onChange={e => setFormAssignee(e.target.value)}
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", outline: "none", cursor: "pointer", background: "#fff" }}>
+              {externalStaff.map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>순회일자</div>
+            <div style={{ padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, background: "#F8FAFC", color: "#1A1D23", fontWeight: 600 }}>{todayStr}</div>
+          </div>
+
+          {/* Facility Checklist */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 8 }}>시설 점검 체크리스트</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {formChecklist.map((c, i) => (
+                <div key={i} style={{ padding: "10px 12px", borderRadius: 8, background: c.status === "이상" ? "#FEF2F2" : "#F0FDF4", border: `1.5px solid ${c.status === "이상" ? "#FECACA" : "#BBF7D0"}`, transition: "all 0.15s" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", flex: 1 }}>{c.item}</span>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      <button onClick={() => { const u = [...formChecklist]; u[i] = { ...u[i], status: "정상", comment: "" }; setFormChecklist(u); }}
+                        style={{ padding: "5px 12px", borderRadius: 6, border: c.status === "정상" ? "2px solid #059669" : "1.5px solid #E0E3E9", background: c.status === "정상" ? "#D1FAE5" : "#fff", color: c.status === "정상" ? "#059669" : "#8F95A3", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+                        ✅ 정상
+                      </button>
+                      <button onClick={() => { const u = [...formChecklist]; u[i] = { ...u[i], status: "이상" }; setFormChecklist(u); }}
+                        style={{ padding: "5px 12px", borderRadius: 6, border: c.status === "이상" ? "2px solid #DC2626" : "1.5px solid #E0E3E9", background: c.status === "이상" ? "#FEE2E2" : "#fff", color: c.status === "이상" ? "#DC2626" : "#8F95A3", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+                        ⚠ 이상
+                      </button>
+                    </div>
+                  </div>
+                  {c.status === "이상" && (
+                    <div style={{ marginTop: 8 }}>
+                      <input value={c.comment} onChange={e => { const u = [...formChecklist]; u[i] = { ...u[i], comment: e.target.value }; setFormChecklist(u); }}
+                        placeholder="이상 내용을 입력하세요..."
+                        style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1.5px solid #FECACA", fontSize: 12, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "#fff" }} />
+                    </div>
+                  )}
+                </div>
+              ))}
+              {formChecklist.length === 0 && (
+                <div style={{ padding: "16px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>이 건물에 설정된 체크리스트가 없습니다. 건물 상세에서 추가해주세요.</div>
+              )}
+            </div>
+          </div>
+
+          {/* General comment */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>전체 코멘트</div>
+            <textarea value={formComment} onChange={e => setFormComment(e.target.value)}
+              placeholder="순회 결과를 기록해주세요..." rows={4}
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", minHeight: 80, boxSizing: "border-box" }} />
+          </div>
+
+          {/* Photos */}
+          <div style={{ marginBottom: 14 }}>
+            <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="#3B82F6"
+              onAdd={(dataUrls) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
+              onRemove={(idx) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
+          </div>
+
+          {/* Save buttons */}
+          <button onClick={savePatrolRecord}
+            style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 8 }}>
+            💾 순회 기록 저장
+          </button>
+          <button onClick={() => setShowNewForm(false)}
+            style={{ width: "100%", padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            취소
+          </button>
+        </Card>
+      </div>
+    );
+  }
+
   // Building detail
   if (selectedBuilding) {
     const b = myPatrolBuildings.find(p => p.building === selectedBuilding);
     if (!b) { setSelectedBuilding(null); return null; }
-    const records = patrolRecords.filter(r => r.building === selectedBuilding);
+    const records = allRecords.filter(r => r.building === selectedBuilding);
     const interval = Math.floor(28 / b.freq);
     const daysSince = b.lastDate ? Math.ceil((today - new Date(b.lastDate)) / 86400000) : null;
     const remain = b.freq - b.doneCount;
@@ -107,7 +290,7 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
               <div style={{ fontSize: 10, color: remain > 0 ? "#DC2626" : "#059669", fontWeight: 600 }}>{remain > 0 ? `${remain}회 남음` : "완료"}</div>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
             <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#F0F4FF", textAlign: "center" }}>
               <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>마지막 순회</div>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23" }}>{b.lastDate ? b.lastDate.slice(5) : "—"}</div>
@@ -118,28 +301,15 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
               <div style={{ fontSize: 14, fontWeight: 800, color: b.lastStatus === "이상발견" ? "#DC2626" : "#059669" }}>{b.lastStatus || "—"}</div>
             </div>
           </div>
+          {/* New patrol button */}
+          <button onClick={() => openNewForm(b.building)}
+            style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+            + 새 순회 기록
+          </button>
         </Card>
 
-        {/* New patrol form */}
+        {/* Report button */}
         <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23", marginBottom: 16, paddingBottom: 10, borderBottom: "2px solid #E8ECF0" }}>🚶 새 순회 기록</div>
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>코멘트 (필수)</div>
-            <textarea placeholder="순회 결과를 기록해주세요..." rows={6}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", minHeight: 140, boxSizing: "border-box" }} />
-          </div>
-          <div style={{ marginBottom: 14 }}>
-            <PhotoDropZone photos={patrolPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="#3B82F6"
-              onAdd={(dataUrls) => setPatrolPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
-              onRemove={(idx) => setPatrolPhotos(patrolPhotos.filter((_, i) => i !== idx))} />
-          </div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-            {["정상", "이상발견"].map(s => (
-              <button key={s} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: s === "정상" ? "#059669" : "#DC2626", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
-                {s === "정상" ? "✅ 정상 완료" : "⚠ 이상발견 저장"}
-              </button>
-            ))}
-          </div>
           <button onClick={() => { alert(`[${b.building}] 순회관리 완료 리포트가 건물주에게 발송되었습니다.`); }}
             style={{ width: "100%", padding: "12px", borderRadius: 10, border: "2px solid #7C3AED", background: "#F5F3FF", color: "#7C3AED", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
             📤 순회관리완료 (건물주 리포트 발송)
@@ -153,13 +323,16 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
             <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", letterSpacing: "0.05em", marginBottom: 12 }}>📋 순회 이력</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {records.map((rec, i) => (
-                <div key={i} onClick={() => setSelectedRecord(rec)}
+                <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
                   style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: 10, cursor: "pointer", background: rec.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${rec.status === "이상발견" ? "#FECACA" : "#E8ECF0"}` }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23" }}>{rec.date}</div>
-                      <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 1 }}>{rec.comment.slice(0, 40)}...</div>
+                      <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 1 }}>
+                        {rec.checklist ? `${rec.checklist.filter(c => c.status === "이상").length}건 이상 · ` : ""}
+                        {rec.comment.slice(0, 40)}...
+                      </div>
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -177,7 +350,15 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
 
   return (
     <div>
-      <SectionTitle sub={`2026년 2월 · 이번 달 ${totalDone}/${totalRequired}회 완료`}>🚶 순회 관리</SectionTitle>
+      <SectionTitle sub={`${today.getFullYear()}년 ${today.getMonth() + 1}월 · 이번 달 ${totalDone}/${totalRequired}회 완료`}>🚶 순회 관리</SectionTitle>
+
+      {/* New patrol button */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => openNewForm(myPatrolBuildings[0]?.building || "")}
+          style={{ width: "100%", padding: "14px", borderRadius: 12, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}>
+          + 새 순회 기록
+        </button>
+      </div>
 
       {/* Progress */}
       <Card style={{ marginBottom: 16 }}>
@@ -321,15 +502,19 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
       <Card style={{ marginTop: 16 }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", letterSpacing: "0.05em", marginBottom: 12 }}>📋 최근 순회 기록</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {patrolRecords.map((rec, i) => (
-            <div key={i} onClick={() => setSelectedRecord(rec)}
+          {allRecords.slice(0, 20).map((rec, i) => (
+            <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, cursor: "pointer",
                 background: rec.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${rec.status === "이상발견" ? "#FECACA" : "#E8ECF0"}` }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{rec.building} · {rec.date}</div>
-                  <div style={{ fontSize: 10, color: "#8F95A3" }}>{rec.assignee} · {rec.comment.slice(0, 35)}...</div>
+                  <div style={{ fontSize: 10, color: "#8F95A3" }}>
+                    {rec.assignee}
+                    {rec.checklist ? ` · 점검 ${rec.checklist.length}항목` : ""}
+                    {" · "}{rec.comment.slice(0, 35)}...
+                  </div>
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
