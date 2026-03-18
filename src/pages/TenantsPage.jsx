@@ -44,6 +44,16 @@ const getLateFee = (r, roomBalances = {}, lateFeeOverrides = {}) => {
 
 // 계좌 모드별 청구 분할 (수금관리와 동일)
 const getBillingSlots = (t, buildingAccounts, allBuildings) => {
+  // 통합관리대장에서 업로드된 실제 청구 금액이 있으면 우선 사용
+  if (t.fromLedger) {
+    const bill1 = (t.prevBillOwner || 0) + (t.curBillOwner || 0);
+    const bill2 = (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
+    const slots = [];
+    if (bill1) slots.push({ label: "①", amount: bill1 });
+    if (bill2) slots.push({ label: "②", amount: bill2, lateFee: t.lateFeeAmount || 0 });
+    return slots;
+  }
+
   const bldg = allBuildings.find(b => b.name === t.building);
   const bTypes = (bldg?.type || "단기").split("+").map(s => s.trim());
   const roomType = getRoomType(t.building, t.room);
@@ -1973,7 +1983,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                     </td>
                     {[0, 1, 2].map(si => (
                       <td key={si} style={{ padding: "10px 10px", textAlign: "right", fontSize: 11 }}>
-                        {slots[si] ? <span style={{ fontWeight: 700, color: slotColors[si] }}>{fmt(slots[si].amount)}</span> : <span style={{ color: "#D1D5DB" }}>—</span>}
+                        {slots[si] ? <><span style={{ fontWeight: 700, color: slotColors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee > 0 && <div style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>연체료 {fmt(slots[si].lateFee)}</div>}</> : <span style={{ color: "#D1D5DB" }}>—</span>}
                       </td>
                     ))}
                   </tr>

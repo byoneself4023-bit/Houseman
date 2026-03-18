@@ -49,7 +49,11 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
   const fmtDate = (v) => {
     if (!v) return "";
-    if (v instanceof Date) return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,"0")}-${String(v.getDate()).padStart(2,"0")}`;
+    if (v instanceof Date) {
+      // 엑셀 날짜가 UTC로 파싱되어 KST에서 하루 밀리는 문제 보정
+      const d = new Date(v.getTime() + 9 * 60 * 60 * 1000);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
     return String(v).slice(0, 10);
   };
   const num = (v) => parseInt(String(v || "0").replace(/,/g, "")) || 0;
@@ -145,6 +149,13 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         newTenants.push({
           id: tid, name, building, room,
           due: dueStr,
+          // G~J열: 청구①(건물주)=G+I, 청구②(하우스맨)=H+J
+          fromLedger: true,            // 통합관리대장에서 올라온 데이터 표시
+          prevBillOwner: num(r[6]),   // G: 전월 청구 (건물주)
+          prevBillHM: num(r[7]),      // H: 전월 청구 (하우스맨)
+          curBillOwner: num(r[8]),    // I: 당월 청구 (건물주)
+          curBillHM: num(r[9]),       // J: 당월 청구 (하우스맨)
+          lateFeeAmount: num(r[10]), // K: 연체료
           moveIn: fmtDate(r[11]),
           expiry: fmtDate(r[12]),
           ssn: String(r[13] || "").trim(),
@@ -255,6 +266,15 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     });
     // 퇴실자는 임차인 목록에서 제거
     const activeTenantList = newTenants.filter(t => t.name !== "퇴실" && t.status !== "퇴실");
+
+    // ── roomBalances 세팅: 청구금액이 있는 임차인의 잔액 ──
+    const newBalances = {};
+    activeTenantList.forEach(t => {
+      const key = `${t.building}_${t.room}`;
+      const total = (t.prevBillOwner || 0) + (t.curBillOwner || 0) + (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
+      if (total > 0) newBalances[key] = total;
+    });
+    try { localStorage.setItem("hm_roomBalances", JSON.stringify(newBalances)); } catch {}
 
     // ── 적용 ──
     setAllBuildings(newBuildings);

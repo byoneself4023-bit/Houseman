@@ -11,6 +11,17 @@ const rk = (t) => `${t.building}_${t.room}`;
 
 // 계좌 모드별 청구 분할 계산
 const getBillingSlots = (t, buildingAccounts, allBuildings) => {
+  // 통합관리대장에서 업로드된 실제 청구 금액이 있으면 우선 사용
+  // 통합관리대장에서 올라온 데이터면 G~J열 값만 사용
+  if (t.fromLedger) {
+    const bill1 = (t.prevBillOwner || 0) + (t.curBillOwner || 0);
+    const bill2 = (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
+    const slots = [];
+    if (bill1) slots.push({ label: "①", amount: bill1 });
+    if (bill2) slots.push({ label: "②", amount: bill2, lateFee: t.lateFeeAmount || 0 });
+    return slots;
+  }
+
   const bldg = allBuildings.find(b => b.name === t.building);
   const bTypes = (bldg?.type || "단기").split("+").map(s => s.trim());
   const roomType = getRoomType(t.building, t.room);
@@ -70,18 +81,29 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
 
 
   // due is "M/D" format → extract day as rent day
-  const getDueDay = (t) => parseInt(t.due.split("/")[1]);
+  const getDueDay = (t) => {
+    if (!t.due || !t.due.includes("/")) return 0;
+    return parseInt(t.due.split("/")[1]) || 0;
+  };
   const _now = new Date();
   const today = _now.getDate();
   const daysInMonth = new Date(_now.getFullYear(), _now.getMonth() + 1, 0).getDate();
   const getDaysSinceDue = (t) => {
     const dueDay = getDueDay(t);
+    if (!dueDay) return 0;
     let diff = today - dueDay;
     if (diff < -daysInMonth / 2) diff += daysInMonth;
     return diff;
   };
 
-  const getBalance = (t) => roomBalances[rk(t)] || 0;
+  const getBalance = (t) => {
+    // 통합관리대장 데이터면 임차인 데이터에서 직접 계산
+    if (t.fromLedger) {
+      return (t.prevBillOwner || 0) + (t.curBillOwner || 0) + (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
+    }
+    // 기존 데이터
+    return roomBalances[rk(t)] || 0;
+  };
   const calcLateFee = (t) => {
     const balance = getBalance(t);
     if (balance <= 0) return 0;
@@ -107,12 +129,30 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
 
   const filteredFinal = useMemo(() => {
     const baseTenants = filterCollector === "전체"
-      ? allMyTenants.filter(t => getRoomType(t.building, t.room) === "단기")
+      ? allMyTenants
       : allMyTenants.filter(t => collectionAssigneeMap[t.building] === filterCollector);
     const filteredByBuilding = buildingSearch
       ? baseTenants.filter(t => matchKorean(t.building, buildingSearch))
       : baseTenants;
-    const filteredVisible = filteredByBuilding.filter(t => getDaysSinceDue(t) >= -2);
+    const filteredVisible = filteredByBuilding.filter(t => {
+      const slots = getBillingSlots(t, buildingAccounts, allBuildings);
+      const totalBill = slots.reduce((s, sl) => s + Math.abs(sl.amount || 0), 0);
+      const balance = getBalance(t);
+      const days = getDaysSinceDue(t);
+      // 디버그: 에덴빌 301
+      if (t.building === "에덴빌" && t.room === "301") {
+        console.log("에덴빌301 디버그:", { fromLedger: t.fromLedger, due: t.due, days, balance, totalBill, slots, curBillHM: t.curBillHM, prevBillHM: t.prevBillHM });
+      }
+      // 퇴실자 제외
+      if (t.name === "퇴실" || t.status === "퇴실") return false;
+      // 통합관리대장 데이터: 청구금액이 있으면 무조건 표시
+      if (t.fromLedger && totalBill > 0) return true;
+      // 잔액이 있고 월세일 지남
+      if (balance > 0 && days >= 0) return true;
+      // 청구 예정 (월세일 2일 전)
+      if (totalBill > 0 && days >= -2) return true;
+      return false;
+    });
     const getRisk = (t) => {
       const days = getDaysSinceDue(t);
       const balance = getBalance(t);
@@ -125,8 +165,14 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     };
     const sorted = [...filteredVisible].sort((a, b) => {
       const balA = getBalance(a), balB = getBalance(b);
-      if ((balA > 0) !== (balB > 0)) return balB > 0 ? 1 : -1;
-      if (sortMode === "위험도순") return getRisk(b) - getRisk(a);
+      // 잔액 있는 사람 먼저
+      if ((balA > 0) !== (balB > 0)) return balA > 0 ? -1 : 1;
+      // 둘 다 잔액 있으면 연체일 많은 순
+      if (balA > 0 && balB > 0) {
+        if (sortMode === "위험도순") return getRisk(b) - getRisk(a);
+        return getDaysSinceDue(b) - getDaysSinceDue(a);
+      }
+      // 둘 다 잔액 없으면 청구일 가까운 순
       return getDaysSinceDue(b) - getDaysSinceDue(a);
     });
     if (statusFilter === "전체") return sorted;
@@ -426,7 +472,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                             const colors = ["#EA580C", "#92400E", "#2563EB"];
                             return [0, 1, 2].map(si => (
                               <td key={si} style={{ padding: "8px 10px", textAlign: "right", fontSize: 11 }}>
-                                {slots[si] ? <span style={{ fontWeight: 700, color: colors[si] }}>{fmt(slots[si].amount)}</span> : <span style={{ color: "#D1D5DB" }}>—</span>}
+                                {slots[si] ? <><span style={{ fontWeight: 700, color: colors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee > 0 && <div style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>연체료 {fmt(slots[si].lateFee)}</div>}</> : <span style={{ color: "#D1D5DB" }}>—</span>}
                               </td>
                             ));
                           })()}
