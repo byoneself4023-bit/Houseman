@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { buildings, billingTypeMap } from '../data';
 import { getRoomType, collectionAssigneeMap, initialStaffMembers } from '../config';
 
@@ -43,8 +43,9 @@ const getBillingSlots = (t, buildingAccounts, allBuildings) => {
 
 export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [], billingHistory = [] }) => {
   const isMobile = useIsMobile();
-  const [historyTarget, setHistoryTarget] = useState(null); // 청구 이력 팝업 대상
+  const [historyTarget, setHistoryTarget] = useState(null);
   const [commentTarget, setCommentTarget] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(40);
   const [commentText, setCommentText] = useState("");
   const [viewMode, setViewMode] = useState("table");
   const [electricCut, setElectricCut] = useLocalStorage("hm_electricCut", {});
@@ -179,6 +180,9 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     if (statusFilter === "연체") return sorted.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0);
     return sorted.filter(t => electricCut[rk(t)] === statusFilter);
   }, [allMyTenants, filterCollector, buildingSearch, statusFilter, electricCut, sortMode, roomBalances]);
+
+  useEffect(() => { setVisibleCount(40); }, [filterCollector, buildingSearch, statusFilter]);
+  const visibleFinal = useMemo(() => filteredFinal.slice(0, visibleCount), [filteredFinal, visibleCount]);
 
   const addComment = (key, tenant) => {
     if (!commentText.trim()) return;
@@ -339,7 +343,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {filteredFinal.length === 0 ? (
                   <div style={{ padding: "40px 0", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>해당 조건의 임차인이 없습니다</div>
-                ) : filteredFinal.map((t, i) => {
+                ) : visibleFinal.map((t, i) => {
                   const key = rk(t);
                   const lateFee = calcLateFee(t);
                   const bill = calcBill(t);
@@ -434,7 +438,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                     <tr><td colSpan={16} style={{ padding: "40px 20px", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>
                       {statusFilter === "단전" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "위험" ? "⚠ 위험 처리된 임차인이 없습니다" : "해당 조건의 임차인이 없습니다"}
                     </td></tr>
-                  ) : filteredFinal.map((t, i) => {
+                  ) : visibleFinal.map((t, i) => {
                     const key = rk(t);
                     const lateFee = calcLateFee(t);
                     const roomComments = comments[key] || [];

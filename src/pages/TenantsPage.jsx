@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { buildings, roomMasterData, billingConfig, billingTypeMap, buildingAccountMap } from '../data';
 import { getRoomType, changeRoomType } from '../config';
 import { flowMap, ownerFieldCfg, defaultHousemanAccount, modeOptions } from '../config/accountConfig';
@@ -226,6 +226,10 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
     if (!aBase && bBase) return 1;
     return a.room.localeCompare(b.room, undefined, { numeric: true });
   }), [myTenants, search, typeFilter, buildingOrder]);
+
+  const [visibleCount, setVisibleCount] = useState(40);
+  useEffect(() => { setVisibleCount(40); }, [search, typeFilter]);
+  const visibleFiltered = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   const doAction = () => {
     if (actionMode === "renew" && selectedTenant) {
@@ -1959,7 +1963,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               </tr>
             </thead>
             <tbody>
-              {filtered.map((r, i) => {
+              {visibleFiltered.map((r, i) => {
                 const bs = getBillingStatus(r, roomBalances);
                 const slots = getBillingSlots(r, buildingAccounts, allBuildings);
                 const slotColors = ["#EA580C", "#92400E", "#2563EB"];
@@ -1992,6 +1996,14 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
             </tbody>
           </table>
         </Card>
+      )}
+      {visibleCount < filtered.length && (
+        <div style={{ textAlign: "center", padding: "16px 0" }}>
+          <button onClick={() => setVisibleCount(v => v + 40)}
+            style={{ padding: "10px 32px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: "#5F6577" }}>
+            더보기 ({filtered.length - visibleCount}명 남음)
+          </button>
+        </div>
       )}
 
       {/* 퇴실사진 모달 */}
