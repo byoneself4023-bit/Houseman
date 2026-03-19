@@ -819,12 +819,22 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         </tr>}
                         <tr>
                           <td colSpan={2} style={{ padding: "6px 0", fontWeight: 700, color: mt.alreadyPaid ? "#DC2626" : "#1D4ED8" }}>
-                            {mt.alreadyPaid ? "환수 합계 (건물주 → HM)" : "지급 합계 (HM → 건물주)"}
+                            월세 {mt.alreadyPaid ? "환수" : "지급"}
                           </td>
                           <td style={{ padding: "6px 0", textAlign: "right", fontWeight: 800, color: mt.alreadyPaid ? "#DC2626" : "#1D4ED8", fontSize: 13 }}>
                             {fmt(mt.settlementAmt)}원
                           </td>
                         </tr>
+                        {cfg.feeRate !== 0 && mt.depositReturn > 0 && (
+                          <tr style={{ borderTop: "1px solid #E5E7EB" }}>
+                            <td colSpan={2} style={{ padding: "6px 0", fontWeight: 700, color: "#DC2626" }}>
+                              예치금 반환 (건물주 → HM)
+                            </td>
+                            <td style={{ padding: "6px 0", textAlign: "right", fontWeight: 800, color: "#DC2626", fontSize: 13 }}>
+                              -{fmt(mt.depositReturn)}원
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
