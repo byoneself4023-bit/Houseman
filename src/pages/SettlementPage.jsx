@@ -297,9 +297,12 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         };
       } else {
         // 퍼센트형 (기본)
-        // 정산금 = 월세정산 + 관리비정산 + 퇴실일할 + 위약금 - 중개수수료 - 예치금반환 - 공제
-        subtotal = totalRentSettlement + totalMgmtSettlement + totalMoveOutRent + totalPenalty
-          - allBrokerage - totalDepositReturn - totalDeduction;
+        // 정산금 = 월세정산 + 관리비정산 + 퇴실일할 - 중개수수료 - 공제 (수수료0%면 위약금/예치금 제외)
+        subtotal = totalRentSettlement + totalMgmtSettlement + totalMoveOutRent
+          + (cfg.feeRate !== 0 ? totalPenalty : 0)
+          - allBrokerage
+          - (cfg.feeRate !== 0 ? totalDepositReturn : 0)
+          - totalDeduction;
         const vatInfo = calcVat(subtotal, bName);
         finalAmount = cfg.vat ? vatInfo.total : subtotal;
 
@@ -548,13 +551,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalBrokerage)}원</span>
                   </div>
                 )}
-                {bs.totalPenalty > 0 && (
+                {cfg.feeRate !== 0 && bs.totalPenalty > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ fontSize: 12, color: "#374151" }}>4. 퇴실시 위약금</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{fmt(bs.totalPenalty)}원</span>
                   </div>
                 )}
-                {bs.totalDepositReturn > 0 && (
+                {cfg.feeRate !== 0 && bs.totalDepositReturn > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ fontSize: 12, color: "#374151" }}>5. 예치금(b)</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalDepositReturn)}원</span>
