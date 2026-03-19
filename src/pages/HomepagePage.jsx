@@ -76,7 +76,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
     return vacancies;
   }, [activeVacancies]);
   const src = lsVacancies;
-  const pub = src.filter(v => v.status !== "점검/청소중");
+  // 홈페이지에는 홍보중/임차인연결 상태만 표시 (점검/청소중 제외)
+  const pub = src.filter(v => v.status === "홍보중" || v.linkedTenant || !v.status || v.status === "공실(입주가능)");
   const filtered = vacancyFilter === "전체" ? pub : pub.filter(v => v.type === vacancyFilter);
 
   useEffect(() => {
