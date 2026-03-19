@@ -69,7 +69,13 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
   const [editContent, setEditContent] = useState(loadContent);
   const SERVICES = DEFAULT_SERVICES.map(s => ({ ...s, ...((editContent.services || {})[s.id] || {}) }));
 
-  const src = activeVacancies.length > 0 ? activeVacancies : vacancies;
+  // activeVacancies가 비어있으면 localStorage에서 직접 읽기 (풀화면 모드용)
+  const lsVacancies = useMemo(() => {
+    if (activeVacancies.length > 0) return activeVacancies;
+    try { const v = JSON.parse(localStorage.getItem("hm_activeVacancies")); if (v && v.length > 0) return v; } catch {}
+    return vacancies;
+  }, [activeVacancies]);
+  const src = lsVacancies;
   const pub = src.filter(v => v.status !== "점검/청소중");
   const filtered = vacancyFilter === "전체" ? pub : pub.filter(v => v.type === vacancyFilter);
 
