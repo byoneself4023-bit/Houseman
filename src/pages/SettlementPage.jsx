@@ -187,12 +187,15 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const commBase = t.commBroker ? pn(t.commBroker) : pn(rmData.commFee);
         const commEvent = t.commEvent ? pn(t.commEvent) : 0;
         const brokerageFee = commBase + commEvent;
+        const deposit = t.deposit || 0;
         return {
           room: t.room, name: t.name, moveIn: t.moveIn,
-          commBase, commEvent, brokerageFee,
+          deposit, commBase, commEvent, brokerageFee,
+          netDeposit: deposit - brokerageFee, // 예치금 - 중개수수료
         };
       });
       const totalBrokerage = moveInSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
+      const totalMoveInDeposit = moveInSettlements.reduce((s, r) => s + (r.deposit || 0), 0);
 
       // 3. 퇴실 정산 (일할 + 청소비 + 검침 + 위약금 + 훼손 + 예치금반환)
       const moveOutSettlements = moveOutTenants.map(mt => {
@@ -644,15 +647,19 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 ))}
                 {bs.roomSettlements.length > 0 && (
                   <tr style={{ borderTop: "2px solid #1A1D23", background: "#F9FAFB" }}>
-                    <td colSpan={isSalary ? 5 : 5} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
-                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>
-                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
                     {isSalary ? (
-                      <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + (r.mgmt || 0), 0))}</td>
+                      <>
+                        <td colSpan={5} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + (r.mgmt || 0), 0))}</td>
+                      </>
                     ) : (
                       <>
+                        <td colSpan={cfg.feeRate === 0 ? 5 : 4} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
+                        {cfg.feeRate !== 0 && <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>}
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
                         <td></td>
-                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800, color: "#DC2626" }}>{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
                         <td style={{ padding: "10px", textAlign: "right", fontWeight: 800, color: "#059669", fontSize: 14 }}>{fmt(bs.totalRentSettlement)}</td>
                         {cfg.includeMgmt && <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalMgmtSettlement)}</td>}
                       </>
@@ -700,7 +707,12 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
-                  {["호실", "세입자", "입주일", "수수료(기본)", "수수료(이벤트)", "합계"].map((h, i) => (
+                  {[
+                    "호실", "세입자", "입주일",
+                    ...(cfg.feeRate !== 0 ? ["예치금"] : []),
+                    "중개수수료",
+                    ...(cfg.feeRate !== 0 ? ["정산금"] : []),
+                  ].map((h, i) => (
                     <th key={i} style={{ padding: "8px 10px", textAlign: i >= 3 ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3" }}>{h}</th>
                   ))}
                 </tr>
@@ -711,15 +723,11 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     <td style={{ padding: "8px 10px", fontWeight: 700 }}>{mi.room}</td>
                     <td style={{ padding: "8px 10px" }}>{mi.name}</td>
                     <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{mi.moveIn}</td>
-                    <td style={{ padding: "8px 10px", textAlign: "right", color: mi.commBase > 0 ? "#DC2626" : "#B0B5C1" }}>
-                      {mi.commBase > 0 ? `-${fmt(mi.commBase)}원` : "—"}
-                    </td>
-                    <td style={{ padding: "8px 10px", textAlign: "right", color: mi.commEvent > 0 ? "#DC2626" : "#B0B5C1" }}>
-                      {mi.commEvent > 0 ? `-${fmt(mi.commEvent)}원` : "—"}
-                    </td>
-                    <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: mi.brokerageFee > 0 ? "#DC2626" : "#B0B5C1" }}>
+                    {cfg.feeRate !== 0 && <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 600 }}>{fmt(mi.deposit)}원</td>}
+                    <td style={{ padding: "8px 10px", textAlign: "right", color: mi.brokerageFee > 0 ? "#DC2626" : "#B0B5C1" }}>
                       {mi.brokerageFee > 0 ? `-${fmt(mi.brokerageFee)}원` : "—"}
                     </td>
+                    {cfg.feeRate !== 0 && <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{fmt(mi.netDeposit)}원</td>}
                   </tr>
                 ))}
               </tbody>
