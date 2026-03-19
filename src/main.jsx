@@ -8,9 +8,12 @@ const isHomepageOnly = params.get('mode') === 'homepage';
 
 if (isHomepageOnly) {
   import('./pages/HomepagePage').then(({ HomepagePage }) => {
+    const loadLS = (key, fallback) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } };
+    const activeVacancies = loadLS("hm_activeVacancies", []);
+    const buildingData = loadLS("hm_buildingData", {});
     ReactDOM.createRoot(document.getElementById('root')).render(
       <React.StrictMode>
-        <HomepagePage />
+        <HomepagePage activeVacancies={activeVacancies} buildingData={buildingData} />
       </React.StrictMode>
     );
   });
