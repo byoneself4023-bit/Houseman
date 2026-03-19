@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { vacancies } from '../data';
 import { useIsMobile, fmt } from '../utils';
 import '../styles/homepage.css';
