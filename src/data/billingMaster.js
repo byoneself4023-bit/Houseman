@@ -243,7 +243,7 @@ export const calcLateFee = (amount, dueDay) => {
 export const settlementMaster = {
   // ── A. 월세 퍼센트형 (HM계좌) ──
   "제이앤제이": { type: "A", feeType: "pct", feeRate: 0, direction: "hm_to_owner", settlementDay: 15, periodType: "mid", vat: false, address: "서울 관악구 제이앤제이빌라", ownerName: "박시현", notes: "수수료 없음. 누나 계좌로 정산." },
-  "스타빌":     { type: "A", feeType: "pct", feeRate: 0.05, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "서울 관악구 스타빌", notes: "" },
+  "스타빌":     { type: "A", feeType: "pct", feeRate: 0.05, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "서울 관악구 봉천동 1549-16", ownerName: "박용상", notes: "" },
   "아페이론":   { type: "A", feeType: "pct", feeRate: 0.05, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: true, address: "서울 관악구 아페이론", notes: "예치금 별도 보관", frequency: "twice", dates: [22, 29] },
   "다존하우스": { type: "A", feeType: "pct", feeRate: 0.10, direction: "hm_to_owner", settlementDay: 21, periodType: "month", vat: true, address: "서울 관악구 다존하우스", notes: "관리비 분리, 월세만 10%", includeMgmt: false },
   "포유빌":     { type: "A", feeType: "pct", feeRate: 0.06, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: true, address: "서울 관악구 포유빌", notes: "정산계좌 2개", dualAccount: true, frequency: "twice", dates: [1, 15] },
