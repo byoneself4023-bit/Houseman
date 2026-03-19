@@ -84,7 +84,7 @@ export const SettlementPrintView = ({ data, onClose }) => {
   const coverTotal = coverItems.reduce((s, item) => s + item.amount, 0);
 
   const periodStr = `${period.start} ~ ${period.end}`;
-  const [py, pm] = period.start.split("-");
+  const [py, pm] = period.end.split("-");
   const monthLabel = `${py}년 ${parseInt(pm)}월`;
   const today = new Date().toISOString().slice(0, 10);
 
