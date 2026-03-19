@@ -78,12 +78,21 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const masterCfg = settlementMaster[bName] || {};
       const cfg = { type: "A", feeType: "pct", feeRate: 0, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "", notes: "", ...masterCfg };
       const period = getSettlementPeriod(bName, y, m);
-      const bTenants = activeTenants.filter(t => t.building === bName);
+      const allBTenants = activeTenants.filter(t => t.building === bName);
       const acctInfo = buildingAccountMap[bName] || {};
       const totalDays = new Date(y, m, 0).getDate();
+      const periodStart = period.start;
+      const periodEnd = period.end;
 
-      // 입주자 (해당월 신규)
-      const moveInTenants = bTenants.filter(t => t.moveIn && t.moveIn.startsWith(selectedMonth));
+      // 정산 기간 내 거주 중인 임차인만 필터
+      // 입주일이 정산기간 종료 이전이어야 함 (정산기간에 살고 있는 사람)
+      const bTenants = allBTenants.filter(t => {
+        if (!t.moveIn) return true; // 입주일 없으면 포함
+        return t.moveIn <= periodEnd; // 입주일이 정산기간 끝 이전
+      });
+
+      // 입주자: 정산 기간 안에 입주한 사람
+      const moveInTenants = allBTenants.filter(t => t.moveIn && t.moveIn >= periodStart && t.moveIn <= periodEnd);
       const moveInCount = moveInTenants.length;
 
       // 퇴실자 (pastTenantsData에서 — 필드: moveOut)
@@ -94,7 +103,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           if (!Array.isArray(records)) return;
           records.forEach(rec => {
             const moDate = rec?.moveOut || rec?.moveOutDate;
-            if (rec && moDate && moDate.startsWith(selectedMonth)) {
+            if (rec && moDate && moDate >= periodStart && moDate <= periodEnd) {
               const room = key.split("_").slice(1).join("_"); // "301_2" → "301_2" or "405" → "405"
               moveOutTenants.push({ ...rec, room: room.replace(/_\d+$/, ""), building: bName, moveOutDate: moDate });
             }
@@ -107,25 +116,45 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const movedOutRooms = new Set(moveOutTenants.map(mt => mt.room));
       // 이번달 입주한 호실 목록
       const movedInRooms = new Set(moveInTenants.map(t => t.room));
-      const roomSettlements = bTenants
-        .filter(t => {
-          // 퇴실됐고 아직 새 입주 안 된 호실은 메인에서 제외 (퇴실 섹션에서 처리)
-          if (movedOutRooms.has(t.room) && !movedInRooms.has(t.room)) return false;
-          return true;
-        })
-        .map(t => {
-        const fee = calcFee(t.rent, bName);
-        const settlementAmt = t.rent - fee;
-        const mgmtSettlement = cfg.includeMgmt ? (t.mgmt || 0) : 0;
-        // 이번달 신규 입주면 상태 표시
-        const isNewMoveIn = movedInRooms.has(t.room);
+      // 모든 호실 목록 (건물 데이터 + 현재 임차인 + 퇴실자)
+      const allRoomSet = new Set();
+      bTenants.forEach(t => allRoomSet.add(t.room));
+      moveOutTenants.forEach(mt => allRoomSet.add(mt.room));
+      // buildingData에서 호실 목록도 추가
+      const bd = buildingData[bName] || {};
+      Object.keys(bd).forEach(k => { const m = k.match(/^room_(.+)/); if (m) allRoomSet.add(m[1]); });
+
+      const roomSettlements = [...allRoomSet].sort().map(room => {
+        const tenant = bTenants.find(t => t.room === room);
+        const movedOut = moveOutTenants.find(mt => mt.room === room);
+        const isNewMoveIn = movedInRooms.has(room);
+
+        if (tenant) {
+          const fee = calcFee(tenant.rent, bName);
+          const settlementAmt = tenant.rent - fee;
+          const mgmtSettlement = cfg.includeMgmt ? (tenant.mgmt || 0) : 0;
+          return {
+            room, name: tenant.name, moveIn: tenant.moveIn, expiry: tenant.expiry,
+            deposit: tenant.deposit || 0, rent: tenant.rent || 0, mgmt: tenant.mgmt || 0,
+            rentDay: parseInt(tenant.due?.split("/")[1]) || 0,
+            fee, settlementAmt, mgmtSettlement,
+            status: isNewMoveIn ? "신규입주" : "입주",
+            delinquent: 0,
+          };
+        }
+        if (movedOut) {
+          return {
+            room, name: movedOut.name, moveIn: movedOut.moveIn, expiry: movedOut.expiry,
+            deposit: 0, rent: 0, mgmt: 0, rentDay: parseInt(movedOut.rentDay || movedOut.due?.split("/")[1]) || 0,
+            fee: 0, settlementAmt: 0, mgmtSettlement: 0,
+            status: "퇴실", delinquent: 0,
+          };
+        }
         return {
-          room: t.room, name: t.name, moveIn: t.moveIn, expiry: t.expiry,
-          deposit: t.deposit || 0, rent: t.rent || 0, mgmt: t.mgmt || 0,
-          rentDay: parseInt(t.due?.split("/")[1]) || 0,
-          fee, settlementAmt, mgmtSettlement,
-          status: isNewMoveIn ? "신규입주" : "입주",
-          delinquent: 0,
+          room, name: "—", moveIn: "", expiry: "",
+          deposit: 0, rent: 0, mgmt: 0, rentDay: 0,
+          fee: 0, settlementAmt: 0, mgmtSettlement: 0,
+          status: "공실", delinquent: 0,
         };
       });
 
@@ -227,7 +256,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const vatCalc = cfg.vat ? { supply: Math.round(vatBase / 1.1), tax: vatBase - Math.round(vatBase / 1.1), total: vatBase } : { supply: vatBase, tax: 0, total: vatBase };
 
         return {
-          building: bName, cfg, period, acctInfo,
+          building: bName, cfg, period, acctInfo, totalDays,
           tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee, totalRentSettlement, totalMgmtSettlement,
           moveInSettlements, totalBrokerage: allBrokerage,
@@ -242,7 +271,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const costsTotal = (cfg.costItems || []).reduce((s, ci) => s + ci.amount, 0);
         subtotal = collected - costsTotal - totalDeduction;
         return {
-          building: bName, cfg, period, acctInfo,
+          building: bName, cfg, period, acctInfo, totalDays,
           tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee: 0, totalRentSettlement: collected, totalMgmtSettlement: 0,
           moveInSettlements, totalBrokerage: 0,
@@ -260,7 +289,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         finalAmount = cfg.vat ? vatInfo.total : subtotal;
 
         return {
-          building: bName, cfg, period, acctInfo,
+          building: bName, cfg, period, acctInfo, totalDays,
           tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee, totalRentSettlement, totalMgmtSettlement,
           moveInSettlements, totalBrokerage: allBrokerage,
@@ -565,7 +594,9 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {bs.roomSettlements.map((r, i) => (
                   <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
                     <td style={{ padding: "8px 10px", fontWeight: 700 }}>{r.room}</td>
-                    <td style={{ padding: "8px 10px" }}><span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#ECFDF5", color: "#059669", fontWeight: 600 }}>{r.status}</span></td>
+                    <td style={{ padding: "8px 10px" }}><span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, fontWeight: 600,
+                      background: r.status === "공실" ? "#F3F4F6" : r.status === "퇴실" ? "#FEF2F2" : r.status === "신규입주" ? "#EFF6FF" : "#ECFDF5",
+                      color: r.status === "공실" ? "#9CA3AF" : r.status === "퇴실" ? "#DC2626" : r.status === "신규입주" ? "#2563EB" : "#059669" }}>{r.status}</span></td>
                     <td style={{ padding: "8px 10px", fontWeight: 600 }}>{r.name}</td>
                     <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{r.moveIn?.slice(2)}</td>
                     {isSalary && <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{r.expiry?.slice(2) || "—"}</td>}
@@ -646,18 +677,18 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   </div>
                   <div style={{ padding: "10px 16px", background: "#ECFDF5" }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", marginBottom: 6 }}>
-                      입주 일할 ({mi.moveInUsedDays}일 / {bs.period.totalDays || totalDays}일) — {mi.moveInDay}일 입주 → {bs.period.totalDays || totalDays}일까지
+                      입주 일할 ({mi.moveInUsedDays}일 / {bs.totalDays}일) — {mi.moveInDay}일 입주 → {bs.totalDays}일까지
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                       <tbody>
                         <tr style={{ borderBottom: "1px solid #A7F3D0" }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>월세</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.rent)} x {mi.moveInUsedDays}일 / {totalDays}일</td>
+                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.rent)} x {mi.moveInUsedDays}일 / {bs.totalDays}일</td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, minWidth: 90 }}>{fmt(mi.rentProRata)}원</td>
                         </tr>
                         {mi.mgmt > 0 && <tr style={{ borderBottom: "1px solid #A7F3D0" }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>관리비</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.mgmt)} x {mi.moveInUsedDays}일 / {totalDays}일</td>
+                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.mgmt)} x {mi.moveInUsedDays}일 / {bs.totalDays}일</td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700 }}>{fmt(mi.mgmtProRata)}원</td>
                         </tr>}
                         <tr>

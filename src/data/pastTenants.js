@@ -1,10 +1,23 @@
 export const pastTenants = {
-  // ── 제이앤제이 입퇴실 (정산서 테스트용) ──
-  // 301호: 차민철 2/8 퇴실 (월세일 21일, 정산일 15일 → 21>=15 안줬음)
-  // 2월 정산(1/15~2/14)에 포함됨
+  // ── 제이앤제이 입퇴실 (정산서 테스트용, 시간순 정합) ──
+  // B01호: 윤슬기 2025-03-05 입주 → 2026-02-05 퇴실 (월세일 5일, 5<15 줬음 → 환수)
+  // → 새 입주자 2026-03-05 입주 (현재 임차인 tenants.js)
+  "제이앤제이_B01": [{
+    name: "윤슬기", phone: "010-2378-5747",
+    moveIn: "2025-03-05", moveOut: "2026-02-05", expiry: "2025-09-05",
+    deposit: 650000, rent: 650000, mgmt: 70000, roomType: "단기",
+    due: "3/5", rentDay: 5,
+    reason: "만기퇴실", settlement: "정산완료", settlementDate: "2026-02-05",
+    cleanFee: 110000, elecReading: 35000, gasReading: 28000, waterReading: 8000,
+    damageFee: 0, damageDesc: "",
+    penalty7: 0, depositReturn: 650000, finalRefund: 469000,
+    brokerageFee: 0,
+  }],
+  // 301호: 차민철 2025-05-21 입주 → 2026-02-08 퇴실 (월세일 21일, 21>=15 안줬음 → 지급)
+  // → 김태호 2026-03-05 입주 (현재 임차인)
   "제이앤제이_301": [{
     name: "차민철", phone: "010-7799-5297",
-    moveIn: "2025-05-20", moveOut: "2026-02-08", expiry: "2025-11-20",
+    moveIn: "2025-05-21", moveOut: "2026-02-08", expiry: "2025-11-21",
     deposit: 1650000, rent: 1650000, mgmt: 120000, roomType: "단기",
     due: "3/21", rentDay: 21,
     reason: "조기퇴실", settlement: "정산완료", settlementDate: "2026-02-08",
@@ -13,11 +26,11 @@ export const pastTenants = {
     penalty7: 0, depositReturn: 1650000, finalRefund: 1311000,
     brokerageFee: 0,
   }],
-  // 401호: 박유하 2/10 퇴실 (월세일 26일, 정산일 15일 → 26>=15 안줬음)
-  // 2월 정산(1/15~2/14)에 포함됨
+  // 401호: 박유하 2025-04-26 입주 → 2026-02-10 퇴실 (월세일 26일, 26>=15 안줬음 → 지급)
+  // → 이서연 2026-02-20 입주 (현재 임차인)
   "제이앤제이_401": [{
     name: "박유하", phone: "010-2990-2972",
-    moveIn: "2025-04-25", moveOut: "2026-02-10", expiry: "2025-10-25",
+    moveIn: "2025-04-26", moveOut: "2026-02-10", expiry: "2025-10-26",
     deposit: 1950000, rent: 1950000, mgmt: 150000, roomType: "단기",
     due: "2/26", rentDay: 26,
     reason: "만기퇴실", settlement: "정산완료", settlementDate: "2026-02-10",

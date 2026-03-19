@@ -570,6 +570,10 @@ www.houseman.co.kr
                   style={{ padding: "3px 8px", borderRadius: 5, border: "1px solid #374151", background: "transparent", color: "#9CA3B0", fontSize: 9, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                   로그아웃
                 </button>
+                <button onClick={() => { if(confirm("데이터를 초기화합니다. 계속?")) { localStorage.clear(); location.reload(); } }}
+                  style={{ padding: "3px 8px", borderRadius: 5, border: "1px solid #DC2626", background: "transparent", color: "#DC2626", fontSize: 9, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                  리셋
+                </button>
               </div>
             )}
           </div>
