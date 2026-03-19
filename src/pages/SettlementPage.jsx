@@ -533,39 +533,48 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     ))}
                   </>
                 )}
-                {!isSalary && bs.totalMgmtSettlement > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>   관리비 정산</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#059669" }}>{fmt(bs.totalMgmtSettlement)}원</span>
-                  </div>
-                )}
-                {bs.moveOutSettlements.length > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>2. 퇴실 일할 정산</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#2563EB" }}>{fmt(bs.totalMoveOutRent)}원</span>
-                  </div>
-                )}
-                {bs.totalBrokerage > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>3. 입주시 중개수수료</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalBrokerage)}원</span>
-                  </div>
-                )}
-                {cfg.feeRate !== 0 && bs.totalPenalty > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>4. 퇴실시 위약금</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{fmt(bs.totalPenalty)}원</span>
-                  </div>
-                )}
-                {cfg.feeRate !== 0 && bs.totalDepositReturn > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>5. 예치금(b)</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalDepositReturn)}원</span>
-                  </div>
-                )}
+                {(() => {
+                  let num = 1;
+                  const items = [];
+                  if (!isSalary && bs.totalMgmtSettlement > 0) {
+                    items.push(<div key="mgmt" style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: "#374151" }}>   관리비 정산</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#059669" }}>{fmt(bs.totalMgmtSettlement)}원</span>
+                    </div>);
+                  }
+                  if (bs.moveOutSettlements.length > 0) {
+                    num++;
+                    items.push(<div key="mo" style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 퇴실 일할 정산</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#2563EB" }}>{fmt(bs.totalMoveOutRent)}원</span>
+                    </div>);
+                  }
+                  if (bs.totalBrokerage > 0) {
+                    num++;
+                    items.push(<div key="brk" style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 입주시 중개수수료</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalBrokerage)}원</span>
+                    </div>);
+                  }
+                  if (cfg.feeRate !== 0 && bs.totalPenalty > 0) {
+                    num++;
+                    items.push(<div key="pen" style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 퇴실시 위약금</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{fmt(bs.totalPenalty)}원</span>
+                    </div>);
+                  }
+                  if (cfg.feeRate !== 0 && bs.totalDepositReturn > 0) {
+                    num++;
+                    items.push(<div key="dep" style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 예치금(b)</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalDepositReturn)}원</span>
+                    </div>);
+                  }
+                  return items;
+                })()}
                 {bs.totalDeduction > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>6. 공제 내역(d)</span>
+                    <span style={{ fontSize: 12, color: "#374151" }}>{(() => { let n = 2; if (bs.moveOutSettlements.length > 0) n++; if (bs.totalBrokerage > 0) n++; if (cfg.feeRate !== 0 && bs.totalPenalty > 0) n++; if (cfg.feeRate !== 0 && bs.totalDepositReturn > 0) n++; return n; })()}. 공제 내역(d)</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
                   </div>
                 )}

@@ -278,10 +278,10 @@ export const SettlementPrintView = ({ data, onClose }) => {
                 <td colSpan={5} className="c">합 계</td>
                 <td className="r">{fmt(bs.totalRent)}</td>
                 <td></td>
-                <td className="r neg">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
+                {cfg.feeRate !== 0 && <td className="r neg">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>}
                 <td className="r b">{fmt(bs.totalRentSettlement)}</td>
                 {cfg.includeMgmt && <td className="r b">{fmt(bs.totalMgmtSettlement)}</td>}
-                <td></td>
+                {cfg.feeRate !== 0 && <td></td>}
               </tr>
             </tbody>
           </table>
@@ -400,10 +400,10 @@ export const SettlementPrintView = ({ data, onClose }) => {
                       {/* 수수료 0%: 월세 일할 결과만 */}
                       {cfg.feeRate === 0 && (
                         <tr style={{ borderTop: '2px solid #333' }}>
-                          <td colSpan={4} style={{ background: '#e8f0fe', fontWeight: 800, fontSize: '10pt' }}>
-                            {mt.alreadyPaid ? "환수 합계" : "지급 합계"}
+                          <td colSpan={5} style={{ background: '#e8f0fe', fontWeight: 800, fontSize: '10pt' }}>
+                            {mt.alreadyPaid ? "환수 합계 (건물주 → HM)" : "지급 합계 (HM → 건물주)"}
                           </td>
-                          <td colSpan={2} className="r b" style={{ fontSize: '10pt', color: mt.alreadyPaid ? '#dc2626' : '#059669' }}>
+                          <td className="r b" style={{ fontSize: '10pt', color: mt.alreadyPaid ? '#dc2626' : '#059669' }}>
                             {fmt(mt.settlementAmt)}원
                           </td>
                         </tr>
