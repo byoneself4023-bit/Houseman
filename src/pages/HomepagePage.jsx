@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { vacancies } from '../data';
+import { roomMasterData } from '../data/roomMasterData';
 import { useIsMobile, fmt } from '../utils';
 import '../styles/homepage.css';
 
@@ -56,7 +57,7 @@ const DEFAULT_SERVICES = [
     features: [{ t: "순회 방문 관리", d: "민원 처리, 공용시설 점검, 입퇴실 관리" }, { t: "입주민 만족도 향상", d: "체계적인 소통 채널 운영" }, { t: "합리적 비용 구조", d: "관리사무소 인건비 대비 절감" }, { t: "맞춤형 서비스", d: "건물 특성에 맞는 서비스 선택 가능" }] },
 ];
 
-export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin = false }) => {
+export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendarEvts = [], setCalendarEvts, isAdmin = false }) => {
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -66,19 +67,94 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
   const [heroIdx, setHeroIdx] = useState(0);
   const [serviceDetail, setServiceDetail] = useState(null); // 서비스 상세 페이지
   const [editMode, setEditMode] = useState(false); // 관리자 편집 모드
+  const [vacancyPage, setVacancyPage] = useState(0);
+  const VACANCY_PER_PAGE = isMobile ? 6 : 12;
+  const [vacancyOrder, setVacancyOrder] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("hm_vacancyOrder") || "null"); } catch { return null; }
+  });
+  // 계약하기 플로우
+  const [contractStep, setContractStep] = useState(null); // null | "verify" | "form"
+  const [contractPhone, setContractPhone] = useState("");
+  const [contractBroker, setContractBroker] = useState(null); // matched broker
+  const [contractForm, setContractForm] = useState({});
+  const [contractError, setContractError] = useState("");
   const [editContent, setEditContent] = useState(loadContent);
   const SERVICES = DEFAULT_SERVICES.map(s => ({ ...s, ...((editContent.services || {})[s.id] || {}) }));
 
-  // activeVacancies가 비어있으면 localStorage에서 직접 읽기 (풀화면 모드용)
-  const lsVacancies = useMemo(() => {
-    if (activeVacancies.length > 0) return activeVacancies;
-    try { const v = JSON.parse(localStorage.getItem("hm_activeVacancies")); if (v && v.length > 0) return v; } catch {}
+  // 공실 데이터: props → localStorage → 정적데이터 순으로 읽기
+  const [realVacancies] = useState(() => {
+    if (activeVacancies && activeVacancies.length > 0) return activeVacancies;
+    try {
+      const raw = localStorage.getItem("hm_activeVacancies");
+      if (raw) { const parsed = JSON.parse(raw); if (parsed && parsed.length > 0) return parsed; }
+    } catch {}
     return vacancies;
-  }, [activeVacancies]);
-  const src = lsVacancies;
-  // 홈페이지에는 홍보중/임차인연결 상태만 표시 (점검/청소중 제외)
-  const pub = src.filter(v => v.status === "홍보중" || v.linkedTenant || !v.status || v.status === "공실(입주가능)");
-  const filtered = vacancyFilter === "전체" ? pub : pub.filter(v => v.type === vacancyFilter);
+  });
+  const src = activeVacancies.length > 0 ? activeVacancies : realVacancies;
+
+  // 계약현황에 있는 공실 체크 (캘린더 이벤트 type="계약")
+  const contractSet = useMemo(() => {
+    const set = new Set();
+    const evts = calendarEvts.length > 0 ? calendarEvts : (() => {
+      try {
+        // App.jsx는 "appData" 키에 저장
+        const appData = JSON.parse(localStorage.getItem("appData") || "{}");
+        return appData["hm_calendarEvts"] || [];
+      } catch { return []; }
+    })();
+    for (const ev of evts) {
+      if (ev.type === "계약" && ev.building && ev.room) {
+        set.add(`${ev.building}_${ev.room}`);
+      }
+    }
+    return set;
+  }, [calendarEvts]);
+
+  const pub = useMemo(() => {
+    const visible = src.filter(v => v.status !== "점검/청소중");
+    const sorted = [...visible].sort((a, b) => {
+      const ka = `${a.building}_${a.room}`;
+      const kb = `${b.building}_${b.room}`;
+      // 1순위: 계약중 → 맨 위
+      const ca = contractSet.has(ka) ? 0 : 1;
+      const cb = contractSet.has(kb) ? 0 : 1;
+      if (ca !== cb) return ca - cb;
+      // 2순위: 일반임대 → 앞으로
+      const typeOrder = { "일반임대": 0, "근생": 1, "단기": 2 };
+      const ta = typeOrder[a.type] ?? 3;
+      const tb = typeOrder[b.type] ?? 3;
+      if (ta !== tb) return ta - tb;
+      // 3순위: 수동 순서
+      if (vacancyOrder) {
+        const orderMap = {};
+        vacancyOrder.forEach((key, idx) => { orderMap[key] = idx; });
+        const ia = orderMap[ka] ?? 9999;
+        const ib = orderMap[kb] ?? 9999;
+        return ia - ib;
+      }
+      return 0;
+    });
+    return sorted;
+  }, [src, vacancyOrder, contractSet]);
+  const filtered = vacancyFilter === "전체" ? pub
+    : vacancyFilter === "계약중" ? pub.filter(v => contractSet.has(`${v.building}_${v.room}`))
+    : pub.filter(v => v.type === vacancyFilter);
+  const totalPages = Math.ceil(filtered.length / VACANCY_PER_PAGE);
+  const pagedVacancies = filtered.slice(vacancyPage * VACANCY_PER_PAGE, (vacancyPage + 1) * VACANCY_PER_PAGE);
+
+  // 순서 저장
+  const saveVacancyOrder = (newList) => {
+    const order = newList.map(v => `${v.building}_${v.room}`);
+    setVacancyOrder(order);
+    localStorage.setItem("hm_vacancyOrder", JSON.stringify(order));
+  };
+  const moveVacancy = (idx, dir) => {
+    const list = [...pub];
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= list.length) return;
+    [list[idx], list[newIdx]] = [list[newIdx], list[idx]];
+    saveVacancyOrder(list);
+  };
 
   useEffect(() => {
     const fn = () => {
@@ -168,31 +244,540 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
   }
 
   // ─── VACANCY DETAIL VIEW ───
-  if (detailRoom) {
-    const v = detailRoom; const photos = getPhotos(v.building, v.room); const idx = photoIdx < photos.length ? photoIdx : 0;
+  // 공실 카드 클릭 → 새 탭으로 상세 페이지 열기
+  const openVacancyDetail = (v) => {
+    if (editMode) return;
+    const key = encodeURIComponent(`${v.building}_${v.room}`);
+    window.open(`${window.location.pathname}?vacancy=${key}`, '_blank');
+  };
+
+  // URL 파라미터로 접근한 상세 페이지
+  const urlVacancy = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('vacancy');
+    if (!key) return null;
+    const decoded = decodeURIComponent(key);
+    const [building, room] = decoded.split('_');
+    return pub.find(v => v.building === building && String(v.room) === String(room))
+      || src.find(v => v.building === building && String(v.room) === String(room));
+  }, [pub, src]);
+
+  if (urlVacancy || detailRoom) {
+    const v = urlVacancy || detailRoom;
+    // 호실 기본정보 연동: roomMasterData + buildingData 병합
+    const rmKey = `${v.building}_${v.room}`;
+    const savedRoom = (buildingData[v.building] || {})[`room_${v.room}`] || {};
+    const roomInfo = { ...(roomMasterData[rmKey] || {}), ...savedRoom };
+    // 사진: buildingData 동적 사진 → roomMasterData 사진 → 빈 배열
+    const photos = getPhotos(v.building, v.room).length > 0
+      ? getPhotos(v.building, v.room)
+      : roomInfo.photos || [];
+    const idx = photoIdx < photos.length ? photoIdx : 0;
+    const isContract = contractSet.has(`${v.building}_${v.room}`);
+    const depositLabel = v.type === "단기" ? "예치금" : "보증금";
+    // 금액: 공실 데이터 → roomInfo 기준금액 fallback
+    const parseNum = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
+    const vDeposit = v.deposit || parseNum(roomInfo.deposit) / 10000;
+    const vRent = v.rent || parseNum(roomInfo.rent) / 10000;
+    const vMgmt = v.mgmt || parseNum(roomInfo.mgmt) / 10000;
+    const vWater = parseNum(roomInfo.water);
+    const vInternet = parseNum(roomInfo.internet);
+    const vCleanFee = parseNum(roomInfo.cleanFee);
+    const goBack = () => {
+      if (urlVacancy) {
+        window.close();
+        // 새 탭에서 열린 경우 close 안 되면 홈으로
+        setTimeout(() => { window.location.href = window.location.pathname; }, 100);
+      } else {
+        setDetailRoom(null);
+      }
+    };
     return (
       <div className="hm-page" style={{ background: "var(--clr-white)", minHeight: "100vh" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: isMobile ? "20px" : "48px 20px" }}>
-          <div onClick={() => setDetailRoom(null)} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 28, cursor: "pointer", fontSize: 14, fontWeight: 500, color: "var(--clr-red)" }}>← 목록으로</div>
-          <div style={{ aspectRatio: "16/9", borderRadius: 24, overflow: "hidden", position: "relative", background: "#f5f5f7", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {/* 독립 헤더 */}
+        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", borderBottom: "1px solid #f0f0f0", padding: isMobile ? "12px 20px" : "14px 48px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img src="/logo-c.svg" alt="HOUSEMAN" style={{ height: 36, width: "auto" }} />
+            <span style={{ fontSize: 16, fontWeight: 800, color: "var(--clr-black)", letterSpacing: "-0.02em" }}>HOUSEMAN</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <a href={`tel:${SITE.phone}`} style={{ fontSize: 13, fontWeight: 600, color: "var(--clr-red)", textDecoration: "none" }}>{SITE.phone}</a>
+            <div onClick={goBack} style={{ padding: "8px 16px", borderRadius: 980, background: "var(--clr-bg)", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "var(--clr-muted)" }}>
+              {urlVacancy ? "전체 매물 보기" : "← 목록"}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "24px 20px 60px" : "48px 20px 80px" }}>
+          {/* 사진 갤러리 */}
+          <div style={{ aspectRatio: isMobile ? "4/3" : "16/9", overflow: "hidden", position: "relative", background: "#f5f5f7", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
             {photos.length ? <img src={photos[idx]} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> :
-              <div style={{ textAlign: "center", color: "var(--clr-light)" }}><div style={{ fontSize: 48 }}>🏢</div><div style={{ fontSize: 14, marginTop: 8 }}>사진 준비중</div></div>}
+              <div style={{ textAlign: "center", color: "var(--clr-light)" }}><div style={{ fontSize: 64 }}>🏢</div><div style={{ fontSize: 16, marginTop: 12 }}>사진 준비중</div></div>}
             {photos.length > 1 && <>
-              <div onClick={() => setPhotoIdx(idx > 0 ? idx - 1 : photos.length - 1)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f", boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}>‹</div>
-              <div onClick={() => setPhotoIdx(idx < photos.length - 1 ? idx + 1 : 0)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f", boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}>›</div>
+              <div onClick={() => setPhotoIdx(idx > 0 ? idx - 1 : photos.length - 1)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, background: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f" }}>‹</div>
+              <div onClick={() => setPhotoIdx(idx < photos.length - 1 ? idx + 1 : 0)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, background: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f" }}>›</div>
             </>}
+            {photos.length > 1 && <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 12, fontWeight: 600, padding: "4px 12px", background: "rgba(0,0,0,0.6)", color: "#fff" }}>{idx + 1} / {photos.length}</div>}
           </div>
-          <h2 className="hm-headline" style={{ fontSize: 32, margin: "28px 0 24px" }}>{v.building} {v.room}호</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 24 }}>
-            {[{ l: "보증금", val: fmt(v.deposit) + "만" }, { l: "월세", val: fmt(v.rent) + "만", c: "var(--clr-red)" }, { l: "관리비", val: v.mgmt > 0 ? v.mgmt + "만" : "없음" }].map((x, i) =>
-              <div key={i} style={{ padding: 20, background: "var(--clr-bg)", borderRadius: 18, textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: "var(--clr-light)", marginBottom: 6 }}>{x.l}</div>
-                <div style={{ fontSize: 26, fontWeight: 700, color: x.c || "var(--clr-black)", letterSpacing: "-0.03em" }}>{x.val}</div>
-              </div>)}
+
+          {/* 썸네일 */}
+          {photos.length > 1 && (
+            <div style={{ display: "flex", gap: 4, marginBottom: 28, overflowX: "auto", paddingBottom: 4 }}>
+              {photos.map((p, pi) => (
+                <div key={pi} onClick={() => setPhotoIdx(pi)} style={{
+                  width: 64, height: 48, overflow: "hidden", cursor: "pointer", flexShrink: 0,
+                  border: pi === idx ? "2px solid #c41230" : "2px solid transparent",
+                  opacity: pi === idx ? 1 : 0.5, transition: "all 0.2s",
+                }}>
+                  <img src={p} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 제목 + 배지 */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, margin: 0, color: "#111", letterSpacing: "-0.03em" }}>{v.building} {v.room}호</h2>
+              <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: badgeColor(v.type), color: "#fff" }}>{v.type}</span>
+              {isContract && <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: "#DC2626", color: "#fff" }}>계약중</span>}
+            </div>
+            {(roomInfo.roomType || roomInfo.area) && (
+              <div style={{ fontSize: 14, color: "#6B7280" }}>
+                {roomInfo.roomType}{roomInfo.area ? ` · ${roomInfo.area}㎡` : ""}
+              </div>
+            )}
           </div>
+
+          {/* 금액 테이블 */}
+          <div style={{ marginBottom: 28, border: "1px solid #E5E7EB" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+              <tbody>
+                <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280", width: "30%" }}>{depositLabel}</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 700, fontSize: 16 }}>{fmt(vDeposit)}만원</td>
+                </tr>
+                <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>월세</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 700, fontSize: 16, color: "#c41230" }}>{fmt(vRent)}만원</td>
+                </tr>
+                {vMgmt > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>관리비</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vMgmt}만원</td>
+                </tr>}
+                {vWater > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>수도</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vWater.toLocaleString()}원</td>
+                </tr>}
+                {vInternet > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>인터넷</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vInternet.toLocaleString()}원</td>
+                </tr>}
+                {vCleanFee > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>퇴실청소비</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vCleanFee.toLocaleString()}원</td>
+                </tr>}
+                {roomInfo.commFee && <tr>
+                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>중개수수료</td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{roomInfo.commFee}원</td>
+                </tr>}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 매물 상세 정보 */}
+          {(roomInfo.roomType || roomInfo.area) && (
+            <div style={{ marginBottom: 28 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>매물 정보</h3>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <tbody>
+                  {roomInfo.roomType && <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+                    <td style={{ padding: "10px 0", color: "#6B7280", width: "30%" }}>방 형태</td>
+                    <td style={{ padding: "10px 0", fontWeight: 600 }}>{roomInfo.roomType}</td>
+                  </tr>}
+                  {roomInfo.area && <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+                    <td style={{ padding: "10px 0", color: "#6B7280" }}>전용면적</td>
+                    <td style={{ padding: "10px 0", fontWeight: 600 }}>{roomInfo.area}㎡</td>
+                  </tr>}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* 특약사항 상단 */}
+          {roomInfo.specialTerms && (
+            <div style={{ marginBottom: 28 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>계약 안내사항</h3>
+              <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>
+                {roomInfo.specialTerms}
+              </div>
+            </div>
+          )}
+
+          {/* 특약사항 하단 */}
+          {roomInfo.specialTermsBottom && (
+            <div style={{ marginBottom: 28 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>추가 안내</h3>
+              <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>
+                {roomInfo.specialTermsBottom}
+              </div>
+            </div>
+          )}
+
+          {/* 문의 버튼 */}
           <div style={{ display: "flex", gap: 12, marginBottom: 40 }}>
-            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark" style={{ flex: 1, justifyContent: "center" }}>📞 {SITE.phone}</a>
-            <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn" style={{ flex: 1, justifyContent: "center", background: "#fee500", color: "#1d1d1f", fontWeight: 600, padding: "14px 32px", borderRadius: 980, textDecoration: "none", fontSize: 17 }}>💬 카카오톡</a>
+            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark" style={{ flex: 1, justifyContent: "center", padding: "16px 32px", fontSize: 17 }}>📞 전화 문의</a>
+            {isContract
+              ? <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 32px", fontSize: 17, fontWeight: 700, background: "#E5E7EB", color: "#9CA3AF" }}>계약 진행중</div>
+              : <button onClick={() => { setContractStep("verify"); setContractPhone(""); setContractError(""); setContractBroker(null); }}
+                style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 32px", fontSize: 17, fontWeight: 700, fontFamily: "inherit", background: "#c41230", color: "#fff", border: "none", cursor: "pointer" }}>계약하기</button>
+            }
+
+          {/* ── 부동산 인증 팝업 ── */}
+          {contractStep === "verify" && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+              onClick={() => setContractStep(null)}>
+              <div onClick={e => e.stopPropagation()} style={{ background: "#fff", padding: 32, width: isMobile ? "90%" : 400, maxWidth: "95%" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 8 }}>등록부동산 확인</div>
+                <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>등록된 부동산만 계약을 진행할 수 있습니다.</div>
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 }}>부동산 연락처</div>
+                  <input value={contractPhone} onChange={e => { setContractPhone(e.target.value); setContractError(""); }}
+                    placeholder="02-0000-0000 또는 010-0000-0000"
+                    style={{ width: "100%", padding: "12px 16px", border: contractError ? "2px solid #DC2626" : "1px solid #D1D5DB", fontSize: 15, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  {contractError && <div style={{ fontSize: 12, color: "#DC2626", marginTop: 6 }}>{contractError}</div>}
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => {
+                    const phone = contractPhone.trim();
+                    if (!phone) { setContractError("연락처를 입력하세요"); return; }
+                    // brokerList에서 확인 (useLocalStorage는 "pageData" 키 안에 저장)
+                    let brokers = [];
+                    try {
+                      const pageData = JSON.parse(localStorage.getItem("pageData") || "{}");
+                      brokers = pageData["hm_brokerList"] || [];
+                    } catch {}
+                    const normalize = (p) => (p || "").replace(/[-\s()]/g, "");
+                    const matched = brokers.find(b => normalize(b.phone) === normalize(phone));
+                    if (!matched) { setContractError("등록되지 않은 부동산입니다. HOUSEMAN에 문의하세요."); return; }
+                    setContractBroker(matched);
+                    // 폼 초기값 설정
+                    const now = new Date();
+                    const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+                    const fmtD = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+                    const isDangi = v.type === "단기";
+                    const defaultMoveIn = isDangi ? fmtD(addDays(now, 5)) : fmtD(addDays(now, 14));
+                    const calcContractDeposit = Math.ceil(vRent * 7 / 30 / 10) * 10; // 월세 7일치, 10만원 단위 올림
+                    setContractForm({
+                      broker: matched.name, brokerPhone: matched.phone,
+                      deposit: vDeposit, rent: vRent, mgmt: vMgmt,
+                      nego: vRent, moveIn: defaultMoveIn, expiry: "",
+                      water: roomInfo.water || "", cable: roomInfo.internet || "",
+                      exitFee: roomInfo.cleanFee || "",
+                      contractDeposit: calcContractDeposit, depositor: "",
+                    });
+                    setContractStep("form");
+                  }} style={{ flex: 1, padding: "12px", background: "#111", color: "#fff", border: "none", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>확인</button>
+                  <button onClick={() => setContractStep(null)} style={{ padding: "12px 24px", background: "#F3F4F6", border: "none", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#6B7280" }}>취소</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── 계약 등록 폼 ── */}
+          {contractStep === "form" && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", overflowY: "auto" }}
+              onClick={() => setContractStep(null)}>
+              <div onClick={e => e.stopPropagation()} style={{ background: "#fff", padding: isMobile ? 24 : 32, width: isMobile ? "95%" : 520, maxWidth: "95%", maxHeight: "90vh", overflowY: "auto", margin: "20px 0" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>계약 등록</div>
+                <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>{v.building} {v.room}호 · {v.type}</div>
+
+                {/* 부동산 정보 (수정 가능) */}
+                <div style={{ padding: 14, background: "#F0F9FF", border: "1px solid #BAE6FD", marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#0369A1", marginBottom: 4 }}>부동산 정보</div>
+                  <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 8 }}>부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#0369A1", marginBottom: 2 }}>부동산명</div>
+                      <input value={contractForm.broker || ""} onChange={e => setContractForm(p => ({ ...p, broker: e.target.value }))}
+                        style={{ width: "100%", padding: "7px 10px", border: "1px solid #BAE6FD", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box", background: "#fff" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: "#0369A1", marginBottom: 2 }}>연락처</div>
+                      <input value={contractForm.brokerPhone || ""} onChange={e => setContractForm(p => ({ ...p, brokerPhone: e.target.value }))}
+                        style={{ width: "100%", padding: "7px 10px", border: "1px solid #BAE6FD", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box", background: "#fff" }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 금액 */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>{depositLabel} (만원)</div>
+                    <input type="number" value={contractForm.deposit ?? ""} onChange={e => setContractForm(p => ({ ...p, deposit: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>월세 (만원)</div>
+                    <input type="number" value={contractForm.rent ?? ""} onChange={e => setContractForm(p => ({ ...p, rent: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>관리비 (만원)</div>
+                    <input type="number" value={contractForm.mgmt ?? ""} onChange={e => setContractForm(p => ({ ...p, mgmt: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                </div>
+
+                {/* 입주일/만기일 */}
+                <div style={{ display: "grid", gridTemplateColumns: v.type === "단기" ? "1fr auto 1fr" : "1fr 1fr", gap: 10, marginBottom: 4, alignItems: "start" }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>입주일 *</div>
+                    <input type="date" value={contractForm.moveIn || ""}
+                      max={v.type === "단기" ? (() => { const d = new Date(); d.setDate(d.getDate() + 5); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })() : undefined}
+                      min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })()}
+                      onChange={e => setContractForm(p => ({ ...p, moveIn: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                  {v.type === "단기" && (
+                    <button onClick={() => {
+                      if (!contractForm.moveIn) return;
+                      const d = new Date(contractForm.moveIn);
+                      d.setMonth(d.getMonth() + 3);
+                      d.setDate(d.getDate() - 1);
+                      const exp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+                      setContractForm(p => ({ ...p, expiry: exp }));
+                    }} style={{ padding: "8px 14px", border: "1px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", marginTop: 18 }}>3개월</button>
+                  )}
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>만기일</div>
+                    <input type="date" value={contractForm.expiry || ""} onChange={e => setContractForm(p => ({ ...p, expiry: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                </div>
+                {v.type === "단기" && <div style={{ fontSize: 10, color: "#F59E0B", marginBottom: 12 }}>단기: 오늘로부터 5일 이내 입주</div>}
+
+                {/* 단기 전용 */}
+                {v.type === "단기" && (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>수도</div>
+                      <input value={contractForm.water ?? ""} onChange={e => setContractForm(p => ({ ...p, water: e.target.value }))}
+                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>인터넷</div>
+                      <input value={contractForm.cable ?? ""} onChange={e => setContractForm(p => ({ ...p, cable: e.target.value }))}
+                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>퇴실청소비</div>
+                      <input value={contractForm.exitFee ?? ""} onChange={e => setContractForm(p => ({ ...p, exitFee: e.target.value }))}
+                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                    </div>
+                  </div>
+                )}
+
+                {/* 계약금 + 입금자명 */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>계약금 (만원)</div>
+                    <input type="number" value={contractForm.contractDeposit ?? ""} onChange={e => setContractForm(p => ({ ...p, contractDeposit: e.target.value }))}
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>입금자명</div>
+                    <input value={contractForm.depositor || ""} onChange={e => setContractForm(p => ({ ...p, depositor: e.target.value }))}
+                      placeholder="입금자명"
+                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  </div>
+                </div>
+
+                {/* 입주금 계산 + 계좌 */}
+                {(() => {
+                  const defaultHmAcct = "하나은행 225-910048-15704 박종호(하우스맨)";
+                  let acctMode = "houseman";
+                  let hmAcct = defaultHmAcct;
+                  let ownerAcct = "";
+                  try {
+                    const appData = JSON.parse(localStorage.getItem("appData") || "{}");
+                    const accts = appData["hm_buildingAccounts"] || {};
+                    const roomKey = `${v.building}_${v.room}`;
+                    const bldgRaw = accts[v.building] || {};
+                    const roomOverride = accts[roomKey];
+                    const eff = roomOverride || { mode: bldgRaw.mode1 || "", housemanAccount: bldgRaw.housemanAccount1 || defaultHmAcct, ownerAccounts: bldgRaw.ownerAccounts1 || {} };
+                    if (eff.mode) acctMode = eff.mode;
+                    if (eff.housemanAccount) hmAcct = eff.housemanAccount;
+                    const oa = eff.ownerAccounts || {};
+                    if (oa.rent_bank || oa.rent) ownerAcct = `${oa.rent_bank || ""} ${oa.rent || ""}${oa.rent_holder ? ` (${oa.rent_holder})` : ""}`.trim();
+                  } catch {}
+
+                  const dep = (Number(contractForm.deposit) || 0) * 10000;
+                  const rent = (Number(contractForm.rent) || 0) * 10000;
+                  const mgmt = (Number(contractForm.mgmt) || 0) * 10000;
+                  const water = parseNum(contractForm.water);
+                  const cable = parseNum(contractForm.cable);
+                  const isDangi = v.type === "단기";
+
+                  if (!isDangi) {
+                    // 근생/일반임대: 계좌만 표시
+                    return (
+                      <div style={{ padding: 14, background: "#FFFBEB", border: "1px solid #FDE68A", marginBottom: 16 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E", marginBottom: 4 }}>입금 계좌</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "monospace" }}>{ownerAcct || hmAcct}</div>
+                      </div>
+                    );
+                  }
+
+                  // 단기: 모드별 입주금 계산
+                  const fmtA = (n) => n >= 10000 ? `${(n/10000)}만` : n > 0 ? `${n.toLocaleString()}원` : "-";
+                  const allItems = [
+                    { l: "예치금", v: dep }, { l: "임대료", v: rent }, { l: "관리비", v: mgmt },
+                    { l: "수도", v: water }, { l: "인터넷", v: cable },
+                  ].filter(x => x.v > 0);
+                  const total = allItems.reduce((a, x) => a + x.v, 0);
+
+                  // 계좌별 항목 분배
+                  let rows = []; // { l, v, acct: "owner"|"hm"|"deferred" }
+                  let desc = "";
+                  if (acctMode === "houseman" || !acctMode) {
+                    desc = "전체 → 하우스맨계좌";
+                    rows = allItems.map(x => ({ ...x, acct: "hm" }));
+                  } else if (acctMode === "hm_owner1") {
+                    desc = "전체 → 건물주계좌";
+                    rows = allItems.map(x => ({ ...x, acct: "owner" }));
+                  } else if (acctMode === "owner1") {
+                    desc = "예치금+임대료→건물주 / 관리비+공과금→하우스맨";
+                    const ownerSet = new Set(["예치금", "임대료"]);
+                    rows = allItems.map(x => ({ ...x, acct: ownerSet.has(x.l) ? "owner" : "hm" }));
+                  } else if (acctMode === "owner2") {
+                    desc = "예치금+임대료+관리비→건물주 / 수도+인터넷→하우스맨";
+                    const ownerSet = new Set(["예치금", "임대료", "관리비"]);
+                    rows = allItems.map(x => ({ ...x, acct: ownerSet.has(x.l) ? "owner" : "hm" }));
+                  } else if (acctMode === "owner3") {
+                    desc = "예치금+임대료+관리비→건물주 / 수도+인터넷 후불";
+                    const ownerSet = new Set(["예치금", "임대료", "관리비"]);
+                    rows = allItems.map(x => ({ ...x, acct: ownerSet.has(x.l) ? "owner" : "deferred" }));
+                  }
+
+                  const ownerRows = rows.filter(r => r.acct === "owner");
+                  const hmRows = rows.filter(r => r.acct === "hm");
+                  const defRows = rows.filter(r => r.acct === "deferred");
+                  const ownerTotal = ownerRows.reduce((a, x) => a + x.v, 0);
+                  const hmTotal = hmRows.reduce((a, x) => a + x.v, 0);
+                  const payTotal = acctMode === "owner3" ? ownerTotal : total;
+
+                  const acctColor = { owner: "#EA580C", hm: "#2563EB", deferred: "#92400E" };
+                  const acctDot = (type) => ({ width: 6, height: 6, borderRadius: "50%", background: acctColor[type], flexShrink: 0 });
+
+                  return (
+                    <div style={{ marginBottom: 16, border: "1px solid #D1D5DB", overflow: "hidden" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ background: "#111" }}>
+                            <th colSpan={3} style={{ padding: "8px 12px", color: "#fff", fontSize: 12, fontWeight: 700, textAlign: "left" }}>입주금 안내 <span style={{ fontWeight: 400, fontSize: 10, color: "#9CA3AF", marginLeft: 8 }}>{desc}</span></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rows.map((r, i) => (
+                            <tr key={i} style={{ borderBottom: "1px solid #E5E7EB" }}>
+                              <td style={{ padding: "6px 12px", width: 8 }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: acctColor[r.acct] }} /></td>
+                              <td style={{ padding: "6px 4px", color: "#374151" }}>{r.l}</td>
+                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, fontFamily: "monospace" }}>{fmtA(r.v)}</td>
+                            </tr>
+                          ))}
+                          {/* 계좌별 소계 */}
+                          {ownerRows.length > 0 && (
+                            <tr style={{ background: "#FFF7ED", borderBottom: "1px solid #E5E7EB" }}>
+                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#EA580C" }} /></td>
+                              <td style={{ padding: "6px 4px", fontSize: 11 }}><span style={{ fontWeight: 700, color: "#EA580C" }}>건물주</span> <span style={{ color: "#9CA3AF", fontSize: 10 }}>{ownerAcct || "미설정"}</span></td>
+                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, color: "#EA580C", fontFamily: "monospace" }}>{fmtA(ownerTotal)}</td>
+                            </tr>
+                          )}
+                          {hmRows.length > 0 && (
+                            <tr style={{ background: "#EFF6FF", borderBottom: "1px solid #E5E7EB" }}>
+                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563EB" }} /></td>
+                              <td style={{ padding: "6px 4px", fontSize: 11 }}><span style={{ fontWeight: 700, color: "#2563EB" }}>하우스맨</span> <span style={{ color: "#9CA3AF", fontSize: 10 }}>{hmAcct}</span></td>
+                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, color: "#2563EB", fontFamily: "monospace" }}>{fmtA(hmTotal)}</td>
+                            </tr>
+                          )}
+                          {defRows.length > 0 && (
+                            <tr style={{ background: "#FFFBEB", borderBottom: "1px solid #E5E7EB" }}>
+                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#92400E" }} /></td>
+                              <td style={{ padding: "6px 4px", fontSize: 11, color: "#92400E", fontWeight: 600 }}>후불 (퇴실정산)</td>
+                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 600, color: "#92400E", fontFamily: "monospace" }}>{fmtA(defRows.reduce((a, x) => a + x.v, 0))}</td>
+                            </tr>
+                          )}
+                          {/* 합계 */}
+                          <tr style={{ background: "#F3F4F6" }}>
+                            <td colSpan={2} style={{ padding: "8px 12px", fontWeight: 800, fontSize: 13, color: "#111" }}>입주금 합계</td>
+                            <td style={{ padding: "8px 12px", textAlign: "right", fontWeight: 800, fontSize: 14, color: "#111", fontFamily: "monospace" }}>{fmtA(payTotal)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
+
+                {/* 등록 버튼 */}
+                <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
+                  <button onClick={() => {
+                    if (!contractForm.moveIn) { alert("입주일을 선택하세요"); return; }
+                    // 중복 계약 방지
+                    const existingEvts = calendarEvts.length > 0 ? calendarEvts : (() => {
+                      try { const ad = JSON.parse(localStorage.getItem("appData") || "{}"); return ad["hm_calendarEvts"] || []; } catch { return []; }
+                    })();
+                    const duplicate = existingEvts.find(e => e.type === "계약" && e.building === v.building && String(e.room) === String(v.room));
+                    if (duplicate) { alert(`${v.building} ${v.room}호는 이미 계약이 등록되어 있습니다.`); return; }
+                    const now = new Date();
+                    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+                    const registeredAt = `${todayStr} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+                    const newEvt = {
+                      date: contractForm.moveIn, type: "계약",
+                      building: v.building, room: v.room, name: "",
+                      color: "#3B82F6", registeredAt, registeredBy: contractForm.broker,
+                      registeredSource: "broker", // 부동산 등록 구분
+                      contractDate: todayStr,
+                      deposit: Number(contractForm.deposit) || 0,
+                      rent: Number(contractForm.rent) || 0,
+                      nego: Number(contractForm.rent) || 0,
+                      mgmt: Number(contractForm.mgmt) || 0,
+                      broker: contractForm.broker, brokerPhone: contractForm.brokerPhone,
+                      moveIn: contractForm.moveIn, expiry: contractForm.expiry || "",
+                      contractDeposit: Number(contractForm.contractDeposit) || 0,
+                      depositor: contractForm.depositor || "",
+                      ...(v.type === "단기" ? {
+                        water: contractForm.water, cable: contractForm.cable,
+                        exitFee: Number(contractForm.exitFee) || 0,
+                      } : {}),
+                    };
+                    // React state로 저장 (같은 앱 내) 또는 localStorage (새 탭)
+                    if (setCalendarEvts) {
+                      setCalendarEvts(prev => [...prev, newEvt]);
+                    } else {
+                      try {
+                        const appData = JSON.parse(localStorage.getItem("appData") || "{}");
+                        const evts = appData["hm_calendarEvts"] || [];
+                        evts.push(newEvt);
+                        appData["hm_calendarEvts"] = evts;
+                        localStorage.setItem("appData", JSON.stringify(appData));
+                      } catch {}
+                    }
+                    setContractStep(null);
+                    alert("계약이 등록되었습니다. HOUSEMAN에서 확인 후 연락드리겠습니다.");
+                  }} style={{ flex: 1, padding: "14px", background: "#c41230", color: "#fff", border: "none", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>계약 등록</button>
+                  <button onClick={() => setContractStep(null)} style={{ padding: "14px 24px", background: "#F3F4F6", border: "none", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#6B7280" }}>취소</button>
+                </div>
+              </div>
+            </div>
+          )}
+          </div>
+
+          {/* 회사 정보 */}
+          <div style={{ padding: "20px 24px", background: "#F9FAFB", border: "1px solid #E5E7EB", fontSize: 13, color: "#6B7280", lineHeight: 1.8 }}>
+            <div style={{ fontWeight: 700, color: "#111", marginBottom: 4, fontSize: 14 }}>HOUSEMAN 하우스맨</div>
+            <div>{SITE.phone} | {SITE.address}</div>
+            <div>사업자등록번호: {SITE.bizNo}</div>
           </div>
         </div>
       </div>
@@ -391,44 +976,106 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
             <p className="hm-body" style={{ fontSize: 17, marginBottom: 36 }}>현재 입주 가능한 <span style={{ color: "var(--clr-red)", fontWeight: 600 }}>{pub.length}개</span> 매물</p>
           </Reveal>
           <div style={{ display: "flex", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
-            {["전체", "단기", "일반임대", "근생"].map(t => {
-              const cnt = t === "전체" ? pub.length : pub.filter(v => v.type === t).length;
+            {["전체", "단기", "일반임대", "근생", "계약중"].map(t => {
+              const cnt = t === "전체" ? pub.length
+                : t === "계약중" ? pub.filter(v => contractSet.has(`${v.building}_${v.room}`)).length
+                : pub.filter(v => v.type === t).length;
               if (t !== "전체" && cnt === 0) return null;
-              return <button key={t} onClick={() => setVacancyFilter(t)} style={{
+              const isContract = t === "계약중";
+              return <button key={t} onClick={() => { setVacancyFilter(t); setVacancyPage(0); }} style={{
                 padding: "10px 24px", borderRadius: 980, border: "none", cursor: "pointer", fontFamily: "inherit",
                 fontWeight: 500, fontSize: 14, letterSpacing: "-0.01em",
-                background: vacancyFilter === t ? "var(--clr-black)" : "#fff", color: vacancyFilter === t ? "#fff" : "var(--clr-muted)",
+                background: vacancyFilter === t ? (isContract ? "#DC2626" : "var(--clr-black)") : "#fff",
+                color: vacancyFilter === t ? "#fff" : isContract ? "#DC2626" : "var(--clr-muted)",
                 transition: "all 0.3s", boxShadow: vacancyFilter !== t ? "0 1px 4px rgba(0,0,0,0.04)" : "none",
               }}>{t} ({cnt})</button>;
             })}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 20 }}>
-            {filtered.slice(0, 6).map((v, i) => {
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16 }}>
+            {pagedVacancies.map((v, i) => {
               const photos = getPhotos(v.building, v.room);
+              const globalIdx = pub.findIndex(p => p.building === v.building && p.room === v.room);
+              const _rmKey = `${v.building}_${v.room}`;
+              const _savedRoom = (buildingData[v.building] || {})[`room_${v.room}`] || {};
+              const _roomInfo = { ...(roomMasterData[_rmKey] || {}), ..._savedRoom };
+              const _pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
+              const _dep = v.deposit || _pn(_roomInfo.deposit) / 10000;
+              const _rent = v.rent || _pn(_roomInfo.rent) / 10000;
+              const _mgmt = v.mgmt || _pn(_roomInfo.mgmt) / 10000;
+              const _water = _pn(_roomInfo.water) / 10000;
+              const _internet = _pn(_roomInfo.internet) / 10000;
+              const isContracted = contractSet.has(`${v.building}_${v.room}`);
               return (
-                <Reveal key={i} className="hm-reveal-scale" delay={i * 0.05}>
-                  <div className="hm-vacancy-card" onClick={() => { setPhotoIdx(0); setDetailRoom(v); }}>
-                    <div style={{ aspectRatio: "16/9", background: "var(--clr-bg)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                      {photos.length > 0 ? <img src={photos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s" }} /> :
-                        <span style={{ fontSize: 36, opacity: 0.3 }}>🏢</span>}
-                      <span style={{ position: "absolute", top: 14, left: 14, fontSize: 12, fontWeight: 600, padding: "5px 14px", borderRadius: 980, background: badgeColor(v.type), color: "#fff" }}>{v.type}</span>
-                    </div>
-                    <div style={{ padding: "18px 22px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, color: "var(--clr-black)", letterSpacing: "-0.02em" }}>{v.building} {v.room}호</span>
-                        {v.linkedTenant && <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" }}>임차인연결</span>}
+                <Reveal key={`${v.building}_${v.room}`} className="hm-reveal-scale" delay={i * 0.04}>
+                  <div onClick={() => openVacancyDetail(v)} style={{
+                    position: "relative", cursor: "pointer", overflow: "hidden",
+                    background: "#fff", border: "1px solid #E5E7EB",
+                    transition: "box-shadow 0.2s, transform 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div style={{ aspectRatio: "4/3", background: "#f5f5f7", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                      {photos.length > 0 ? <img src={photos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> :
+                        <span style={{ fontSize: 40, opacity: 0.25 }}>🏢</span>}
+                      {/* 상단 배지 */}
+                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "10px 12px", display: "flex", gap: 6, background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", background: badgeColor(v.type), color: "#fff" }}>{v.type}</span>
+                        {isContracted && <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", background: "#DC2626", color: "#fff" }}>계약중</span>}
                       </div>
-                      <div style={{ display: "flex", gap: 20, fontSize: 14 }}>
-                        <span><span style={{ color: "var(--clr-light)", fontSize: 12 }}>보증금 </span><span style={{ fontWeight: 700 }}>{fmt(v.deposit)}만</span></span>
-                        <span><span style={{ color: "var(--clr-light)", fontSize: 12 }}>월세 </span><span style={{ fontWeight: 700, color: "var(--clr-red)" }}>{fmt(v.rent)}만</span></span>
-                        {v.mgmt > 0 && <span><span style={{ color: "var(--clr-light)", fontSize: 12 }}>관리비 </span><span style={{ fontWeight: 600 }}>{v.mgmt}만</span></span>}
-                      </div>
+                      {photos.length > 1 && <span style={{ position: "absolute", bottom: 8, right: 8, fontSize: 10, fontWeight: 600, padding: "3px 8px", background: "rgba(0,0,0,0.6)", color: "#fff" }}>{photos.length}</span>}
                     </div>
+                    <div style={{ padding: "14px 16px" }}>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "#111", letterSpacing: "-0.02em", marginBottom: 6 }}>
+                        {v.building} {v.room}호
+                        {_roomInfo.roomType && <span style={{ fontSize: 11, fontWeight: 500, color: "#9CA3AF", marginLeft: 6 }}>{_roomInfo.roomType}{_roomInfo.area ? ` ${_roomInfo.area}㎡` : ""}</span>}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>{v.type === "단기" ? "예치금" : "보증금"}</span>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: "#111" }}>{fmt(_dep)}</span>
+                        <span style={{ fontSize: 11, color: "#9CA3AF", margin: "0 2px" }}>/</span>
+                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>월세</span>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: "#c41230" }}>{fmt(_rent)}</span>
+                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>만</span>
+                      </div>
+                      {(_mgmt > 0 || _water > 0 || _internet > 0) && (
+                        <div style={{ fontSize: 11, color: "#9CA3AF", display: "flex", gap: 8 }}>
+                          {_mgmt > 0 && <span>관리비 {_mgmt}만</span>}
+                          {_water > 0 && <span>수도 {_water > 1 ? _water + "만" : (_water * 10000).toLocaleString() + "원"}</span>}
+                          {_internet > 0 && <span>인터넷 {_internet > 1 ? _internet + "만" : (_internet * 10000).toLocaleString() + "원"}</span>}
+                        </div>
+                      )}
+                    </div>
+                    {editMode && (
+                      <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 4, zIndex: 5 }} onClick={e => e.stopPropagation()}>
+                        <span style={{ fontSize: 11, fontWeight: 800, padding: "2px 8px", background: "rgba(0,0,0,0.7)", color: "#fff" }}>{globalIdx + 1}</span>
+                        <button onClick={() => moveVacancy(globalIdx, -1)} style={{ width: 26, height: 26, border: "none", background: "rgba(0,0,0,0.7)", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800 }}>↑</button>
+                        <button onClick={() => moveVacancy(globalIdx, 1)} style={{ width: 26, height: 26, border: "none", background: "rgba(0,0,0,0.7)", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800 }}>↓</button>
+                      </div>
+                    )}
                   </div>
                 </Reveal>
               );
             })}
           </div>
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 40 }}>
+              <button onClick={() => setVacancyPage(p => Math.max(0, p - 1))} disabled={vacancyPage === 0}
+                style={{ padding: "10px 20px", borderRadius: 980, border: "none", background: vacancyPage === 0 ? "#E5E7EB" : "var(--clr-black)", color: vacancyPage === 0 ? "#9CA3AF" : "#fff", cursor: vacancyPage === 0 ? "default" : "pointer", fontSize: 14, fontWeight: 600 }}>이전</button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button key={i} onClick={() => setVacancyPage(i)}
+                  style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: vacancyPage === i ? "var(--clr-red)" : "transparent", color: vacancyPage === i ? "#fff" : "var(--clr-muted)", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>{i + 1}</button>
+              ))}
+              <button onClick={() => setVacancyPage(p => Math.min(totalPages - 1, p + 1))} disabled={vacancyPage === totalPages - 1}
+                style={{ padding: "10px 20px", borderRadius: 980, border: "none", background: vacancyPage === totalPages - 1 ? "#E5E7EB" : "var(--clr-black)", color: vacancyPage === totalPages - 1 ? "#9CA3AF" : "#fff", cursor: vacancyPage === totalPages - 1 ? "default" : "pointer", fontSize: 14, fontWeight: 600 }}>다음</button>
+            </div>
+          )}
+          {filtered.length > 0 && (
+            <div style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "var(--clr-light)" }}>
+              {vacancyPage * VACANCY_PER_PAGE + 1}~{Math.min((vacancyPage + 1) * VACANCY_PER_PAGE, filtered.length)} / 총 {filtered.length}개
+            </div>
+          )}
         </div>
       </section>
 
@@ -543,16 +1190,17 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], isAdmin 
         </div>
       </div>
 
-      {/* ═══ 관리자 편집 버튼 ═══ */}
+      {/* ═══ 홈페이지 관리 버튼 ═══ */}
       {isAdmin && (
         <div onClick={() => setEditMode(!editMode)} style={{
           position: "fixed", bottom: isMobile ? 70 : 24, right: 24, zIndex: 101,
-          width: 52, height: 52, borderRadius: 16,
+          display: "flex", alignItems: "center", gap: 8,
+          padding: editMode ? "12px 20px" : "0", width: editMode ? "auto" : 52, height: 52, borderRadius: 16,
           background: editMode ? "var(--clr-red)" : "var(--clr-black)",
-          color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer", fontSize: 20, boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-          transition: "all 0.3s",
-        }}>{editMode ? "✓" : "✏️"}</div>
+          color: "#fff", justifyContent: "center",
+          cursor: "pointer", fontSize: editMode ? 14 : 20, fontWeight: 700,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.15)", transition: "all 0.3s",
+        }}>{editMode ? "관리 완료 ✓" : "✏️"}</div>
       )}
     </div>
   );

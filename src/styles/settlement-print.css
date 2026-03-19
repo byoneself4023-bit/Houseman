@@ -91,10 +91,8 @@
   border-bottom: 3px double #333;
 }
 .stl-logo {
-  font-size: 9pt;
-  color: #888;
-  letter-spacing: 3px;
-  margin-bottom: 3mm;
+  text-align: left;
+  margin-bottom: 5mm;
 }
 .stl-title {
   font-size: 22pt;

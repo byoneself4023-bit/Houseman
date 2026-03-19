@@ -1,7 +1,12 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { patrolBuildings } from '../data/patrolData';
 import { asItems } from '../data/asItems';
 import { useIsMobile } from '../utils';
+import { useLocalStorage } from '../utils/useLocalStorage';
+import { initialStaffMembers } from '../config';
+import { buildingCoords } from '../data/buildingCoords';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // ── 권역 매핑 ──
 const REGIONS = {
@@ -80,6 +85,45 @@ function daysBetween(dateStr, refDate) {
   return Math.floor((ref - d) / (1000 * 60 * 60 * 24));
 }
 
+// ── Haversine 거리 계산 (km) ──
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ── 최근접 이웃 알고리즘으로 동선 최적화 ──
+function optimizeRoute(buildings) {
+  if (buildings.length <= 1) return buildings;
+  const coords = buildings.map(b => buildingCoords[b.building]).filter(Boolean);
+  if (coords.length < 2) return buildings;
+
+  const remaining = [...buildings];
+  const route = [remaining.shift()];
+
+  while (remaining.length > 0) {
+    const last = route[route.length - 1];
+    const lastCoord = buildingCoords[last.building];
+    if (!lastCoord) { route.push(remaining.shift()); continue; }
+
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < remaining.length; i++) {
+      const c = buildingCoords[remaining[i].building];
+      if (!c) continue;
+      const d = haversine(lastCoord.lat, lastCoord.lng, c.lat, c.lng);
+      if (d < bestDist) { bestDist = d; bestIdx = i; }
+    }
+    route.push(remaining.splice(bestIdx, 1)[0]);
+  }
+  return route;
+}
+
+// ── 요일별 색상 ──
+const DAY_COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
+
 // ── 시간 슬롯 생성 ──
 function timeSlots(count, start = '09:30') {
   const [h, m] = start.split(':').map(Number);
@@ -100,15 +144,44 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
   const [weekOffset, setWeekOffset] = useState(0);
   const [expandedDay, setExpandedDay] = useState(null);
   const [highlightedBuilding, setHighlightedBuilding] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState('전체');
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
+  const [mapDay, setMapDay] = useState(null); // null = all days, 0~4 = specific day
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+  const polylinesRef = useRef([]);
   const [scheduleOverrides] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('hm_routeSchedule') || '{}');
     } catch { return {}; }
   });
 
+  const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
+  const externalStaff = useMemo(() => staffList.filter(s => s.roles.includes("external")), [staffList]);
+
+  // 외부직원별 담당 건물 매핑 (patrolBuildings의 assignee 기준)
+  const staffBuildingMap = useMemo(() => {
+    const map = {};
+    for (const s of externalStaff) {
+      map[s.name] = patrolBuildings.filter(pb => pb.assignee === s.name).map(pb => pb.building);
+    }
+    return map;
+  }, [externalStaff]);
+
   const today = new Date();
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const weekLabel = weekOffset === 0 ? '이번 주' : weekOffset === 1 ? '다음 주' : `${weekOffset > 0 ? '+' : ''}${weekOffset}주`;
+
+  // 선택된 직원 기준 건물 필터
+  const filteredBuildings = useMemo(() => {
+    if (selectedStaff === '전체') return myBuildings;
+    const staffBuildings = staffBuildingMap[selectedStaff] || [];
+    if (myBuildings.length > 0) {
+      return myBuildings.filter(b => staffBuildings.includes(b));
+    }
+    return staffBuildings;
+  }, [selectedStaff, myBuildings, staffBuildingMap]);
 
   // ── 건물별 주소/권역 매핑 ──
   const buildingRegions = useMemo(() => {
@@ -129,8 +202,16 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
   const pendingTasks = useMemo(() => {
     const tasks = []; // { building, type, label, priority, daysSince }
 
+    // 선택 직원의 건물 목록
+    const staffBuildings = selectedStaff !== '전체' ? (staffBuildingMap[selectedStaff] || []) : null;
+    const isInScope = (building) => {
+      if (staffBuildings && !staffBuildings.includes(building)) return false;
+      if (filteredBuildings.length > 0 && !filteredBuildings.includes(building)) return false;
+      return true;
+    };
+
     // 1) AS 미완료
-    const pendingAS = asItems.filter(a => a.status !== '완료');
+    const pendingAS = asItems.filter(a => a.status !== '완료' && isInScope(a.building));
     for (const a of pendingAS) {
       tasks.push({
         building: a.building,
@@ -142,9 +223,11 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     }
 
     // 2) 순회 지연 (30일 * freq 초과)
-    const relevantPatrol = myBuildings.length > 0
-      ? patrolBuildings.filter(b => myBuildings.includes(b.building))
-      : patrolBuildings;
+    const relevantPatrol = filteredBuildings.length > 0
+      ? patrolBuildings.filter(b => filteredBuildings.includes(b.building))
+      : selectedStaff !== '전체'
+        ? patrolBuildings.filter(b => staffBuildings && staffBuildings.includes(b.building))
+        : patrolBuildings;
 
     for (const pb of relevantPatrol) {
       const threshold = 30 / (pb.freq || 1);
@@ -162,7 +245,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
     // 3) 입퇴실 관련 (activeTenants에서 moveIn/moveOut 근접건)
     for (const t of activeTenants) {
-      if (!t.building) continue;
+      if (!t.building || !isInScope(t.building)) continue;
       const moveIn = t.moveIn || t.startDate;
       const moveOut = t.moveOut || t.endDate;
       for (const [dateStr, taskLabel] of [[moveIn, '입주 체크'], [moveOut, '퇴실 체크']]) {
@@ -183,7 +266,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     }
 
     return tasks;
-  }, [myBuildings, activeTenants, today.toDateString()]);
+  }, [filteredBuildings, selectedStaff, staffBuildingMap, activeTenants, today.toDateString()]);
 
   // ── 권역별 그룹 + 주간 배분 ──
   const { dailySchedule, unassigned, delayRanking } = useMemo(() => {
@@ -275,6 +358,120 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       }, [])
       .slice(0, 5);
   }, [highlightedBuilding, pendingTasks, buildingRegions]);
+
+  // ── 거리 기반 동선 최적화 적용 ──
+  const optimizedSchedule = useMemo(() => {
+    return dailySchedule.map(day => ({
+      ...day,
+      buildings: optimizeRoute(day.buildings),
+    }));
+  }, [dailySchedule]);
+
+  // ── 지도 렌더링 ──
+  useEffect(() => {
+    if (viewMode !== 'map') return;
+    if (!mapRef.current) return;
+
+    // 지도 초기화
+    if (!mapInstanceRef.current) {
+      mapInstanceRef.current = L.map(mapRef.current, {
+        center: [37.484, 126.929],
+        zoom: 13,
+        zoomControl: true,
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(mapInstanceRef.current);
+    }
+
+    const map = mapInstanceRef.current;
+
+    // 기존 마커/라인 제거
+    markersRef.current.forEach(m => map.removeLayer(m));
+    polylinesRef.current.forEach(p => map.removeLayer(p));
+    markersRef.current = [];
+    polylinesRef.current = [];
+
+    const allBounds = [];
+    const daysToShow = mapDay !== null ? [mapDay] : [0, 1, 2, 3, 4];
+
+    for (const dayIdx of daysToShow) {
+      const day = optimizedSchedule[dayIdx];
+      if (!day || day.buildings.length === 0) continue;
+
+      const dayColor = DAY_COLORS[dayIdx];
+      const routeCoords = [];
+
+      day.buildings.forEach((b, bIdx) => {
+        const coord = buildingCoords[b.building];
+        if (!coord) return;
+
+        const latlng = [coord.lat, coord.lng];
+        routeCoords.push(latlng);
+        allBounds.push(latlng);
+
+        const mainType = b.tasks[0]?.type || 'patrol';
+        const markerColor = TASK_COLORS[mainType];
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="
+            width:28px;height:28px;border-radius:50%;
+            background:${markerColor};color:#fff;
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:800;
+            border:3px solid ${dayColor};
+            box-shadow:0 2px 6px rgba(0,0,0,0.3);
+          ">${bIdx + 1}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+        });
+
+        const taskList = b.tasks.map(t =>
+          `<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;background:${TASK_COLORS[t.type]};margin-right:4px">${TASK_LABELS[t.type]}</span> ${t.label}`
+        ).join('<br/>');
+
+        const marker = L.marker(latlng, { icon })
+          .addTo(map)
+          .bindPopup(`
+            <div style="min-width:160px">
+              <div style="font-weight:800;font-size:14px;margin-bottom:6px">${b.building}</div>
+              <div style="font-size:11px;color:#6B7280;margin-bottom:4px">${WEEKDAY_NAMES[dayIdx]} ${bIdx + 1}번째</div>
+              ${taskList}
+              ${coord.address ? `<div style="font-size:10px;color:#9CA3AF;margin-top:6px">${coord.address}</div>` : ''}
+            </div>
+          `);
+
+        markersRef.current.push(marker);
+      });
+
+      if (routeCoords.length >= 2) {
+        const polyline = L.polyline(routeCoords, {
+          color: dayColor,
+          weight: 3,
+          opacity: 0.8,
+          dashArray: mapDay === null ? '8, 6' : null,
+        }).addTo(map);
+        polylinesRef.current.push(polyline);
+      }
+    }
+
+    if (allBounds.length > 0) {
+      map.fitBounds(allBounds, { padding: [40, 40], maxZoom: 15 });
+    }
+
+    setTimeout(() => map.invalidateSize(), 100);
+  }, [viewMode, optimizedSchedule, mapDay]);
+
+  useEffect(() => {
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
 
   const toggleDay = useCallback((idx) => {
     setExpandedDay(prev => prev === idx ? null : idx);
@@ -384,17 +581,194 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
         </div>
       </div>
 
-      {/* ── Legend ── */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-        {Object.entries(TASK_LABELS).map(([type, label]) => (
-          <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6B7280' }}>
-            <div style={dotStyle(TASK_COLORS[type])} />
-            <span>{label}</span>
-          </div>
-        ))}
+      {/* ── Staff Filter ── */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#6B7280', marginRight: 4 }}>담당자:</span>
+        {['전체', ...externalStaff.map(s => s.name)].map(name => {
+          const isActive = selectedStaff === name;
+          const staffInfo = externalStaff.find(s => s.name === name);
+          const buildingCount = name === '전체' ? null : (staffBuildingMap[name] || []).length;
+          return (
+            <button
+              key={name}
+              onClick={() => setSelectedStaff(name)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: 8,
+                border: isActive ? '2px solid #3B82F6' : '1px solid #D1D5DB',
+                background: isActive ? '#EFF6FF' : '#fff',
+                color: isActive ? '#1D4ED8' : '#374151',
+                fontSize: 13,
+                fontWeight: isActive ? 800 : 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {name}
+              {buildingCount != null && (
+                <span style={{ fontSize: 11, color: isActive ? '#3B82F6' : '#9CA3AF', marginLeft: 4 }}>
+                  ({buildingCount})
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div style={mainGrid}>
+      {/* ── Legend + View Toggle ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          {Object.entries(TASK_LABELS).map(([type, label]) => (
+            <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6B7280' }}>
+              <div style={dotStyle(TASK_COLORS[type])} />
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 4, background: '#F3F4F6', borderRadius: 8, padding: 2 }}>
+          {[['list', '목록'], ['map', '지도']].map(([mode, label]) => (
+            <button
+              key={mode}
+              onClick={() => {
+                if (mode !== viewMode) {
+                  if (mode === 'list' && mapInstanceRef.current) {
+                    mapInstanceRef.current.remove();
+                    mapInstanceRef.current = null;
+                  }
+                  setViewMode(mode);
+                }
+              }}
+              style={{
+                padding: '5px 14px',
+                borderRadius: 6,
+                border: 'none',
+                background: viewMode === mode ? '#fff' : 'transparent',
+                color: viewMode === mode ? '#111827' : '#6B7280',
+                fontSize: 13,
+                fontWeight: viewMode === mode ? 700 : 500,
+                cursor: 'pointer',
+                boxShadow: viewMode === mode ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Map View ── */}
+      {viewMode === 'map' && (
+        <div style={{ marginBottom: 20 }}>
+          {/* 요일 필터 */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setMapDay(null)}
+              style={{
+                padding: '5px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                background: mapDay === null ? '#111827' : '#F3F4F6',
+                color: mapDay === null ? '#fff' : '#6B7280',
+              }}
+            >
+              전체
+            </button>
+            {WEEKDAY_NAMES.map((name, idx) => {
+              const count = optimizedSchedule[idx]?.buildings.length || 0;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setMapDay(idx)}
+                  style={{
+                    padding: '5px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                    background: mapDay === idx ? DAY_COLORS[idx] : '#F3F4F6',
+                    color: mapDay === idx ? '#fff' : '#6B7280',
+                  }}
+                >
+                  {name.slice(0, 1)} {count > 0 && `(${count})`}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 지도 요일 범례 */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
+            {WEEKDAY_NAMES.map((name, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6B7280' }}>
+                <div style={{ width: 12, height: 3, background: DAY_COLORS[idx], borderRadius: 2 }} />
+                <span>{name.slice(0, 1)}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 지도 컨테이너 */}
+          <div
+            ref={mapRef}
+            style={{
+              width: '100%',
+              height: isMobile ? 400 : 550,
+              borderRadius: 12,
+              border: '1px solid #E8ECF0',
+              overflow: 'hidden',
+            }}
+          />
+
+          {/* 선택된 날의 동선 순서 표시 */}
+          {mapDay !== null && optimizedSchedule[mapDay]?.buildings.length > 0 && (
+            <div style={{
+              marginTop: 12, padding: 12, background: '#F9FAFB', borderRadius: 10,
+              border: `2px solid ${DAY_COLORS[mapDay]}20`,
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', marginBottom: 8 }}>
+                {WEEKDAY_NAMES[mapDay]} 최적 동선 ({optimizedSchedule[mapDay].buildings.length}개 건물)
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
+                {optimizedSchedule[mapDay].buildings.map((b, i) => {
+                  const coord = buildingCoords[b.building];
+                  const prevCoord = i > 0 ? buildingCoords[optimizedSchedule[mapDay].buildings[i - 1].building] : null;
+                  const dist = prevCoord && coord ? haversine(prevCoord.lat, prevCoord.lng, coord.lat, coord.lng).toFixed(1) : null;
+                  return (
+                    <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      {i > 0 && (
+                        <span style={{ fontSize: 11, color: '#9CA3AF' }}>
+                          → {dist && `${dist}km`}
+                        </span>
+                      )}
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        padding: '3px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700,
+                        background: `${DAY_COLORS[mapDay]}15`, color: '#111827',
+                        border: `1px solid ${DAY_COLORS[mapDay]}30`,
+                      }}>
+                        <span style={{
+                          width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 800,
+                          background: DAY_COLORS[mapDay], color: '#fff',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        }}>{i + 1}</span>
+                        {b.building}
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
+              {(() => {
+                const buildings = optimizedSchedule[mapDay].buildings;
+                let totalDist = 0;
+                for (let i = 1; i < buildings.length; i++) {
+                  const prev = buildingCoords[buildings[i - 1].building];
+                  const curr = buildingCoords[buildings[i].building];
+                  if (prev && curr) totalDist += haversine(prev.lat, prev.lng, curr.lat, curr.lng);
+                }
+                return totalDist > 0 ? (
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
+                    총 이동거리: <strong style={{ color: '#111827' }}>{totalDist.toFixed(1)}km</strong> (직선거리 기준)
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          )}
+        </div>
+      )}
+
+      {viewMode === 'list' && <div style={mainGrid}>
         {/* ── Left: Daily Schedule Cards ── */}
         <div>
           {dailySchedule.map((day, idx) => {
@@ -599,7 +973,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             </div>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* ── Mobile: delay ranking at bottom ── */}
       {isMobile && delayRanking.length > 0 && (

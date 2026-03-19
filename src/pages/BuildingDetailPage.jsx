@@ -490,6 +490,26 @@ const BuildingDetailPageInner = ({ buildingName, onBack, buildingAccounts = {}, 
                               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                 {ownerFirstModes[curMode] ? <>{ownerSection}{hmSection}</> : <>{hmSection}{ownerSection}</>}
                                 <div style={{ fontSize: 10, color: "#5F6577", padding: "4px 0" }}>💡 {flowMap[curMode]}</div>
+                                {/* 예치금 보관 선택: 단기 + 하우스맨 계좌 1개일 때만 */}
+                                {aType === "단기" && curMode === "houseman" && (
+                                  <div style={{ marginTop: 6, padding: "8px 10px", background: "#fff", borderRadius: 6, border: "1px solid #E5E7EB" }}>
+                                    <div style={{ fontSize: 9, fontWeight: 700, color: "#374151", marginBottom: 6 }}>예치금 보관</div>
+                                    <div style={{ display: "flex", gap: 4 }}>
+                                      {[{ id: "hm", label: "하우스맨 보관" }, { id: "owner", label: "건물주 보관" }].map(opt => {
+                                        const cur = bldgAccts.depositHolder || "hm";
+                                        return (
+                                          <button key={opt.id} onClick={() => updateBldgAcct({ depositHolder: opt.id })}
+                                            style={{ padding: "5px 12px", borderRadius: 6, border: cur === opt.id ? "1.5px solid #3B82F6" : "1px solid #E0E3E9", background: cur === opt.id ? "#EFF6FF" : "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: cur === opt.id ? "#2563EB" : "#5F6577" }}>
+                                            {opt.label}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                    <div style={{ fontSize: 9, color: "#9CA3AF", marginTop: 4 }}>
+                                      {(bldgAccts.depositHolder || "hm") === "hm" ? "퇴실 시 하우스맨에서 임차인에게 직접 반환" : "퇴실 시 건물주에게 반환 요청 후 임차인에게 반환"}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             );
                           })()}
@@ -1440,7 +1460,7 @@ const BuildingDetailPageInner = ({ buildingName, onBack, buildingAccounts = {}, 
                   </div>
                 </div>
               )}
-              {/* 🏦 호실 계좌 정보 — 건물 기본값 상속 + 호실 개별 설정 */}
+              {/* 🏦 호실 계좌 정보 + 입주금 계산 */}
               {(() => {
                 const roomAcctKey = `${buildingName}_${selectedRoom}`;
                 const roomType = getRoomType(buildingName, selectedRoom);
@@ -1485,8 +1505,59 @@ const BuildingDetailPageInner = ({ buildingName, onBack, buildingAccounts = {}, 
                 const validMode = currentOptions.find(o => o.id === effectiveAcct.mode) ? effectiveAcct.mode : "";
                 const ownerFields = ownerFieldCfg[validMode] || [];
                 const hmUsage = housemanUsageMap[validMode];
+                // 입주금 계산 (단기 전용)
+                const isDangiRoom = roomAcctType === "단기";
+                const pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
+                const rmKey2 = `${buildingName}_${selectedRoom}`;
+                const sr2 = saved[`room_${selectedRoom}`] || {};
+                const ri2 = { ...(roomMasterData[rmKey2] || {}), ...sr2 };
+                const riDeposit = pn(ri2.deposit);
+                const riRent = pn(ri2.rent);
+                const riMgmt = pn(ri2.mgmt);
+                const riWater = pn(ri2.water);
+                const riInternet = pn(ri2.internet);
+
+                const moveInCalc = (() => {
+                  if (!isDangiRoom) return null;
+                  const total = riDeposit + riRent + riMgmt + riWater + riInternet;
+                  const fmtW = (n) => n >= 10000 ? `${(n/10000).toFixed(n%10000===0?0:1)}만` : n > 0 ? `${n.toLocaleString()}원` : "0원";
+
+                  if (validMode === "houseman" || validMode === "hm_owner1" || !validMode) {
+                    // 계좌 1개: 전부 한 계좌
+                    const acctName = validMode === "hm_owner1" ? "건물주계좌" : "하우스맨계좌";
+                    return { type: "single", acctName, items: [
+                      { l: "예치금", v: riDeposit }, { l: "임대료", v: riRent }, { l: "관리비", v: riMgmt },
+                      { l: "수도", v: riWater }, { l: "인터넷", v: riInternet },
+                    ], total };
+                  }
+                  if (validMode === "owner1") {
+                    // 건물주: 임대료, 하우스맨: 관리비+공과금
+                    return { type: "dual", accounts: [
+                      { name: "건물주계좌", items: [{ l: "예치금", v: riDeposit }, { l: "임대료", v: riRent }], sub: riDeposit + riRent },
+                      { name: "하우스맨계좌", items: [{ l: "관리비", v: riMgmt }, { l: "수도", v: riWater }, { l: "인터넷", v: riInternet }], sub: riMgmt + riWater + riInternet },
+                    ], total };
+                  }
+                  if (validMode === "owner2") {
+                    // 건물주: 임대료+관리비, 하우스맨: 수도+인터넷
+                    return { type: "dual", accounts: [
+                      { name: "건물주계좌", items: [{ l: "예치금", v: riDeposit }, { l: "임대료", v: riRent }, { l: "관리비", v: riMgmt }], sub: riDeposit + riRent + riMgmt },
+                      { name: "하우스맨계좌", items: [{ l: "수도", v: riWater }, { l: "인터넷", v: riInternet }], sub: riWater + riInternet },
+                    ], total };
+                  }
+                  if (validMode === "owner3") {
+                    // 건물주: 임대료+관리비, 수도+인터넷 후불
+                    return { type: "dual_deferred", accounts: [
+                      { name: "건물주계좌", items: [{ l: "예치금", v: riDeposit }, { l: "임대료", v: riRent }, { l: "관리비", v: riMgmt }], sub: riDeposit + riRent + riMgmt },
+                    ], deferred: [{ l: "수도", v: riWater }, { l: "인터넷", v: riInternet }],
+                    deferredSub: riWater + riInternet, total: riDeposit + riRent + riMgmt };
+                  }
+                  return null;
+                })();
+
                 return (
-                  <div style={{ marginTop: 14, padding: "10px 14px", background: "#FFFBF0", borderRadius: 10, border: "1px solid #FDE68A" }}>
+                  <div style={{ marginTop: 14, display: isDangiRoom ? "grid" : "block", gridTemplateColumns: isDangiRoom ? "1fr 1fr" : "1fr", gap: 12 }}>
+                  {/* 왼쪽: 계좌 정보 */}
+                  <div style={{ padding: "10px 14px", background: "#FFFBF0", borderRadius: 10, border: "1px solid #FDE68A" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                       <span style={{ fontSize: 10, fontWeight: 800, color: "#92400E" }}>🏦 계좌 정보</span>
                       <span style={{ fontSize: 9, padding: "2px 8px", borderRadius: 4, background: acctTypeBg[roomAcctType], color: acctTypeColor[roomAcctType], fontWeight: 700 }}>{acctTypeLabel[roomAcctType]}</span>
@@ -1598,6 +1669,73 @@ const BuildingDetailPageInner = ({ buildingName, onBack, buildingAccounts = {}, 
                         );
                       })()}
                     </>}
+                  </div>
+
+                  {/* 오른쪽: 입주금 계산 (단기 전용) */}
+                  {isDangiRoom && moveInCalc && (
+                    <div style={{ padding: "10px 14px", background: "#F0FDF4", borderRadius: 10, border: "1px solid #BBF7D0" }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: "#065F46", marginBottom: 4 }}>💰 입주금 계산</div>
+                      <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 10, lineHeight: 1.5 }}>
+                        {moveInCalc.type === "single" && (moveInCalc.acctName === "건물주계좌"
+                          ? "이 건물은 전체 입주금을 건물주 계좌로 입금합니다."
+                          : "이 건물은 전체 입주금을 하우스맨 계좌로 입금합니다."
+                        )}
+                        {moveInCalc.type === "dual" && validMode === "owner1" && "이 건물은 예치금+임대료는 건물주 계좌, 관리비+공과금은 하우스맨 계좌로 분리 입금합니다."}
+                        {moveInCalc.type === "dual" && validMode === "owner2" && "이 건물은 예치금+임대료+관리비는 건물주 계좌, 수도+인터넷은 하우스맨 계좌로 분리 입금합니다."}
+                        {moveInCalc.type === "dual_deferred" && "이 건물은 예치금+임대료+관리비는 건물주 계좌로 입금하고, 수도+인터넷은 후불로 정산합니다."}
+                      </div>
+                      {moveInCalc.type === "single" && (
+                        <div>
+                          <div style={{ fontSize: 9, fontWeight: 700, color: "#065F46", marginBottom: 6, padding: "3px 8px", background: "#DCFCE7", borderRadius: 4 }}>{moveInCalc.acctName}</div>
+                          {moveInCalc.items.filter(x => x.v > 0).map((x, i) => (
+                            <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, padding: "3px 0", color: "#374151" }}>
+                              <span>{x.l}</span>
+                              <span style={{ fontWeight: 600, fontFamily: "monospace" }}>{x.v.toLocaleString()}원</span>
+                            </div>
+                          ))}
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 800, color: "#065F46", borderTop: "2px solid #065F46", marginTop: 6, paddingTop: 6 }}>
+                            <span>합계</span>
+                            <span style={{ fontFamily: "monospace" }}>{moveInCalc.total.toLocaleString()}원</span>
+                          </div>
+                        </div>
+                      )}
+                      {(moveInCalc.type === "dual" || moveInCalc.type === "dual_deferred") && (
+                        <div>
+                          {moveInCalc.accounts.map((acct, ai) => (
+                            <div key={ai} style={{ marginBottom: 8 }}>
+                              <div style={{ fontSize: 9, fontWeight: 700, color: ai === 0 ? "#EA580C" : "#2563EB", marginBottom: 4, padding: "3px 8px", background: ai === 0 ? "#FFF7ED" : "#EFF6FF", borderRadius: 4 }}>{acct.name}</div>
+                              {acct.items.filter(x => x.v > 0).map((x, i) => (
+                                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, padding: "2px 0", color: "#374151" }}>
+                                  <span>{x.l}</span>
+                                  <span style={{ fontWeight: 600, fontFamily: "monospace" }}>{x.v.toLocaleString()}원</span>
+                                </div>
+                              ))}
+                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 700, color: ai === 0 ? "#EA580C" : "#2563EB", borderTop: "1px solid #E5E7EB", marginTop: 3, paddingTop: 3 }}>
+                                <span>소계</span>
+                                <span style={{ fontFamily: "monospace" }}>{acct.sub.toLocaleString()}원</span>
+                              </div>
+                            </div>
+                          ))}
+                          {moveInCalc.type === "dual_deferred" && moveInCalc.deferredSub > 0 && (
+                            <div style={{ padding: "6px 8px", background: "#FEF3C7", borderRadius: 4, marginBottom: 8 }}>
+                              <div style={{ fontSize: 9, fontWeight: 700, color: "#92400E", marginBottom: 3 }}>후불 항목</div>
+                              {moveInCalc.deferred.filter(x => x.v > 0).map((x, i) => (
+                                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, padding: "1px 0", color: "#92400E" }}>
+                                  <span>{x.l}</span>
+                                  <span style={{ fontWeight: 600, fontFamily: "monospace" }}>{x.v.toLocaleString()}원</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 800, color: "#065F46", borderTop: "2px solid #065F46", paddingTop: 6 }}>
+                            <span>입주금 합계</span>
+                            <span style={{ fontFamily: "monospace" }}>{moveInCalc.total.toLocaleString()}원</span>
+                          </div>
+                          {moveInCalc.type === "dual_deferred" && <div style={{ fontSize: 10, color: "#92400E", marginTop: 4 }}>※ 수도/인터넷은 후불 정산</div>}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   </div>
                 );
               })()}

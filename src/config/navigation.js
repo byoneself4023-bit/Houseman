@@ -33,6 +33,7 @@ export const menuSections = [
   ]},
 { section: "설정", items: [
     { id: "payroll", icon: "💵", label: "급여내역" },
+    { id: "broker", icon: "🏠", label: "부동산 관리" },
     { id: "staff", icon: "👥", label: "담당자 관리" },
     { id: "data-upload", icon: "📁", label: "데이터 업로드" },
     { id: "homepage-edit", icon: "🌐", label: "홈페이지 편집" },

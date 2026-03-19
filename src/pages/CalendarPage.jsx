@@ -281,7 +281,11 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                     onDoubleClick={() => openEditEvent(ev)}>
                     {/* 스텝 인디케이터 */}
                     <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #EFF6FF, #F8FAFF)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #BFDBFE", display: "flex", alignItems: "center", gap: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#3B82F6", marginRight: 12, whiteSpace: "nowrap" }}>{ev.building} {ev.room}호</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#3B82F6", marginRight: 6, whiteSpace: "nowrap" }}>{ev.building} {ev.room}호</div>
+                      {ev.registeredSource === "broker"
+                        ? <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", background: "#EC4899", color: "#fff", borderRadius: 3, marginRight: 6, whiteSpace: "nowrap" }}>부동산</span>
+                        : <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", background: "#6B7280", color: "#fff", borderRadius: 3, marginRight: 6, whiteSpace: "nowrap" }}>직접</span>
+                      }
                       <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
                         {cSteps.map((step, si) => {
                           const isActive = si === currentStep;
@@ -379,6 +383,28 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                       {setEvents && (
                         <span onClick={() => {
                           const bf = buildingFloors[ev.building] || {};
+                          const isReported = !!ev.reported;
+                          // 건물주보고 안 된 상태면 부동산에게만 문자
+                          if (!isReported && ev.brokerPhone) {
+                            const brokerMsg = [
+                              `[${ev.building} ${ev.room}호 계약파기 안내]`,
+                              ``,
+                              `안녕하세요, 하우스맨입니다.`,
+                              `${ev.building} ${ev.room}호 계약이 파기되었습니다.`,
+                              ``,
+                              `▪ 보증금: ${ev.deposit ?? 0}만원`,
+                              `▪ 월세: ${ev.rent ?? 0}만원`,
+                              `▪ 입주예정일: ${ev.moveIn || ev.date || "-"}`,
+                              ``,
+                              `해당 호실은 다시 공실로 전환됩니다.`,
+                              `감사합니다.`,
+                              `- 하우스맨`,
+                            ].join("\n");
+                            setEvents(prev => prev.filter(e => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
+                            setActiveVacancies?.(prev => prev.map(v => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
+                            setBreakReport({ ev, owners: [{ name: ev.broker || "부동산", phone: ev.brokerPhone }], msgText: brokerMsg, targetBroker: true });
+                            return;
+                          }
                           const owners = [{ name: bf.owner || "", phone: bf.phone || "" }];
                           const ownerName = owners[0]?.name || "건물주";
                           const msgLines = [
@@ -511,6 +537,15 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                     </div>
                     {/* 액션 버튼 행 */}
                     <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      {/* 입주사진 보기 */}
+                      {(tm.moveInCheckPhotos && tm.moveInCheckPhotos.length > 0) ? (
+                        <span onClick={() => setCheckPhotoModalTenant({ ...tm, _viewModeOnly: "moveIn" })}
+                          style={{ fontSize: 10, fontWeight: 700, color: "#059669", padding: "4px 10px", borderRadius: 6, border: "1px solid #A7F3D0", background: "#ECFDF5", cursor: "pointer" }}>
+                          🏠 입주사진 ({tm.moveInCheckPhotos.length})
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: "#C4C7CF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>🏠 입주사진 없음</span>
+                      )}
                       {/* 퇴실문자 */}
                       {ev.moveOutMsg ? (
                         <span onClick={(e) => { e.stopPropagation(); setMoveOutMsgModal({ ev, text: ev.moveOutMsg }); }}
@@ -1915,19 +1950,19 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
             <div onClick={e => e.stopPropagation()}
               style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span>📩 계약파기 건물주 보고 — {ev.building} {ev.room}호</span>
+                <span>📩 계약파기 {breakReport.targetBroker ? "부동산 안내" : "건물주 보고"} — {ev.building} {ev.room}호</span>
                 <button onClick={() => setBreakReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
               </div>
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>{breakReport.targetBroker ? "🏠 부동산 정보" : "👤 건물주 정보"}</div>
                 {owners.map((o, oi) => (
                   <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
-                    <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
+                    <span style={{ fontWeight: 700 }}>{o.name || (breakReport.targetBroker ? "부동산" : `건물주${oi + 1}`)}</span>
                     <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ marginBottom: 12 }}>
+              {!breakReport.targetBroker && <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💰 계약금 (만원)</div>
                 <input id="break-deposit-amt" type="number" placeholder="계약금 입력"
                   onChange={e => {
@@ -1938,7 +1973,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
                     }
                   }}
                   style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #FECACA", fontSize: 12, fontFamily: "inherit", background: "#FEF2F2", boxSizing: "border-box" }} />
-              </div>
+              </div>}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💬 전송 내용</div>
                 <textarea id="break-report-msg" defaultValue={msgText} rows={14}

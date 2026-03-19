@@ -40,6 +40,7 @@ const TaskDriverPage = React.lazy(() => import('./pages/TaskDriverPage').then(m 
 const ProfitDashboardPage = React.lazy(() => import('./pages/ProfitDashboardPage').then(m => ({ default: m.ProfitDashboardPage })));
 
 const RouteSchedulePage = React.lazy(() => import('./pages/RouteSchedulePage').then(m => ({ default: m.RouteSchedulePage })));
+const BrokerPage = React.lazy(() => import('./pages/BrokerPage').then(m => ({ default: m.BrokerPage })));
 
 
 
@@ -141,7 +142,17 @@ export default function App() {
   const [lateFeeOverrides, setLateFeeOverrides] = useState(() => loadLS("hm_lateFeeOverrides", {}));
   const [pendingContract, setPendingContract] = useState(null);
   const [pendingMoveout, setPendingMoveout] = useState(null);
-  const [activeTenants, setActiveTenants] = useState(() => loadLS("hm_activeTenants", [...tenants]));
+  const [activeTenants, setActiveTenants] = useState(() => {
+    const saved = loadLS("hm_activeTenants", [...tenants]);
+    // type 교정: 정적 tenants에 정확한 type이 있으면 덮어쓰기
+    const staticMap = {};
+    tenants.forEach(t => { staticMap[`${t.building}_${t.room}`] = t.type; });
+    return saved.map(t => {
+      const correctType = staticMap[`${t.building}_${t.room}`];
+      if (correctType && correctType !== t.type) return { ...t, type: correctType };
+      return t;
+    });
+  });
   const [pastTenantsData, setPastTenantsData] = useState(() => loadLS("hm_pastTenantsData", { ...staticPastTenants }));
   const [activeVacancies, setActiveVacancies] = useState(() => loadLS("hm_activeVacancies", [...staticVacancies]));
   const [settlementExpenses, setSettlementExpenses] = useState(() => loadLS("hm_settlementExpenses", defaultSettlementExpenses));
@@ -453,7 +464,8 @@ www.houseman.co.kr
     const renewalTypes = new Set(["일반임대", "근생"]);
     const renewalCount = (activeTenants || []).filter(t => {
       if (!t.expiry || !t.name || t.name === "퇴실") return false;
-      const rt = t.type || getRoomType(t.building, t.room);
+      // type 판별: 임차인 자체 → 건물데이터 → getRoomType → 건물 기본 type
+      const rt = t.type || (buildingData[t.building]?.rooms?.[t.room]?.type) || getRoomType(t.building, t.room) || (allBuildings.find(b => b.name === t.building)?.type) || "단기";
       if (!renewalTypes.has(rt)) return false;
       const exp = new Date(t.expiry);
       if (isNaN(exp.getTime())) return false;
@@ -479,13 +491,14 @@ www.houseman.co.kr
       return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} setPendingContract={setPendingContract} buildingData={buildingData} />;
     }
     if (role === "homepage") {
-      return <HomepagePage buildingData={buildingData} activeVacancies={activeVacancies} isAdmin={role === "admin"} />;
+      return <HomepagePage buildingData={buildingData} activeVacancies={activeVacancies} calendarEvts={calendarEvts} setCalendarEvts={setCalendarEvts} isAdmin={role === "admin"} />;
     }
     if (page === "buildings" && selectedBuilding) {
       return <BuildingDetailPage buildingName={selectedBuilding} onBack={() => setSelectedBuilding(null)} buildingAccounts={buildingAccounts} setBuildingAccounts={setBuildingAccounts} customBuildings={customBuildings} allBuildings={allBuildings} setAllBuildings={setAllBuildings} buildingData={buildingData} setBuildingData={setBuildingData} activeTenants={activeTenants} activeVacancies={activeVacancies} pastTenantsData={pastTenantsData} />;
     }
     switch (page) {
       case "staff": return <StaffPage />;
+      case "broker": return <BrokerPage />;
       case "buildings": return <BuildingsPage onSelectBuilding={(name) => setSelectedBuilding(name)} myBuildings={myBuildings} customBuildings={customBuildings} setCustomBuildings={setCustomBuildings} allBuildings={allBuildings} setAllBuildings={setAllBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} />;
       case "tenants": return <TenantsPage myBuildings={myBuildings} parkingInfo={parkingInfo} setParkingInfo={setParkingInfo} pendingContract={pendingContract} setPendingContract={setPendingContract} pendingMoveout={pendingMoveout} setPendingMoveout={setPendingMoveout} buildingAccounts={buildingAccounts} allBuildings={allBuildings} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} calendarEvts={calendarEvts} setCalendarEvts={setCalendarEvts} billingHistory={billingHistory} roomBalances={roomBalances} lateFeeOverrides={lateFeeOverrides} buildingData={buildingData} />;
       case "pastTenants": return <PastTenantsPage myBuildings={myBuildings} pastTenantsData={pastTenantsData} activeTenants={activeTenants} />;
@@ -500,7 +513,7 @@ www.houseman.co.kr
       case "as": return <ASPage myBuildings={myBuildings} />;
       case "calendar": return <CalendarPage events={calendarEvts} setEvents={setCalendarEvts} currentStaff={currentStaff} activeVacancies={activeVacancies} setActiveVacancies={setActiveVacancies} activeTenants={activeTenants} setActiveTenants={setActiveTenants} pastTenantsData={pastTenantsData} setPastTenantsData={setPastTenantsData} setPage={setPage} setPendingMoveout={setPendingMoveout} setPendingContract={setPendingContract} buildingData={buildingData} />;
       case "patrol": return <PatrolPage myBuildings={myBuildings} buildingData={buildingData} />;
-      case "settlement": return <SettlementPage myBuildings={myBuildings} activeTenants={activeTenants} transactions={transactions} settlementExpenses={settlementExpenses} setSettlementExpenses={setSettlementExpenses} buildingData={buildingData} pastTenantsData={pastTenantsData} addCashbookEntry={addCashbookEntry} />;
+      case "settlement": return <SettlementPage myBuildings={myBuildings} activeTenants={activeTenants} transactions={transactions} settlementExpenses={settlementExpenses} setSettlementExpenses={setSettlementExpenses} buildingData={buildingData} pastTenantsData={pastTenantsData} addCashbookEntry={addCashbookEntry} roomBalances={roomBalances} billingHistory={billingHistory} />;
       case "cashbook": return <CashBookPage cashbookEntries={cashbookEntries} setCashbookEntries={setCashbookEntries} buildingData={buildingData} />;
       case "payroll": return <PayrollPage />;
       case "task-driver": return <TaskDriverPage myBuildings={myBuildings} activeTenants={activeTenants} activeVacancies={activeVacancies} calendarEvts={calendarEvts} buildingData={buildingData} settlementExpenses={settlementExpenses} roomBalances={roomBalances} billingHistory={billingHistory} pastTenantsData={pastTenantsData} currentStaff={currentStaff} />;
@@ -546,7 +559,7 @@ www.houseman.co.kr
       {!isMobile && (
         <div style={{ width: sidebarOpen ? 230 : 64, background: "#1B1F2E", display: "flex", flexDirection: "column", transition: "width 0.25s ease", flexShrink: 0, overflow: "hidden" }}>
           <div style={{ padding: sidebarOpen ? "10px 14px" : "14px 12px", borderBottom: "1px solid #2A2F42", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: "linear-gradient(135deg, #3B82F6, #2563EB)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>🏗️</div>
+            <img src="/logo-icon.svg" alt="" style={{ height: 30, width: "auto", flexShrink: 0 }} />
             {sidebarOpen && (
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div>

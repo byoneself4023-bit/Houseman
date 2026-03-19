@@ -5,6 +5,7 @@ export const modeOptions = {
     { id: "hm_owner1", label: "건물주계좌1", desc: "제이앤제이식 · 임대료+관리비+공과금→건물주계좌" },
     { id: "owner1", label: "건물주계좌2", desc: "와이원빈티지식 · 임대료→건물주 / 관리비+공과금→하우스맨" },
     { id: "owner2", label: "건물주계좌3", desc: "굿모닝빌식 · 임대료+관리비→건물주 / 공과금→하우스맨" },
+    { id: "owner3", label: "건물주계좌4", desc: "임대료+관리비→건물주 / 수도+인터넷 후불" },
   ],
   "일반임대": [
     { id: "gs1", label: "건물주 1개", desc: "임대료+관리비+공과금→건물주계좌" },
@@ -24,7 +25,7 @@ export const modeOptions = {
   ],
 };
 export const ownerFieldCfg = {
-  houseman: [], hm_owner1: [{ key: "rent", label: "건물주계좌 (임대료+관리비+공과금)" }], owner1: [{ key: "rent", label: "건물주계좌 (임대료)" }], owner2: [{ key: "rent", label: "건물주계좌 (임대료+관리비)" }],
+  houseman: [], hm_owner1: [{ key: "rent", label: "건물주계좌 (임대료+관리비+공과금)" }], owner1: [{ key: "rent", label: "건물주계좌 (임대료)" }], owner2: [{ key: "rent", label: "건물주계좌 (임대료+관리비)" }], owner3: [{ key: "rent", label: "건물주계좌 (임대료+관리비)" }],
   gs1: [{ key: "rent", label: "건물주계좌" }],
   gs2a: [{ key: "rent", label: "건물주계좌1 (임대료)" }, { key: "mgmt", label: "건물주계좌2 (관리비+공과금)" }],
   gs2b: [{ key: "rent", label: "건물주계좌1 (임대료+관리비)" }, { key: "utility", label: "건물주계좌2 (공과금)" }],
@@ -32,9 +33,9 @@ export const ownerFieldCfg = {
   mgmt_houseman: [], mgmt_building: [{ key: "representative", label: "건물 대표계좌" }],
 };
 export const housemanUsageMap = { houseman: "전체", owner1: "관리비+공과금", owner2: "공과금", mgmt_houseman: "전체 수금" };
-export const ownerFirstModes = { owner1: true, owner2: true };
+export const ownerFirstModes = { owner1: true, owner2: true, owner3: true };
 export const flowMap = {
-  houseman: "임대료+관리비+공과금 → 하우스맨", hm_owner1: "임대료+관리비+공과금 → 건물주계좌", owner1: "임대료→건물주 / 관리비+공과금→하우스맨", owner2: "임대료+관리비→건물주 / 공과금→하우스맨",
+  houseman: "임대료+관리비+공과금 → 하우스맨", hm_owner1: "임대료+관리비+공과금 → 건물주계좌", owner1: "임대료→건물주 / 관리비+공과금→하우스맨", owner2: "임대료+관리비→건물주 / 공과금→하우스맨", owner3: "임대료+관리비→건물주 / 수도+인터넷 후불",
   gs1: "전체→건물주계좌", gs2a: "임대료→계좌1 / 관리비+공과금→계좌2", gs2b: "임대료+관리비→계좌1 / 공과금→계좌2", gs3: "임대료→계좌1 / 관리비→계좌2 / 공과금→계좌3",
   mgmt_houseman: "전체→하우스맨", mgmt_building: "전체→건물대표계좌",
 };

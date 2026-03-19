@@ -117,7 +117,9 @@ export const SettlementPrintView = ({ data, onClose }) => {
         ====================================================== */}
         <div className="stl-page">
           <div className="stl-header">
-            <div className="stl-logo">HOUSEMAN</div>
+            <div className="stl-logo">
+              <img src="/logo-c.svg" alt="" style={{ height: 36 }} />
+            </div>
             <div className="stl-title">{bs.building} 정산서</div>
             <div className="stl-subtitle">{monthLabel}</div>
           </div>
