@@ -82,84 +82,67 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const allBTenants = activeTenants.filter(t => t.building === bName);
       const acctInfo = buildingAccountMap[bName] || {};
       const totalDays = new Date(y, m, 0).getDate();
-      const periodStart = period.start;
-      const periodEnd = period.end;
+      const settlementDay = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
+      const isNoFee = cfg.feeRate === 0; // 수수료 0% (제이앤제이 등)
+      const truncate10 = (n) => Math.floor(n / 10) * 10; // 10원 미만 절삭
+      const pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; };
 
-      // 정산 기간 내 거주 중인 임차인만 필터
-      // 입주일이 정산기간 종료 이전이어야 함 (정산기간에 살고 있는 사람)
-      const bTenants = allBTenants.filter(t => {
-        if (!t.moveIn) return true; // 입주일 없으면 포함
-        return t.moveIn <= periodEnd; // 입주일이 정산기간 끝 이전
-      });
-
-      // 입주자: 정산 기간 안에 입주한 사람
-      const moveInTenants = allBTenants.filter(t => t.moveIn && t.moveIn >= periodStart && t.moveIn <= periodEnd);
+      // ── 정산 기간 기준 필터 ──
+      const bTenants = allBTenants.filter(t => !t.moveIn || t.moveIn <= period.end);
+      const moveInTenants = allBTenants.filter(t => t.moveIn && t.moveIn >= period.start && t.moveIn <= period.end);
       const moveInCount = moveInTenants.length;
 
-      // 퇴실자 (pastTenantsData에서 — 필드: moveOut)
       const moveOutTenants = [];
       try {
         Object.entries(pastTenantsData || {}).forEach(([key, records]) => {
-          if (!key.startsWith(bName + "_")) return;
-          if (!Array.isArray(records)) return;
+          if (!key.startsWith(bName + "_") || !Array.isArray(records)) return;
           records.forEach(rec => {
             const moDate = rec?.moveOut || rec?.moveOutDate;
-            if (rec && moDate && moDate >= periodStart && moDate <= periodEnd) {
-              const room = key.split("_").slice(1).join("_"); // "301_2" → "301_2" or "405" → "405"
-              moveOutTenants.push({ ...rec, room: room.replace(/_\d+$/, ""), building: bName, moveOutDate: moDate });
+            if (rec && moDate && moDate >= period.start && moDate <= period.end) {
+              const room = key.split("_").slice(1).join("_").replace(/_\d+$/, "");
+              moveOutTenants.push({ ...rec, room, building: bName, moveOutDate: moDate });
             }
           });
         });
       } catch(e) { console.warn("pastTenantsData 파싱 오류:", e); }
 
-      // 1. 호실별 월세 정산
-      // 퇴실된 호실 목록
+      // ── 1. 호실별 월세 정산 ──
       const movedOutRooms = new Set(moveOutTenants.map(mt => mt.room));
-      // 이번달 입주한 호실 목록
       const movedInRooms = new Set(moveInTenants.map(t => t.room));
-      // 모든 호실 목록 (roomMasterData + buildingData + 현재 임차인 + 퇴실자)
+
+      // 전체 호실 수집 (임차인 + 퇴실자 + buildingData + roomMasterData)
       const allRoomSet = new Set();
       bTenants.forEach(t => allRoomSet.add(t.room));
       moveOutTenants.forEach(mt => allRoomSet.add(mt.room));
-      // buildingData에서 호실 목록
       const bd = buildingData[bName] || {};
       Object.keys(bd).forEach(k => { const m = k.match(/^room_(.+)/); if (m) allRoomSet.add(m[1]); });
-      // roomMasterData에서 호실 목록 (건물명_호실 키)
       Object.keys(roomMasterData).forEach(k => {
         if (k.startsWith(bName + "_")) allRoomSet.add(k.slice(bName.length + 1));
       });
 
-      // 호실 정렬: 지하(B) → 1층 → 2층 순서
-      const roomSort = (a, b) => {
-        const floorOf = (r) => {
-          const s = String(r).toUpperCase();
-          if (s.startsWith("B")) return -parseInt(s.slice(1)) || -1; // B01=-1, B02=-2
-          return parseInt(s) || 999;
-        };
-        return floorOf(a) - floorOf(b);
-      };
-      const roomSettlements = [...allRoomSet].sort(roomSort).map(room => {
+      // 호실 정렬: 지하(B) → 1층 → 2층
+      const floorOf = (r) => { const s = String(r).toUpperCase(); return s.startsWith("B") ? -(parseInt(s.slice(1)) || 1) : (parseInt(s) || 999); };
+      const roomSettlements = [...allRoomSet].sort((a, b) => floorOf(a) - floorOf(b)).map(room => {
         const tenant = bTenants.find(t => t.room === room);
         const movedOut = moveOutTenants.find(mt => mt.room === room);
-        const isNewMoveIn = movedInRooms.has(room);
 
         if (tenant) {
           const fee = calcFee(tenant.rent, bName);
-          const settlementAmt = tenant.rent - fee;
-          const mgmtSettlement = cfg.includeMgmt ? (tenant.mgmt || 0) : 0;
           return {
             room, name: tenant.name, moveIn: tenant.moveIn, expiry: tenant.expiry,
             deposit: tenant.deposit || 0, rent: tenant.rent || 0, mgmt: tenant.mgmt || 0,
             rentDay: parseInt(tenant.due?.split("/")[1]) || 0,
-            fee, settlementAmt, mgmtSettlement,
-            status: isNewMoveIn ? "신규입주" : "",
+            fee, settlementAmt: tenant.rent - fee,
+            mgmtSettlement: cfg.includeMgmt ? (tenant.mgmt || 0) : 0,
+            status: movedInRooms.has(room) ? "신규입주" : "",
             delinquent: 0,
           };
         }
         if (movedOut) {
           return {
             room, name: movedOut.name, moveIn: movedOut.moveIn, expiry: movedOut.expiry,
-            deposit: 0, rent: 0, mgmt: 0, rentDay: parseInt(movedOut.rentDay || movedOut.due?.split("/")[1]) || 0,
+            deposit: 0, rent: 0, mgmt: 0,
+            rentDay: parseInt(movedOut.rentDay || movedOut.due?.split("/")[1]) || 0,
             fee: 0, settlementAmt: 0, mgmtSettlement: 0,
             status: "퇴실", delinquent: 0,
           };
@@ -177,88 +160,64 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const totalRentSettlement = roomSettlements.reduce((s, r) => s + r.settlementAmt, 0);
       const totalMgmtSettlement = roomSettlements.reduce((s, r) => s + r.mgmtSettlement, 0);
 
-      // 2. 입주 정산 (입주 일할 + 예치금)
-      const settleDayNum = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
+      // ── 2. 입주 정산: 예치금 - 중개수수료 ──
       const moveInSettlements = moveInTenants.map(t => {
-        // 중개수수료: 기본 + 이벤트
-        const rmKey = `${bName}_${t.room}`;
-        const rmData = roomMasterData[rmKey] || {};
-        const pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; };
+        const rmData = roomMasterData[`${bName}_${t.room}`] || {};
         const commBase = t.commBroker ? pn(t.commBroker) : pn(rmData.commFee);
         const commEvent = t.commEvent ? pn(t.commEvent) : 0;
         const brokerageFee = commBase + commEvent;
         const deposit = t.deposit || 0;
         return {
           room: t.room, name: t.name, moveIn: t.moveIn,
-          deposit, commBase, commEvent, brokerageFee,
-          netDeposit: deposit - brokerageFee, // 예치금 - 중개수수료
+          deposit, brokerageFee,
+          netDeposit: deposit - brokerageFee,
         };
       });
-      const totalBrokerage = moveInSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
-      const totalMoveInDeposit = moveInSettlements.reduce((s, r) => s + (r.deposit || 0), 0);
+      const totalBrokerage = moveInSettlements.reduce((s, r) => s + r.brokerageFee, 0);
+      const totalMoveInDeposit = moveInSettlements.reduce((s, r) => s + r.deposit, 0);
 
-      // 3. 퇴실 정산 (일할 + 청소비 + 검침 + 위약금 + 훼손 + 예치금반환)
+      // ── 3. 퇴실 정산: 월세 일할 + 예치금 반환 ──
+      // 규칙: 월세일 < 정산일 → 이미 줬음(환수-) / 월세일 >= 정산일 → 안줬음(지급+)
+      // 사용일수: 월세일~퇴실일 (시작일 포함), 1달 = 해당 월 실제 일수
+      // 수수료 0%: 월세만 / 그 외: 월세+관리비
       const moveOutSettlements = moveOutTenants.map(mt => {
         const moveOutDay = parseInt(mt.moveOutDate?.split("-")[2]) || 1;
         const rent = mt.rent || 0;
         const mgmt = mt.mgmt || 0;
-        // 기간정산: 월세일~퇴실일, 시작일 포함
         const rentDay = parseInt(mt.rentDay || mt.due?.split("/")[1]) || parseInt(mt.moveIn?.split("-")[2]) || 1;
-        const settlementDay = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
-        // 사용일수: 월세일부터 퇴실일까지 (시작일 포함) — 항상 재계산
-        // 1달 = 해당 월의 실제 일수 (28/29/30/31)
-        const monthDays = totalDays; // 해당 월 실제 일수
-        const usedDays = moveOutDay >= rentDay ? moveOutDay - rentDay + 1 : monthDays - rentDay + moveOutDay + 1;
-        // 이미 건물주에게 줬는지: 월세일 < 정산일 → 줬음(환수), 월세일 >= 정산일 → 안줬음(지급)
+        const usedDays = moveOutDay >= rentDay ? moveOutDay - rentDay + 1 : totalDays - rentDay + moveOutDay + 1;
         const alreadyPaid = rentDay < settlementDay;
-        const proRataDays = alreadyPaid ? (monthDays - usedDays) : usedDays;
-        // 10원 미만 절삭
-        const truncate10 = (n) => Math.floor(n / 10) * 10;
-        const rentProRata = truncate10(rent * proRataDays / monthDays);
-        const mgmtProRata = truncate10(mgmt * proRataDays / monthDays);
-        const fee = calcFee(truncate10(rent * usedDays / 30), bName);
-
-        // 퇴실 공제 항목
-        const cleanFee = mt.cleanFee || 0;
-        const elecReading = mt.elecReading || 0;
-        const gasReading = mt.gasReading || 0;
-        const waterReading = mt.waterReading || 0;
-        const damageFee = mt.damageFee || 0;
-        const penalty7 = mt.penalty7 || 0;
-
-        // 예치금 반환
-        const depositReturn = mt.depositReturn || mt.deposit || 0;
-        const totalDeductItems = cleanFee + elecReading + gasReading + waterReading + damageFee + penalty7;
-        const finalRefund = mt.finalRefund != null ? mt.finalRefund : (depositReturn - totalDeductItems);
-
-        // 정산서 반영: 환수(-) 또는 지급(+), 수수료 0%면 월세만
-        const proRataSum = cfg.feeRate === 0 ? rentProRata : (rentProRata + mgmtProRata);
+        const proRataDays = alreadyPaid ? (totalDays - usedDays) : usedDays;
+        const rentProRata = truncate10(rent * proRataDays / totalDays);
+        const mgmtProRata = truncate10(mgmt * proRataDays / totalDays);
+        const proRataSum = isNoFee ? rentProRata : (rentProRata + mgmtProRata);
         const settlementAmt = alreadyPaid ? -proRataSum : proRataSum;
+        const depositReturn = mt.depositReturn || mt.deposit || 0;
 
         return {
           room: mt.room, name: mt.name, moveOutDate: mt.moveOutDate,
-          moveIn: mt.moveIn, expiry: mt.expiry,
-          reason: mt.reason || "",
-          rent, mgmt, usedDays, totalDays, monthDays, alreadyPaid, proRataDays,
-          rentProRata, mgmtProRata, fee, settlementAmt,
-          cleanFee, elecReading, gasReading, waterReading,
-          damageFee, damageDesc: mt.damageDesc || "",
-          penalty7, penaltyReason: mt.penaltyReason || "",
-          depositReturn, totalDeductItems, finalRefund,
+          moveIn: mt.moveIn, expiry: mt.expiry, reason: mt.reason || "",
+          rent, mgmt, usedDays, totalDays, alreadyPaid, proRataDays,
+          rentProRata, mgmtProRata, settlementAmt, depositReturn, rentDay,
+          fee: calcFee(truncate10(rent * usedDays / totalDays), bName),
+          cleanFee: mt.cleanFee || 0, elecReading: mt.elecReading || 0,
+          gasReading: mt.gasReading || 0, waterReading: mt.waterReading || 0,
+          damageFee: mt.damageFee || 0, damageDesc: mt.damageDesc || "",
+          penalty7: mt.penalty7 || 0, penaltyReason: mt.penaltyReason || "",
+          totalDeductItems: (mt.cleanFee||0) + (mt.elecReading||0) + (mt.gasReading||0) + (mt.waterReading||0) + (mt.damageFee||0) + (mt.penalty7||0),
+          finalRefund: mt.finalRefund != null ? mt.finalRefund : (depositReturn - ((mt.cleanFee||0) + (mt.elecReading||0) + (mt.gasReading||0) + (mt.waterReading||0) + (mt.damageFee||0) + (mt.penalty7||0))),
           brokerageFee: mt.brokerageFee || 0,
-          rentDay,
         };
       });
       const totalMoveOutRent = moveOutSettlements.reduce((s, r) => s + r.settlementAmt, 0);
       const totalPenalty = moveOutSettlements.reduce((s, r) => s + r.penalty7, 0);
       const totalDepositReturn = moveOutSettlements.reduce((s, r) => s + r.depositReturn, 0);
-      const totalMoveOutBrokerage = moveOutSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
 
-      // 4. 공제내역
+      // ── 4. 공제내역 ──
       const deductions = settlementExpenses.filter(e => e.building === bName && e.month === selectedMonth);
       const totalDeduction = deductions.reduce((s, e) => s + e.amount, 0);
 
-      // 합산 중개수수료 (입주 + 퇴실시 기록된)
+      const totalMoveOutBrokerage = moveOutSettlements.reduce((s, r) => s + r.brokerageFee, 0);
       const allBrokerage = totalBrokerage + totalMoveOutBrokerage;
 
       // 5. 최종 정산금 계산 (유형별)
