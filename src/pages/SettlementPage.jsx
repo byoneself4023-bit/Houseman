@@ -80,6 +80,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const period = getSettlementPeriod(bName, y, m);
       const bTenants = activeTenants.filter(t => t.building === bName);
       const acctInfo = buildingAccountMap[bName] || {};
+      const totalDays = new Date(y, m, 0).getDate();
 
       // 입주자 (해당월 신규)
       const moveInTenants = bTenants.filter(t => t.moveIn && t.moveIn.startsWith(selectedMonth));
@@ -137,10 +138,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const settleDayNum = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
       const moveInSettlements = moveInTenants.map(t => {
         const moveInDay = parseInt(t.moveIn?.split("-")[2]) || 1;
-        // 입주일~30일까지, 시작일 포함
-        const moveInUsedDays = 30 - moveInDay + 1;
-        const rentProRata = Math.round((t.rent || 0) * moveInUsedDays / 30);
-        const mgmtProRata = Math.round((t.mgmt || 0) * moveInUsedDays / 30);
+        // 입주일~말일까지, 시작일 포함, 해당 월 실제 일수 기준
+        const moveInUsedDays = totalDays - moveInDay + 1;
+        const rentProRata = Math.round((t.rent || 0) * moveInUsedDays / totalDays);
+        const mgmtProRata = Math.round((t.mgmt || 0) * moveInUsedDays / totalDays);
         return {
           room: t.room, name: t.name, moveIn: t.moveIn,
           deposit: t.deposit || 0, rent: t.rent || 0, mgmt: t.mgmt || 0,
@@ -157,17 +158,18 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const moveOutDay = parseInt(mt.moveOutDate?.split("-")[2]) || 1;
         const rent = mt.rent || 0;
         const mgmt = mt.mgmt || 0;
-        const totalDays = new Date(y, m, 0).getDate();
         // 기간정산: 월세일~퇴실일, 시작일 포함
         const rentDay = parseInt(mt.rentDay || mt.due?.split("/")[1]) || parseInt(mt.moveIn?.split("-")[2]) || 1;
         const settlementDay = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
-        // 사용일수: 월세일부터 퇴실일까지 (시작일 포함)
-        const usedDays = mt.usedDays || (moveOutDay >= rentDay ? moveOutDay - rentDay + 1 : 30 - rentDay + moveOutDay + 1);
+        // 사용일수: 월세일부터 퇴실일까지 (시작일 포함) — 항상 재계산
+        // 1달 = 해당 월의 실제 일수 (28/29/30/31)
+        const monthDays = totalDays; // 해당 월 실제 일수
+        const usedDays = moveOutDay >= rentDay ? moveOutDay - rentDay + 1 : monthDays - rentDay + moveOutDay + 1;
         // 이미 건물주에게 줬는지: 월세일 < 정산일 → 줬음(환수), 월세일 >= 정산일 → 안줬음(지급)
         const alreadyPaid = rentDay < settlementDay;
-        const proRataDays = alreadyPaid ? (30 - usedDays) : usedDays;
-        const rentProRata = mt.rentProRata != null ? mt.rentProRata : Math.round(rent * proRataDays / 30);
-        const mgmtProRata = mt.mgmtProRata != null ? mt.mgmtProRata : Math.round(mgmt * proRataDays / 30);
+        const proRataDays = alreadyPaid ? (monthDays - usedDays) : usedDays;
+        const rentProRata = Math.round(rent * proRataDays / monthDays);
+        const mgmtProRata = Math.round(mgmt * proRataDays / monthDays);
         const fee = calcFee(Math.round(rent * usedDays / 30), bName);
 
         // 퇴실 공제 항목
@@ -190,7 +192,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           room: mt.room, name: mt.name, moveOutDate: mt.moveOutDate,
           moveIn: mt.moveIn, expiry: mt.expiry,
           reason: mt.reason || "",
-          rent, mgmt, usedDays, totalDays, alreadyPaid, proRataDays,
+          rent, mgmt, usedDays, totalDays, monthDays, alreadyPaid, proRataDays,
           rentProRata, mgmtProRata, fee, settlementAmt,
           cleanFee, elecReading, gasReading, waterReading,
           damageFee, damageDesc: mt.damageDesc || "",
@@ -644,18 +646,18 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   </div>
                   <div style={{ padding: "10px 16px", background: "#ECFDF5" }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", marginBottom: 6 }}>
-                      입주 일할 ({mi.moveInUsedDays}일 / 30일) — {mi.moveInDay}일 입주 → 30일까지
+                      입주 일할 ({mi.moveInUsedDays}일 / {bs.period.totalDays || totalDays}일) — {mi.moveInDay}일 입주 → {bs.period.totalDays || totalDays}일까지
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                       <tbody>
                         <tr style={{ borderBottom: "1px solid #A7F3D0" }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>월세</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.rent)} x {mi.moveInUsedDays}일 / 30일</td>
+                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.rent)} x {mi.moveInUsedDays}일 / {totalDays}일</td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, minWidth: 90 }}>{fmt(mi.rentProRata)}원</td>
                         </tr>
                         {mi.mgmt > 0 && <tr style={{ borderBottom: "1px solid #A7F3D0" }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>관리비</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.mgmt)} x {mi.moveInUsedDays}일 / 30일</td>
+                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>{fmt(mi.mgmt)} x {mi.moveInUsedDays}일 / {totalDays}일</td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700 }}>{fmt(mi.mgmtProRata)}원</td>
                         </tr>}
                         <tr>
@@ -734,7 +736,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         <tr style={{ borderBottom: `1px solid ${mt.alreadyPaid ? "#FECACA" : "#BFDBFE"}` }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>월세</td>
                           <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>
-                            {fmt(mt.rent)} x {mt.proRataDays}일 / 30일
+                            {fmt(mt.rent)} x {mt.proRataDays}일 / {mt.totalDays}일
                           </td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, minWidth: 90, color: mt.alreadyPaid ? "#DC2626" : "#111" }}>
                             {mt.alreadyPaid ? "-" : ""}{fmt(mt.rentProRata)}원
@@ -743,7 +745,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         {mt.mgmt > 0 && <tr style={{ borderBottom: `1px solid ${mt.alreadyPaid ? "#FECACA" : "#BFDBFE"}` }}>
                           <td style={{ padding: "4px 0", color: "#374151" }}>관리비</td>
                           <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>
-                            {fmt(mt.mgmt)} x {mt.proRataDays}일 / 30일
+                            {fmt(mt.mgmt)} x {mt.proRataDays}일 / {mt.totalDays}일
                           </td>
                           <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, color: mt.alreadyPaid ? "#DC2626" : "#111" }}>
                             {mt.alreadyPaid ? "-" : ""}{fmt(mt.mgmtProRata)}원
