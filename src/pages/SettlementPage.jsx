@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { settlementMaster, buildingAccountMap, getSettlementPeriod, calcFee, calcProRata, calcVat } from '../data';
-import { roomMasterData } from '../data/roomMasterData';
 import { useIsMobile, fmt } from '../utils';
 import { Card, SectionTitle } from '../components';
 import { SettlementPrintView } from '../components/SettlementPrintView';
@@ -35,7 +34,7 @@ const TYPE_LABELS = {
   "X": "기타",
 };
 
-const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transactions = [], settlementExpenses = [], setSettlementExpenses, buildingData = {}, pastTenantsData = {}, addCashbookEntry, roomBalances = {}, billingHistory = [] }) => {
+const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transactions = [], settlementExpenses = [], setSettlementExpenses, buildingData = {}, pastTenantsData = {}, addCashbookEntry }) => {
   const isMobile = useIsMobile();
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -79,79 +78,41 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const masterCfg = settlementMaster[bName] || {};
       const cfg = { type: "A", feeType: "pct", feeRate: 0, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "", notes: "", ...masterCfg };
       const period = getSettlementPeriod(bName, y, m);
-      const allBTenants = activeTenants.filter(t => t.building === bName);
+      const bTenants = activeTenants.filter(t => t.building === bName);
       const acctInfo = buildingAccountMap[bName] || {};
-      const totalDays = new Date(y, m, 0).getDate();
-      const settlementDay = cfg.settlementDay === "말일" ? totalDays : (cfg.settlementDay || 15);
-      const isNoFee = cfg.feeRate === 0; // 수수료 0% (제이앤제이 등)
-      const truncate10 = (n) => Math.floor(n / 10) * 10; // 10원 미만 절삭
-      const pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; };
 
-      // ── 정산 기간 기준 필터 ──
-      const bTenants = allBTenants.filter(t => !t.moveIn || t.moveIn <= period.end);
-      const moveInTenants = allBTenants.filter(t => t.moveIn && t.moveIn >= period.start && t.moveIn <= period.end);
+      // 입주자 (해당월 신규)
+      const moveInTenants = bTenants.filter(t => t.moveIn && t.moveIn.startsWith(selectedMonth));
       const moveInCount = moveInTenants.length;
 
+      // 퇴실자 (pastTenantsData에서 — 필드: moveOut)
       const moveOutTenants = [];
       try {
         Object.entries(pastTenantsData || {}).forEach(([key, records]) => {
-          if (!key.startsWith(bName + "_") || !Array.isArray(records)) return;
+          if (!key.startsWith(bName + "_")) return;
+          if (!Array.isArray(records)) return;
           records.forEach(rec => {
             const moDate = rec?.moveOut || rec?.moveOutDate;
-            if (rec && moDate && moDate >= period.start && moDate <= period.end) {
-              const room = key.split("_").slice(1).join("_").replace(/_\d+$/, "");
-              moveOutTenants.push({ ...rec, room, building: bName, moveOutDate: moDate });
+            if (rec && moDate && moDate.startsWith(selectedMonth)) {
+              const room = key.split("_").slice(1).join("_"); // "301_2" → "301_2" or "405" → "405"
+              moveOutTenants.push({ ...rec, room: room.replace(/_\d+$/, ""), building: bName, moveOutDate: moDate });
             }
           });
         });
       } catch(e) { console.warn("pastTenantsData 파싱 오류:", e); }
 
-      // ── 1. 호실별 월세 정산 ──
-      const movedOutRooms = new Set(moveOutTenants.map(mt => mt.room));
-      const movedInRooms = new Set(moveInTenants.map(t => t.room));
-
-      // 전체 호실 수집 (임차인 + 퇴실자 + buildingData + roomMasterData)
-      const allRoomSet = new Set();
-      bTenants.forEach(t => allRoomSet.add(t.room));
-      moveOutTenants.forEach(mt => allRoomSet.add(mt.room));
-      const bd = buildingData[bName] || {};
-      Object.keys(bd).forEach(k => { const m = k.match(/^room_(.+)/); if (m) allRoomSet.add(m[1]); });
-      Object.keys(roomMasterData).forEach(k => {
-        if (k.startsWith(bName + "_")) allRoomSet.add(k.slice(bName.length + 1));
-      });
-
-      // 호실 정렬: 지하(B) → 1층 → 2층
-      const floorOf = (r) => { const s = String(r).toUpperCase(); return s.startsWith("B") ? -(parseInt(s.slice(1)) || 1) : (parseInt(s) || 999); };
-      const roomSettlements = [...allRoomSet].sort((a, b) => floorOf(a) - floorOf(b)).map(room => {
-        const tenant = bTenants.find(t => t.room === room);
-        const movedOut = moveOutTenants.find(mt => mt.room === room);
-
-        if (tenant) {
-          const fee = calcFee(tenant.rent, bName);
-          return {
-            room, name: tenant.name, moveIn: tenant.moveIn, expiry: tenant.expiry,
-            deposit: tenant.deposit || 0, rent: tenant.rent || 0, mgmt: tenant.mgmt || 0,
-            rentDay: parseInt(tenant.due?.split("/")[1]) || 0,
-            fee, settlementAmt: tenant.rent - fee,
-            mgmtSettlement: cfg.includeMgmt ? (tenant.mgmt || 0) : 0,
-            status: movedInRooms.has(room) ? "신규입주" : "",
-            delinquent: 0,
-          };
-        }
-        if (movedOut) {
-          return {
-            room, name: movedOut.name, moveIn: movedOut.moveIn, expiry: movedOut.expiry,
-            deposit: 0, rent: 0, mgmt: 0,
-            rentDay: parseInt(movedOut.rentDay || movedOut.due?.split("/")[1]) || 0,
-            fee: 0, settlementAmt: 0, mgmtSettlement: 0,
-            status: "퇴실", delinquent: 0,
-          };
-        }
+      // 1. 호실별 월세 정산
+      const roomSettlements = bTenants.map(t => {
+        const fee = calcFee(t.rent, bName);
+        const settlementAmt = t.rent - fee;
+        const mgmtSettlement = cfg.includeMgmt ? (t.mgmt || 0) : 0;
         return {
-          room, name: "—", moveIn: "", expiry: "",
-          deposit: 0, rent: 0, mgmt: 0, rentDay: 0,
-          fee: 0, settlementAmt: 0, mgmtSettlement: 0,
-          status: "공실", delinquent: 0,
+          room: t.room, name: t.name, moveIn: t.moveIn, expiry: t.expiry,
+          deposit: t.deposit || 0, rent: t.rent || 0, mgmt: t.mgmt || 0,
+          rentDay: parseInt(t.due?.split("/")[1]) || 0,
+          fee, settlementAmt, mgmtSettlement,
+          status: "입주",
+          delinquent: 0,
         };
       });
 
@@ -160,64 +121,66 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       const totalRentSettlement = roomSettlements.reduce((s, r) => s + r.settlementAmt, 0);
       const totalMgmtSettlement = roomSettlements.reduce((s, r) => s + r.mgmtSettlement, 0);
 
-      // ── 2. 입주 정산: 예치금 - 중개수수료 ──
-      const moveInSettlements = moveInTenants.map(t => {
-        const rmData = roomMasterData[`${bName}_${t.room}`] || {};
-        const commBase = t.commBroker ? pn(t.commBroker) : pn(rmData.commFee);
-        const commEvent = t.commEvent ? pn(t.commEvent) : 0;
-        const brokerageFee = commBase + commEvent;
-        const deposit = t.deposit || 0;
-        return {
-          room: t.room, name: t.name, moveIn: t.moveIn,
-          deposit, brokerageFee,
-          netDeposit: deposit - brokerageFee,
-        };
-      });
-      const totalBrokerage = moveInSettlements.reduce((s, r) => s + r.brokerageFee, 0);
-      const totalMoveInDeposit = moveInSettlements.reduce((s, r) => s + r.deposit, 0);
+      // 2. 입주 정산 (예치금, 중개수수료)
+      const moveInSettlements = moveInTenants.map(t => ({
+        room: t.room, name: t.name, moveIn: t.moveIn,
+        deposit: t.deposit || 0,
+        brokerageFee: t.brokerageFee || 0, // 중개수수료 (마이너스 값으로 반영)
+      }));
+      const totalBrokerage = moveInSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
 
-      // ── 3. 퇴실 정산: 월세 일할 + 예치금 반환 ──
-      // 규칙: 월세일 < 정산일 → 이미 줬음(환수-) / 월세일 >= 정산일 → 안줬음(지급+)
-      // 사용일수: 월세일~퇴실일 (시작일 포함), 1달 = 해당 월 실제 일수
-      // 수수료 0%: 월세만 / 그 외: 월세+관리비
+      // 3. 퇴실 정산 (일할 + 청소비 + 검침 + 위약금 + 훼손 + 예치금반환)
       const moveOutSettlements = moveOutTenants.map(mt => {
         const moveOutDay = parseInt(mt.moveOutDate?.split("-")[2]) || 1;
         const rent = mt.rent || 0;
         const mgmt = mt.mgmt || 0;
-        const rentDay = parseInt(mt.rentDay || mt.due?.split("/")[1]) || parseInt(mt.moveIn?.split("-")[2]) || 1;
-        const usedDays = moveOutDay >= rentDay ? moveOutDay - rentDay + 1 : totalDays - rentDay + moveOutDay + 1;
-        const alreadyPaid = rentDay < settlementDay;
-        const proRataDays = alreadyPaid ? (totalDays - usedDays) : usedDays;
-        const rentProRata = truncate10(rent * proRataDays / totalDays);
-        const mgmtProRata = truncate10(mgmt * proRataDays / totalDays);
-        const proRataSum = isNoFee ? rentProRata : (rentProRata + mgmtProRata);
-        const settlementAmt = alreadyPaid ? -proRataSum : proRataSum;
+        const totalDays = new Date(y, m, 0).getDate();
+        const usedDays = mt.usedDays || moveOutDay;
+
+        // 일할계산 (pastTenants에 이미 계산된 값 우선 사용)
+        const rentProRata = mt.rentProRata != null ? mt.rentProRata : Math.round(rent * usedDays / totalDays);
+        const mgmtProRata = mt.mgmtProRata != null ? mt.mgmtProRata : Math.round(mgmt * usedDays / totalDays);
+        const fee = calcFee(rentProRata, bName);
+
+        // 퇴실 공제 항목
+        const cleanFee = mt.cleanFee || 0;
+        const elecReading = mt.elecReading || 0;
+        const gasReading = mt.gasReading || 0;
+        const waterReading = mt.waterReading || 0;
+        const damageFee = mt.damageFee || 0;
+        const penalty7 = mt.penalty7 || 0;
+
+        // 예치금 반환
         const depositReturn = mt.depositReturn || mt.deposit || 0;
+        const totalDeductItems = cleanFee + elecReading + gasReading + waterReading + damageFee + penalty7;
+        const finalRefund = mt.finalRefund != null ? mt.finalRefund : (depositReturn - totalDeductItems);
+
+        // 정산서 반영 금액: 일할 월세정산금 - 수수료
+        const settlementAmt = rentProRata - fee;
 
         return {
           room: mt.room, name: mt.name, moveOutDate: mt.moveOutDate,
-          moveIn: mt.moveIn, expiry: mt.expiry, reason: mt.reason || "",
-          rent, mgmt, usedDays, totalDays, alreadyPaid, proRataDays,
-          rentProRata, mgmtProRata, settlementAmt, depositReturn, rentDay,
-          fee: calcFee(truncate10(rent * usedDays / totalDays), bName),
-          cleanFee: mt.cleanFee || 0, elecReading: mt.elecReading || 0,
-          gasReading: mt.gasReading || 0, waterReading: mt.waterReading || 0,
-          damageFee: mt.damageFee || 0, damageDesc: mt.damageDesc || "",
-          penalty7: mt.penalty7 || 0, penaltyReason: mt.penaltyReason || "",
-          totalDeductItems: (mt.cleanFee||0) + (mt.elecReading||0) + (mt.gasReading||0) + (mt.waterReading||0) + (mt.damageFee||0) + (mt.penalty7||0),
-          finalRefund: mt.finalRefund != null ? mt.finalRefund : (depositReturn - ((mt.cleanFee||0) + (mt.elecReading||0) + (mt.gasReading||0) + (mt.waterReading||0) + (mt.damageFee||0) + (mt.penalty7||0))),
+          moveIn: mt.moveIn, expiry: mt.expiry,
+          reason: mt.reason || "",
+          rent, mgmt, usedDays, totalDays,
+          rentProRata, mgmtProRata, fee, settlementAmt,
+          cleanFee, elecReading, gasReading, waterReading,
+          damageFee, damageDesc: mt.damageDesc || "",
+          penalty7, penaltyReason: mt.penaltyReason || "",
+          depositReturn, totalDeductItems, finalRefund,
           brokerageFee: mt.brokerageFee || 0,
         };
       });
       const totalMoveOutRent = moveOutSettlements.reduce((s, r) => s + r.settlementAmt, 0);
       const totalPenalty = moveOutSettlements.reduce((s, r) => s + r.penalty7, 0);
       const totalDepositReturn = moveOutSettlements.reduce((s, r) => s + r.depositReturn, 0);
+      const totalMoveOutBrokerage = moveOutSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
 
-      // ── 4. 공제내역 ──
+      // 4. 공제내역
       const deductions = settlementExpenses.filter(e => e.building === bName && e.month === selectedMonth);
       const totalDeduction = deductions.reduce((s, e) => s + e.amount, 0);
 
-      const totalMoveOutBrokerage = moveOutSettlements.reduce((s, r) => s + r.brokerageFee, 0);
+      // 합산 중개수수료 (입주 + 퇴실시 기록된)
       const allBrokerage = totalBrokerage + totalMoveOutBrokerage;
 
       // 5. 최종 정산금 계산 (유형별)
@@ -233,8 +196,8 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const vatCalc = cfg.vat ? { supply: Math.round(vatBase / 1.1), tax: vatBase - Math.round(vatBase / 1.1), total: vatBase } : { supply: vatBase, tax: 0, total: vatBase };
 
         return {
-          building: bName, cfg, period, acctInfo, totalDays,
-          tenantCount: allRoomSet.size, vacantCount: allRoomSet.size - bTenants.length, moveInCount, moveOutCount: moveOutTenants.length,
+          building: bName, cfg, period, acctInfo,
+          tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee, totalRentSettlement, totalMgmtSettlement,
           moveInSettlements, totalBrokerage: allBrokerage,
           moveOutSettlements, totalMoveOutRent: 0, totalPenalty: 0, totalDepositReturn: 0,
@@ -248,8 +211,8 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         const costsTotal = (cfg.costItems || []).reduce((s, ci) => s + ci.amount, 0);
         subtotal = collected - costsTotal - totalDeduction;
         return {
-          building: bName, cfg, period, acctInfo, totalDays,
-          tenantCount: allRoomSet.size, vacantCount: allRoomSet.size - bTenants.length, moveInCount, moveOutCount: moveOutTenants.length,
+          building: bName, cfg, period, acctInfo,
+          tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee: 0, totalRentSettlement: collected, totalMgmtSettlement: 0,
           moveInSettlements, totalBrokerage: 0,
           moveOutSettlements, totalMoveOutRent: 0, totalPenalty: 0, totalDepositReturn: 0,
@@ -259,18 +222,15 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         };
       } else {
         // 퍼센트형 (기본)
-        // 정산금 = 월세정산 + 관리비정산 + 퇴실일할 - 중개수수료 - 공제 (수수료0%면 위약금/예치금 제외)
-        subtotal = totalRentSettlement + totalMgmtSettlement + totalMoveOutRent
-          + (cfg.feeRate !== 0 ? totalPenalty : 0)
-          - allBrokerage
-          - (cfg.feeRate !== 0 ? totalDepositReturn : 0)
-          - totalDeduction;
+        // 정산금 = 월세정산 + 관리비정산 + 퇴실일할 + 위약금 - 중개수수료 - 예치금반환 - 공제
+        subtotal = totalRentSettlement + totalMgmtSettlement + totalMoveOutRent + totalPenalty
+          - allBrokerage - totalDepositReturn - totalDeduction;
         const vatInfo = calcVat(subtotal, bName);
         finalAmount = cfg.vat ? vatInfo.total : subtotal;
 
         return {
-          building: bName, cfg, period, acctInfo, totalDays,
-          tenantCount: allRoomSet.size, vacantCount: allRoomSet.size - bTenants.length, moveInCount, moveOutCount: moveOutTenants.length,
+          building: bName, cfg, period, acctInfo,
+          tenantCount: bTenants.length, vacantCount: 0, moveInCount, moveOutCount: moveOutTenants.length,
           roomSettlements, totalRent, totalFee, totalRentSettlement, totalMgmtSettlement,
           moveInSettlements, totalBrokerage: allBrokerage,
           moveOutSettlements, totalMoveOutRent, totalPenalty, totalDepositReturn,
@@ -447,9 +407,14 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
               <div style={{ fontSize: 20, fontWeight: 800, color: "#1A1D23" }}>{bs.building} 정산서</div>
-              <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 4 }}>{cfg.ownerName ? `${cfg.ownerName} 건물주님 · ` : ""}{monthLabel} · {typeLabel}</div>
+              <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 4 }}>{monthLabel} · {typeLabel} · {dirLabel}</div>
             </div>
             <div style={{ display: "flex", gap: 6 }}>
+              {cfg.feeRate > 0 && (
+                <span style={{ fontSize: 10, padding: "4px 12px", borderRadius: 6, background: "#EFF6FF", color: "#2563EB", fontWeight: 700 }}>
+                  수수료 {(cfg.feeRate * 100).toFixed(1)}%
+                </span>
+              )}
               {cfg.feeAmount > 0 && (
                 <span style={{ fontSize: 10, padding: "4px 12px", borderRadius: 6, background: "#F5F3FF", color: "#7C3AED", fontWeight: 700 }}>
                   월정액 {fmt(cfg.feeAmount)}원
@@ -466,7 +431,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>주소</span><span style={{ fontWeight: 600 }}>{cfg.address || "—"}</span></div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>정산계좌</span><span style={{ fontWeight: 600 }}>{acctInfo.owner ? `${acctInfo.owner.bank} ${acctInfo.owner.account}` : "하우스맨 통합"}</span></div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>정산기간</span><span style={{ fontWeight: 600 }}>{period.start} ~ {period.end}</span></div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>호실</span><span style={{ fontWeight: 600 }}>{bs.tenantCount}실 (입주 {bs.tenantCount - bs.vacantCount} / 공실 {bs.vacantCount})</span></div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>입주</span><span style={{ fontWeight: 600 }}>{bs.tenantCount}세대 (신규 {bs.moveInCount})</span></div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ color: "#8F95A3" }}>퇴실</span><span style={{ fontWeight: 600 }}>{bs.moveOutCount}건</span></div>
               </div>
             </div>
@@ -484,7 +449,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {isSalary && (
                   <>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>1. 관리비</span>
+                      <span style={{ fontSize: 12, color: "#374151" }}>1. 관리 수수료</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#7C3AED" }}>{fmt(cfg.feeAmount)}원</span>
                     </div>
                     {cfg.subItems && cfg.subItems.map((si, i) => (
@@ -495,48 +460,39 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     ))}
                   </>
                 )}
-                {(() => {
-                  let num = 1;
-                  const items = [];
-                  if (!isSalary && bs.totalMgmtSettlement > 0) {
-                    items.push(<div key="mgmt" style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>   관리비 정산</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#059669" }}>{fmt(bs.totalMgmtSettlement)}원</span>
-                    </div>);
-                  }
-                  if (bs.moveOutSettlements.length > 0) {
-                    num++;
-                    items.push(<div key="mo" style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 퇴실 일할 정산</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#2563EB" }}>{fmt(bs.totalMoveOutRent)}원</span>
-                    </div>);
-                  }
-                  if (bs.totalBrokerage > 0) {
-                    num++;
-                    items.push(<div key="brk" style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 입주시 중개수수료</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalBrokerage)}원</span>
-                    </div>);
-                  }
-                  if (cfg.feeRate !== 0 && bs.totalPenalty > 0) {
-                    num++;
-                    items.push(<div key="pen" style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 퇴실시 위약금</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{fmt(bs.totalPenalty)}원</span>
-                    </div>);
-                  }
-                  if (cfg.feeRate !== 0 && bs.totalDepositReturn > 0) {
-                    num++;
-                    items.push(<div key="dep" style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#374151" }}>{num}. 예치금(b)</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalDepositReturn)}원</span>
-                    </div>);
-                  }
-                  return items;
-                })()}
+                {!isSalary && bs.totalMgmtSettlement > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "#374151" }}>   관리비 정산</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#059669" }}>{fmt(bs.totalMgmtSettlement)}원</span>
+                  </div>
+                )}
+                {bs.moveOutSettlements.length > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "#374151" }}>2. 퇴실 일할 정산</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#2563EB" }}>{fmt(bs.totalMoveOutRent)}원</span>
+                  </div>
+                )}
+                {bs.totalBrokerage > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "#374151" }}>3. 입주시 중개수수료</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalBrokerage)}원</span>
+                  </div>
+                )}
+                {bs.totalPenalty > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "#374151" }}>4. 퇴실시 위약금</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#F59E0B" }}>{fmt(bs.totalPenalty)}원</span>
+                  </div>
+                )}
+                {bs.totalDepositReturn > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 12, color: "#374151" }}>5. 예치금(b)</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>-{fmt(bs.totalDepositReturn)}원</span>
+                  </div>
+                )}
                 {bs.totalDeduction > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 12, color: "#374151" }}>{(() => { let n = 2; if (bs.moveOutSettlements.length > 0) n++; if (bs.totalBrokerage > 0) n++; if (cfg.feeRate !== 0 && bs.totalPenalty > 0) n++; if (cfg.feeRate !== 0 && bs.totalDepositReturn > 0) n++; return n; })()}. 공제 내역(d)</span>
+                    <span style={{ fontSize: 12, color: "#374151" }}>6. 공제 내역(d)</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
                   </div>
                 )}
@@ -573,11 +529,9 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
                   {(isSalary
                     ? ["호실", "상태", "임차인", "입주일", "만기일", "보증금", "임대료", "관리비"]
-                    : cfg.feeRate === 0
-                      ? ["호실", "상태", "세입자", "입주일", "만기일", "월세", "월세일", "정산금"]
-                      : ["호실", "상태", "세입자", "입주일", "예치금", "월세", "월세일", "정산금", ...(cfg.includeMgmt ? ["관리비"] : [])]
+                    : ["호실", "상태", "세입자", "입주일", "예치금", "월세", "월세일", `수수료(${(cfg.feeRate*100).toFixed(1)}%)`, "정산금", ...(cfg.includeMgmt ? ["관리비"] : [])]
                   ).map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", textAlign: i >= (isSalary ? 5 : cfg.feeRate === 0 ? 5 : 4) ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
+                    <th key={i} style={{ padding: "8px 10px", textAlign: i >= (isSalary ? 5 : 4) ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -585,19 +539,18 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {bs.roomSettlements.map((r, i) => (
                   <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
                     <td style={{ padding: "8px 10px", fontWeight: 700 }}>{r.room}</td>
-                    <td style={{ padding: "8px 10px" }}>{r.status && <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, fontWeight: 600,
-                      background: r.status === "공실" ? "#F3F4F6" : r.status === "퇴실" ? "#FEF2F2" : r.status === "신규입주" ? "#EFF6FF" : "#ECFDF5",
-                      color: r.status === "공실" ? "#9CA3AF" : r.status === "퇴실" ? "#DC2626" : r.status === "신규입주" ? "#2563EB" : "#059669" }}>{r.status}</span>}</td>
+                    <td style={{ padding: "8px 10px" }}><span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#ECFDF5", color: "#059669", fontWeight: 600 }}>{r.status}</span></td>
                     <td style={{ padding: "8px 10px", fontWeight: 600 }}>{r.name}</td>
                     <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{r.moveIn?.slice(2)}</td>
-                    {(isSalary || cfg.feeRate === 0) && <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{r.expiry?.slice(2) || "—"}</td>}
-                    {!(cfg.feeRate === 0 && !isSalary) && <td style={{ padding: "8px 10px", textAlign: "right" }}>{fmt(r.deposit)}</td>}
+                    {isSalary && <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{r.expiry?.slice(2) || "—"}</td>}
+                    <td style={{ padding: "8px 10px", textAlign: "right" }}>{fmt(r.deposit)}</td>
                     <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700 }}>{fmt(r.rent)}</td>
                     {isSalary ? (
                       <td style={{ padding: "8px 10px", textAlign: "right" }}>{fmt(r.mgmt)}</td>
                     ) : (
                       <>
                         <td style={{ padding: "8px 10px", textAlign: "right" }}>{r.rentDay}일</td>
+                        <td style={{ padding: "8px 10px", textAlign: "right", color: r.fee > 0 ? "#DC2626" : "#B0B5C1" }}>{r.fee > 0 ? `-${fmt(r.fee)}` : "—"}</td>
                         <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 800, color: "#059669" }}>{fmt(r.settlementAmt)}</td>
                         {cfg.includeMgmt && <td style={{ padding: "8px 10px", textAlign: "right" }}>{fmt(r.mgmt)}</td>}
                       </>
@@ -606,19 +559,15 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 ))}
                 {bs.roomSettlements.length > 0 && (
                   <tr style={{ borderTop: "2px solid #1A1D23", background: "#F9FAFB" }}>
+                    <td colSpan={isSalary ? 5 : 5} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
+                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>
+                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
                     {isSalary ? (
-                      <>
-                        <td colSpan={5} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
-                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>
-                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
-                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + (r.mgmt || 0), 0))}</td>
-                      </>
+                      <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + (r.mgmt || 0), 0))}</td>
                     ) : (
                       <>
-                        <td colSpan={cfg.feeRate === 0 ? 5 : 4} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
-                        {cfg.feeRate !== 0 && <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>}
-                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
                         <td></td>
+                        <td style={{ padding: "10px", textAlign: "right", fontWeight: 800, color: "#DC2626" }}>{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
                         <td style={{ padding: "10px", textAlign: "right", fontWeight: 800, color: "#059669", fontSize: 14 }}>{fmt(bs.totalRentSettlement)}</td>
                         {cfg.includeMgmt && <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalMgmtSettlement)}</td>}
                       </>
@@ -663,34 +612,30 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #A7F3D0" }}>
               입주 정산 ({bs.moveInSettlements.length}건)
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
-                  {[
-                    "호실", "세입자", "입주일",
-                    ...(cfg.feeRate !== 0 ? ["예치금"] : []),
-                    "중개수수료",
-                    ...(cfg.feeRate !== 0 ? ["정산금"] : []),
-                  ].map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", textAlign: i >= 3 ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {bs.moveInSettlements.map((mi, i) => (
-                  <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
-                    <td style={{ padding: "8px 10px", fontWeight: 700 }}>{mi.room}</td>
-                    <td style={{ padding: "8px 10px" }}>{mi.name}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{mi.moveIn}</td>
-                    {cfg.feeRate !== 0 && <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 600 }}>{fmt(mi.deposit)}원</td>}
-                    <td style={{ padding: "8px 10px", textAlign: "right", color: mi.brokerageFee > 0 ? "#DC2626" : "#B0B5C1" }}>
-                      {mi.brokerageFee > 0 ? `-${fmt(mi.brokerageFee)}원` : "—"}
-                    </td>
-                    {cfg.feeRate !== 0 && <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#059669" }}>{fmt(mi.netDeposit)}원</td>}
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+                    {["호실", "세입자", "입주일", "예치금(b)", "중개수수료(c)"].map((h, i) => (
+                      <th key={i} style={{ padding: "8px 10px", textAlign: i >= 3 ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3" }}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {bs.moveInSettlements.map((mi, i) => (
+                    <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
+                      <td style={{ padding: "8px 10px", fontWeight: 700 }}>{mi.room}</td>
+                      <td style={{ padding: "8px 10px" }}>{mi.name}</td>
+                      <td style={{ padding: "8px 10px", fontSize: 11, color: "#5F6577" }}>{mi.moveIn}</td>
+                      <td style={{ padding: "8px 10px", textAlign: "right", fontWeight: 600 }}>{fmt(mi.deposit)}</td>
+                      <td style={{ padding: "8px 10px", textAlign: "right", color: mi.brokerageFee ? "#DC2626" : "#B0B5C1" }}>
+                        {mi.brokerageFee ? `-${fmt(mi.brokerageFee)}` : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
         )}
 
@@ -700,116 +645,60 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             <div style={{ fontSize: 13, fontWeight: 800, color: "#2563EB", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #BFDBFE" }}>
               퇴실 정산 ({bs.moveOutSettlements.length}건)
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {bs.moveOutSettlements.map((mt, i) => (
-                <div key={i} style={{ border: "1px solid #BFDBFE", overflow: "hidden" }}>
+                <div key={i} style={{ padding: "14px 16px", borderRadius: 10, background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
                   {/* 헤더 */}
-                  <div style={{ padding: "10px 16px", background: "#2563EB", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid #BFDBFE" }}>
                     <div>
                       <span style={{ fontWeight: 800, fontSize: 14 }}>{mt.room}호</span>
-                      <span style={{ marginLeft: 8, fontWeight: 500, opacity: 0.9 }}>{mt.name}</span>
+                      <span style={{ marginLeft: 8, color: "#5F6577", fontWeight: 600 }}>{mt.name}</span>
+                      <span style={{ marginLeft: 8, fontSize: 10, padding: "2px 8px", borderRadius: 4,
+                        background: mt.reason === "조기퇴실" ? "#FEF3C7" : "#ECFDF5",
+                        color: mt.reason === "조기퇴실" ? "#92400E" : "#059669", fontWeight: 600 }}>
+                        {mt.reason || "퇴실"}
+                      </span>
                     </div>
-                    <span style={{ fontSize: 11, padding: "2px 10px",
-                      background: mt.reason === "조기퇴실" ? "#FDE68A" : "rgba(255,255,255,0.2)",
-                      color: mt.reason === "조기퇴실" ? "#92400E" : "#fff", fontWeight: 600 }}>
-                      {mt.reason || "만기퇴실"}
-                    </span>
                   </div>
-
-                  {/* 계약 정보 테이블 */}
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                    <tbody>
-                      <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600, width: "25%" }}>입주일</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{mt.moveIn || "—"}</td>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600, width: "25%" }}>퇴실일</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{mt.moveOutDate}</td>
-                      </tr>
-                      <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>만기일</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{mt.expiry || "—"}</td>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>기간정산</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{mt.usedDays}일</td>
-                      </tr>
-                      {cfg.feeRate !== 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>예치금</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{fmt(mt.depositReturn)}원</td>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>월세</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600 }}>{fmt(mt.rent)}원</td>
-                      </tr>}
-                      {cfg.feeRate === 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>월세</td>
-                        <td colSpan={3} style={{ padding: "6px 16px", fontWeight: 600 }}>{fmt(mt.rent)}원</td>
-                      </tr>}
-                      {cfg.feeRate !== 0 && mt.mgmt > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "6px 16px", background: "#F9FAFB", color: "#6B7280", fontWeight: 600 }}>관리비</td>
-                        <td colSpan={3} style={{ padding: "6px 16px", fontWeight: 600 }}>{fmt(mt.mgmt)}원</td>
-                      </tr>}
-                    </tbody>
-                  </table>
-
+                  {/* 기본 정보 */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, fontSize: 11, marginBottom: 8 }}>
+                    <div><span style={{ color: "#8F95A3" }}>퇴실일</span> <strong>{mt.moveOutDate}</strong></div>
+                    <div><span style={{ color: "#8F95A3" }}>입주일</span> <strong>{mt.moveIn?.slice(5)}</strong></div>
+                    <div><span style={{ color: "#8F95A3" }}>만기일</span> <strong>{mt.expiry?.slice(5) || "—"}</strong></div>
+                  </div>
                   {/* 일할계산 */}
-                  <div style={{ padding: "10px 16px", background: mt.alreadyPaid ? "#FEF2F2" : "#EFF6FF", borderTop: `1px solid ${mt.alreadyPaid ? "#FECACA" : "#BFDBFE"}` }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: mt.alreadyPaid ? "#DC2626" : "#1D4ED8", marginBottom: 6 }}>
-                      {mt.alreadyPaid
-                        ? `미사용분 환수 (사용 ${mt.usedDays}일 → 미사용 ${mt.proRataDays}일 돌려받음)`
-                        : `사용분 지급 (${mt.usedDays}일 사용 → ${mt.proRataDays}일분 지급)`
-                      }
+                  <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px", marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 4 }}>일할계산 ({mt.usedDays}일 / {mt.totalDays}일)</div>
+                    <div style={{ display: "flex", gap: 16, fontSize: 11 }}>
+                      <span>월세 일할: <strong>{fmt(mt.rentProRata)}</strong></span>
+                      <span>관리비 일할: <strong>{fmt(mt.mgmtProRata)}</strong></span>
+                      <span>수수료({(cfg.feeRate*100).toFixed(1)}%): <strong style={{ color: "#DC2626" }}>-{fmt(mt.fee)}</strong></span>
+                      <span>정산금: <strong style={{ color: "#2563EB" }}>{fmt(mt.settlementAmt)}</strong></span>
                     </div>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                      <tbody>
-                        <tr style={{ borderBottom: `1px solid ${mt.alreadyPaid ? "#FECACA" : "#BFDBFE"}` }}>
-                          <td style={{ padding: "4px 0", color: "#374151" }}>월세</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>
-                            {fmt(mt.rent)} x {mt.proRataDays}일 / {mt.totalDays}일
-                          </td>
-                          <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, minWidth: 90, color: mt.alreadyPaid ? "#DC2626" : "#111" }}>
-                            {mt.alreadyPaid ? "-" : ""}{fmt(mt.rentProRata)}원
-                          </td>
-                        </tr>
-                        {cfg.feeRate !== 0 && mt.mgmt > 0 && <tr style={{ borderBottom: `1px solid ${mt.alreadyPaid ? "#FECACA" : "#BFDBFE"}` }}>
-                          <td style={{ padding: "4px 0", color: "#374151" }}>관리비</td>
-                          <td style={{ padding: "4px 0", textAlign: "right", color: "#6B7280", fontSize: 11 }}>
-                            {fmt(mt.mgmt)} x {mt.proRataDays}일 / {mt.totalDays}일
-                          </td>
-                          <td style={{ padding: "4px 0", textAlign: "right", fontWeight: 700, color: mt.alreadyPaid ? "#DC2626" : "#111" }}>
-                            {mt.alreadyPaid ? "-" : ""}{fmt(mt.mgmtProRata)}원
-                          </td>
-                        </tr>}
-                        <tr>
-                          <td colSpan={2} style={{ padding: "6px 0", fontWeight: 700, color: mt.alreadyPaid ? "#DC2626" : "#1D4ED8" }}>
-                            월세 {mt.alreadyPaid ? "환수" : "지급"}
-                          </td>
-                          <td style={{ padding: "6px 0", textAlign: "right", fontWeight: 800, color: mt.alreadyPaid ? "#DC2626" : "#1D4ED8", fontSize: 13 }}>
-                            {fmt(mt.settlementAmt)}원
-                          </td>
-                        </tr>
-                        {cfg.feeRate !== 0 && mt.depositReturn > 0 && (
-                          <tr style={{ borderTop: "1px solid #E5E7EB" }}>
-                            <td colSpan={2} style={{ padding: "6px 0", fontWeight: 700, color: "#DC2626" }}>
-                              예치금 반환 (건물주 → HM)
-                            </td>
-                            <td style={{ padding: "6px 0", textAlign: "right", fontWeight: 800, color: "#DC2626", fontSize: 13 }}>
-                              -{fmt(mt.depositReturn)}원
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
                   </div>
-
-                  {/* 예치금 반환 (수수료 0% 건물은 제외) */}
-                  {cfg.feeRate !== 0 && (
-                    <div style={{ padding: "12px 16px", background: "#F9FAFB", borderTop: "2px solid #111" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                        <span>예치금: <strong>{fmt(mt.depositReturn)}</strong></span>
-                        <span>공제: <strong style={{ color: "#DC2626" }}>-{fmt(mt.totalDeductItems)}</strong></span>
-                        <span style={{ fontWeight: 800, color: mt.finalRefund >= 0 ? "#059669" : "#DC2626", fontSize: 14 }}>
-                          환불: {fmt(mt.finalRefund)}원
-                        </span>
-                      </div>
+                  {/* 공제 항목 */}
+                  <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px", marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 4 }}>퇴실 공제</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, fontSize: 11 }}>
+                      {mt.cleanFee > 0 && <span>퇴실청소비: <strong>{fmt(mt.cleanFee)}</strong></span>}
+                      {mt.elecReading > 0 && <span>전기검침: <strong>{fmt(mt.elecReading)}</strong></span>}
+                      {mt.gasReading > 0 && <span>가스검침: <strong>{fmt(mt.gasReading)}</strong></span>}
+                      {mt.waterReading > 0 && <span>수도검침: <strong>{fmt(mt.waterReading)}</strong></span>}
+                      {mt.damageFee > 0 && <span>훼손/파손: <strong>{fmt(mt.damageFee)}</strong> <span style={{ fontSize: 9, color: "#8F95A3" }}>({mt.damageDesc})</span></span>}
+                      {mt.penalty7 > 0 && <span style={{ color: "#DC2626" }}>위약금(7일): <strong>{fmt(mt.penalty7)}</strong></span>}
                     </div>
-                  )}
+                    <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600 }}>공제합계: <strong style={{ color: "#DC2626" }}>{fmt(mt.totalDeductItems)}</strong></div>
+                  </div>
+                  {/* 예치금 반환 */}
+                  <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                      <span>예치금: <strong>{fmt(mt.depositReturn)}</strong></span>
+                      <span>공제: <strong style={{ color: "#DC2626" }}>-{fmt(mt.totalDeductItems)}</strong></span>
+                      <span style={{ fontWeight: 800, color: mt.finalRefund >= 0 ? "#059669" : "#DC2626", fontSize: 14 }}>
+                        환불: {fmt(mt.finalRefund)}원
+                      </span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -991,7 +880,8 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         {isOpen && (
                           <div style={{ display: "flex", gap: 12, fontSize: 11, color: isPast ? "#B0B5C1" : "#5F6577", marginTop: 6 }}>
                             {!isSal && ibs.totalRent > 0 && <span>월세 <strong>{fmt(ibs.totalRent)}</strong></span>}
-                            {isSal && <span>관리비 <strong style={{ color: "#7C3AED" }}>{fmt(icfg.feeAmount)}</strong></span>}
+                            {!isSal && ibs.totalFee > 0 && <span>수수료 <strong style={{ color: isPast ? "#D1D5DB" : "#DC2626" }}>-{fmt(ibs.totalFee)}</strong></span>}
+                            {isSal && <span>관리수수료 <strong style={{ color: "#7C3AED" }}>{fmt(icfg.feeAmount)}</strong></span>}
                             {ibs.totalDeduction > 0 && <span>공제 <strong style={{ color: isPast ? "#D1D5DB" : "#DC2626" }}>{fmt(ibs.totalDeduction)}</strong></span>}
                             {ibs.moveOutCount > 0 && <span>퇴실 <strong>{ibs.moveOutCount}건</strong></span>}
                             <span style={{ marginLeft: "auto", color: "#8F95A3", fontSize: 10 }}>

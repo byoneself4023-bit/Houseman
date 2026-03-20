@@ -50,15 +50,15 @@ const buildCoverItems = (bs) => {
       items.push({ label: "입주시 중개 수수료", amount: -(bs.totalBrokerage) });
     }
 
-    if (cfg.feeRate !== 0 && bs.totalPenalty > 0) {
+    if (bs.totalPenalty > 0) {
       items.push({ label: "퇴실시 위약금", amount: bs.totalPenalty });
     }
 
-    if (cfg.feeRate !== 0 && bs.totalDepositReturn > 0) {
+    if (bs.totalDepositReturn > 0) {
       items.push({ label: "예치금(b)", amount: -(bs.totalDepositReturn) });
     }
 
-    if (cfg.feeRate !== 0 && bs.totalDeduction > 0) {
+    if (bs.totalDeduction > 0) {
       items.push({ label: "공제 내역(d)", amount: -(bs.totalDeduction) });
     }
 
@@ -84,7 +84,7 @@ export const SettlementPrintView = ({ data, onClose }) => {
   const coverTotal = coverItems.reduce((s, item) => s + item.amount, 0);
 
   const periodStr = `${period.start} ~ ${period.end}`;
-  const [py, pm] = period.end.split("-");
+  const [py, pm] = period.start.split("-");
   const monthLabel = `${py}년 ${parseInt(pm)}월`;
   const today = new Date().toISOString().slice(0, 10);
 
@@ -117,9 +117,7 @@ export const SettlementPrintView = ({ data, onClose }) => {
         ====================================================== */}
         <div className="stl-page">
           <div className="stl-header">
-            <div className="stl-logo">
-              <img src="/logo-c.svg" alt="" style={{ height: 36 }} />
-            </div>
+            <div className="stl-logo">HOUSEMAN</div>
             <div className="stl-title">{bs.building} 정산서</div>
             <div className="stl-subtitle">{monthLabel}</div>
           </div>
@@ -191,10 +189,10 @@ export const SettlementPrintView = ({ data, onClose }) => {
           {/* 참고 합계 */}
           <div className="stl-ref">
             <div style={{ fontWeight: 700, marginBottom: '1.5mm', fontSize: '9pt', color: '#374151' }}>참고 합계</div>
-            {cfg.feeRate !== 0 && <div className="stl-ref-row">
+            <div className="stl-ref-row">
               <span className="stl-ref-label">총 예치금/보증금</span>
               <span className="stl-ref-value">{fmt(refDeposit)}원</span>
-            </div>}
+            </div>
             <div className="stl-ref-row">
               <span className="stl-ref-label">총 월세/임대료</span>
               <span className="stl-ref-value">{fmt(refRent)}원</span>
@@ -245,14 +243,13 @@ export const SettlementPrintView = ({ data, onClose }) => {
                 <th>상태</th>
                 <th>세입자</th>
                 <th>입주일</th>
-                {cfg.feeRate !== 0 && <th>예치금</th>}
-                {cfg.feeRate === 0 && <th>만기일</th>}
+                <th>예치금</th>
                 <th>월세</th>
                 <th>월세일</th>
-                {cfg.feeRate !== 0 && <th>수수료<br/>({(cfg.feeRate * 100).toFixed(1)}%)</th>}
+                <th>수수료<br/>({(cfg.feeRate * 100).toFixed(1)}%)</th>
                 <th>정산금(a)</th>
                 {cfg.includeMgmt && <th>관리비</th>}
-                {cfg.feeRate !== 0 && <th>미납</th>}
+                <th>미납</th>
               </tr>
             </thead>
             <tbody>
@@ -262,26 +259,25 @@ export const SettlementPrintView = ({ data, onClose }) => {
                   <td className="c">{r.status}</td>
                   <td>{r.name}</td>
                   <td className="c" style={{ fontSize: '7.5pt' }}>{r.moveIn?.slice(2)}</td>
-                  {cfg.feeRate !== 0 && <td className="r">{fmt(r.deposit)}</td>}
-                  {cfg.feeRate === 0 && <td className="c" style={{ fontSize: '7.5pt' }}>{r.expiry?.slice(2) || "—"}</td>}
+                  <td className="r">{fmt(r.deposit)}</td>
                   <td className="r b">{fmt(r.rent)}</td>
                   <td className="c">{r.rentDay}일</td>
-                  {cfg.feeRate !== 0 && <td className="r neg">{r.fee > 0 ? `-${fmt(r.fee)}` : "—"}</td>}
+                  <td className="r neg">{r.fee > 0 ? `-${fmt(r.fee)}` : "—"}</td>
                   <td className="r b">{fmt(r.settlementAmt)}</td>
                   {cfg.includeMgmt && <td className="r">{fmt(r.mgmt)}</td>}
-                  {cfg.feeRate !== 0 && <td className="r" style={{ color: (r.delinquent || 0) > 0 ? '#dc2626' : '#999' }}>
+                  <td className="r" style={{ color: (r.delinquent || 0) > 0 ? '#dc2626' : '#999' }}>
                     {(r.delinquent || 0) > 0 ? fmt(r.delinquent) : "—"}
-                  </td>}
+                  </td>
                 </tr>
               ))}
               <tr className="sub">
                 <td colSpan={5} className="c">합 계</td>
                 <td className="r">{fmt(bs.totalRent)}</td>
                 <td></td>
-                {cfg.feeRate !== 0 && <td className="r neg">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>}
+                <td className="r neg">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
                 <td className="r b">{fmt(bs.totalRentSettlement)}</td>
                 {cfg.includeMgmt && <td className="r b">{fmt(bs.totalMgmtSettlement)}</td>}
-                {cfg.feeRate !== 0 && <td></td>}
+                <td></td>
               </tr>
             </tbody>
           </table>
@@ -296,8 +292,9 @@ export const SettlementPrintView = ({ data, onClose }) => {
                     <th>호실</th>
                     <th>세입자</th>
                     <th>입주일</th>
-                    {cfg.feeRate !== 0 && <th>예치금(b)</th>}
-                    <th>중개수수료</th>
+                    <th>예치금(b)</th>
+                    <th>중개수수료(c)</th>
+                    <th>비고</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -306,8 +303,9 @@ export const SettlementPrintView = ({ data, onClose }) => {
                       <td className="c b">{mi.room}</td>
                       <td>{mi.name}</td>
                       <td className="c">{mi.moveIn}</td>
-                      {cfg.feeRate !== 0 && <td className="r">{fmt(mi.deposit)}</td>}
+                      <td className="r">{fmt(mi.deposit)}</td>
                       <td className="r neg">{mi.brokerageFee ? `-${fmt(mi.brokerageFee)}` : "—"}</td>
+                      <td></td>
                     </tr>
                   ))}
                 </tbody>
@@ -336,78 +334,68 @@ export const SettlementPrintView = ({ data, onClose }) => {
                         <td style={{ width: '13%' }}>{mt.moveOutDate}</td>
                         <td style={{ width: '20%', background: '#f5f5f5', fontWeight: 600 }}>입주일</td>
                         <td style={{ width: '13%' }}>{mt.moveIn?.slice(2)}</td>
-                        <td style={{ width: '20%', background: '#f5f5f5', fontWeight: 600 }}>기간정산</td>
-                        <td>{mt.usedDays}일 / {mt.totalDays}일</td>
+                        <td style={{ width: '20%', background: '#f5f5f5', fontWeight: 600 }}>만기일</td>
+                        <td>{mt.expiry?.slice(2) || "—"}</td>
                       </tr>
                       <tr>
                         <td style={{ background: '#f5f5f5', fontWeight: 600 }}>월세</td>
                         <td className="r">{fmt(mt.rent)}</td>
-                        {cfg.feeRate !== 0 && <><td style={{ background: '#f5f5f5', fontWeight: 600 }}>관리비</td>
-                        <td className="r">{fmt(mt.mgmt)}</td></>}
-                        {cfg.feeRate === 0 && <><td style={{ background: '#f5f5f5', fontWeight: 600 }}>만기일</td>
-                        <td>{mt.expiry?.slice(2) || "—"}</td></>}
-                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>월세 일할</td>
-                        <td className="r b">{fmt(mt.rentProRata)}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>관리비</td>
+                        <td className="r">{fmt(mt.mgmt)}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>거주일수</td>
+                        <td>{mt.usedDays}일 / {mt.totalDays}일</td>
                       </tr>
-                      {cfg.feeRate !== 0 && (
-                        <>
-                          <tr>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>관리비 일할</td>
-                            <td className="r">{fmt(mt.mgmtProRata)}</td>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>수수료 공제</td>
-                            <td className="r neg">-{fmt(mt.fee)}</td>
-                            <td></td><td></td>
-                          </tr>
-                          <tr style={{ borderTop: '1.5px solid #999' }}>
-                            <td colSpan={6} style={{ background: '#fef2f2', fontWeight: 700, color: '#991b1b', fontSize: '9pt' }}>
-                              퇴실 공제 항목
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>퇴실청소비</td>
-                            <td className="r">{mt.cleanFee > 0 ? fmt(mt.cleanFee) : "—"}</td>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>전기검침</td>
-                            <td className="r">{mt.elecReading > 0 ? fmt(mt.elecReading) : "—"}</td>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>가스검침</td>
-                            <td className="r">{mt.gasReading > 0 ? fmt(mt.gasReading) : "—"}</td>
-                          </tr>
-                          <tr>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>수도검침</td>
-                            <td className="r">{mt.waterReading > 0 ? fmt(mt.waterReading) : "—"}</td>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>훼손/파손</td>
-                            <td className="r">{mt.damageFee > 0 ? fmt(mt.damageFee) : "—"}</td>
-                            <td style={{ background: '#f5f5f5', fontWeight: 600 }}>위약금(7일)</td>
-                            <td className="r" style={{ color: mt.penalty7 > 0 ? '#dc2626' : undefined }}>{mt.penalty7 > 0 ? fmt(mt.penalty7) : "—"}</td>
-                          </tr>
-                          {mt.damageDesc && (
-                            <tr>
-                              <td style={{ background: '#f5f5f5', fontWeight: 600 }}>훼손사유</td>
-                              <td colSpan={5}>{mt.damageDesc}</td>
-                            </tr>
-                          )}
-                          <tr style={{ borderTop: '2px solid #333' }}>
-                            <td style={{ background: '#e8f0fe', fontWeight: 700 }}>예치금</td>
-                            <td className="r b">{fmt(mt.depositReturn)}</td>
-                            <td style={{ background: '#e8f0fe', fontWeight: 700 }}>공제합계</td>
-                            <td className="r b neg">-{fmt(mt.totalDeductItems)}</td>
-                            <td style={{ background: '#e8f0fe', fontWeight: 800, fontSize: '10pt' }}>최종 환불</td>
-                            <td className="r b" style={{ fontSize: '10pt', color: mt.finalRefund >= 0 ? '#059669' : '#dc2626' }}>
+                      <tr>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>월세 일할</td>
+                        <td className="r">{fmt(mt.rentProRata)}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>관리비 일할</td>
+                        <td className="r">{fmt(mt.mgmtProRata)}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>수수료 공제</td>
+                        <td className="r neg">-{fmt(mt.fee)}</td>
+                      </tr>
+                      <tr style={{ borderTop: '1.5px solid #999' }}>
+                        <td colSpan={6} style={{ background: '#fef2f2', fontWeight: 700, color: '#991b1b', fontSize: '9pt' }}>
+                          퇴실 공제 항목
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>퇴실청소비</td>
+                        <td className="r">{mt.cleanFee > 0 ? fmt(mt.cleanFee) : "—"}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>전기검침</td>
+                        <td className="r">{mt.elecReading > 0 ? fmt(mt.elecReading) : "—"}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>가스검침</td>
+                        <td className="r">{mt.gasReading > 0 ? fmt(mt.gasReading) : "—"}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>수도검침</td>
+                        <td className="r">{mt.waterReading > 0 ? fmt(mt.waterReading) : "—"}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>훼손/파손</td>
+                        <td className="r">{mt.damageFee > 0 ? fmt(mt.damageFee) : "—"}</td>
+                        <td style={{ background: '#f5f5f5', fontWeight: 600 }}>위약금(7일)</td>
+                        <td className="r" style={{ color: mt.penalty7 > 0 ? '#dc2626' : undefined }}>{mt.penalty7 > 0 ? fmt(mt.penalty7) : "—"}</td>
+                      </tr>
+                      {mt.damageDesc && (
+                        <tr>
+                          <td style={{ background: '#f5f5f5', fontWeight: 600 }}>훼손사유</td>
+                          <td colSpan={5}>{mt.damageDesc}</td>
+                        </tr>
+                      )}
+                      {mt.penaltyReason && (
+                        <tr>
+                          <td style={{ background: '#f5f5f5', fontWeight: 600 }}>위약사유</td>
+                          <td colSpan={5}>{mt.penaltyReason}</td>
+                        </tr>
+                      )}
+                      <tr style={{ borderTop: '2px solid #333' }}>
+                        <td style={{ background: '#e8f0fe', fontWeight: 700 }}>예치금</td>
+                        <td className="r b">{fmt(mt.depositReturn)}</td>
+                        <td style={{ background: '#e8f0fe', fontWeight: 700 }}>공제합계</td>
+                        <td className="r b neg">-{fmt(mt.totalDeductItems)}</td>
+                        <td style={{ background: '#e8f0fe', fontWeight: 800, fontSize: '10pt' }}>최종 환불</td>
+                        <td className="r b" style={{ fontSize: '10pt', color: mt.finalRefund >= 0 ? '#059669' : '#dc2626' }}>
                           {fmt(mt.finalRefund)}원
                         </td>
                       </tr>
-                        </>
-                      )}
-                      {/* 수수료 0%: 월세 일할 결과만 */}
-                      {cfg.feeRate === 0 && (
-                        <tr style={{ borderTop: '2px solid #333' }}>
-                          <td colSpan={5} style={{ background: '#e8f0fe', fontWeight: 800, fontSize: '10pt' }}>
-                            {mt.alreadyPaid ? "환수 합계 (건물주 → HM)" : "지급 합계 (HM → 건물주)"}
-                          </td>
-                          <td className="r b" style={{ fontSize: '10pt', color: mt.alreadyPaid ? '#dc2626' : '#059669' }}>
-                            {fmt(mt.settlementAmt)}원
-                          </td>
-                        </tr>
-                      )}
                     </tbody>
                   </table>
                 </div>
