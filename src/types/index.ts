@@ -282,6 +282,12 @@ export interface PatrolBuilding {
   lastStatus: string | null;
 }
 
+export interface PatrolChecklistItem {
+  item: string;
+  status: string;
+  comment?: string;
+}
+
 export interface PatrolRecord {
   id: number;
   building: string;
@@ -290,6 +296,7 @@ export interface PatrolRecord {
   status: string;
   comment: string;
   photos: string[];
+  checklist?: PatrolChecklistItem[];
 }
 
 // ── AS Items ──
@@ -300,13 +307,21 @@ export interface ASStep {
   note: string;
 }
 
+export interface ASAction {
+  step: string;
+  date: string;
+  by: string;
+}
+
 export interface ASItem {
   id: number;
   date: string;
   building: string;
   room: string;
   content: string;
+  title?: string;
   detail: string;
+  desc?: string;
   priority: string;
   assignee: string;
   status: string;
@@ -314,9 +329,13 @@ export interface ASItem {
   paid: string;
   cost: number;
   vendor: string;
+  source?: string;
   photoBefore: string;
   photoAfter: string;
   steps: ASStep[];
+  actions?: ASAction[];
+  ownerApproval?: string | null;
+  estimatedCost?: number;
 }
 
 // ── Building Coords ──

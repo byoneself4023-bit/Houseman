@@ -1,15 +1,15 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { patrolBuildings } from '../data/patrolData';
-import { asItems } from '../data/asItems';
-import { useIsMobile } from '../utils';
-import { useLocalStorage } from '../utils/useLocalStorage';
-import { initialStaffMembers } from '../config';
-import { buildingCoords } from '../data/buildingCoords';
+import { patrolBuildings } from '@/data/patrolData';
+import { asItems } from '@/data/asItems';
+import { useIsMobile } from '@/utils';
+import { useLocalStorage } from '@/utils/useLocalStorage';
+import { initialStaffMembers } from '@/config';
+import { buildingCoords } from '@/data/buildingCoords';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // ── 권역 매핑 ──
-const REGIONS = {
+const REGIONS: Record<string, string[]> = {
   '관악/동작': ['관악구', '동작구'],
   '강남/서초': ['강남구', '서초구'],
   '중구/마포': ['중구', '마포구', '용산구'],
@@ -21,14 +21,14 @@ const REGIONS = {
 const REGION_KEYS = Object.keys(REGIONS);
 
 // ── 태스크 유형별 색상 ──
-const TASK_COLORS = {
+const TASK_COLORS: Record<string, string> = {
   as: '#EF4444',
   patrol: '#3B82F6',
   meter: '#F59E0B',
   moveinout: '#10B981',
 };
 
-const TASK_LABELS = {
+const TASK_LABELS: Record<string, string> = {
   as: 'AS',
   patrol: '순회',
   meter: '검침',
@@ -38,7 +38,7 @@ const TASK_LABELS = {
 const WEEKDAY_NAMES = ['월요일', '화요일', '수요일', '목요일', '금요일'];
 
 // ── 주소에서 권역 추출 ──
-function getRegion(address) {
+function getRegion(address: string): string {
   if (!address) return '기타';
   for (const [region, keywords] of Object.entries(REGIONS)) {
     if (region === '기타') continue;
@@ -50,7 +50,7 @@ function getRegion(address) {
 }
 
 // ── 주의 월~금 날짜 계산 ──
-function getWeekDates(weekOffset) {
+function getWeekDates(weekOffset: number): Date[] {
   const now = new Date();
   const day = now.getDay(); // 0=Sun
   const diff = day === 0 ? -6 : 1 - day; // Mon offset
@@ -58,7 +58,7 @@ function getWeekDates(weekOffset) {
   monday.setDate(now.getDate() + diff + weekOffset * 7);
   monday.setHours(0, 0, 0, 0);
 
-  const dates = [];
+  const dates: Date[] = [];
   for (let i = 0; i < 5; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
@@ -67,26 +67,26 @@ function getWeekDates(weekOffset) {
   return dates;
 }
 
-function formatDate(d) {
+function formatDate(d: Date): string {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-function toDateStr(d) {
+function toDateStr(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${dd}`;
 }
 
-function daysBetween(dateStr, refDate) {
+function daysBetween(dateStr: string | undefined, refDate?: Date): number {
   if (!dateStr) return 999;
   const d = new Date(dateStr);
   const ref = refDate || new Date();
-  return Math.floor((ref - d) / (1000 * 60 * 60 * 24));
+  return Math.floor((ref.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 // ── Haversine 거리 계산 (km) ──
-function haversine(lat1, lng1, lat2, lng2) {
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
@@ -94,19 +94,35 @@ function haversine(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+interface PendingTask {
+  building: string;
+  type: string;
+  label: string;
+  priority: number;
+  daysSince: number;
+  targetDate?: string;
+}
+
+interface BuildingTask {
+  building: string;
+  tasks: PendingTask[];
+  priority: number;
+  region?: string;
+}
+
 // ── 최근접 이웃 알고리즘으로 동선 최적화 ──
-function optimizeRoute(buildings) {
+function optimizeRoute(buildings: BuildingTask[]): BuildingTask[] {
   if (buildings.length <= 1) return buildings;
   const coords = buildings.map(b => buildingCoords[b.building]).filter(Boolean);
   if (coords.length < 2) return buildings;
 
   const remaining = [...buildings];
-  const route = [remaining.shift()];
+  const route = [remaining.shift()!];
 
   while (remaining.length > 0) {
     const last = route[route.length - 1];
     const lastCoord = buildingCoords[last.building];
-    if (!lastCoord) { route.push(remaining.shift()); continue; }
+    if (!lastCoord) { route.push(remaining.shift()!); continue; }
 
     let bestIdx = 0;
     let bestDist = Infinity;
@@ -125,9 +141,9 @@ function optimizeRoute(buildings) {
 const DAY_COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
 
 // ── 시간 슬롯 생성 ──
-function timeSlots(count, start = '09:30') {
+function timeSlots(count: number, start = '09:30'): string[] {
   const [h, m] = start.split(':').map(Number);
-  const slots = [];
+  const slots: string[] = [];
   let minutes = h * 60 + m;
   for (let i = 0; i < count; i++) {
     const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
@@ -139,30 +155,42 @@ function timeSlots(count, start = '09:30') {
   return slots;
 }
 
-export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeTenants = [] }) {
+interface DaySchedule {
+  region: string;
+  buildings: BuildingTask[];
+}
+
+interface RouteSchedulePageProps {
+  myBuildings?: string[];
+  buildingData?: Record<string, any>;
+  activeTenants?: Record<string, any>[];
+  isLoading?: boolean;
+}
+
+export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeTenants = [] }: RouteSchedulePageProps) {
   const isMobile = useIsMobile();
   const [weekOffset, setWeekOffset] = useState(0);
-  const [expandedDay, setExpandedDay] = useState(null);
-  const [highlightedBuilding, setHighlightedBuilding] = useState(null);
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const [highlightedBuilding, setHighlightedBuilding] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState('전체');
-  const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
-  const [mapDay, setMapDay] = useState(null); // null = all days, 0~4 = specific day
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markersRef = useRef([]);
-  const polylinesRef = useRef([]);
-  const [scheduleOverrides] = useState(() => {
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [mapDay, setMapDay] = useState<number | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
+  const polylinesRef = useRef<L.Polyline[]>([]);
+  const [scheduleOverrides] = useState<Record<string, any>>(() => {
     try {
       return JSON.parse(localStorage.getItem('hm_routeSchedule') || '{}');
     } catch { return {}; }
   });
 
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
-  const externalStaff = useMemo(() => staffList.filter(s => s.roles.includes("external")), [staffList]);
+  const externalStaff = useMemo(() => (staffList as any[]).filter(s => s.roles.includes("external")), [staffList]);
 
   // 외부직원별 담당 건물 매핑 (patrolBuildings의 assignee 기준)
   const staffBuildingMap = useMemo(() => {
-    const map = {};
+    const map: Record<string, string[]> = {};
     for (const s of externalStaff) {
       map[s.name] = patrolBuildings.filter(pb => pb.assignee === s.name).map(pb => pb.building);
     }
@@ -185,7 +213,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
   // ── 건물별 주소/권역 매핑 ──
   const buildingRegions = useMemo(() => {
-    const map = {};
+    const map: Record<string, { address: string; region: string }> = {};
     const allNames = new Set([
       ...patrolBuildings.map(b => b.building),
       ...(myBuildings.length > 0 ? myBuildings : []),
@@ -200,11 +228,11 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
   // ── 건물별 미처리 태스크 수집 ──
   const pendingTasks = useMemo(() => {
-    const tasks = []; // { building, type, label, priority, daysSince }
+    const tasks: PendingTask[] = [];
 
     // 선택 직원의 건물 목록
     const staffBuildings = selectedStaff !== '전체' ? (staffBuildingMap[selectedStaff] || []) : null;
-    const isInScope = (building) => {
+    const isInScope = (building: string): boolean => {
       if (staffBuildings && !staffBuildings.includes(building)) return false;
       if (filteredBuildings.length > 0 && !filteredBuildings.includes(building)) return false;
       return true;
@@ -231,7 +259,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
     for (const pb of relevantPatrol) {
       const threshold = 30 / (pb.freq || 1);
-      const elapsed = daysBetween(pb.lastDate, today);
+      const elapsed = daysBetween(pb.lastDate ?? undefined, today);
       if (elapsed > threshold) {
         tasks.push({
           building: pb.building,
@@ -248,7 +276,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       if (!t.building || !isInScope(t.building)) continue;
       const moveIn = t.moveIn || t.startDate;
       const moveOut = t.moveOut || t.endDate;
-      for (const [dateStr, taskLabel] of [[moveIn, '입주 체크'], [moveOut, '퇴실 체크']]) {
+      for (const [dateStr, taskLabel] of [[moveIn, '입주 체크'], [moveOut, '퇴실 체크']] as [string, string][]) {
         if (!dateStr) continue;
         const diff = daysBetween(toDateStr(today), new Date(dateStr)); // future days
         const diffAbs = Math.abs(daysBetween(dateStr, today));
@@ -271,14 +299,14 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
   // ── 권역별 그룹 + 주간 배분 ──
   const { dailySchedule, unassigned, delayRanking } = useMemo(() => {
     // 건물별 태스크 그룹핑
-    const buildingTasks = {};
+    const buildingTasks: Record<string, PendingTask[]> = {};
     for (const t of pendingTasks) {
       if (!buildingTasks[t.building]) buildingTasks[t.building] = [];
       buildingTasks[t.building].push(t);
     }
 
     // 권역별 건물 그룹
-    const regionBuildings = {};
+    const regionBuildings: Record<string, BuildingTask[]> = {};
     for (const [bName, tasks] of Object.entries(buildingTasks)) {
       const region = buildingRegions[bName]?.region || '기타';
       if (!regionBuildings[region]) regionBuildings[region] = [];
@@ -292,8 +320,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       return aPri - bPri || b[1].length - a[1].length;
     });
 
-    const daily = Array.from({ length: 5 }, () => ({ region: '', buildings: [] }));
-    const unassignedList = [];
+    const daily: DaySchedule[] = Array.from({ length: 5 }, () => ({ region: '', buildings: [] }));
+    const unassignedList: (BuildingTask & { region: string })[] = [];
 
     // 가용한 요일에 권역 배분
     let dayIdx = 0;
@@ -309,7 +337,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       // 같은 권역 건물이 5개 넘으면 여러 날로 분배
       const sorted = [...buildings].sort((a, b) => a.priority - b.priority);
       const perDay = Math.ceil(sorted.length / Math.max(1, Math.ceil(sorted.length / 6)));
-      let chunk = [];
+      let chunk: BuildingTask[] = [];
 
       for (let i = 0; i < sorted.length; i++) {
         chunk.push(sorted[i]);
@@ -350,7 +378,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     if (!region) return [];
     return pendingTasks
       .filter(t => t.building !== highlightedBuilding && buildingRegions[t.building]?.region === region)
-      .reduce((acc, t) => {
+      .reduce((acc: { building: string; type: string; label: string }[], t) => {
         if (!acc.find(x => x.building === t.building)) {
           acc.push({ building: t.building, type: t.type, label: t.label });
         }
@@ -393,7 +421,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     markersRef.current = [];
     polylinesRef.current = [];
 
-    const allBounds = [];
+    const allBounds: L.LatLngTuple[] = [];
     const daysToShow = mapDay !== null ? [mapDay] : [0, 1, 2, 3, 4];
 
     for (const dayIdx of daysToShow) {
@@ -401,13 +429,13 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       if (!day || day.buildings.length === 0) continue;
 
       const dayColor = DAY_COLORS[dayIdx];
-      const routeCoords = [];
+      const routeCoords: L.LatLngTuple[] = [];
 
       day.buildings.forEach((b, bIdx) => {
         const coord = buildingCoords[b.building];
         if (!coord) return;
 
-        const latlng = [coord.lat, coord.lng];
+        const latlng: L.LatLngTuple = [coord.lat, coord.lng];
         routeCoords.push(latlng);
         allBounds.push(latlng);
 
@@ -451,7 +479,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           color: dayColor,
           weight: 3,
           opacity: 0.8,
-          dashArray: mapDay === null ? '8, 6' : null,
+          dashArray: mapDay === null ? '8, 6' : undefined,
         }).addTo(map);
         polylinesRef.current.push(polyline);
       }
@@ -473,18 +501,18 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     };
   }, []);
 
-  const toggleDay = useCallback((idx) => {
+  const toggleDay = useCallback((idx: number) => {
     setExpandedDay(prev => prev === idx ? null : idx);
   }, []);
 
   // ── Styles ──
-  const containerStyle = {
+  const containerStyle: React.CSSProperties = {
     padding: isMobile ? 16 : 24,
     maxWidth: 1200,
     margin: '0 auto',
   };
 
-  const headerStyle = {
+  const headerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -493,7 +521,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     gap: 12,
   };
 
-  const navBtnStyle = {
+  const navBtnStyle: React.CSSProperties = {
     padding: '8px 16px',
     borderRadius: 8,
     border: '1px solid #D1D5DB',
@@ -504,19 +532,19 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     color: '#374151',
   };
 
-  const weekLabelStyle = {
+  const weekLabelStyle: React.CSSProperties = {
     fontSize: isMobile ? 16 : 20,
     fontWeight: 800,
     color: '#111827',
   };
 
-  const mainGrid = {
+  const mainGrid: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns: isMobile ? '1fr' : nearbyBuildings.length > 0 || delayRanking.length > 0 ? '1fr 300px' : '1fr',
     gap: 20,
   };
 
-  const cardStyle = {
+  const cardStyle: React.CSSProperties = {
     background: '#fff',
     borderRadius: 12,
     border: '1px solid #E8ECF0',
@@ -526,7 +554,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     transition: 'box-shadow 0.15s',
   };
 
-  const dotStyle = (color) => ({
+  const dotStyle = (color: string): React.CSSProperties => ({
     width: 10,
     height: 10,
     borderRadius: '50%',
@@ -534,14 +562,14 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     flexShrink: 0,
   });
 
-  const lineStyle = {
+  const lineStyle: React.CSSProperties = {
     width: 2,
     background: '#E5E7EB',
     minHeight: 24,
     marginLeft: 4,
   };
 
-  const taskBadge = (type) => ({
+  const taskBadge = (type: string): React.CSSProperties => ({
     display: 'inline-block',
     padding: '2px 8px',
     borderRadius: 6,
@@ -626,7 +654,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           ))}
         </div>
         <div style={{ display: 'flex', gap: 4, background: '#F3F4F6', borderRadius: 8, padding: 2 }}>
-          {[['list', '목록'], ['map', '지도']].map(([mode, label]) => (
+          {([['list', '목록'], ['map', '지도']] as [string, string][]).map(([mode, label]) => (
             <button
               key={mode}
               onClick={() => {
@@ -635,7 +663,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                     mapInstanceRef.current.remove();
                     mapInstanceRef.current = null;
                   }
-                  setViewMode(mode);
+                  setViewMode(mode as 'list' | 'map');
                 }
               }}
               style={{
@@ -723,7 +751,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
               <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
                 {optimizedSchedule[mapDay].buildings.map((b, i) => {
                   const coord = buildingCoords[b.building];
-                  const prevCoord = i > 0 ? buildingCoords[optimizedSchedule[mapDay].buildings[i - 1].building] : null;
+                  const prevCoord = i > 0 ? buildingCoords[optimizedSchedule[mapDay!].buildings[i - 1].building] : null;
                   const dist = prevCoord && coord ? haversine(prevCoord.lat, prevCoord.lng, coord.lat, coord.lng).toFixed(1) : null;
                   return (
                     <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -735,12 +763,12 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                         padding: '3px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700,
-                        background: `${DAY_COLORS[mapDay]}15`, color: '#111827',
-                        border: `1px solid ${DAY_COLORS[mapDay]}30`,
+                        background: `${DAY_COLORS[mapDay!]}15`, color: '#111827',
+                        border: `1px solid ${DAY_COLORS[mapDay!]}30`,
                       }}>
                         <span style={{
                           width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 800,
-                          background: DAY_COLORS[mapDay], color: '#fff',
+                          background: DAY_COLORS[mapDay!], color: '#fff',
                           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         }}>{i + 1}</span>
                         {b.building}
@@ -750,11 +778,11 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                 })}
               </div>
               {(() => {
-                const buildings = optimizedSchedule[mapDay].buildings;
+                const blds = optimizedSchedule[mapDay!].buildings;
                 let totalDist = 0;
-                for (let i = 1; i < buildings.length; i++) {
-                  const prev = buildingCoords[buildings[i - 1].building];
-                  const curr = buildingCoords[buildings[i].building];
+                for (let i = 1; i < blds.length; i++) {
+                  const prev = buildingCoords[blds[i - 1].building];
+                  const curr = buildingCoords[blds[i].building];
                   if (prev && curr) totalDist += haversine(prev.lat, prev.lng, curr.lat, curr.lng);
                 }
                 return totalDist > 0 ? (

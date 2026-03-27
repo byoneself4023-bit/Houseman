@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { buildings } from '../data';
-import { useIsMobile, fmt } from '../utils';
-import { Card, SectionTitle, Table } from '../components';
-import { inputStyle } from '../components/Field';
-import { useLocalStorage } from '../utils/useLocalStorage';
+import { buildings } from '@/data';
+import { useIsMobile, fmt } from '@/utils';
+import { Card, SectionTitle, Table } from '@/components';
+import { inputStyle } from '@/components/Field';
+import { useLocalStorage } from '@/utils/useLocalStorage';
 
 // 뱅크다 시뮬레이션 데이터 (실제로는 a.bankda.com API에서 가져옴)
 const sampleBankData = [
@@ -39,15 +39,18 @@ const sampleBankData = [
   { id: "B026", date: "2026-03-06", depositor: "강미래", amount: 350000, bank: "국민", memo: "" },
 ];
 
+interface MatchResult {
+  score: number;
+  tenant: Record<string, any> | null;
+  reason: string;
+  saveName: boolean;
+  candidates?: { tenant: Record<string, any>; score: number; reasons: string[] }[];
+}
+
 /**
  * 자동 매칭 알고리즘
- * 100% 조건 (자동 처리):
- *   1) 임차인 이름 정확 일치 + 금액(월세+관리비) 정확 일치
- *   2) 이름 다르지만 금액이 1원 단위까지 일치하고, 해당 금액의 임차인이 딱 1명 → 이름 저장
- *   3) 회사 지정 입금자명(건물호실 조합이름)과 일치
- * 그 외 → 확률 표시, 수동 지정
  */
-const calcMatch = (bankTx, allTenants, nameAliases, depositNames, prevTransactions) => {
+const calcMatch = (bankTx: Record<string, any>, allTenants: Record<string, any>[], nameAliases: Record<string, string[]>, depositNames: Record<string, string>, prevTransactions: Record<string, any>[]): MatchResult => {
   const dep = bankTx.depositor.trim();
   const amt = bankTx.amount;
 
@@ -87,7 +90,7 @@ const calcMatch = (bankTx, allTenants, nameAliases, depositNames, prevTransactio
   // === 확률 매칭 ===
   const candidates = allTenants.map(t => {
     let score = 0;
-    let reasons = [];
+    let reasons: string[] = [];
     const totalDue = t.rent + (t.mgmt || 0);
     const key = `${t.building}_${t.room}`;
     const aliases = nameAliases[key] || [];
@@ -116,11 +119,20 @@ const calcMatch = (bankTx, allTenants, nameAliases, depositNames, prevTransactio
   return { score: 0, tenant: null, reason: "매칭 대상 없음", saveName: false, candidates: [] };
 };
 
-export const TransactionPage = ({ myBuildings = [], activeTenants = [], transactions, addDeposit, roomBalances }) => {
+interface TransactionPageProps {
+  myBuildings?: string[];
+  activeTenants?: Record<string, any>[];
+  transactions: Record<string, any>[];
+  addDeposit: (building: string, room: string, name: string, amount: number, method: string, note: string) => void;
+  roomBalances: Record<string, number>;
+  isLoading?: boolean;
+}
+
+export const TransactionPage = ({ myBuildings = [], activeTenants = [], transactions, addDeposit, roomBalances, isLoading }: TransactionPageProps) => {
   const isMobile = useIsMobile();
   const [showForm, setShowForm] = useState(false);
   const [showDebtSection, setShowDebtSection] = useState(false);
-  const [moveoutDebts, setMoveoutDebts] = useLocalStorage("hm_moveoutDebts", []);
+  const [moveoutDebts, setMoveoutDebts] = useLocalStorage<Record<string, any>[]>("hm_moveoutDebts", []);
   const [formBld, setFormBld] = useState("");
   const [formRoom, setFormRoom] = useState("");
   const [formAmount, setFormAmount] = useState("");
@@ -129,10 +141,10 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
   const [filterBld, setFilterBld] = useState("전체");
   const [done, setDone] = useState(false);
   const [showBankda, setShowBankda] = useState(false);
-  const [matchedItems, setMatchedItems] = useLocalStorage("hm_bankdaMatched", {});
-  const [nameAliases, setNameAliases] = useLocalStorage("hm_nameAliases", {});
-  const [depositNames, setDepositNames] = useLocalStorage("hm_depositNames", {});
-  const [manualAssign, setManualAssign] = useState(null);
+  const [matchedItems, setMatchedItems] = useLocalStorage<Record<string, boolean>>("hm_bankdaMatched", {});
+  const [nameAliases, setNameAliases] = useLocalStorage<Record<string, string[]>>("hm_nameAliases", {});
+  const [depositNames, setDepositNames] = useLocalStorage<Record<string, string>>("hm_depositNames", {});
+  const [manualAssign, setManualAssign] = useState<string | null>(null);
   const [showDepositNames, setShowDepositNames] = useState(false);
   const [editDepKey, setEditDepKey] = useState("");
   const [editDepVal, setEditDepVal] = useState("");
@@ -155,7 +167,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
   const auto100 = bankMatches.filter(m => m.score === 100);
   const manualNeeded = bankMatches.filter(m => m.score < 100);
 
-  const handleMatch = (bankTx, tenant, saveName) => {
+  const handleMatch = (bankTx: Record<string, any>, tenant: Record<string, any>, saveName: boolean) => {
     addDeposit(tenant.building, tenant.room, tenant.name, bankTx.amount, "계좌이체", `뱅크다 매칭 (${bankTx.depositor})`);
     setMatchedItems(prev => ({ ...prev, [bankTx.id]: true }));
     // 이름이 다르면 별명 저장
@@ -372,7 +384,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
           {/* 100% 자동매칭 일괄 처리 */}
           {auto100.length > 0 && (
-            <button onClick={() => auto100.forEach(m => handleMatch(m.bankTx, m.tenant, m.saveName))}
+            <button onClick={() => auto100.forEach(m => handleMatch(m.bankTx, m.tenant!, m.saveName))}
               style={{ width: "100%", padding: "10px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>
               100% 매칭 {auto100.length}건 일괄 입금처리
             </button>
@@ -548,7 +560,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               {formBld && formRoom && (
                 <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 6, background: "#F8FAFC", fontSize: 12, color: "#5F6577" }}>
                   현재 잔액: <strong style={{ color: (roomBalances[`${formBld}_${formRoom}`] || 0) > 0 ? "#DC2626" : "#059669" }}>{fmt(roomBalances[`${formBld}_${formRoom}`] || 0)}원</strong>
-                  {formAmount && <> → 입금 후: <strong style={{ color: "#059669" }}>{fmt(Math.max(0, (roomBalances[`${formBld}_${formRoom}`] || 0) - parseInt(formAmount.replace(/,/g, "") || 0)))}원</strong></>}
+                  {formAmount && <> → 입금 후: <strong style={{ color: "#059669" }}>{fmt(Math.max(0, (roomBalances[`${formBld}_${formRoom}`] || 0) - parseInt(formAmount.replace(/,/g, "") || "0")))}원</strong></>}
                 </div>
               )}
             </>
@@ -576,18 +588,18 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
       ) : (
       <Table
         columns={[
-          { label: "일자", render: r => <span style={{ fontSize: 11 }}>{r.date.slice(5)}</span> },
-          { label: "유형", render: r => <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: r.type === "입금" ? "#ECFDF5" : "#FEF2F2", color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type}</span> },
-          { label: "건물", render: r => <span style={{ fontWeight: 600, fontSize: 11 }}>{r.building}</span> },
-          { label: "호실", render: r => r.room },
-          { label: "입주자", render: r => <span style={{ fontWeight: 700, display: "inline-block", maxWidth: "5em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{r.name}</span> },
-          { label: "금액", align: "right", render: r => <span style={{ fontWeight: 800, color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span> },
-          { label: "방법", render: r => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.method}</span> },
-          { label: "잔액", align: "right", render: r => {
+          { label: "일자", render: (r: Record<string, any>) => <span style={{ fontSize: 11 }}>{r.date.slice(5)}</span> },
+          { label: "유형", render: (r: Record<string, any>) => <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: r.type === "입금" ? "#ECFDF5" : "#FEF2F2", color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type}</span> },
+          { label: "건물", render: (r: Record<string, any>) => <span style={{ fontWeight: 600, fontSize: 11 }}>{r.building}</span> },
+          { label: "호실", render: (r: Record<string, any>) => r.room },
+          { label: "입주자", render: (r: Record<string, any>) => <span style={{ fontWeight: 700, display: "inline-block", maxWidth: "5em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{r.name}</span> },
+          { label: "금액", align: "right" as const, render: (r: Record<string, any>) => <span style={{ fontWeight: 800, color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span> },
+          { label: "방법", render: (r: Record<string, any>) => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.method}</span> },
+          { label: "잔액", align: "right" as const, render: (r: Record<string, any>) => {
             const bal = roomBalances[`${r.building}_${r.room}`] || 0;
             return <span style={{ fontWeight: 700, fontSize: 11, color: bal > 0 ? "#DC2626" : "#059669" }}>{fmt(bal)}원</span>;
           }},
-          { label: "비고", render: r => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.note}</span> },
+          { label: "비고", render: (r: Record<string, any>) => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.note}</span> },
         ]}
         data={sortedTx}
       />

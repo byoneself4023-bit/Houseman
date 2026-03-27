@@ -1,10 +1,41 @@
 import { useState, useMemo, useCallback } from 'react';
-import { patrolBuildings } from '../data/patrolData';
-import { asItems } from '../data/asItems';
-import { initialStaffMembers } from '../config/staff';
-import { getRoomType } from '../config';
+import { patrolBuildings } from '@/data/patrolData';
+import { asItems } from '@/data/asItems';
+import { initialStaffMembers } from '@/config/staff';
+import { getRoomType } from '@/config';
+import type { Tenant, Vacancy, CalendarEvent, Staff } from '@/types';
 
-const TYPE_LABELS = {
+interface TaskDriverPageProps {
+  isLoading?: boolean;
+  myBuildings?: string[];
+  activeTenants?: Tenant[];
+  activeVacancies?: Vacancy[];
+  calendarEvts?: CalendarEvent[];
+  buildingData?: Record<string, any>;
+  settlementExpenses?: Record<string, any>;
+  roomBalances?: Record<string, number>;
+  billingHistory?: Record<string, any>;
+  pastTenantsData?: Record<string, any>;
+  currentStaff?: Staff | null;
+  setPage?: (page: string) => void;
+  setCalendarEvts?: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
+  parkingInfo?: Record<string, any>;
+}
+
+interface Task {
+  id: string;
+  type: string;
+  title: string;
+  building: string;
+  room: string | null;
+  assignee: string;
+  dueDate: Date;
+  priority: string;
+  category: string;
+  overdueDays: number;
+}
+
+const TYPE_LABELS: Record<string, string> = {
   settlement: '정산',
   renewal: '재계약',
   patrol: '순회',
@@ -15,7 +46,7 @@ const TYPE_LABELS = {
   billing: '청구',
 };
 
-const TYPE_COLORS = {
+const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   settlement: { bg: '#DBEAFE', color: '#1E40AF' },
   renewal: { bg: '#FEF3C7', color: '#92400E' },
   patrol: { bg: '#D1FAE5', color: '#065F46' },
@@ -26,7 +57,7 @@ const TYPE_COLORS = {
   billing: { bg: '#FEF2F2', color: '#DC2626' },
 };
 
-const PRIORITY_COLORS = {
+const PRIORITY_COLORS: Record<string, string> = {
   high: '#EF4444',
   medium: '#F59E0B',
   low: '#6B7280',
@@ -51,11 +82,11 @@ const STAFF_COLORS = [
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 
-function lsKey(staffId) {
+function lsKey(staffId: number | string | undefined): string {
   return `hm_completedTasks_${staffId || 'global'}`;
 }
 
-function loadCompleted(staffId) {
+function loadCompleted(staffId: number | string | undefined): Record<string, string> {
   try {
     const saved = localStorage.getItem(lsKey(staffId));
     if (saved) {
@@ -66,29 +97,29 @@ function loadCompleted(staffId) {
   return {};
 }
 
-function daysDiff(a, b) {
+function daysDiff(a: Date, b: Date): number {
   const msPerDay = 86400000;
   const utcA = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
   const utcB = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
   return Math.round((utcB - utcA) / msPerDay);
 }
 
-function lastDayOfMonth(year, month) {
+function lastDayOfMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
 
-function getAssignee(building, patrolData) {
-  const p = patrolData.find(pb => pb.building === building);
+function getAssignee(building: string, patrolData: any[]): string {
+  const p = patrolData.find((pb: any) => pb.building === building);
   return p ? p.assignee : '미배정';
 }
 
-function formatDate(d) {
+function formatDate(d: Date): string {
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
-function dDayLabel(overdueDays) {
+function dDayLabel(overdueDays: number): string {
   if (overdueDays > 0) return `D+${overdueDays}`;
   if (overdueDays === 0) return 'D-Day';
   return `D${overdueDays}`;
@@ -105,7 +136,8 @@ export function TaskDriverPage({
   billingHistory = {},
   pastTenantsData = {},
   currentStaff = null,
-}) {
+  isLoading,
+}: TaskDriverPageProps) {
   const today = useMemo(() => new Date(), []);
   const todayStr = formatDate(today);
   const isGeneral = currentStaff?.roles?.includes('general');
@@ -115,11 +147,11 @@ export function TaskDriverPage({
   const [viewStaff, setViewStaff] = useState('all');
 
   // 직원별 완료 태스크 (로그인 직원의 localStorage)
-  const [completedTasks, setCompletedTasks] = useState(() => loadCompleted(currentStaff?.id));
+  const [completedTasks, setCompletedTasks] = useState<Record<string, string>>(() => loadCompleted(currentStaff?.id));
 
   const [sortBy, setSortBy] = useState('due');
 
-  const toggleTask = useCallback((taskId) => {
+  const toggleTask = useCallback((taskId: string) => {
     setCompletedTasks(prev => {
       const next = { ...prev };
       if (next[taskId]) {
@@ -134,13 +166,13 @@ export function TaskDriverPage({
 
   // Generate all tasks (전체 건물 기준 — myBuildings는 이미 총괄이면 전체)
   const allTasks = useMemo(() => {
-    const tasks = [];
+    const tasks: Task[] = [];
     const now = today;
     const year = now.getFullYear();
     const month = now.getMonth();
 
     // 1. 정산일 D-7
-    (myBuildings || []).forEach(b => {
+    (myBuildings || []).forEach((b: any) => {
       const bName = typeof b === 'string' ? b : b.name;
       if (!bName) return;
       const settlDay = lastDayOfMonth(year, month);
@@ -163,7 +195,7 @@ export function TaskDriverPage({
     });
 
     // 2 & 3. 재계약 D-60 / D-30
-    (activeTenants || []).forEach(t => {
+    (activeTenants || []).forEach((t: Tenant) => {
       if (!t.expiry || !t.name || t.name === '퇴실' || t.name === '건물주') return;
       const expiry = new Date(t.expiry);
       if (isNaN(expiry.getTime())) return;
@@ -205,7 +237,7 @@ export function TaskDriverPage({
     });
 
     // 4. 순회 지연
-    (patrolBuildings || []).forEach(pb => {
+    (patrolBuildings || []).forEach((pb: any) => {
       if (!pb.lastDate) {
         tasks.push({
           id: `patrol_${pb.building}_norecord`,
@@ -241,7 +273,7 @@ export function TaskDriverPage({
     });
 
     // 5. AS 미처리
-    (asItems || []).forEach(item => {
+    (asItems || []).forEach((item: any) => {
       if (item.status === '완료') return;
       const itemDate = new Date(item.date);
       const daysSince = daysDiff(itemDate, now);
@@ -262,7 +294,7 @@ export function TaskDriverPage({
     });
 
     // 6. 공실 경과
-    (activeVacancies || []).forEach(v => {
+    (activeVacancies || []).forEach((v: Vacancy) => {
       const days = v.days || 0;
       if (days > 30) {
         tasks.push({
@@ -281,7 +313,7 @@ export function TaskDriverPage({
     });
 
     // 7. 입주 예정
-    (calendarEvts || []).forEach(evt => {
+    (calendarEvts || []).forEach((evt: any) => {
       const evtTitle = evt.title || evt.content || '';
       const evtDate = new Date(evt.date || evt.start);
       if (isNaN(evtDate.getTime())) return;
@@ -305,11 +337,11 @@ export function TaskDriverPage({
     });
 
     // 8. 단기 월세 청구 (납부일 7~12일 전, 6일 전이면 high)
-    (activeTenants || []).forEach(t => {
+    (activeTenants || []).forEach((t: Tenant) => {
       if (!t.name || t.name === '퇴실' || t.name === '건물주') return;
       if (getRoomType(t.building, t.room) !== '단기') return;
       // 납부일 = 입주일의 날짜(day)
-      let rentDay = null;
+      let rentDay: number | null = null;
       if (t.moveIn) {
         const mi = new Date(t.moveIn);
         if (!isNaN(mi.getTime())) rentDay = mi.getDate();
@@ -361,7 +393,7 @@ export function TaskDriverPage({
     }
 
     return [...tasks].sort((a, b) => {
-      if (sortBy === 'due') return a.dueDate - b.dueDate;
+      if (sortBy === 'due') return a.dueDate.getTime() - b.dueDate.getTime();
       if (sortBy === 'building') return (a.building || '').localeCompare(b.building || '');
       if (sortBy === 'type') return (a.type || '').localeCompare(b.type || '');
       return 0;
@@ -371,8 +403,8 @@ export function TaskDriverPage({
   // 대표 전체보기: 직원별 그룹핑
   const tasksByStaff = useMemo(() => {
     if (!isGeneral || viewStaff !== 'all') return null;
-    const grouped = {};
-    initialStaffMembers.forEach(s => { grouped[s.name] = []; });
+    const grouped: Record<string, Task[]> = {};
+    initialStaffMembers.forEach((s: Staff) => { grouped[s.name] = []; });
     grouped['미배정'] = [];
 
     visibleTasks.forEach(task => {
@@ -389,7 +421,7 @@ export function TaskDriverPage({
   // 직원별 태스크 수 (대표 탭에 건수 표시용)
   const staffTaskCounts = useMemo(() => {
     if (!isGeneral) return {};
-    const counts = {};
+    const counts: Record<string, number> = {};
     allTasks.forEach(t => {
       const a = t.assignee || '미배정';
       counts[a] = (counts[a] || 0) + 1;
@@ -429,256 +461,46 @@ export function TaskDriverPage({
       background: '#F8FAFC',
       minHeight: '100vh',
       fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      flexWrap: 'wrap',
-      gap: '12px',
-      marginBottom: '20px',
-    },
-    headerLeft: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '4px',
-    },
-    title: {
-      fontSize: '24px',
-      fontWeight: '700',
-      color: '#1E293B',
-      margin: 0,
-    },
-    dateLabel: {
-      fontSize: '14px',
-      color: '#64748B',
-      margin: 0,
-    },
-    staffTabRow: {
-      display: 'flex',
-      gap: '6px',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      marginBottom: '16px',
-      padding: '12px 16px',
-      background: '#fff',
-      borderRadius: '12px',
-      border: '1px solid #E8ECF0',
-    },
-    staffTab: (active) => ({
-      padding: '6px 14px',
-      borderRadius: '20px',
-      border: active ? '2px solid #3B82F6' : '1px solid #CBD5E1',
-      background: active ? '#EFF6FF' : '#fff',
-      color: active ? '#3B82F6' : '#475569',
-      fontWeight: active ? '700' : '400',
-      fontSize: '13px',
-      cursor: 'pointer',
-      transition: 'all 0.15s',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '6px',
-    }),
-    staffTabCount: (active) => ({
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: '18px',
-      height: '18px',
-      borderRadius: '9px',
-      background: active ? '#3B82F6' : '#E2E8F0',
-      color: active ? '#fff' : '#64748B',
-      fontSize: '11px',
-      fontWeight: '700',
-      padding: '0 4px',
-    }),
-    sortRow: {
-      display: 'flex',
-      gap: '6px',
-      alignItems: 'center',
-      fontSize: '13px',
-      color: '#64748B',
-    },
-    sortBtn: (active) => ({
-      padding: '4px 10px',
-      borderRadius: '6px',
-      border: 'none',
-      background: active ? '#3B82F6' : '#E2E8F0',
-      color: active ? '#fff' : '#475569',
-      fontWeight: active ? '600' : '400',
-      fontSize: '12px',
-      cursor: 'pointer',
-    }),
-    summaryRow: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-      gap: '12px',
-      marginBottom: '24px',
-    },
-    summaryCard: (color) => ({
-      background: '#fff',
-      border: '1px solid #E8ECF0',
-      borderRadius: '12px',
-      padding: '16px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '4px',
-      borderBottom: `3px solid ${color}`,
-    }),
-    summaryNum: (color) => ({
-      fontSize: '28px',
-      fontWeight: '700',
-      color,
-      margin: 0,
-    }),
-    summaryLabel: {
-      fontSize: '13px',
-      color: '#64748B',
-      margin: 0,
-    },
-    section: {
-      marginBottom: '24px',
-    },
-    sectionHeader: (bgColor) => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      padding: '10px 16px',
-      borderRadius: '10px 10px 0 0',
-      background: bgColor,
-      borderBottom: '1px solid #E8ECF0',
-    }),
-    sectionTitle: {
-      fontSize: '15px',
-      fontWeight: '600',
-      color: '#1E293B',
-      margin: 0,
-    },
-    sectionBadge: (bg, color) => ({
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: '22px',
-      height: '22px',
-      borderRadius: '11px',
-      background: bg,
-      color,
-      fontSize: '12px',
-      fontWeight: '700',
-      padding: '0 6px',
-    }),
-    sectionBody: {
-      background: '#fff',
-      border: '1px solid #E8ECF0',
-      borderTop: 'none',
-      borderRadius: '0 0 10px 10px',
-    },
-    taskItem: (isCompleted) => ({
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      padding: '12px 16px',
-      borderBottom: '1px solid #F1F5F9',
-      opacity: isCompleted ? 0.5 : 1,
-      textDecoration: isCompleted ? 'line-through' : 'none',
-      transition: 'all 0.15s',
-    }),
-    checkbox: (isCompleted) => ({
-      width: '20px',
-      height: '20px',
-      borderRadius: '4px',
-      border: isCompleted ? '2px solid #10B981' : '2px solid #CBD5E1',
-      background: isCompleted ? '#10B981' : '#fff',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexShrink: 0,
-      color: '#fff',
-      fontSize: '12px',
-      fontWeight: '700',
-    }),
-    taskContent: {
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '2px',
-      minWidth: 0,
-    },
-    taskTopRow: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      flexWrap: 'wrap',
-    },
-    typeBadge: (type) => ({
-      display: 'inline-block',
-      padding: '2px 8px',
-      borderRadius: '4px',
-      fontSize: '11px',
-      fontWeight: '600',
-      background: (TYPE_COLORS[type] || { bg: '#F1F5F9' }).bg,
-      color: (TYPE_COLORS[type] || { color: '#475569' }).color,
-      whiteSpace: 'nowrap',
-    }),
-    taskTitle: {
-      fontSize: '14px',
-      fontWeight: '500',
-      color: '#1E293B',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
-    taskBottomRow: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      fontSize: '12px',
-      color: '#94A3B8',
-    },
-    taskRight: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-end',
-      gap: '4px',
-      flexShrink: 0,
-    },
-    buildingLabel: {
-      fontSize: '12px',
-      fontWeight: '500',
-      color: '#64748B',
-      whiteSpace: 'nowrap',
-    },
-    dDayBadge: (overdueDays) => {
+    } as React.CSSProperties,
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' as const, gap: '12px', marginBottom: '20px' } as React.CSSProperties,
+    headerLeft: { display: 'flex', flexDirection: 'column' as const, gap: '4px' } as React.CSSProperties,
+    title: { fontSize: '24px', fontWeight: '700', color: '#1E293B', margin: 0 } as React.CSSProperties,
+    dateLabel: { fontSize: '14px', color: '#64748B', margin: 0 } as React.CSSProperties,
+    staffTabRow: { display: 'flex', gap: '6px', flexWrap: 'wrap' as const, alignItems: 'center', marginBottom: '16px', padding: '12px 16px', background: '#fff', borderRadius: '12px', border: '1px solid #E8ECF0' } as React.CSSProperties,
+    staffTab: (active: boolean): React.CSSProperties => ({ padding: '6px 14px', borderRadius: '20px', border: active ? '2px solid #3B82F6' : '1px solid #CBD5E1', background: active ? '#EFF6FF' : '#fff', color: active ? '#3B82F6' : '#475569', fontWeight: active ? '700' : '400', fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: '6px' }),
+    staffTabCount: (active: boolean): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '18px', height: '18px', borderRadius: '9px', background: active ? '#3B82F6' : '#E2E8F0', color: active ? '#fff' : '#64748B', fontSize: '11px', fontWeight: '700', padding: '0 4px' }),
+    sortRow: { display: 'flex', gap: '6px', alignItems: 'center', fontSize: '13px', color: '#64748B' } as React.CSSProperties,
+    sortBtn: (active: boolean): React.CSSProperties => ({ padding: '4px 10px', borderRadius: '6px', border: 'none', background: active ? '#3B82F6' : '#E2E8F0', color: active ? '#fff' : '#475569', fontWeight: active ? '600' : '400', fontSize: '12px', cursor: 'pointer' }),
+    summaryRow: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' } as React.CSSProperties,
+    summaryCard: (color: string): React.CSSProperties => ({ background: '#fff', border: '1px solid #E8ECF0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', borderBottom: `3px solid ${color}` }),
+    summaryNum: (color: string): React.CSSProperties => ({ fontSize: '28px', fontWeight: '700', color, margin: 0 }),
+    summaryLabel: { fontSize: '13px', color: '#64748B', margin: 0 } as React.CSSProperties,
+    section: { marginBottom: '24px' } as React.CSSProperties,
+    sectionHeader: (bgColor: string): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '10px 10px 0 0', background: bgColor, borderBottom: '1px solid #E8ECF0' }),
+    sectionTitle: { fontSize: '15px', fontWeight: '600', color: '#1E293B', margin: 0 } as React.CSSProperties,
+    sectionBadge: (bg: string, color: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', borderRadius: '11px', background: bg, color, fontSize: '12px', fontWeight: '700', padding: '0 6px' }),
+    sectionBody: { background: '#fff', border: '1px solid #E8ECF0', borderTop: 'none', borderRadius: '0 0 10px 10px' } as React.CSSProperties,
+    taskItem: (isCompleted: boolean): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid #F1F5F9', opacity: isCompleted ? 0.5 : 1, textDecoration: isCompleted ? 'line-through' : 'none', transition: 'all 0.15s' }),
+    checkbox: (isCompleted: boolean): React.CSSProperties => ({ width: '20px', height: '20px', borderRadius: '4px', border: isCompleted ? '2px solid #10B981' : '2px solid #CBD5E1', background: isCompleted ? '#10B981' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: '12px', fontWeight: '700' }),
+    taskContent: { flex: 1, display: 'flex', flexDirection: 'column' as const, gap: '2px', minWidth: 0 } as React.CSSProperties,
+    taskTopRow: { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' as const } as React.CSSProperties,
+    typeBadge: (type: string): React.CSSProperties => ({ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', background: (TYPE_COLORS[type] || { bg: '#F1F5F9' }).bg, color: (TYPE_COLORS[type] || { color: '#475569' }).color, whiteSpace: 'nowrap' }),
+    taskTitle: { fontSize: '14px', fontWeight: '500', color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties,
+    taskBottomRow: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#94A3B8' } as React.CSSProperties,
+    taskRight: { display: 'flex', flexDirection: 'column' as const, alignItems: 'flex-end', gap: '4px', flexShrink: 0 } as React.CSSProperties,
+    buildingLabel: { fontSize: '12px', fontWeight: '500', color: '#64748B', whiteSpace: 'nowrap' } as React.CSSProperties,
+    dDayBadge: (overdueDays: number): React.CSSProperties => {
       let bg = '#EFF6FF';
       let color = '#3B82F6';
       if (overdueDays > 0) { bg = '#FEE2E2'; color = '#EF4444'; }
       else if (overdueDays === 0) { bg = '#FEF3C7'; color = '#D97706'; }
-      return {
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: '10px',
-        fontSize: '11px',
-        fontWeight: '700',
-        background: bg,
-        color,
-        whiteSpace: 'nowrap',
-      };
+      return { display: 'inline-block', padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', background: bg, color, whiteSpace: 'nowrap' };
     },
-    completedTime: {
-      fontSize: '11px',
-      color: '#10B981',
-      whiteSpace: 'nowrap',
-    },
-    emptySection: {
-      padding: '24px',
-      textAlign: 'center',
-      color: '#94A3B8',
-      fontSize: '14px',
-    },
+    completedTime: { fontSize: '11px', color: '#10B981', whiteSpace: 'nowrap' } as React.CSSProperties,
+    emptySection: { padding: '24px', textAlign: 'center' as const, color: '#94A3B8', fontSize: '14px' } as React.CSSProperties,
   };
 
-  const renderTaskItem = (task) => {
+  const renderTaskItem = (task: Task) => {
     const isCompleted = !!completedTasks[task.id];
     const completedAt = completedTasks[task.id];
     return (
@@ -714,7 +536,7 @@ export function TaskDriverPage({
     );
   };
 
-  const renderStaffSection = (staffName, tasks, colorIdx) => {
+  const renderStaffSection = (staffName: string, tasks: Task[], colorIdx: number) => {
     const colors = STAFF_COLORS[colorIdx % STAFF_COLORS.length];
     const pending = tasks.filter(t => !completedTasks[t.id]);
     const done = tasks.filter(t => completedTasks[t.id]);
@@ -814,14 +636,8 @@ export function TaskDriverPage({
           <div style={s.section}>
             <details>
               <summary style={{
-                padding: '10px 16px',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#10B981',
-                cursor: 'pointer',
-                background: '#F0FDF4',
-                borderRadius: '10px',
-                border: '1px solid #D1FAE5',
+                padding: '10px 16px', fontSize: '14px', fontWeight: '600', color: '#10B981',
+                cursor: 'pointer', background: '#F0FDF4', borderRadius: '10px', border: '1px solid #D1FAE5',
               }}>
                 완료 {done.length}건
               </summary>
@@ -875,7 +691,7 @@ export function TaskDriverPage({
             전체
             <span style={s.staffTabCount(viewStaff === 'all')}>{allTasks.length}</span>
           </button>
-          {initialStaffMembers.map(staff => {
+          {initialStaffMembers.map((staff: Staff) => {
             const count = staffTaskCounts[staff.name] || 0;
             return (
               <button
@@ -914,7 +730,7 @@ export function TaskDriverPage({
       {/* 태스크 목록 */}
       {isGeneral && viewStaff === 'all' ? (
         // 대표 전체보기: 직원별 그룹
-        [...initialStaffMembers.map(s => s.name), '미배정'].map((name, idx) => {
+        [...initialStaffMembers.map((s: Staff) => s.name), '미배정'].map((name, idx) => {
           const tasks = (tasksByStaff && tasksByStaff[name]) || [];
           if (tasks.length === 0) return null;
           return renderStaffSection(name, tasks, idx);

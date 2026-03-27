@@ -1,34 +1,107 @@
 import { useState, useMemo, useRef } from 'react';
 import html2canvas from 'html2canvas';
-import { buildings } from '../data';
-import { useIsMobile, fmt } from '../utils';
-import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, Table } from '../components';
-import { inputStyle } from '../components/Field';
+import { buildings } from '@/data';
+import { useIsMobile, fmt } from '@/utils';
+import { matchKorean } from '@/utils/koreanSearch';
+import { Card, SectionTitle, Table } from '@/components';
+import { inputStyle } from '@/components/Field';
 
-const REASON_COLORS = {
+const REASON_COLORS: Record<string, { bg: string; c: string }> = {
   "만기퇴실": { bg: "#F0FDF4", c: "#059669" },
   "만기전퇴실": { bg: "#FEF2F2", c: "#DC2626" },
   "재계약": { bg: "#EFF6FF", c: "#2563EB" },
 };
 
-export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, activeTenants = [] }) => {
+interface PastTenantRecord {
+  name: string;
+  phone?: string;
+  building: string;
+  room: string;
+  moveIn?: string;
+  moveOut?: string;
+  expiry?: string;
+  deposit: number;
+  rent: number;
+  mgmt?: number;
+  roomType?: string;
+  reason: string;
+  settlement?: string;
+  settlementDate?: string;
+  finalSettlement?: number;
+  renewedAt?: string;
+  contractFiles?: string[];
+  moveInPhotos?: string[];
+  moveInCheckPhotos?: string[];
+  moveOutPhotos?: string[];
+  isRentPrepaid?: boolean;
+  isMgmtPrepaid?: boolean;
+  cleanFee?: number;
+  waterAmt?: number;
+  internetAmt?: number;
+  startDay?: number;
+  daysInMonth?: number;
+  usedDays?: number;
+  netRent?: number;
+  netMgmt?: number;
+  netWater?: number;
+  netInternet?: number;
+  unpaidRent?: number;
+  unpaidMgmt?: number;
+  unpaidWater?: number;
+  unpaidInternet?: number;
+  totalRefund?: number;
+  totalDeduct?: number;
+  penalty7?: number;
+  penaltyComm?: number;
+  lateFee?: number;
+  prevUnpaid?: number;
+  usagePeriod?: string;
+  manElec?: { amt: string | number; period?: string }[];
+  manGas?: { amt: string | number; period?: string }[];
+  manRepair?: number;
+  manRepairDesc?: string;
+  manWaste?: number;
+  manWasteDesc?: string;
+  manOther?: { amt: string | number; desc?: string }[];
+  manRestoration?: number;
+  manRestorationDesc?: string;
+  _key: string;
+  _idx: number;
+  [key: string]: any;
+}
+
+interface SRowProps {
+  label: string;
+  sub?: string;
+  value: number | string;
+  color?: string;
+  bold?: boolean;
+}
+
+interface PastTenantsPageProps {
+  myBuildings?: string[];
+  pastTenantsData?: Record<string, Record<string, any>[]>;
+  activeTenants?: Record<string, any>[];
+  isLoading?: boolean;
+}
+
+export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = [], pastTenantsData = {}, activeTenants = [] }) => {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
   const [filterBld, setFilterBld] = useState("전체");
   const [filterReason, setFilterReason] = useState("전체");
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<PastTenantRecord | null>(null);
   const [viewMode, setViewMode] = useState("info"); // "info" | "settlement"
   const [capturing, setCapturing] = useState(false);
-  const settlementRef = useRef(null);
+  const settlementRef = useRef<HTMLDivElement>(null);
 
-  const allRecords = useMemo(() => {
-    const list = [];
+  const allRecords = useMemo((): PastTenantRecord[] => {
+    const list: PastTenantRecord[] = [];
     Object.entries(pastTenantsData).forEach(([key, records]) => {
       const [building, room] = key.split("_");
       if (myBuildings.length > 0 && !myBuildings.includes(building)) return;
-      (records || []).forEach((r, idx) => {
-        list.push({ ...r, building, room, _key: key, _idx: idx });
+      (records || []).forEach((r: Record<string, any>, idx: number) => {
+        list.push({ ...r, building, room, _key: key, _idx: idx } as PastTenantRecord);
       });
     });
     list.sort((a, b) => (b.moveOut || "").localeCompare(a.moveOut || ""));
@@ -58,7 +131,7 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
     return { total: allRecords.length, moveout, renew };
   }, [allRecords]);
 
-  const getReasonStyle = (reason) => REASON_COLORS[reason] || { bg: "#F3F4F6", c: "#5F6577" };
+  const getReasonStyle = (reason: string) => REASON_COLORS[reason] || { bg: "#F3F4F6", c: "#5F6577" };
 
   // 정산서 이미지 캡처 & 다운로드
   const handleCapture = () => {
@@ -68,7 +141,7 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
       .then(canvas => {
         const a = document.createElement("a");
         a.href = canvas.toDataURL("image/png");
-        a.download = `퇴실정산서_${selected.building}_${selected.room}_${selected.name}_${selected.moveOut}.png`;
+        a.download = `퇴실정산서_${selected!.building}_${selected!.room}_${selected!.name}_${selected!.moveOut}.png`;
         a.click();
       })
       .catch(err => { console.warn("캡처 실패:", err); alert("이미지 캡처에 실패했습니다."); })
@@ -83,9 +156,9 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
     const hasSettlement = r.finalSettlement !== undefined;
     const depositLabel = r.roomType === "단기" ? "예치금" : "보증금";
     const isManOff = r.roomType === "관리사무소";
-    const pn = (v) => Number(String(v).replace(/,/g, "")) || 0;
+    const pn = (v: any): number => Number(String(v).replace(/,/g, "")) || 0;
 
-    const SRow = ({ label, sub, value, color, bold }) => (
+    const SRow: React.FC<SRowProps> = ({ label, sub, value, color, bold }) => (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
         <div><span style={{ fontSize: 11, color: color || "#5F6577", fontWeight: bold ? 700 : 400 }}>{label}</span>{sub && <span style={{ fontSize: 9, color: "#B0B5C1", marginLeft: 6 }}>{sub}</span>}</div>
         <span style={{ fontSize: 12, fontWeight: bold ? 800 : 600, color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
@@ -166,10 +239,10 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
 
               {/* 최종 정산 요약 */}
               {hasSettlement && (
-                <div style={{ background: (r.finalSettlement >= 0) ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", marginBottom: 16, border: `2px solid ${(r.finalSettlement >= 0) ? "#BBF7D0" : "#FECACA"}` }}>
+                <div style={{ background: (r.finalSettlement! >= 0) ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", marginBottom: 16, border: `2px solid ${(r.finalSettlement! >= 0) ? "#BBF7D0" : "#FECACA"}` }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: (r.finalSettlement >= 0) ? "#065F46" : "#991B1B" }}>{(r.finalSettlement >= 0) ? "반환금액" : "추가청구"}</span>
-                    <span style={{ fontSize: 24, fontWeight: 900, color: (r.finalSettlement >= 0) ? "#059669" : "#DC2626" }}>{r.finalSettlement < 0 ? `-${fmt(Math.abs(r.finalSettlement))}` : fmt(r.finalSettlement)}<span style={{ fontSize: 12 }}>원</span></span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: (r.finalSettlement! >= 0) ? "#065F46" : "#991B1B" }}>{(r.finalSettlement! >= 0) ? "반환금액" : "추가청구"}</span>
+                    <span style={{ fontSize: 24, fontWeight: 900, color: (r.finalSettlement! >= 0) ? "#059669" : "#DC2626" }}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span style={{ fontSize: 12 }}>원</span></span>
                   </div>
                 </div>
               )}
@@ -214,9 +287,9 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
               {/* 입주사진 */}
               {(r.moveInPhotos || []).length > 0 && (
                 <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#059669", marginBottom: 8, paddingBottom: 6, borderBottom: "2px solid #D1FAE5" }}>🏠 입주사진 ({r.moveInPhotos.length}장) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{r.moveIn || ""}</span></div>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#059669", marginBottom: 8, paddingBottom: 6, borderBottom: "2px solid #D1FAE5" }}>🏠 입주사진 ({r.moveInPhotos!.length}장) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{r.moveIn || ""}</span></div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
-                    {r.moveInPhotos.map((src, pi) => (
+                    {r.moveInPhotos!.map((src, pi) => (
                       <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #BBF7D0", overflow: "hidden", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
                           <img src={src} alt={`입주 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -239,7 +312,7 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                       <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8 }}>📋 입주체크사진 (시작) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{(r.moveInCheckPhotos || []).length}장</span></div>
                       {(r.moveInCheckPhotos || []).length > 0 ? (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
-                          {r.moveInCheckPhotos.map((src, pi) => (
+                          {r.moveInCheckPhotos!.map((src, pi) => (
                             <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #FED7AA", overflow: "hidden", background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
                                 <img src={src} alt={`체크 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -258,7 +331,7 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                       <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", marginBottom: 8 }}>🚪 퇴실사진 (끝) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{(r.moveOutPhotos || []).length}장</span></div>
                       {(r.moveOutPhotos || []).length > 0 ? (
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
-                          {r.moveOutPhotos.map((src, pi) => (
+                          {r.moveOutPhotos!.map((src, pi) => (
                             <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #FECACA", overflow: "hidden", background: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
                                 <img src={src} alt={`퇴실 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -279,13 +352,13 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
 
             {/* 같은 호실 전체 이력 */}
             {(() => {
-              const roomRecords = (pastTenantsData[`${r.building}_${r.room}`] || []).map((rec, idx) => ({ ...rec, _idx: idx }));
+              const roomRecords = (pastTenantsData[`${r.building}_${r.room}`] || []).map((rec: Record<string, any>, idx: number) => ({ ...rec, _idx: idx }));
               if (roomRecords.length <= 1) return null;
               return (
                 <Card>
                   <SectionTitle sub={`${r.building} ${r.room}호`}>📋 해당 호실 전체 이력</SectionTitle>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {[...roomRecords].reverse().map((rec, i) => {
+                    {[...roomRecords].reverse().map((rec: Record<string, any>, i: number) => {
                       const rcs = getReasonStyle(rec.reason);
                       return (
                         <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
@@ -376,8 +449,8 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>월세 <span style={{ fontSize: 8, color: r.isRentPrepaid ? "#059669" : "#DC2626" }}>({r.isRentPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(r.rent)}</div></div>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비 <span style={{ fontSize: 8, color: r.isMgmtPrepaid ? "#059669" : "#DC2626" }}>({r.isMgmtPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(r.mgmt || 0)}</div></div>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: r.cleanFee > 0 ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                      {r.cleanFee > 0 && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실청소비</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 600, textAlign: "right", color: "#DC2626" }}>{fmt(r.cleanFee)}</div></div>}
+                    <div style={{ display: "grid", gridTemplateColumns: (r.cleanFee ?? 0) > 0 ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
+                      {(r.cleanFee ?? 0) > 0 && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실청소비</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 600, textAlign: "right", color: "#DC2626" }}>{fmt(r.cleanFee!)}</div></div>}
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수도</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(r.waterAmt || 0)}</div></div>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>TV/인터넷</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(r.internetAmt || 0)}</div></div>
                       <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.expiry || "-"}</div></div>
@@ -385,44 +458,44 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
 
                     {/* 수기 입력 내역 */}
                     {(() => {
-                      const hasManual = (r.manElec||[]).some(x=>pn(x.amt)>0) || (r.manGas||[]).some(x=>pn(x.amt)>0) || r.manRepair>0 || r.manWaste>0 || (r.manOther||[]).some(x=>pn(x.amt)>0) || r.manRestoration>0;
+                      const hasManual = (r.manElec||[]).some((x: any)=>pn(x.amt)>0) || (r.manGas||[]).some((x: any)=>pn(x.amt)>0) || (r.manRepair ?? 0)>0 || (r.manWaste ?? 0)>0 || (r.manOther||[]).some((x: any)=>pn(x.amt)>0) || (r.manRestoration ?? 0)>0;
                       if (!hasManual) return null;
                       return (<>
                         <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #FED7AA" }}>✏️ 수기 입력 내역</div>
-                        {(r.manElec||[]).map((row,i) => pn(row.amt) > 0 && (
+                        {(r.manElec||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
                           <div key={`e${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#EA580C" }}>전기{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
                             <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
-                        {(r.manGas||[]).map((row,i) => pn(row.amt) > 0 && (
+                        {(r.manGas||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
                           <div key={`g${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#EA580C" }}>가스{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
                             <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
-                        {r.manRepair > 0 && (
+                        {(r.manRepair ?? 0) > 0 && (
                           <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#EA580C" }}>수리비{r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRepair)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRepair!)}</span>
                           </div>
                         )}
-                        {r.manWaste > 0 && (
+                        {(r.manWaste ?? 0) > 0 && (
                           <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#EA580C" }}>폐기물{r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manWaste)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manWaste!)}</span>
                           </div>
                         )}
-                        {(r.manOther||[]).map((row,i) => pn(row.amt) > 0 && (
+                        {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
                           <div key={`o${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#EA580C" }}>기타{i+1}{row.desc ? ` (${row.desc})` : ""}</span>
                             <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
-                        {r.manRestoration > 0 && (
+                        {(r.manRestoration ?? 0) > 0 && (
                           <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
                             <span style={{ fontSize: 11, color: "#7C3AED" }}>원상복구비{r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRestoration)}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRestoration!)}</span>
                           </div>
                         )}
                         <div style={{ height: 12 }} />
@@ -439,10 +512,10 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                     <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #BBF7D0" }}>
                       <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 4 }}>반환 항목</div>
                       <SRow label={depositLabel} value={r.deposit} color="#059669" bold />
-                      {r.netRent < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth - r.usedDays}일분${r.unpaidRent > 0 ? " · 미납반영" : ""}`} value={-r.netRent} color="#059669" />}
-                      {r.netMgmt < 0 && <SRow label="관리비 환불" sub={`${r.daysInMonth - r.usedDays}일분${r.unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={-r.netMgmt} color="#059669" />}
-                      {r.netWater < 0 && <SRow label="수도 환불" sub={`${r.daysInMonth - r.usedDays}일분${r.unpaidWater > 0 ? " · 미납반영" : ""}`} value={-r.netWater} color="#059669" />}
-                      {r.netInternet < 0 && <SRow label="TV/인터넷 환불" sub={`${r.daysInMonth - r.usedDays}일분${r.unpaidInternet > 0 ? " · 미납반영" : ""}`} value={-r.netInternet} color="#059669" />}
+                      {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="#059669" />}
+                      {(r.netMgmt ?? 0) < 0 && <SRow label="관리비 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netMgmt!} color="#059669" />}
+                      {(r.netWater ?? 0) < 0 && <SRow label="수도 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netWater!} color="#059669" />}
+                      {(r.netInternet ?? 0) < 0 && <SRow label="TV/인터넷 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netInternet!} color="#059669" />}
                       <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #BBF7D0" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#065F46" }}>반환소계</span>
                         <span style={{ fontSize: 14, fontWeight: 900, color: "#059669" }}>{fmt(r.deposit + (r.totalRefund || 0))}</span>
@@ -452,26 +525,26 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                     {/* 공제 */}
                     <div style={{ background: "#FEF2F2", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #FECACA" }}>
                       <div style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", marginBottom: 4 }}>공제 항목</div>
-                      {r.netRent > 0 && <SRow label="월세" sub={`${r.usedDays}일분${r.unpaidRent > 0 ? " · 미납반영" : ""}`} value={r.netRent} color="#DC2626" />}
-                      {r.netMgmt > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${r.unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={r.netMgmt} color="#DC2626" />}
-                      {r.netWater > 0 && <SRow label="수도" sub={`${r.usedDays}일분${r.unpaidWater > 0 ? " · 미납반영" : ""}`} value={r.netWater} color="#DC2626" />}
-                      {r.netInternet > 0 && <SRow label="TV/인터넷" sub={`${r.usedDays}일분${r.unpaidInternet > 0 ? " · 미납반영" : ""}`} value={r.netInternet} color="#DC2626" />}
-                      {r.cleanFee > 0 && <SRow label="퇴실청소비" value={r.cleanFee} color="#DC2626" />}
-                      {(r.manElec||[]).map((row,i) => pn(row.amt) > 0 && <SRow key={`e${i}`} label={`전기${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
-                      {(r.manGas||[]).map((row,i) => pn(row.amt) > 0 && <SRow key={`g${i}`} label={`가스${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
-                      {r.manRepair > 0 && <SRow label={`수리비${r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}`} value={r.manRepair} color="#DC2626" />}
-                      {r.manWaste > 0 && <SRow label={`폐기물${r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}`} value={r.manWaste} color="#DC2626" />}
-                      {(r.manOther||[]).map((row,i) => pn(row.amt) > 0 && <SRow key={`o${i}`} label={`기타${i+1}${row.desc ? ` (${row.desc})` : ""}`} value={pn(row.amt)} color="#DC2626" />)}
-                      {r.manRestoration > 0 && <SRow label={`원상복구비${r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}`} value={r.manRestoration} color="#7C3AED" />}
-                      {(r.penalty7 > 0 || r.penaltyComm > 0) && <>
+                      {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="#DC2626" />}
+                      {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="#DC2626" />}
+                      {(r.netWater ?? 0) > 0 && <SRow label="수도" sub={`${r.usedDays}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netWater!} color="#DC2626" />}
+                      {(r.netInternet ?? 0) > 0 && <SRow label="TV/인터넷" sub={`${r.usedDays}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netInternet!} color="#DC2626" />}
+                      {(r.cleanFee ?? 0) > 0 && <SRow label="퇴실청소비" value={r.cleanFee!} color="#DC2626" />}
+                      {(r.manElec||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`e${i}`} label={`전기${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
+                      {(r.manGas||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`g${i}`} label={`가스${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
+                      {(r.manRepair ?? 0) > 0 && <SRow label={`수리비${r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}`} value={r.manRepair!} color="#DC2626" />}
+                      {(r.manWaste ?? 0) > 0 && <SRow label={`폐기물${r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}`} value={r.manWaste!} color="#DC2626" />}
+                      {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`o${i}`} label={`기타${i+1}${row.desc ? ` (${row.desc})` : ""}`} value={pn(row.amt)} color="#DC2626" />)}
+                      {(r.manRestoration ?? 0) > 0 && <SRow label={`원상복구비${r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}`} value={r.manRestoration!} color="#7C3AED" />}
+                      {((r.penalty7 ?? 0) > 0 || (r.penaltyComm ?? 0) > 0) && <>
                         <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
-                        {r.penalty7 > 0 && <SRow label="7일패널티" value={r.penalty7} color="#DC2626" />}
-                        {r.penaltyComm > 0 && <SRow label="중개수수료" value={r.penaltyComm} color="#DC2626" />}
+                        {(r.penalty7 ?? 0) > 0 && <SRow label="7일패널티" value={r.penalty7!} color="#DC2626" />}
+                        {(r.penaltyComm ?? 0) > 0 && <SRow label="중개수수료" value={r.penaltyComm!} color="#DC2626" />}
                       </>}
-                      {r.lateFee > 0 && <SRow label="연체수수료" sub="미납임대료 5%" value={r.lateFee} color="#DC2626" />}
-                      {r.prevUnpaid > 0 && <>
+                      {(r.lateFee ?? 0) > 0 && <SRow label="연체수수료" sub="미납임대료 5%" value={r.lateFee!} color="#DC2626" />}
+                      {(r.prevUnpaid ?? 0) > 0 && <>
                         <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
-                        <SRow label="전월 미납금" value={r.prevUnpaid} color="#DC2626" bold />
+                        <SRow label="전월 미납금" value={r.prevUnpaid!} color="#DC2626" bold />
                       </>}
                       <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #FECACA" }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: "#991B1B" }}>공제소계</span>
@@ -480,16 +553,16 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
                     </div>
 
                     {/* 최종 정산 */}
-                    <div style={{ background: r.finalSettlement >= 0 ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", border: `2px solid ${r.finalSettlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
+                    <div style={{ background: r.finalSettlement! >= 0 ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", border: `2px solid ${r.finalSettlement! >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: r.finalSettlement >= 0 ? "#065F46" : "#991B1B" }}>{r.finalSettlement >= 0 ? "반환금액" : "추가청구"}</span>
-                        <span style={{ fontSize: 24, fontWeight: 900, color: r.finalSettlement >= 0 ? "#059669" : "#DC2626" }}>{r.finalSettlement < 0 ? `-${fmt(Math.abs(r.finalSettlement))}` : fmt(r.finalSettlement)}<span style={{ fontSize: 12 }}>원</span></span>
+                        <span style={{ fontSize: 14, fontWeight: 800, color: r.finalSettlement! >= 0 ? "#065F46" : "#991B1B" }}>{r.finalSettlement! >= 0 ? "반환금액" : "추가청구"}</span>
+                        <span style={{ fontSize: 24, fontWeight: 900, color: r.finalSettlement! >= 0 ? "#059669" : "#DC2626" }}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span style={{ fontSize: 12 }}>원</span></span>
                       </div>
                     </div>
 
-                    {r.reason === "만기전퇴실" && (r.penalty7 > 0 || r.penaltyComm > 0) && (
+                    {r.reason === "만기전퇴실" && ((r.penalty7 ?? 0) > 0 || (r.penaltyComm ?? 0) > 0) && (
                       <div style={{ marginTop: 8, padding: "6px 10px", background: "#FEF2F2", borderRadius: 6, border: "1px solid #FECACA", fontSize: 10, color: "#DC2626", fontWeight: 600 }}>
-                        ⚠️ 만기전퇴실 위약금: {r.penalty7 > 0 ? `${fmt(r.penalty7)}원` : ""}{r.penaltyComm > 0 ? ` + 중개수수료 ${fmt(r.penaltyComm)}원` : ""}
+                        ⚠️ 만기전퇴실 위약금: {(r.penalty7 ?? 0) > 0 ? `${fmt(r.penalty7!)}원` : ""}{(r.penaltyComm ?? 0) > 0 ? ` + 중개수수료 ${fmt(r.penaltyComm!)}원` : ""}
                       </div>
                     )}
                   </div>
@@ -503,8 +576,8 @@ export const PastTenantsPage = ({ myBuildings = [], pastTenantsData = {}, active
   }
 
   // ── List view ──
-  const reasonColors = { "전체": "#1A1D23", "만기퇴실": "#059669", "만기전퇴실": "#DC2626", "재계약": "#2563EB" };
-  const reasonCounts = { "전체": allRecords.length, "만기퇴실": stats.moveout - allRecords.filter(r => r.reason === "만기전퇴실").length, "만기전퇴실": allRecords.filter(r => r.reason === "만기전퇴실").length, "재계약": stats.renew };
+  const reasonColors: Record<string, string> = { "전체": "#1A1D23", "만기퇴실": "#059669", "만기전퇴실": "#DC2626", "재계약": "#2563EB" };
+  const reasonCounts: Record<string, number> = { "전체": allRecords.length, "만기퇴실": stats.moveout - allRecords.filter(r => r.reason === "만기전퇴실").length, "만기전퇴실": allRecords.filter(r => r.reason === "만기전퇴실").length, "재계약": stats.renew };
 
   return (
     <div>

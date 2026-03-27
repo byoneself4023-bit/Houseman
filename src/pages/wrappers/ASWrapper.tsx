@@ -1,7 +1,5 @@
 import { useAppContext } from '@/types/appContext';
-import { ASPage as _ASPage } from '../ASPage';
-
-const ASPage: React.ComponentType<any> = _ASPage;
+import { ASPage } from '../ASPage';
 
 export function ASWrapper() {
   const ctx = useAppContext();

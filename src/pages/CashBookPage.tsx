@@ -1,25 +1,48 @@
 import React, { useState, useMemo } from 'react';
-import { settlementMaster, buildingAccountMap } from '../data';
-import { useIsMobile, fmt } from '../utils';
-import { Card, SectionTitle } from '../components';
+import { settlementMaster, buildingAccountMap } from '@/data';
+import { useIsMobile, fmt } from '@/utils';
+import { Card, SectionTitle } from '@/components';
 
-const TYPE_LABELS = {
+const TYPE_LABELS: Record<string, string> = {
   "settlement": "건물주정산",
   "moveout": "퇴실정산",
   "manual": "수동입력",
 };
-const TYPE_COLORS = {
+const TYPE_COLORS: Record<string, { bg: string; color: string; border: string }> = {
   "settlement": { bg: "#EFF6FF", color: "#2563EB", border: "#BFDBFE" },
   "moveout": { bg: "#FEF3C7", color: "#92400E", border: "#FDE68A" },
   "manual": { bg: "#F3F4F6", color: "#5F6577", border: "#E0E3E9" },
 };
-const STATUS_MAP = {
+const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> = {
   "대기": { bg: "#FEF3C7", color: "#92400E", label: "송금 대기" },
   "완료": { bg: "#ECFDF5", color: "#059669", label: "송금 완료" },
   "보류": { bg: "#FEF2F2", color: "#DC2626", label: "보류" },
 };
 
-export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildingData = {} }) => {
+interface CashbookEntry {
+  id: number;
+  type: string;
+  date: string;
+  building: string;
+  description: string;
+  amount: number;
+  direction: string;
+  account: string;
+  status: string;
+  sentAt: string | null;
+  round?: number;
+  room?: string;
+  accountHolder?: string;
+}
+
+interface CashBookPageProps {
+  cashbookEntries?: CashbookEntry[];
+  setCashbookEntries?: React.Dispatch<React.SetStateAction<CashbookEntry[]>>;
+  buildingData?: Record<string, any>;
+  isLoading?: boolean;
+}
+
+export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildingData = {}, isLoading }: CashBookPageProps) => {
   const isMobile = useIsMobile();
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -35,7 +58,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
   const [formDirection, setFormDirection] = useState("출금");
 
   const [y, m] = selectedMonth.split("-").map(Number);
-  const changeMonth = (delta) => {
+  const changeMonth = (delta: number) => {
     const d = new Date(y, m - 1 + delta, 1);
     setSelectedMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
   };
@@ -67,29 +90,29 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
     };
   }, [cashbookEntries, selectedMonth]);
 
-  const updateEntry = (id, patch) => {
-    setCashbookEntries(prev => prev.map(e => e.id === id ? { ...e, ...patch } : e));
+  const updateEntry = (id: number, patch: Partial<CashbookEntry>) => {
+    setCashbookEntries?.(prev => prev.map(e => e.id === id ? { ...e, ...patch } : e));
   };
 
-  const markSent = (id) => {
+  const markSent = (id: number) => {
     updateEntry(id, { status: "완료", sentAt: new Date().toISOString().slice(0, 16).replace("T", " ") });
   };
 
-  const markHold = (id) => {
+  const markHold = (id: number) => {
     updateEntry(id, { status: "보류" });
   };
 
-  const markPending = (id) => {
+  const markPending = (id: number) => {
     updateEntry(id, { status: "대기", sentAt: null });
   };
 
-  const deleteEntry = (id) => {
-    setCashbookEntries(prev => prev.filter(e => e.id !== id));
+  const deleteEntry = (id: number) => {
+    setCashbookEntries?.(prev => prev.filter(e => e.id !== id));
   };
 
   const handleAddManual = () => {
     if (!formDesc.trim() || !formAmount) return;
-    setCashbookEntries(prev => [...prev, {
+    setCashbookEntries?.(prev => [...prev, {
       id: Date.now(),
       type: "manual",
       date: new Date().toISOString().slice(0, 10),
@@ -106,11 +129,11 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
 
   // 날짜별 그룹핑
   const dateGroups = useMemo(() => {
-    const groups = new Map();
+    const groups = new Map<string, CashbookEntry[]>();
     monthEntries.forEach(entry => {
       const d = entry.date || "미정";
       if (!groups.has(d)) groups.set(d, []);
-      groups.get(d).push(entry);
+      groups.get(d)!.push(entry);
     });
     return [...groups.entries()];
   }, [monthEntries]);
@@ -264,7 +287,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                               {TYPE_LABELS[entry.type] || entry.type}
                             </span>
                             <span style={{ fontSize: 14, fontWeight: 800, color: isSent ? "#9CA3AF" : "#1A1D23" }}>{entry.building}</span>
-                            {entry.round > 0 && (
+                            {entry.round && entry.round > 0 && (
                               <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "#8B5CF6", color: "#fff", fontWeight: 700 }}>{entry.round}차</span>
                             )}
                             {entry.room && (

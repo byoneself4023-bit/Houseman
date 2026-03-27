@@ -1,22 +1,76 @@
 import { useState } from 'react';
-import { asItems as staticAsItems } from '../data';
-import { buildings } from '../data/buildings';
-import { useIsMobile, fmt } from '../utils';
-import { Card, SectionTitle, Table, StatusBadge, PhotoDropZone } from '../components';
-import { inputStyle } from '../components/Field';
-import { initialStaffMembers } from '../config';
-import { useLocalStorage } from '../utils/useLocalStorage';
+import { asItems as staticAsItems } from '@/data';
+import { buildings } from '@/data/buildings';
+import { useIsMobile, fmt } from '@/utils';
+import { Card, SectionTitle, Table, StatusBadge, PhotoDropZone } from '@/components';
+import { inputStyle } from '@/components/Field';
+import { initialStaffMembers } from '@/config';
+import { useLocalStorage } from '@/utils/useLocalStorage';
 
+interface ASStep {
+  date: string;
+  action: string;
+  note: string;
+}
 
-export const ASPage = ({ myBuildings = [] }) => {
+interface ASAction {
+  step: string;
+  date: string;
+  by: string;
+}
+
+interface ASItemRecord {
+  id: number;
+  building: string;
+  room: string;
+  date: string;
+  title?: string;
+  content?: string;
+  detail?: string;
+  desc?: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  paid: string;
+  cost: number;
+  vendor: string;
+  source?: string;
+  category?: string;
+  photos?: string[];
+  photoBefore?: string;
+  photoAfter?: string;
+  steps?: ASStep[];
+  actions?: ASAction[];
+  ownerApproval?: string | null;
+  estimatedCost?: number;
+  [key: string]: any;
+}
+
+interface Vendor {
+  name: string;
+  phone: string;
+  specialty: string;
+  note: string;
+}
+
+interface ApprovalBadgeProps {
+  status?: string | null;
+}
+
+interface ASPageProps {
+  myBuildings?: string[];
+  isLoading?: boolean;
+}
+
+export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
   const isMobile = useIsMobile();
   const [tab, setTab] = useState("전체");
-  const [selectedAS, setSelectedAS] = useState(null);
+  const [selectedAS, setSelectedAS] = useState<ASItemRecord | null>(null);
   const [filterAssigneeAS, setFilterAssigneeAS] = useState("전체");
-  const [asBeforePhotos, setAsBeforePhotos] = useLocalStorage("hm_asBeforePhotos", []);
-  const [asAfterPhotos, setAsAfterPhotos] = useLocalStorage("hm_asAfterPhotos", []);
-  const [localAsItems, setLocalAsItems] = useLocalStorage("hm_asItems", []);
-  const [vendors, setVendors] = useLocalStorage("hm_vendors", []);
+  const [asBeforePhotos, setAsBeforePhotos] = useLocalStorage<string[]>("hm_asBeforePhotos", []);
+  const [asAfterPhotos, setAsAfterPhotos] = useLocalStorage<string[]>("hm_asAfterPhotos", []);
+  const [localAsItems, setLocalAsItems] = useLocalStorage<ASItemRecord[]>("hm_asItems", []);
+  const [vendors, setVendors] = useLocalStorage<Vendor[]>("hm_vendors", []);
   const [showNewForm, setShowNewForm] = useState(false);
   const [showVendorMgmt, setShowVendorMgmt] = useState(false);
 
@@ -24,17 +78,17 @@ export const ASPage = ({ myBuildings = [] }) => {
   const [newBuilding, setNewBuilding] = useState("");
   const [newRoom, setNewRoom] = useState("");
   const [newDesc, setNewDesc] = useState("");
-  const [newPhotos, setNewPhotos] = useState([]);
+  const [newPhotos, setNewPhotos] = useState<string[]>([]);
   const [newPriority, setNewPriority] = useState("일반");
   const [newSource, setNewSource] = useState("사무실접수");
   const [newAssignee, setNewAssignee] = useState("");
 
   // Vendor form state
-  const [vendorForm, setVendorForm] = useState({ name: "", phone: "", specialty: "", note: "" });
-  const [editingVendorIdx, setEditingVendorIdx] = useState(null);
+  const [vendorForm, setVendorForm] = useState<Vendor>({ name: "", phone: "", specialty: "", note: "" });
+  const [editingVendorIdx, setEditingVendorIdx] = useState<number | null>(null);
 
   // Status update modal state
-  const [showStatusModal, setShowStatusModal] = useState(null); // "진행중" | "완료" | null
+  const [showStatusModal, setShowStatusModal] = useState<string | null>(null); // "진행중" | "완료" | null
   const [completePaid, setCompletePaid] = useState("무상");
   const [completeCost, setCompleteCost] = useState("");
   const [completeVendor, setCompleteVendor] = useState("");
@@ -46,11 +100,11 @@ export const ASPage = ({ myBuildings = [] }) => {
 
   const statuses = ["전체", "대기", "진행중", "완료"];
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
-  const externalStaffAS = staffList.filter(s => s.roles.includes("external")).map(s => s.name);
-  const allStaff = staffList.map(s => s.name);
+  const externalStaffAS = (staffList as any[]).filter(s => s.roles.includes("external")).map(s => s.name);
+  const allStaff = (staffList as any[]).map(s => s.name);
 
   // Merge static + localStorage AS items
-  const allAsItems = [...staticAsItems, ...localAsItems];
+  const allAsItems: ASItemRecord[] = [...(staticAsItems as any[]), ...localAsItems];
   const myAS = myBuildings.length > 0 ? allAsItems.filter(a => myBuildings.includes(a.building)) : allAsItems;
 
   const assigneesAS = ["전체", ...externalStaffAS];
@@ -61,7 +115,7 @@ export const ASPage = ({ myBuildings = [] }) => {
   const paidCount = myAS.filter(a => a.paid === "유상").length;
   const paidCost = myAS.filter(a => a.paid === "유상").reduce((s, a) => s + (a.cost || 0), 0);
 
-  const actionColors = {
+  const actionColors: Record<string, { bg: string; color: string; icon: string }> = {
     "접수": { bg: "#EFF6FF", color: "#2563EB", icon: "📋" },
     "현장확인": { bg: "#FFF7ED", color: "#EA580C", icon: "🔍" },
     "현장출동": { bg: "#FFF7ED", color: "#EA580C", icon: "🚗" },
@@ -80,18 +134,18 @@ export const ASPage = ({ myBuildings = [] }) => {
   const buildingNames = buildings.map(b => b.name);
 
   // Helper to update a local AS item
-  const updateLocalItem = (id, updater) => {
+  const updateLocalItem = (id: number, updater: (item: ASItemRecord) => ASItemRecord) => {
     setLocalAsItems(prev => prev.map(item => item.id === id ? updater(item) : item));
   };
 
   // Check if item is from localStorage (editable)
-  const isLocalItem = (item) => localAsItems.some(li => li.id === item.id);
+  const isLocalItem = (item: ASItemRecord): boolean => localAsItems.some(li => li.id === item.id);
 
   // Handle new AS submission
   const handleSubmitAS = () => {
     if (!newBuilding || !newDesc.trim()) return;
     const titleLine = newDesc.trim().split("\n")[0].slice(0, 30);
-    const newItem = {
+    const newItem: ASItemRecord = {
       id: Date.now(),
       building: newBuilding,
       room: newRoom,
@@ -140,9 +194,9 @@ export const ASPage = ({ myBuildings = [] }) => {
   };
 
   // Approval status badge
-  const ApprovalBadge = ({ status }) => {
+  const ApprovalBadge: React.FC<ApprovalBadgeProps> = ({ status }) => {
     if (!status) return null;
-    const cfg = {
+    const cfg: Record<string, { label: string; bg: string; color: string; border: string }> = {
       pending: { label: "승인대기", bg: "#FFFBEB", color: "#D97706", border: "#FDE68A" },
       approved: { label: "승인완료", bg: "#ECFDF5", color: "#059669", border: "#A7F3D0" },
       rejected: { label: "반려", bg: "#FEF2F2", color: "#DC2626", border: "#FECACA" },
@@ -158,9 +212,9 @@ export const ASPage = ({ myBuildings = [] }) => {
 
   // ─── DETAIL VIEW ────────────────────────────────────────
   if (selectedAS) {
-    const as = selectedAS;
-    const canEdit = isLocalItem(as);
-    const steps = as.steps || [];
+    const as_ = selectedAS;
+    const canEdit = isLocalItem(as_);
+    const steps = as_.steps || [];
 
     return (
       <div>
@@ -168,22 +222,22 @@ export const ASPage = ({ myBuildings = [] }) => {
           <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} style={{ width: 40, height: 40, borderRadius: 10, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0 }}>‹</button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>AS #{as.id}</h1>
-              <StatusBadge status={as.status} />
-              <ApprovalBadge status={as.ownerApproval} />
+              <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>AS #{as_.id}</h1>
+              <StatusBadge status={as_.status} />
+              <ApprovalBadge status={as_.ownerApproval} />
             </div>
-            <p style={{ fontSize: 12, color: "#8F95A3", marginTop: 3 }}>{as.building} {as.room}호 · {as.date}</p>
+            <p style={{ fontSize: 12, color: "#8F95A3", marginTop: 3 }}>{as_.building} {as_.room}호 · {as_.date}</p>
           </div>
         </div>
 
         {/* Status + Cost Quick Bar */}
         <div style={{ display: "flex", gap: 8, marginBottom: 16, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4 }}>
           {[
-            ...(as.priority === "높음" ? [{ label: "긴급도", value: "높음", bg: "#FEF2F2", color: "#DC2626" }] : []),
-            { label: "유/무상", value: as.paid, bg: as.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: as.paid === "유상" ? "#DC2626" : "#059669" },
-            { label: "비용", value: as.cost > 0 ? `${fmt(as.cost)}원` : "없음", bg: as.cost > 0 ? "#FEF2F2" : "#F3F4F6", color: as.cost > 0 ? "#DC2626" : "#8F95A3" },
-            { label: "담당", value: as.assignee, bg: "#EFF6FF", color: "#2563EB" },
-            ...(as.source ? [{ label: "접수경로", value: as.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
+            ...(as_.priority === "높음" ? [{ label: "긴급도", value: "높음", bg: "#FEF2F2", color: "#DC2626" }] : []),
+            { label: "유/무상", value: as_.paid, bg: as_.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: as_.paid === "유상" ? "#DC2626" : "#059669" },
+            { label: "비용", value: as_.cost > 0 ? `${fmt(as_.cost)}원` : "없음", bg: as_.cost > 0 ? "#FEF2F2" : "#F3F4F6", color: as_.cost > 0 ? "#DC2626" : "#8F95A3" },
+            { label: "담당", value: as_.assignee, bg: "#EFF6FF", color: "#2563EB" },
+            ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
             <div key={i} style={{ flexShrink: 0, padding: "10px 14px", borderRadius: 10, background: chip.bg, textAlign: "center", minWidth: 80 }}>
               <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 3 }}>{chip.label}</div>
@@ -193,16 +247,16 @@ export const ASPage = ({ myBuildings = [] }) => {
         </div>
 
         {/* Paid Alert Banner */}
-        {as.paid === "유상" && (
+        {as_.paid === "유상" && (
           <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 12, background: "#FEF2F2", border: "1.5px solid #FECACA", display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 28, flexShrink: 0 }}>💰</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#991B1B" }}>유상 수리 · 세입자 부담</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#DC2626" }}>{fmt(as.cost)}<span style={{ fontSize: 12, fontWeight: 500 }}>원</span></div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#DC2626" }}>{fmt(as_.cost)}<span style={{ fontSize: 12, fontWeight: 500 }}>원</span></div>
             </div>
             <div style={{ padding: "6px 12px", background: "#fff", borderRadius: 8, border: "1px solid #FECACA", textAlign: "center" }}>
               <div style={{ fontSize: 9, color: "#8F95A3" }}>업체</div>
-              <div style={{ fontSize: 12, fontWeight: 700 }}>{as.vendor}</div>
+              <div style={{ fontSize: 12, fontWeight: 700 }}>{as_.vendor}</div>
             </div>
           </div>
         )}
@@ -210,14 +264,14 @@ export const ASPage = ({ myBuildings = [] }) => {
         {/* Content Card */}
         <Card style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 8 }}>📋 접수 내용</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1D23", marginBottom: 8, lineHeight: 1.4 }}>{as.content || as.title}</div>
-          <div style={{ fontSize: 13, color: "#5F6577", lineHeight: 1.7, padding: "12px 14px", background: "#F9FAFB", borderRadius: 10 }}>{as.detail || as.desc}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1D23", marginBottom: 8, lineHeight: 1.4 }}>{as_.content || as_.title}</div>
+          <div style={{ fontSize: 13, color: "#5F6577", lineHeight: 1.7, padding: "12px 14px", background: "#F9FAFB", borderRadius: 10 }}>{as_.detail || as_.desc}</div>
           <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
             <div style={{ padding: "8px 14px", background: "#F3F4F6", borderRadius: 8, fontSize: 12 }}>
-              🏷️ <span style={{ fontWeight: 700 }}>{as.category || "기타"}</span>
+              🏷️ <span style={{ fontWeight: 700 }}>{as_.category || "기타"}</span>
             </div>
             <div style={{ padding: "8px 14px", background: "#F3F4F6", borderRadius: 8, fontSize: 12 }}>
-              🏪 <span style={{ fontWeight: 700 }}>{as.vendor || "자체처리"}</span>
+              🏪 <span style={{ fontWeight: 700 }}>{as_.vendor || "자체처리"}</span>
             </div>
           </div>
         </Card>
@@ -227,11 +281,11 @@ export const ASPage = ({ myBuildings = [] }) => {
           <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 12 }}>📸 현장 사진</div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
             <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="#DC2626"
-              onAdd={(dataUrls) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
-              onRemove={(pi) => setAsBeforePhotos(prev => prev.filter((_, i) => i !== pi))} />
+              onAdd={(dataUrls: string[]) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
+              onRemove={(pi: number) => setAsBeforePhotos(prev => prev.filter((_, i) => i !== pi))} />
             <PhotoDropZone photos={asAfterPhotos} maxPhotos={30} label="수리 후 사진" color="#059669"
-              onAdd={(dataUrls) => setAsAfterPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
-              onRemove={(pi) => setAsAfterPhotos(prev => prev.filter((_, i) => i !== pi))} />
+              onAdd={(dataUrls: string[]) => setAsAfterPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
+              onRemove={(pi: number) => setAsAfterPhotos(prev => prev.filter((_, i) => i !== pi))} />
           </div>
         </Card>
 
@@ -262,27 +316,27 @@ export const ASPage = ({ myBuildings = [] }) => {
           </div>
 
           {/* Status Update Buttons */}
-          {as.status !== "완료" && canEdit && (
+          {as_.status !== "완료" && canEdit && (
             <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-              {as.status === "대기" && (
+              {as_.status === "대기" && (
                 <button onClick={() => {
-                  updateLocalItem(as.id, item => ({
+                  updateLocalItem(as_.id, item => ({
                     ...item,
                     status: "진행중",
                     steps: [...(item.steps || []), { date: today, action: "진행시작", note: "AS 처리 진행 시작" }],
                     actions: [...(item.actions || []), { step: "진행시작", date: today, by: "사무실" }],
                   }));
-                  setSelectedAS(prev => ({
+                  setSelectedAS(prev => prev ? ({
                     ...prev,
                     status: "진행중",
                     steps: [...(prev.steps || []), { date: today, action: "진행시작", note: "AS 처리 진행 시작" }],
-                  }));
+                  }) : null);
                 }}
                   style={{ flex: 1, padding: "14px", borderRadius: 10, border: "2px solid #EA580C", background: "#FFF7ED", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#EA580C", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   ▶️ 진행중으로 변경
                 </button>
               )}
-              {(as.status === "대기" || as.status === "진행중") && (
+              {(as_.status === "대기" || as_.status === "진행중") && (
                 <button onClick={() => setShowStatusModal("완료")}
                   style={{ flex: 1, padding: "14px", borderRadius: 10, border: "2px solid #059669", background: "#ECFDF5", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#059669", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   ✅ 완료 처리
@@ -292,7 +346,7 @@ export const ASPage = ({ myBuildings = [] }) => {
           )}
 
           {/* Status change for static items - just shows button but no-op with note */}
-          {as.status !== "완료" && !canEdit && (
+          {as_.status !== "완료" && !canEdit && (
             <button style={{ width: "100%", marginTop: 16, padding: "14px", borderRadius: 10, border: "2px dashed #3B82F6", background: "#EFF6FF", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#2563EB", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               ⏭️ 다음 단계 기록하기
             </button>
@@ -333,7 +387,7 @@ export const ASPage = ({ myBuildings = [] }) => {
               </button>
               <button onClick={() => {
                 const cost = completePaid === "유상" ? (parseInt(completeCost) || 0) : 0;
-                updateLocalItem(as.id, item => ({
+                updateLocalItem(as_.id, item => ({
                   ...item,
                   status: "완료",
                   paid: completePaid,
@@ -342,14 +396,14 @@ export const ASPage = ({ myBuildings = [] }) => {
                   steps: [...(item.steps || []), { date: today, action: "수리완료", note: `${completePaid} 처리 완료${cost > 0 ? ` · ${fmt(cost)}원` : ""}${completeVendor ? ` · ${completeVendor}` : ""}` }],
                   actions: [...(item.actions || []), { step: "완료", date: today, by: "사무실" }],
                 }));
-                setSelectedAS(prev => ({
+                setSelectedAS(prev => prev ? ({
                   ...prev,
                   status: "완료",
                   paid: completePaid,
                   cost,
                   vendor: completeVendor,
                   steps: [...(prev.steps || []), { date: today, action: "수리완료", note: `${completePaid} 처리 완료${cost > 0 ? ` · ${fmt(cost)}원` : ""}${completeVendor ? ` · ${completeVendor}` : ""}` }],
-                }));
+                }) : null);
                 setShowStatusModal(null);
                 setCompletePaid("무상");
                 setCompleteCost("");
@@ -363,19 +417,19 @@ export const ASPage = ({ myBuildings = [] }) => {
         )}
 
         {/* Owner Approval Section */}
-        {as.status !== "완료" && canEdit && (
+        {as_.status !== "완료" && canEdit && (
           <Card style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "#D97706", letterSpacing: "0.05em" }}>🏠 건물주 승인</div>
-              {as.ownerApproval && <ApprovalBadge status={as.ownerApproval} />}
+              {as_.ownerApproval && <ApprovalBadge status={as_.ownerApproval} />}
             </div>
-            {!as.ownerApproval && !showApprovalForm && (
+            {!as_.ownerApproval && !showApprovalForm && (
               <button onClick={() => setShowApprovalForm(true)}
                 style={{ width: "100%", padding: "12px", borderRadius: 10, border: "1.5px solid #FDE68A", background: "#FFFBEB", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#D97706", fontFamily: "inherit" }}>
                 📩 건물주 승인 요청
               </button>
             )}
-            {showApprovalForm && !as.ownerApproval && (
+            {showApprovalForm && !as_.ownerApproval && (
               <div>
                 <div style={{ marginBottom: 10 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>예상 비용 (원)</div>
@@ -397,7 +451,7 @@ export const ASPage = ({ myBuildings = [] }) => {
                   </button>
                   <button onClick={() => {
                     const cost = parseInt(approvalCost) || 0;
-                    updateLocalItem(as.id, item => ({
+                    updateLocalItem(as_.id, item => ({
                       ...item,
                       ownerApproval: "pending",
                       estimatedCost: cost,
@@ -405,13 +459,13 @@ export const ASPage = ({ myBuildings = [] }) => {
                       steps: [...(item.steps || []), { date: today, action: "건물주승인요청", note: `건물주 승인 요청${cost > 0 ? ` · 예상비용 ${fmt(cost)}원` : ""}${approvalVendor ? ` · ${approvalVendor}` : ""}` }],
                       actions: [...(item.actions || []), { step: "건물주승인요청", date: today, by: "사무실" }],
                     }));
-                    setSelectedAS(prev => ({
+                    setSelectedAS(prev => prev ? ({
                       ...prev,
                       ownerApproval: "pending",
                       estimatedCost: cost,
                       vendor: approvalVendor || prev.vendor,
                       steps: [...(prev.steps || []), { date: today, action: "건물주승인요청", note: `건물주 승인 요청${cost > 0 ? ` · 예상비용 ${fmt(cost)}원` : ""}${approvalVendor ? ` · ${approvalVendor}` : ""}` }],
-                    }));
+                    }) : null);
                     setShowApprovalForm(false);
                     setApprovalCost("");
                     setApprovalVendor("");
@@ -422,17 +476,17 @@ export const ASPage = ({ myBuildings = [] }) => {
                 </div>
               </div>
             )}
-            {as.ownerApproval === "pending" && (
+            {as_.ownerApproval === "pending" && (
               <div style={{ padding: "12px 14px", background: "#FFFBEB", borderRadius: 8, border: "1px solid #FDE68A", fontSize: 12, color: "#92400E" }}>
-                건물주 승인 대기 중입니다{as.estimatedCost > 0 ? ` · 예상비용 ${fmt(as.estimatedCost)}원` : ""}
+                건물주 승인 대기 중입니다{(as_.estimatedCost ?? 0) > 0 ? ` · 예상비용 ${fmt(as_.estimatedCost!)}원` : ""}
               </div>
             )}
-            {as.ownerApproval === "approved" && (
+            {as_.ownerApproval === "approved" && (
               <div style={{ padding: "12px 14px", background: "#ECFDF5", borderRadius: 8, border: "1px solid #A7F3D0", fontSize: 12, color: "#065F46" }}>
                 건물주가 승인했습니다. 진행해 주세요.
               </div>
             )}
-            {as.ownerApproval === "rejected" && (
+            {as_.ownerApproval === "rejected" && (
               <div style={{ padding: "12px 14px", background: "#FEF2F2", borderRadius: 8, border: "1px solid #FECACA", fontSize: 12, color: "#991B1B" }}>
                 건물주가 반려했습니다. 재검토가 필요합니다.
               </div>
@@ -454,9 +508,9 @@ export const ASPage = ({ myBuildings = [] }) => {
             <span style={{ fontSize: 24 }}>💰</span>
             <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>견적 입력</span>
           </button>
-          <button style={{ padding: "16px", borderRadius: 12, border: as.status !== "완료" ? "2px solid #10B981" : "1px solid #E0E3E9", background: as.status !== "완료" ? "#ECFDF5" : "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+          <button style={{ padding: "16px", borderRadius: 12, border: as_.status !== "완료" ? "2px solid #10B981" : "1px solid #E0E3E9", background: as_.status !== "완료" ? "#ECFDF5" : "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
             <span style={{ fontSize: 24 }}>✅</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: as.status !== "완료" ? "#059669" : "#1A1D23" }}>처리 완료</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: as_.status !== "완료" ? "#059669" : "#1A1D23" }}>처리 완료</span>
           </button>
         </div>
 
@@ -465,14 +519,14 @@ export const ASPage = ({ myBuildings = [] }) => {
           <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 10 }}>ℹ️ 요약 정보</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
             {[
-              { label: "접수일", value: as.date },
-              { label: "건물/호실", value: `${as.building} ${as.room}호` },
-              { label: "분류", value: as.category || "기타" },
-              { label: "긴급도", value: as.priority },
-              { label: "담당자", value: as.assignee },
-              { label: "유/무상", value: as.paid, highlight: as.paid === "유상" },
-              { label: "비용", value: as.cost > 0 ? `${fmt(as.cost)}원` : "—", highlight: as.cost > 0 },
-              { label: "처리업체", value: as.vendor || "자체처리" },
+              { label: "접수일", value: as_.date },
+              { label: "건물/호실", value: `${as_.building} ${as_.room}호` },
+              { label: "분류", value: as_.category || "기타" },
+              { label: "긴급도", value: as_.priority },
+              { label: "담당자", value: as_.assignee },
+              { label: "유/무상", value: as_.paid, highlight: as_.paid === "유상" },
+              { label: "비용", value: as_.cost > 0 ? `${fmt(as_.cost)}원` : "—", highlight: as_.cost > 0 },
+              { label: "처리업체", value: as_.vendor || "자체처리" },
             ].map((item, i) => (
               <div key={i} style={{ padding: "10px 12px", borderBottom: "1px solid #F0F2F5", borderRight: i % 2 === 0 ? "1px solid #F0F2F5" : "none" }}>
                 <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>{item.label}</div>
@@ -523,8 +577,8 @@ export const ASPage = ({ myBuildings = [] }) => {
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>사진</div>
             <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="#3B82F6"
-              onAdd={(dataUrls) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
-              onRemove={(pi) => setNewPhotos(prev => prev.filter((_, i) => i !== pi))} />
+              onAdd={(dataUrls: string[]) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
+              onRemove={(pi: number) => setNewPhotos(prev => prev.filter((_, i) => i !== pi))} />
           </div>
 
           {/* Priority */}
@@ -751,19 +805,19 @@ export const ASPage = ({ myBuildings = [] }) => {
           <Table
             columns={[
               { label: "접수일", key: "date" },
-              { label: "건물", render: r => `${r.building} ${r.room}호` },
-              { label: "분류", render: r => <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "#F3F4F6", fontWeight: 600 }}>{r.category || "기타"}</span> },
-              { label: "내용", render: r => r.content || r.title },
-              { label: "유/무상", render: r => <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: r.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: r.paid === "유상" ? "#DC2626" : "#059669" }}>{r.paid}</span> },
-              { label: "비용", align: "right", render: r => r.cost > 0 ? <span style={{ fontWeight: 700 }}>{fmt(r.cost)}원</span> : <span style={{ color: "#ccc" }}>—</span> },
-              { label: "긴급도", render: r => (r.priority === "높음" || r.priority === "긴급") ? <StatusBadge status={r.priority} /> : null },
+              { label: "건물", render: (r: ASItemRecord) => `${r.building} ${r.room}호` },
+              { label: "분류", render: (r: ASItemRecord) => <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "#F3F4F6", fontWeight: 600 }}>{r.category || "기타"}</span> },
+              { label: "내용", render: (r: ASItemRecord) => r.content || r.title },
+              { label: "유/무상", render: (r: ASItemRecord) => <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: r.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: r.paid === "유상" ? "#DC2626" : "#059669" }}>{r.paid}</span> },
+              { label: "비용", align: "right" as const, render: (r: ASItemRecord) => r.cost > 0 ? <span style={{ fontWeight: 700 }}>{fmt(r.cost)}원</span> : <span style={{ color: "#ccc" }}>—</span> },
+              { label: "긴급도", render: (r: ASItemRecord) => (r.priority === "높음" || r.priority === "긴급") ? <StatusBadge status={r.priority} /> : null },
               { label: "담당", key: "assignee" },
-              { label: "승인", render: r => <ApprovalBadge status={r.ownerApproval} /> },
-              { label: "진행", render: r => <span style={{ fontSize: 11, color: "#8F95A3" }}>{(r.steps || []).length}단계</span> },
-              { label: "상태", render: r => <StatusBadge status={r.status} /> },
+              { label: "승인", render: (r: ASItemRecord) => <ApprovalBadge status={r.ownerApproval} /> },
+              { label: "진행", render: (r: ASItemRecord) => <span style={{ fontSize: 11, color: "#8F95A3" }}>{(r.steps || []).length}단계</span> },
+              { label: "상태", render: (r: ASItemRecord) => <StatusBadge status={r.status} /> },
             ]}
             data={filtered}
-            onRowClick={(row) => setSelectedAS(row)}
+            onRowClick={(row: ASItemRecord) => setSelectedAS(row)}
           />
           <div style={{ marginTop: 10, fontSize: 11, color: "#B0B5C1", textAlign: "center" }}>행을 클릭하면 상세 화면으로 이동합니다</div>
         </Card>

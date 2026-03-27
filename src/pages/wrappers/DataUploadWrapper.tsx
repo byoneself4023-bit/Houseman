@@ -7,13 +7,13 @@ export function DataUploadWrapper() {
   return (
     <DataUploadPage
       allBuildings={ctx.allBuildings}
-      setAllBuildings={ctx.setAllBuildings}
+      setAllBuildings={ctx.setAllBuildings as any}
       buildingData={ctx.buildingData}
       setBuildingData={ctx.setBuildingData}
       activeTenants={ctx.activeTenants}
-      setActiveTenants={ctx.setActiveTenants}
+      setActiveTenants={ctx.setActiveTenants as any}
       activeVacancies={ctx.activeVacancies}
-      setActiveVacancies={ctx.setActiveVacancies}
+      setActiveVacancies={ctx.setActiveVacancies as any}
     />
   );
 }

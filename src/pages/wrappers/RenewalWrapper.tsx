@@ -1,15 +1,18 @@
 import { useAppContext } from '@/types/appContext';
-import { RenewalPage as _RenewalPage } from '../RenewalPage';
-
-const RenewalPage: React.ComponentType<any> = _RenewalPage;
+import { useContracts } from '@/hooks/queries';
+import { useApiOr } from '@/hooks/useApiOr';
+import { USE_API } from '@/lib/featureFlag';
+import { RenewalPage } from '../RenewalPage';
 
 export function RenewalWrapper() {
   const ctx = useAppContext();
+  const contractsQ = useContracts();
 
   return (
     <RenewalPage
       myBuildings={ctx.myBuildings}
-      activeTenants={ctx.activeTenants}
+      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
+      isLoading={USE_API && contractsQ.isLoading}
     />
   );
 }

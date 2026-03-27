@@ -1,15 +1,18 @@
 import { useAppContext } from '@/types/appContext';
-import { PatrolPage as _PatrolPage } from '../PatrolPage';
-
-const PatrolPage: React.ComponentType<any> = _PatrolPage;
+import { useBuildings } from '@/hooks/queries';
+import { useApiOr } from '@/hooks/useApiOr';
+import { USE_API } from '@/lib/featureFlag';
+import { PatrolPage } from '../PatrolPage';
 
 export function PatrolWrapper() {
   const ctx = useAppContext();
+  const buildingsQ = useBuildings();
 
   return (
     <PatrolPage
       myBuildings={ctx.myBuildings}
-      buildingData={ctx.buildingData}
+      buildingData={useApiOr(buildingsQ.data, ctx.buildingData)}
+      isLoading={USE_API && buildingsQ.isLoading}
     />
   );
 }

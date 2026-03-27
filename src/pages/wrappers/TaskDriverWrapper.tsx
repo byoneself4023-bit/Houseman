@@ -1,23 +1,31 @@
 import { useAppContext } from '@/types/appContext';
-import { TaskDriverPage as _TaskDriverPage } from '../TaskDriverPage';
-
-const TaskDriverPage: React.ComponentType<any> = _TaskDriverPage;
+import { useContracts, usePastContracts, useVacancies, useCalendarEvents, useSettlementExpenses, useBillingRecords } from '@/hooks/queries';
+import { useApiOr } from '@/hooks/useApiOr';
+import { USE_API } from '@/lib/featureFlag';
+import { TaskDriverPage } from '../TaskDriverPage';
 
 export function TaskDriverWrapper() {
   const ctx = useAppContext();
+  const contractsQ = useContracts();
+  const pastContractsQ = usePastContracts();
+  const vacanciesQ = useVacancies();
+  const calendarQ = useCalendarEvents();
+  const settlementQ = useSettlementExpenses();
+  const billingQ = useBillingRecords();
 
   return (
     <TaskDriverPage
       myBuildings={ctx.myBuildings}
-      activeTenants={ctx.activeTenants}
-      activeVacancies={ctx.activeVacancies}
-      calendarEvts={ctx.calendarEvts}
+      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
+      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
+      calendarEvts={useApiOr(calendarQ.data, ctx.calendarEvts)}
       buildingData={ctx.buildingData}
-      settlementExpenses={ctx.settlementExpenses}
+      settlementExpenses={useApiOr(settlementQ.data, ctx.settlementExpenses)}
       roomBalances={ctx.roomBalances}
-      billingHistory={ctx.billingHistory}
-      pastTenantsData={ctx.pastTenantsData}
+      billingHistory={useApiOr(billingQ.data, ctx.billingHistory)}
+      pastTenantsData={useApiOr(pastContractsQ.data, ctx.pastTenantsData)}
       currentStaff={ctx.currentStaff}
+      isLoading={USE_API && (contractsQ.isLoading || vacanciesQ.isLoading)}
     />
   );
 }

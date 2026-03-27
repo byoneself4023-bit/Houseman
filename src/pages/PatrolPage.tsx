@@ -1,42 +1,82 @@
 import { useState, useMemo } from 'react';
-import { patrolBuildings, patrolRecords } from '../data/patrolData';
-import { useIsMobile } from '../utils';
-import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, StatusBadge, PhotoDropZone } from '../components';
-import { initialStaffMembers } from '../config';
-import { useLocalStorage } from '../utils/useLocalStorage';
+import { patrolBuildings, patrolRecords } from '@/data/patrolData';
+import { useIsMobile } from '@/utils';
+import { matchKorean } from '@/utils/koreanSearch';
+import { Card, SectionTitle, StatusBadge, PhotoDropZone } from '@/components';
+import { initialStaffMembers } from '@/config';
+import { useLocalStorage } from '@/utils/useLocalStorage';
 
 const DEFAULT_CHECKLIST = ["복도 조명", "옥상 배수구", "CCTV 작동", "소방시설", "주차장"];
 
-export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
+interface ChecklistItem {
+  item: string;
+  status: string;
+  comment?: string;
+}
+
+interface PatrolRecordItem {
+  id: number;
+  building: string;
+  date: string;
+  assignee: string;
+  checklist?: ChecklistItem[];
+  comment: string;
+  photos: string[];
+  status: string;
+  [key: string]: any;
+}
+
+interface PatrolBuildingItem {
+  building: string;
+  freq: number;
+  assignee: string;
+  doneCount: number;
+  lastDate: string | null;
+  lastStatus: string | null;
+  [key: string]: any;
+}
+
+interface FormChecklistItem {
+  item: string;
+  status: string;
+  comment: string;
+}
+
+interface PatrolPageProps {
+  myBuildings?: string[];
+  buildingData?: Record<string, any>;
+  isLoading?: boolean;
+}
+
+export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildingData = {} }) => {
   const isMobile = useIsMobile();
-  const [selectedBuilding, setSelectedBuilding] = useState(null);
-  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<PatrolRecordItem | null>(null);
   const [filterAssignee, setFilterAssignee] = useState("전체");
-  const [patrolPhotos, setPatrolPhotos] = useLocalStorage("hm_patrolPhotos", []);
-  const [savedPatrolRecords, setSavedPatrolRecords] = useLocalStorage("hm_patrolRecords", []);
+  const [patrolPhotos, setPatrolPhotos] = useLocalStorage<string[]>("hm_patrolPhotos", []);
+  const [savedPatrolRecords, setSavedPatrolRecords] = useLocalStorage<PatrolRecordItem[]>("hm_patrolRecords", []);
 
   // New patrol form state
   const [showNewForm, setShowNewForm] = useState(false);
   const [formBuilding, setFormBuilding] = useState("");
-  const [formChecklist, setFormChecklist] = useState([]);
+  const [formChecklist, setFormChecklist] = useState<FormChecklistItem[]>([]);
   const [formComment, setFormComment] = useState("");
-  const [formPhotos, setFormPhotos] = useState([]);
+  const [formPhotos, setFormPhotos] = useState<string[]>([]);
   const [formAssignee, setFormAssignee] = useState("");
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
 
   // Merge static and localStorage records
-  const allRecords = useMemo(() => {
-    const merged = [...patrolRecords, ...savedPatrolRecords];
+  const allRecords = useMemo((): PatrolRecordItem[] => {
+    const merged = [...patrolRecords, ...savedPatrolRecords] as PatrolRecordItem[];
     return merged.sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
   }, [savedPatrolRecords]);
 
   // 건물호실정보의 순회주기 + 담당자 설정 반영 (buildingData 우선, 없으면 기본값 월1회)
-  const parseCycleFreq = (cycle) => { const m = cycle?.match(/월(\d+)회/); return m ? parseInt(m[1]) : 1; };
+  const parseCycleFreq = (cycle?: string): number => { const m = cycle?.match(/월(\d+)회/); return m ? parseInt(m[1]) : 1; };
   const rawPatrol = myBuildings.length > 0 ? patrolBuildings.filter(b => myBuildings.includes(b.building)) : patrolBuildings;
-  const myPatrolBuildings = rawPatrol.map(b => {
+  const myPatrolBuildings: PatrolBuildingItem[] = rawPatrol.map(b => {
     const bd = buildingData[b.building];
     // Include saved records in done count
     const savedForBuilding = savedPatrolRecords.filter(r => r.building === b.building && r.date.startsWith(today.toISOString().slice(0, 7)));
@@ -51,14 +91,14 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
   });
 
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
-  const externalStaff = staffList.filter(s => s.roles.includes("external")).map(s => s.name);
+  const externalStaff = (staffList as any[]).filter(s => s.roles.includes("external")).map(s => s.name);
   const assignees = ["전체", ...externalStaff];
 
   // Urgency: days until next patrol due. Lower = more urgent = top
-  const getUrgency = (b) => {
+  const getUrgency = (b: PatrolBuildingItem): number => {
     const interval = Math.floor(28 / b.freq);
     if (!b.lastDate) return -999; // never patrolled = most urgent
-    const daysSince = Math.ceil((today - new Date(b.lastDate)) / 86400000);
+    const daysSince = Math.ceil((today.getTime() - new Date(b.lastDate).getTime()) / 86400000);
     return interval - daysSince; // negative = overdue, 0 = due today, positive = days left
   };
 
@@ -67,18 +107,18 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
 
   const totalDone = myPatrolBuildings.reduce((s, b) => s + b.doneCount, 0);
   const totalRequired = myPatrolBuildings.reduce((s, b) => s + b.freq, 0);
-  const progressPct = totalRequired > 0 ? ((totalDone / totalRequired) * 100).toFixed(0) : 0;
+  const progressPct = totalRequired > 0 ? ((totalDone / totalRequired) * 100).toFixed(0) : "0";
   const overdueBuildings = myPatrolBuildings.filter(b => {
     if (!b.lastDate) return true;
-    const days = Math.ceil((today - new Date(b.lastDate)) / 86400000);
+    const days = Math.ceil((today.getTime() - new Date(b.lastDate).getTime()) / 86400000);
     const interval = Math.floor(28 / b.freq);
     return days > interval;
   });
 
   // Initialize new patrol form
-  const openNewForm = (buildingName) => {
+  const openNewForm = (buildingName: string) => {
     const bd = buildingData[buildingName];
-    const checklist = bd?.facilityChecklist || DEFAULT_CHECKLIST;
+    const checklist: string[] = bd?.facilityChecklist || DEFAULT_CHECKLIST;
     setFormBuilding(buildingName || (myPatrolBuildings[0]?.building || ""));
     setFormChecklist(checklist.map(item => ({ item, status: "정상", comment: "" })));
     setFormComment("");
@@ -87,9 +127,9 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
     setShowNewForm(true);
   };
 
-  const updateFormBuilding = (name) => {
+  const updateFormBuilding = (name: string) => {
     const bd = buildingData[name];
-    const checklist = bd?.facilityChecklist || DEFAULT_CHECKLIST;
+    const checklist: string[] = bd?.facilityChecklist || DEFAULT_CHECKLIST;
     setFormBuilding(name);
     setFormChecklist(checklist.map(item => ({ item, status: "정상", comment: "" })));
     setFormAssignee(bd?.managers?.external || myPatrolBuildings.find(p => p.building === name)?.assignee || externalStaff[0] || "");
@@ -98,7 +138,7 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
   const savePatrolRecord = () => {
     if (!formBuilding) { alert("건물을 선택해주세요."); return; }
     const hasIssue = formChecklist.some(c => c.status === "이상");
-    const record = {
+    const record: PatrolRecordItem = {
       id: Date.now(),
       building: formBuilding,
       date: todayStr,
@@ -246,8 +286,8 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
           {/* Photos */}
           <div style={{ marginBottom: 14 }}>
             <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="#3B82F6"
-              onAdd={(dataUrls) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
-              onRemove={(idx) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
+              onAdd={(dataUrls: string[]) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
+              onRemove={(idx: number) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
           </div>
 
           {/* Save buttons */}
@@ -270,7 +310,7 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
     if (!b) { setSelectedBuilding(null); return null; }
     const records = allRecords.filter(r => r.building === selectedBuilding);
     const interval = Math.floor(28 / b.freq);
-    const daysSince = b.lastDate ? Math.ceil((today - new Date(b.lastDate)) / 86400000) : null;
+    const daysSince = b.lastDate ? Math.ceil((today.getTime() - new Date(b.lastDate).getTime()) / 86400000) : null;
     const remain = b.freq - b.doneCount;
 
     return (
@@ -374,7 +414,7 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
           </div>
         </div>
         <div style={{ height: 8, background: "#E5E7EB", borderRadius: 4, overflow: "hidden" }}>
-          <div style={{ width: `${progressPct}%`, height: "100%", background: progressPct >= 80 ? "#10B981" : progressPct >= 50 ? "#F59E0B" : "#EF4444", borderRadius: 4, transition: "width 0.3s" }} />
+          <div style={{ width: `${progressPct}%`, height: "100%", background: Number(progressPct) >= 80 ? "#10B981" : Number(progressPct) >= 50 ? "#F59E0B" : "#EF4444", borderRadius: 4, transition: "width 0.3s" }} />
         </div>
       </Card>
 
@@ -392,7 +432,7 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
         {sorted.map((b, i) => {
           const remain = b.freq - b.doneCount;
           const interval = Math.floor(28 / b.freq);
-          const daysSince = b.lastDate ? Math.ceil((today - new Date(b.lastDate)) / 86400000) : null;
+          const daysSince = b.lastDate ? Math.ceil((today.getTime() - new Date(b.lastDate).getTime()) / 86400000) : null;
           const daysLeft = daysSince !== null ? interval - daysSince : -999;
           const overdue = daysLeft < 0;
           const greenThreshold = b.freq >= 4 ? 3 : 7; // 월4회→3일, 그 외→7일
@@ -446,14 +486,14 @@ export const PatrolPage = ({ myBuildings = [], buildingData = {} }) => {
       {(() => {
         const alerts = sorted.map(b => {
           const interval = Math.floor(28 / b.freq);
-          const daysSince = b.lastDate ? Math.ceil((today - new Date(b.lastDate)) / 86400000) : null;
+          const daysSince = b.lastDate ? Math.ceil((today.getTime() - new Date(b.lastDate).getTime()) / 86400000) : null;
           const daysLeft = daysSince !== null ? interval - daysSince : -999;
           const greenThreshold = b.freq >= 4 ? 3 : 7;
           const overdue = daysLeft < 0;
           const approaching = !overdue && daysLeft >= 0 && daysLeft <= greenThreshold;
           if (!overdue && !approaching) return null;
           return { ...b, daysLeft, overdue, interval };
-        }).filter(Boolean);
+        }).filter(Boolean) as (PatrolBuildingItem & { daysLeft: number; overdue: boolean; interval: number })[];
         const overdueList = alerts.filter(a => a.overdue).sort((a, b) => a.daysLeft - b.daysLeft);
         const approachList = alerts.filter(a => !a.overdue).sort((a, b) => a.daysLeft - b.daysLeft);
         if (alerts.length === 0) return null;

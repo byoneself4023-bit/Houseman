@@ -1,20 +1,20 @@
 import { useState } from 'react';
-import { tenants, vacancies, asItems } from '../data';
-import { staffRoles, initialStaffMembers } from '../config';
-import { useLocalStorage } from '../utils/useLocalStorage';
-import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '../config/accountConfig';
-import { useIsMobile, fmt, feeLabel } from '../utils';
-import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, StatusBadge, PhotoDropZone, Field } from '../components';
-import { inputStyle } from '../components/Field';
+import { tenants, vacancies, asItems } from '@/data';
+import { staffRoles, initialStaffMembers } from '@/config';
+import { useLocalStorage } from '@/utils/useLocalStorage';
+import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '@/config/accountConfig';
+import { useIsMobile, fmt, feeLabel } from '@/utils';
+import { matchKorean } from '@/utils/koreanSearch';
+import { Card, SectionTitle, StatusBadge, PhotoDropZone, Field } from '@/components';
+import { inputStyle } from '@/components/Field';
 
-const emptyVendor = (withManager) => ({
+const emptyVendor = (withManager: boolean) => ({
   company: "", phone: "", contact: "", contactPhone: "",
   ...(withManager ? { manager: "", managerPhone: "", managerNote: "" } : {}),
 });
 
-const initialRegForm = {
-  name: "", address: "", types: [],
+const initialRegForm: Record<string, any> = {
+  name: "", address: "", types: [] as string[],
   feeType: "pct", fee: "", fixedFee: "",
   owners: [{ name: "", phone: "", ssn: "", address: "", settlement: "" }],
   startDate: "", approvalDate: "", entrancePw: "",
@@ -48,7 +48,15 @@ const initialRegForm = {
 };
 
 /* ── 접기/펼치기 Card 헤더 ── */
-const SectionHeader = ({ icon, title, subtitle, open, onToggle }) => (
+interface SectionHeaderProps {
+  icon: string;
+  title: string;
+  subtitle?: string;
+  open: boolean;
+  onToggle: () => void;
+}
+
+const SectionHeader = ({ icon, title, subtitle, open, onToggle }: SectionHeaderProps) => (
   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: open ? 12 : 0, cursor: "pointer" }} onClick={onToggle}>
     <div style={{ flex: 1 }}>
       <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>{icon} {title}</div>
@@ -58,7 +66,22 @@ const SectionHeader = ({ icon, title, subtitle, open, onToggle }) => (
   </div>
 );
 
-export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildings = [], setCustomBuildings, allBuildings = [], setAllBuildings, activeTenants = [], activeVacancies = [] }) => {
+interface BuildingsPageProps {
+  onSelectBuilding: (building: string) => void;
+  myBuildings?: string[];
+  customBuildings?: Record<string, any>[];
+  setCustomBuildings?: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
+  allBuildings?: Record<string, any>[];
+  setAllBuildings?: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
+  activeTenants?: Record<string, any>[];
+  activeVacancies?: Record<string, any>[];
+  buildingData?: Record<string, any>;
+  setBuildingData?: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  parkingInfo?: Record<string, any>;
+  isLoading?: boolean;
+}
+
+export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildings = [], setCustomBuildings, allBuildings = [], setAllBuildings, activeTenants = [], activeVacancies = [], isLoading }: BuildingsPageProps) => {
   const isMobile = useIsMobile();
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
   const filteredBuildings = myBuildings.length > 0 ? allBuildings.filter(b => myBuildings.includes(b.name)) : allBuildings;
@@ -78,19 +101,19 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
   const [sec7Open, setSec7Open] = useState(true);   // 호실 등록
   const [fireMode, setFireMode] = useState("direct"); // "direct" 직접관리 | "vendor" 협력업체관리
 
-  const set = (patch) => setRegForm(f => ({ ...f, ...patch }));
-  const setOwner = (idx, field, value) => setRegForm(f => {
+  const set = (patch: Record<string, any>) => setRegForm(f => ({ ...f, ...patch }));
+  const setOwner = (idx: number, field: string, value: any) => setRegForm(f => {
     const updated = [...f.owners];
     updated[idx] = { ...updated[idx], [field]: value };
     return { ...f, owners: updated };
   });
   const addOwner = () => setRegForm(f => f.owners.length < 4 ? { ...f, owners: [...f.owners, { name: "", phone: "", ssn: "", address: "", settlement: "" }] } : f);
-  const removeOwner = (idx) => setRegForm(f => f.owners.length > 1 ? { ...f, owners: f.owners.filter((_, i) => i !== idx) } : f);
-  const setVendor = (key, field, value) => setRegForm(f => ({
+  const removeOwner = (idx: number) => setRegForm(f => f.owners.length > 1 ? { ...f, owners: f.owners.filter((_: any, i: number) => i !== idx) } : f);
+  const setVendor = (key: string, field: string, value: any) => setRegForm(f => ({
     ...f,
     vendors: { ...f.vendors, [key]: { ...f.vendors[key], [field]: value } }
   }));
-  const toggleVendor = (key) => setRegForm(f => ({
+  const toggleVendor = (key: string) => setRegForm(f => ({
     ...f,
     vendorEnabled: { ...f.vendorEnabled, [key]: !f.vendorEnabled[key] }
   }));
@@ -103,7 +126,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
     const newRooms = [];
     for (let i = from; i <= to; i++) {
       const roomNum = `${f.startsWith("B") || f.startsWith("b") ? f.toUpperCase() : f}${String(i).padStart(2, "0")}`;
-      if (!regForm.roomList.find(r => r.room === roomNum)) {
+      if (!regForm.roomList.find((r: any) => r.room === roomNum)) {
         newRooms.push({ room: roomNum, roomType: "", buildingType: "", area: "", rent: "", mgmt: "", deposit: "", water: "", internet: "", cleanFee: "", elecNo: "", gasNo: "", commFee: "", photos: [] });
       }
     }
@@ -111,13 +134,13 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
     set({ roomList: [...regForm.roomList, ...newRooms], newFloor: "", newFrom: "", newTo: "", editIdx: startIdx });
   };
 
-  const updateRoom = (idx, field, value) => {
+  const updateRoom = (idx: number, field: string, value: any) => {
     const updated = [...regForm.roomList];
     updated[idx] = { ...updated[idx], [field]: value };
     set({ roomList: updated });
   };
 
-  const removeRoom = (idx) => {
+  const removeRoom = (idx: number) => {
     const updated = [...regForm.roomList];
     updated.splice(idx, 1);
     const newIdx = updated.length === 0 ? null : idx >= updated.length ? updated.length - 1 : idx;
@@ -158,8 +181,8 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
 
   // 건물유형 배열 → 계좌타입 직접 파생
   const allBuildingTypes = ["단기", "일반임대", "근생", "관리사무소", "기업시설관리"];
-  const buildingTypeLabel = { "단기": "단기", "일반임대": "일반임대(주택)", "근생": "근생", "관리사무소": "관리사무소", "기업시설관리": "기업시설관리" };
-  const acctTypes = regForm.types.map(t => t === "기업시설관리" ? "관리사무소" : t);
+  const buildingTypeLabel: Record<string, string> = { "단기": "단기", "일반임대": "일반임대(주택)", "근생": "근생", "관리사무소": "관리사무소", "기업시설관리": "기업시설관리" };
+  const acctTypes = regForm.types.map((t: string) => t === "기업시설관리" ? "관리사무소" : t);
 
   return (
     <div>
@@ -212,7 +235,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{b.type}{feeLabel(b) && ` · ${feeLabel(b)}`}</div>
+                    <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{b.type}{feeLabel(b as any) && ` · ${feeLabel(b as any)}`}</div>
                   </div>
                   {pendingCount > 0 ? (
                     <div style={{ background: "#FEF2F2", color: "#DC2626", padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>🔧 {pendingCount}건</div>
@@ -274,7 +297,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
           </Card>
 
           {/* 미리보기: 건물주 정보 */}
-          {regForm.owners.some(ow => ow.name) && (
+          {regForm.owners.some((ow: any) => ow.name) && (
             <Card style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>👤 건물주 정보</div>
               {(() => {
@@ -284,7 +307,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                   { bg: "#FFF7ED", color: "#EA580C", label: "" },
                   { bg: "#F0FDF4", color: "#059669", label: "" },
                 ];
-                return regForm.owners.filter(ow => ow.name).map((ow, oi) => {
+                return regForm.owners.filter((ow: any) => ow.name).map((ow: any, oi: number) => {
                   const c = ownerColors[oi] || ownerColors[0];
                   return (
                     <div key={oi} style={{ padding: "8px 12px", background: c.bg, borderRadius: 8, marginBottom: 8 }}>
@@ -308,7 +331,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             <Card style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏦 건물 계좌 정보</div>
               <div style={{ display: "grid", gridTemplateColumns: acctTypes.length === 3 ? "1fr 1fr 1fr" : acctTypes.length === 2 ? "1fr 1fr" : "1fr", gap: 10 }}>
-                {acctTypes.map((aType, ai) => {
+                {acctTypes.map((aType: string, ai: number) => {
                   const suffix = String(ai + 1);
                   const currentMode = regForm[`acctMode${suffix}`];
                   if (!currentMode) return null;
@@ -361,10 +384,10 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
               return mgrs.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
                   {mgrs.map(m => {
-                    const sr = staffRoles.find(r => r.id === m.role);
+                    const sr = staffRoles.find(r => r.id === m.role)!;
                     return (
-                      <span key={m.key} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: sr.color + "15", color: sr.color, border: `1px solid ${sr.color}40` }}>
-                        {sr.icon} {sr.label}: {regForm[m.key]}
+                      <span key={m.key} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: sr?.color + "15", color: sr?.color, border: `1px solid ${sr?.color}40` }}>
+                        {sr?.icon} {sr?.label}: {regForm[m.key]}
                       </span>
                     );
                   })}
@@ -379,7 +402,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                 (regForm.types.includes("단기") || regForm.types.includes("일반임대")) ? { l: "표준임대차", v: regForm.standardLease } : null,
                 { l: "순회주기", v: regForm.visitCycle },
                 { l: "E-MAIL", v: regForm.email },
-              ].filter(x => x && x.v).map((x, i) => (
+              ].filter(x => x && x.v).map((x: any, i: number) => (
                 <div key={i} style={{ padding: "4px 0", borderBottom: "1px solid #F3F4F6" }}>
                   <span style={{ fontSize: 10, color: "#8F95A3" }}>{x.l}</span>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{x.v}</div>
@@ -449,7 +472,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
           <Card style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🚪 호실 등록 ({regForm.roomList.length}개)</div>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 8 }}>
-              {regForm.roomList.map((r, i) => {
+              {regForm.roomList.map((r: any, i: number) => {
                 const filled = r.roomType && r.rent;
                 return (
                   <div key={i} style={{ padding: "10px 12px", borderRadius: 8, border: `1.5px solid ${filled ? "#A7F3D0" : "#FBBF24"}`, background: filled ? "#F0FDF4" : "#FFFBEB" }}>
@@ -520,7 +543,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                         </select>
                       );
                     })()}
-                    {regForm.types.slice(1).map((t, ti) => {
+                    {regForm.types.slice(1).map((t: string, ti: number) => {
                       const realIdx = ti + 1;
                       const acctKey = t === "기업시설관리" ? "관리사무소" : t;
                       return (
@@ -531,7 +554,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                               <option key={bt} value={bt} disabled={bt !== t && regForm.types.includes(bt)}>{buildingTypeLabel[bt]}</option>
                             ))}
                           </select>
-                          <button onClick={() => set({ types: regForm.types.filter((_, i) => i !== realIdx) })}
+                          <button onClick={() => set({ types: regForm.types.filter((_: any, i: number) => i !== realIdx) })}
                             style={{ width: 20, height: 20, borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", cursor: "pointer", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, fontFamily: "inherit" }}>✕</button>
                         </div>
                       );
@@ -588,7 +611,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                   { bg: "#FFF7ED", border: "#FED7AA", color: "#EA580C", label: "" },
                   { bg: "#F0FDF4", border: "#BBF7D0", color: "#059669", label: "" },
                 ];
-                return regForm.owners.map((ow, oi) => {
+                return regForm.owners.map((ow: any, oi: number) => {
                   const c = ownerColors[oi] || ownerColors[0];
                   return (
                     <div key={oi} style={{ padding: "10px 12px", background: c.bg, borderRadius: 8, border: `1px solid ${c.border}`, marginBottom: oi < regForm.owners.length - 1 ? 10 : 0 }}>
@@ -624,7 +647,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             <SectionHeader icon="🏦" title="건물 계좌 정보" subtitle={`기본정보 건물유형(${regForm.types.join(" + ")})에서 자동 반영 · 호실이 자동으로 상속합니다`} open={sec3Open} onToggle={() => setSec3Open(!sec3Open)} />
             {sec3Open && <div>
               <div style={{ display: "grid", gridTemplateColumns: acctTypes.length === 3 ? "1fr 1fr 1fr" : acctTypes.length === 2 ? "1fr 1fr" : "1fr", gap: 12 }}>
-                {acctTypes.map((aType, ai) => {
+                {acctTypes.map((aType: string, ai: number) => {
                   const suffix = String(ai + 1);
                   const modeKey = `acctMode${suffix}`;
                   const hmKey = `housemanAccount${suffix}`;
@@ -705,10 +728,10 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                     { key: "contractMgr", role: "contract" },
                     { key: "generalMgr", role: "general" },
                   ].map(m => {
-                    const sr = staffRoles.find(r => r.id === m.role);
+                    const sr = staffRoles.find(r => r.id === m.role)!;
                     return (
                       <div key={m.key}>
-                        <div style={{ fontSize: 9, color: sr.color, fontWeight: 700, marginBottom: 2 }}>{sr.icon} {sr.label}</div>
+                        <div style={{ fontSize: 9, color: sr?.color, fontWeight: 700, marginBottom: 2 }}>{sr?.icon} {sr?.label}</div>
                         <select value={regForm[m.key]} onChange={e => set({[m.key]: e.target.value})} style={{...inputStyle, padding: "5px 8px", fontSize: 10, cursor: "pointer"}}>
                           <option value="">선택</option>
                           {staffList.filter(s => s.roles.includes(m.role)).map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
@@ -940,7 +963,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                 <div>
                   {/* Room tags */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 16 }}>
-                    {regForm.roomList.map((r, i) => {
+                    {regForm.roomList.map((r: any, i: number) => {
                       const filled = r.roomType && r.rent;
                       const selected = regForm.editIdx === i;
                       return (
@@ -982,7 +1005,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                           <div style={{ marginBottom: 10, padding: "8px 12px", background: "#F0F4FF", borderRadius: 8, border: "1px solid #BFDBFE", display: "flex", alignItems: "center", gap: 10 }}>
                             <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", whiteSpace: "nowrap" }}>🏢 호실 유형</div>
                             <div style={{ display: "flex", gap: 4 }}>
-                              {acctTypes.map(at => (
+                              {acctTypes.map((at: string) => (
                                 <button key={at} onClick={() => updateRoom(idx, "buildingType", at)}
                                   style={{ padding: "5px 14px", borderRadius: 6, border: (r.buildingType || acctTypes[0]) === at ? `1.5px solid ${acctTypeColor[at]}` : "1px solid #E0E3E9", background: (r.buildingType || acctTypes[0]) === at ? acctTypeBg[at] : "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: (r.buildingType || acctTypes[0]) === at ? acctTypeColor[at] : "#8F95A3" }}>
                                   {at}
@@ -1048,7 +1071,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                             updateRoom(idx, "roomAcctCustom", { mode1: regForm[`acctMode${s}`], housemanAccount1: regForm[`housemanAccount${s}`], ownerAccounts1: { ...regForm[`ownerAccounts${s}`] } });
                           };
                           const disableRoomCustom = () => updateRoom(idx, "roomAcctCustom", null);
-                          const updateRoomAcctField = (field, value) => updateRoom(idx, "roomAcctCustom", { ...r.roomAcctCustom, [field]: value });
+                          const updateRoomAcctField = (field: string, value: any) => updateRoom(idx, "roomAcctCustom", { ...r.roomAcctCustom, [field]: value });
                           return (
                             <div style={{ marginTop: 14, padding: "10px 14px", background: "#FFFBF0", borderRadius: 10, border: "1px solid #FDE68A" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
@@ -1179,7 +1202,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
 
                         {/* 👤 호실 담당자 오버라이드 */}
                         {(() => {
-                          const mgrKeyMap = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
+                          const mgrKeyMap: Record<string, string> = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
                           return (
                             <div style={{ marginTop: 14, padding: "10px 14px", background: "#F0F4FF", borderRadius: 10, border: "1px solid #BFDBFE" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>

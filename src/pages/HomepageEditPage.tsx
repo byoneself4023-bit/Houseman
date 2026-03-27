@@ -1,11 +1,25 @@
 import { useState } from 'react';
-import { useIsMobile } from '../utils';
+import { useIsMobile } from '@/utils';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const LS_HP = "hm_homepage_content";
-const load = () => { try { return JSON.parse(localStorage.getItem(LS_HP)) || {}; } catch { return {}; } };
-const save = (c) => localStorage.setItem(LS_HP, JSON.stringify(c));
+const load = (): Record<string, string> => { try { return JSON.parse(localStorage.getItem(LS_HP) || '{}') || {}; } catch { return {}; } };
+const save = (c: Record<string, string>) => localStorage.setItem(LS_HP, JSON.stringify(c));
 
-const FIELDS = [
+interface FieldDef {
+  key: string;
+  label: string;
+  default: string;
+  type?: string;
+}
+
+interface SectionDef {
+  section: string;
+  fields: FieldDef[];
+}
+
+const FIELDS: SectionDef[] = [
   { section: "히어로 (메인 배너)", fields: [
     { key: "heroSub", label: "상단 작은 글씨", default: "15년 경험 · 서울 100여 건물 관리" },
     { key: "heroTitle", label: "메인 타이틀", default: "건물 운영의 격을\n다르게 합니다" },
@@ -34,10 +48,10 @@ const FIELDS = [
 
 export const HomepageEditPage = () => {
   const isMobile = useIsMobile();
-  const [data, setData] = useState(load);
+  const [data, setData] = useState<Record<string, string>>(load);
   const [saved, setSaved] = useState(false);
 
-  const update = (key, val) => {
+  const update = (key: string, val: string) => {
     const next = { ...data, [key]: val };
     setData(next);
     setSaved(false);
@@ -58,56 +72,56 @@ export const HomepageEditPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto", fontFamily: "'Pretendard', sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+    <div className="max-w-[800px] mx-auto">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px", letterSpacing: "-0.03em" }}>홈페이지 편집</h1>
-          <p style={{ fontSize: 13, color: "#86868b", margin: 0 }}>홈페이지에 표시되는 텍스트를 수정합니다</p>
+          <h1 className="text-[22px] font-extrabold tracking-tight m-0 mb-1">홈페이지 편집</h1>
+          <p className="text-[13px] text-[#86868b] m-0">홈페이지에 표시되는 텍스트를 수정합니다</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={handleReset} style={{ padding: "10px 20px", borderRadius: 10, border: "1px solid #e5e5ea", background: "#fff", color: "#6e6e73", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>초기화</button>
-          <button onClick={handleSave} style={{ padding: "10px 24px", borderRadius: 10, border: "none", background: saved ? "#34c759" : "#c8161d", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", transition: "background 0.3s" }}>
+        <div className="flex gap-2">
+          <button onClick={handleReset} className="px-5 py-2.5 rounded-[10px] border border-[#e5e5ea] bg-white text-[#6e6e73] font-semibold text-[13px] cursor-pointer">초기화</button>
+          <button onClick={handleSave}
+            className={`px-6 py-2.5 rounded-[10px] border-none text-white font-bold text-[13px] cursor-pointer transition-colors duration-300 ${saved ? 'bg-green-500' : 'bg-[#c8161d]'}`}>
             {saved ? "✓ 저장완료" : "저장"}
           </button>
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-        <a href="/?mode=homepage" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 16px", borderRadius: 8, background: "#f5f5f7", border: "1px solid #e5e5ea", color: "#1d1d1f", textDecoration: "none", fontSize: 12, fontWeight: 600 }}>🌐 홈페이지 미리보기</a>
+      <div className="flex gap-2 mb-6">
+        <a href="/?mode=homepage" target="_blank" rel="noopener noreferrer"
+          className="px-4 py-2 rounded-lg bg-[#f5f5f7] border border-[#e5e5ea] text-[#1d1d1f] no-underline text-xs font-semibold">
+          🌐 홈페이지 미리보기
+        </a>
       </div>
 
       {FIELDS.map((section, si) => (
-        <div key={si} style={{ marginBottom: 32, background: "#fff", borderRadius: 16, border: "1px solid #e5e5ea", overflow: "hidden" }}>
-          <div style={{ padding: "16px 20px", background: "#f5f5f7", borderBottom: "1px solid #e5e5ea" }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, color: "#1d1d1f" }}>{section.section}</h2>
+        <div key={si} className="mb-8 bg-white rounded-2xl border border-[#e5e5ea] overflow-hidden">
+          <div className="px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e5ea]">
+            <h2 className="text-[15px] font-bold m-0 text-[#1d1d1f]">{section.section}</h2>
           </div>
-          <div style={{ padding: "20px" }}>
+          <div className="p-5">
             {section.fields.map((field, fi) => (
-              <div key={fi} style={{ marginBottom: fi < section.fields.length - 1 ? 20 : 0 }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#6e6e73", marginBottom: 6 }}>{field.label}</label>
+              <div key={fi} className={fi < section.fields.length - 1 ? 'mb-5' : ''}>
+                <label className="block text-[13px] font-semibold text-[#6e6e73] mb-1.5">{field.label}</label>
                 {field.type === "long" ? (
-                  <textarea
+                  <Textarea
                     value={data[field.key] ?? field.default}
                     onChange={e => update(field.key, e.target.value)}
                     placeholder={field.default}
-                    style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1.5px solid #e5e5ea", fontSize: 14, fontFamily: "inherit", resize: "vertical", minHeight: 100, outline: "none", lineHeight: 1.7, boxSizing: "border-box", transition: "border-color 0.2s" }}
-                    onFocus={e => e.target.style.borderColor = "#c8161d"}
-                    onBlur={e => e.target.style.borderColor = "#e5e5ea"}
+                    className="min-h-[100px] text-sm leading-[1.7] resize-y"
                   />
                 ) : (
-                  <input
+                  <Input
                     value={data[field.key] ?? field.default}
                     onChange={e => update(field.key, e.target.value)}
                     placeholder={field.default}
-                    style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1.5px solid #e5e5ea", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.2s" }}
-                    onFocus={e => e.target.style.borderColor = "#c8161d"}
-                    onBlur={e => e.target.style.borderColor = "#e5e5ea"}
+                    className="text-sm"
                   />
                 )}
                 {(data[field.key] && data[field.key] !== field.default) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                    <span style={{ fontSize: 11, color: "#c8161d", fontWeight: 600 }}>수정됨</span>
-                    <span onClick={() => update(field.key, field.default)} style={{ fontSize: 11, color: "#86868b", cursor: "pointer", textDecoration: "underline" }}>원래대로</span>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-[11px] text-[#c8161d] font-semibold">수정됨</span>
+                    <span onClick={() => update(field.key, field.default)} className="text-[11px] text-[#86868b] cursor-pointer underline">원래대로</span>
                   </div>
                 )}
               </div>
@@ -116,9 +130,9 @@ export const HomepageEditPage = () => {
         </div>
       ))}
 
-      <div style={{ padding: "20px", background: "#f5f5f7", borderRadius: 16, marginBottom: 32 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#86868b", marginBottom: 8 }}>안내</div>
-        <div style={{ fontSize: 13, color: "#6e6e73", lineHeight: 1.7 }}>
+      <div className="p-5 bg-[#f5f5f7] rounded-2xl mb-8">
+        <div className="text-[13px] font-semibold text-[#86868b] mb-2">안내</div>
+        <div className="text-[13px] text-[#6e6e73] leading-[1.7]">
           • 저장 후 홈페이지를 새로고침하면 반영됩니다<br/>
           • 줄바꿈은 텍스트 입력란에서 Enter로 가능합니다<br/>
           • 초기화하면 기본 텍스트로 돌아갑니다<br/>

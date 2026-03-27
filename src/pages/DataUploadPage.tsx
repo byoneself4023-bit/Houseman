@@ -1,13 +1,42 @@
 import React, { useState, useRef } from "react";
 import * as XLSX from "xlsx";
+import type { Building, Tenant, Vacancy } from "@/types";
 
-export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, setBuildingData, activeTenants, setActiveTenants, activeVacancies, setActiveVacancies }) {
+interface DataUploadPageProps {
+  isLoading?: boolean;
+  allBuildings: Building[];
+  setAllBuildings: React.Dispatch<React.SetStateAction<Building[]>>;
+  buildingData: Record<string, any>;
+  setBuildingData: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  activeTenants: Tenant[];
+  setActiveTenants: React.Dispatch<React.SetStateAction<Tenant[]>>;
+  activeVacancies: Vacancy[];
+  setActiveVacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>;
+}
+
+interface LedgerResult {
+  buildings: number;
+  tenants: number;
+  vacancies: number;
+  pastTenants: number;
+  rooms: number;
+  errors: string[];
+}
+
+interface ColumnDef {
+  key: string;
+  label: string;
+  required?: boolean;
+  note?: string;
+}
+
+export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, setBuildingData, activeTenants, setActiveTenants, activeVacancies, setActiveVacancies, isLoading }: DataUploadPageProps) {
   const [tab, setTab] = useState("ledger");
-  const [preview, setPreview] = useState(null);
+  const [preview, setPreview] = useState<Record<string, any>[] | null>(null);
   const [uploadMsg, setUploadMsg] = useState("");
-  const fileRef = useRef();
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const [ledgerResult, setLedgerResult] = useState(null);
+  const [ledgerResult, setLedgerResult] = useState<LedgerResult | null>(null);
   const tabs = [
     { id: "ledger", label: "통합관리대장", icon: "📊" },
     { id: "building", label: "건물정보", icon: "🏢" },
@@ -16,15 +45,15 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   ];
 
   // ======== 엑셀 읽기 공통 ========
-  const readExcel = (file) => {
+  const readExcel = (file: File): Promise<Record<string, any>[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const wb = XLSX.read(e.target.result, { type: "array" });
+          const wb = XLSX.read(e.target?.result, { type: "array" });
           const ws = wb.Sheets[wb.SheetNames[0]];
           const data = XLSX.utils.sheet_to_json(ws, { defval: "" });
-          resolve(data);
+          resolve(data as Record<string, any>[]);
         } catch (err) { reject(err); }
       };
       reader.onerror = reject;
@@ -33,12 +62,12 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   };
 
   // ======== 통합관리대장 읽기 (멀티시트) ========
-  const readLedger = (file) => {
+  const readLedger = (file: File): Promise<XLSX.WorkBook> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const wb = XLSX.read(e.target.result, { type: "array", cellDates: true });
+          const wb = XLSX.read(e.target?.result, { type: "array", cellDates: true });
           resolve(wb);
         } catch (err) { reject(err); }
       };
@@ -47,7 +76,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     });
   };
 
-  const fmtDate = (v) => {
+  const fmtDate = (v: any): string => {
     if (!v) return "";
     if (v instanceof Date) {
       // 엑셀 날짜가 UTC로 파싱되어 KST에서 하루 밀리는 문제 보정
@@ -56,25 +85,25 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     }
     return String(v).slice(0, 10);
   };
-  const num = (v) => parseInt(String(v || "0").replace(/,/g, "")) || 0;
+  const num = (v: any): number => parseInt(String(v || "0").replace(/,/g, "")) || 0;
 
-  const applyLedger = async (wb) => {
-    const result = { buildings: 0, tenants: 0, vacancies: 0, pastTenants: 0, rooms: 0, errors: [] };
+  const applyLedger = async (wb: XLSX.WorkBook) => {
+    const result: LedgerResult = { buildings: 0, tenants: 0, vacancies: 0, pastTenants: 0, rooms: 0, errors: [] };
 
     // ── 1. 관리건물_목록 ──
     const buildingListSheet = wb.Sheets["관리건물_목록"];
-    const buildingNames = [];
+    const buildingNames: string[] = [];
     if (buildingListSheet) {
-      const rows = XLSX.utils.sheet_to_json(buildingListSheet, { header: 1, defval: "" });
+      const rows = XLSX.utils.sheet_to_json(buildingListSheet, { header: 1, defval: "" }) as any[][];
       rows.forEach(r => { const name = String(r[0] || "").trim(); if (name) buildingNames.push(name); });
     }
 
     // ── 2. ◆건물정보 ──
     const buildingSheet = wb.Sheets["◆건물정보"];
-    const newBuildings = [];
-    const newBD = { ...buildingData };
+    const newBuildings: Building[] = [];
+    const newBD: Record<string, any> = { ...buildingData };
     if (buildingSheet) {
-      const rows = XLSX.utils.sheet_to_json(buildingSheet, { header: 1, defval: "" });
+      const rows = XLSX.utils.sheet_to_json(buildingSheet, { header: 1, defval: "" }) as any[][];
       // 행1=헤더, 행2=서브헤더, 행3~=데이터
       for (let i = 2; i < rows.length; i++) {
         const r = rows[i];
@@ -85,7 +114,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
           name, rooms: 0, occupied: 0, type: "단기",
           feeType: feeRate > 0 ? "pct" : "fixed", fee: feeRate,
           fixedFee: 0, special: null, parkingTotal: 0,
-        });
+        } as Building);
         newBD[name] = {
           ...(newBD[name] || {}),
           startDate: fmtDate(r[2]),
@@ -119,7 +148,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     // 목록에만 있고 건물정보에 없는 건물 추가
     buildingNames.forEach(name => {
       if (!newBuildings.find(b => b.name === name)) {
-        newBuildings.push({ name, rooms: 0, occupied: 0, type: "단기", feeType: "pct", fee: 0, fixedFee: 0, special: null, parkingTotal: 0 });
+        newBuildings.push({ name, rooms: 0, occupied: 0, type: "단기", feeType: "pct", fee: 0, fixedFee: 0, special: null, parkingTotal: 0 } as Building);
         if (!newBD[name]) newBD[name] = {};
         result.buildings++;
       }
@@ -127,10 +156,10 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
     // ── 3. ■입주정보 ──
     const tenantSheet = wb.Sheets["■입주정보"];
-    const newTenants = [];
+    const newTenants: any[] = [];
     let tid = 0;
     if (tenantSheet) {
-      const rows = XLSX.utils.sheet_to_json(tenantSheet, { header: 1, defval: "" });
+      const rows = XLSX.utils.sheet_to_json(tenantSheet, { header: 1, defval: "" }) as any[][];
       // 행1=헤더1, 행2=헤더2, 행3=번호, 행4~=데이터
       for (let i = 3; i < rows.length; i++) {
         const r = rows[i];
@@ -190,9 +219,9 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
     // ── 4. ■퇴실정보 ──
     const pastSheet = wb.Sheets["■퇴실정보"];
-    const pastTenants = [];
+    const pastTenants: any[] = [];
     if (pastSheet) {
-      const rows = XLSX.utils.sheet_to_json(pastSheet, { header: 1, defval: "" });
+      const rows = XLSX.utils.sheet_to_json(pastSheet, { header: 1, defval: "" }) as any[][];
       for (let i = 3; i < rows.length; i++) {
         const r = rows[i];
         const building = String(r[1] || "").trim();
@@ -219,9 +248,9 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
     // ── 5. ◆관리정보 ──
     const mgmtSheet = wb.Sheets["◆관리정보"];
-    const roomData = {};
+    const roomData: Record<string, any> = {};
     if (mgmtSheet) {
-      const rows = XLSX.utils.sheet_to_json(mgmtSheet, { header: 1, defval: "" });
+      const rows = XLSX.utils.sheet_to_json(mgmtSheet, { header: 1, defval: "" }) as any[][];
       for (let i = 3; i < rows.length; i++) {
         const r = rows[i];
         const building = String(r[1] || "").trim();
@@ -254,7 +283,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     }
 
     // ── 공실 자동 생성: 입주자가 "퇴실"인 건 ──
-    const vacancies = [];
+    const vacancies: any[] = [];
     newTenants.filter(t => t.name === "퇴실" || t.status === "퇴실").forEach(t => {
       vacancies.push({
         building: t.building, room: t.room, type: t.type || "단기",
@@ -268,8 +297,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     const activeTenantList = newTenants.filter(t => t.name !== "퇴실" && t.status !== "퇴실");
 
     // ── roomBalances 세팅: 청구금액이 있는 임차인의 잔액 ──
-    const newBalances = {};
-    activeTenantList.forEach(t => {
+    const newBalances: Record<string, number> = {};
+    activeTenantList.forEach((t: any) => {
       const key = `${t.building}_${t.room}`;
       const total = (t.prevBillOwner || 0) + (t.curBillOwner || 0) + (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
       if (total > 0) newBalances[key] = total;
@@ -295,8 +324,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     setUploadMsg(`통합관리대장 업로드 완료! 건물 ${result.buildings}개, 임차인 ${activeTenantList.length}명, 공실 ${result.vacancies}개, 퇴실 ${result.pastTenants}건`);
   };
 
-  const handleLedgerFile = async (e) => {
-    const file = e.target.files[0];
+  const handleLedgerFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploadMsg(""); setLedgerResult(null);
     try {
@@ -310,14 +339,14 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       if (window.confirm(`통합관리대장 파일을 인식했습니다.\n\n발견된 시트: ${found.join(", ")}\n\n기존 데이터가 모두 교체됩니다. 진행하시겠습니까?`)) {
         await applyLedger(wb);
       }
-    } catch (err) {
+    } catch (err: any) {
       setUploadMsg("파일 읽기 실패: " + err.message);
     }
     e.target.value = "";
   };
 
   // ======== 건물정보 업로드 ========
-  const buildingColumns = [
+  const buildingColumns: ColumnDef[] = [
     { key: "name", label: "건물명", required: true },
     { key: "owner", label: "건물주" },
     { key: "ownerPhone", label: "건물주 연락처" },
@@ -334,10 +363,10 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     { key: "floors", label: "층별 호실", note: "예: B:B01,B02|1층:101,102|2층:201,202" },
   ];
 
-  const applyBuilding = (rows) => {
-    const newBuildings = [];
-    const newBD = { ...buildingData };
-    const newFloors = {};
+  const applyBuilding = (rows: Record<string, any>[]) => {
+    const newBuildings: Building[] = [];
+    const newBD: Record<string, any> = { ...buildingData };
+    const newFloors: Record<string, any> = {};
 
     rows.forEach(r => {
       const name = String(r.name || r["건물명"] || "").trim();
@@ -350,12 +379,12 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
       // floors 파싱: "B:B01,B02|1층:101,102"
       const floorsStr = String(r.floors || r["층별 호실"] || "");
-      const floors = {};
+      const floors: Record<string, string[]> = {};
       if (floorsStr) {
-        floorsStr.split("|").forEach(seg => {
+        floorsStr.split("|").forEach((seg: string) => {
           const [floorName, roomsStr] = seg.split(":");
           if (floorName && roomsStr) {
-            floors[floorName.trim()] = roomsStr.split(",").map(s => s.trim()).filter(Boolean);
+            floors[floorName.trim()] = roomsStr.split(",").map((s: string) => s.trim()).filter(Boolean);
           }
         });
       }
@@ -366,8 +395,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         name,
         rooms: roomCount,
         occupied: 0,
-        type,
-        feeType,
+        type: type as any,
+        feeType: feeType as any,
         fee: feeType === "pct" ? fee : 0,
         fixedFee: feeType === "fixed" ? fee : 0,
         special: null,
@@ -412,7 +441,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   };
 
   // ======== 호실정보 업로드 ========
-  const roomColumns = [
+  const roomColumns: ColumnDef[] = [
     { key: "buildingRoom", label: "건물_호실", required: true, note: "예: 스타빌_101" },
     { key: "roomType", label: "호실유형", note: "원룸/투룸/쓰리룸/근생/사무실" },
     { key: "area", label: "면적(㎡)" },
@@ -427,8 +456,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     { key: "gasNo", label: "가스고객번호" },
   ];
 
-  const applyRoom = (rows) => {
-    const roomData = {};
+  const applyRoom = (rows: Record<string, any>[]) => {
+    const roomData: Record<string, any> = {};
     rows.forEach(r => {
       const key = String(r.buildingRoom || r["건물_호실"] || "").trim();
       if (!key || !key.includes("_")) return;
@@ -456,7 +485,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   };
 
   // ======== 임차인정보 업로드 ========
-  const tenantColumns = [
+  const tenantColumns: ColumnDef[] = [
     { key: "name", label: "이름", required: true },
     { key: "building", label: "건물", required: true },
     { key: "room", label: "호실", required: true },
@@ -475,7 +504,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     { key: "carType", label: "차종" },
   ];
 
-  const applyTenant = (rows) => {
+  const applyTenant = (rows: Record<string, any>[]) => {
     let maxId = activeTenants.reduce((m, t) => Math.max(m, t.id || 0), 0);
     const newTenants = rows.map(r => {
       const name = String(r.name || r["이름"] || "").trim();
@@ -512,17 +541,17 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         carType: String(r.carType || r["차종"] || "").trim() || undefined,
         moveInPhotos: [],
       };
-    }).filter(Boolean);
+    }).filter(Boolean) as any[];
 
     setActiveTenants(newTenants);
 
     // 공실 자동 업데이트: 임차인이 없는 호실은 공실로 등록
-    const occupiedKeys = new Set(newTenants.map(t => `${t.building}_${t.room}`));
-    const newVacancies = [];
+    const occupiedKeys = new Set(newTenants.map((t: any) => `${t.building}_${t.room}`));
+    const newVacancies: any[] = [];
     const bd = buildingData || {};
-    Object.entries(bd).forEach(([bName, bInfo]) => {
+    Object.entries(bd).forEach(([bName, bInfo]: [string, any]) => {
       const floors = bInfo.floors || {};
-      Object.values(floors).flat().forEach(room => {
+      Object.values(floors).flat().forEach((room: any) => {
         if (!occupiedKeys.has(`${bName}_${room}`)) {
           // 기존 공실 정보 유지
           const existing = activeVacancies.find(v => v.building === bName && String(v.room) === String(room));
@@ -539,14 +568,14 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   };
 
   // ======== 파일 처리 ========
-  const handleFile = async (e) => {
-    const file = e.target.files[0];
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploadMsg("");
     try {
       const rows = await readExcel(file);
       setPreview(rows.slice(0, 10));
-    } catch (err) {
+    } catch (err: any) {
       setUploadMsg("파일 읽기 실패: " + err.message);
     }
     e.target.value = "";
@@ -563,17 +592,17 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
     setPreview(null);
   };
 
-  const fullDataRef = useRef([]);
+  const fullDataRef = useRef<Record<string, any>[]>([]);
 
-  const handleFileReal = async (e) => {
-    const file = e.target.files[0];
+  const handleFileReal = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploadMsg("");
     try {
       const rows = await readExcel(file);
       fullDataRef.current = rows;
       setPreview(rows.slice(0, 10));
-    } catch (err) {
+    } catch (err: any) {
       setUploadMsg("파일 읽기 실패: " + err.message);
     }
     e.target.value = "";
@@ -611,7 +640,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       const rows = allBuildings.map(b => {
         const bd = buildingData[b.name] || {};
         const floors = bd.floors || {};
-        const floorsStr = Object.entries(floors).map(([f, rooms]) => `${f}:${rooms.join(",")}`).join("|");
+        const floorsStr = Object.entries(floors).map(([f, rooms]: [string, any]) => `${f}:${rooms.join(",")}`).join("|");
         return {
           "건물명": b.name,
           "건물주": bd.owner || "",
@@ -633,7 +662,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       XLSX.utils.book_append_sheet(wb, ws, "건물정보");
     } else if (tab === "room") {
       // roomMasterData from localStorage or static
-      let rmData = {};
+      let rmData: Record<string, any> = {};
       try {
         const override = localStorage.getItem("hm_roomMasterData_override");
         if (override) rmData = JSON.parse(override);
@@ -643,7 +672,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         // Read from the module — but we can't import dynamically here
         // Just export what we have
       }
-      const rows = Object.entries(rmData).map(([key, r]) => ({
+      const rows = Object.entries(rmData).map(([key, r]: [string, any]) => ({
         "건물_호실": key,
         "호실유형": r.roomType || "",
         "면적(㎡)": r.area || "",
@@ -672,7 +701,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         "입주일": t.moveIn || "",
         "만기일": t.expiry || "",
         "납부일": t.due || "",
-        "월세일": t.rentDay || "",
+        "월세일": (t as any).rentDay || "",
         "납부상태": t.status || "정상",
         "연체금액": t.overdue || 0,
         "차량번호": t.carNumber || "",
@@ -688,9 +717,9 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   const columns = tab === "building" ? buildingColumns : tab === "room" ? roomColumns : tenantColumns;
 
   const s = {
-    card: { background: "#fff", borderRadius: 12, border: "1px solid #E8ECF0", padding: 20, marginBottom: 16 },
-    btn: { padding: "8px 16px", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" },
-    tab: (active) => ({ padding: "10px 20px", borderRadius: "8px 8px 0 0", border: "none", background: active ? "#fff" : "#F3F4F8", color: active ? "#2563EB" : "#6B7280", fontSize: 13, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: "inherit", borderBottom: active ? "2px solid #2563EB" : "none" }),
+    card: { background: "#fff", borderRadius: 12, border: "1px solid #E8ECF0", padding: 20, marginBottom: 16 } as React.CSSProperties,
+    btn: { padding: "8px 16px", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" } as React.CSSProperties,
+    tab: (active: boolean): React.CSSProperties => ({ padding: "10px 20px", borderRadius: "8px 8px 0 0", border: "none", background: active ? "#fff" : "#F3F4F8", color: active ? "#2563EB" : "#6B7280", fontSize: 13, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: "inherit", borderBottom: active ? "2px solid #2563EB" : "none" }),
   };
 
   return (
@@ -727,10 +756,10 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
                   { name: "관리건물_목록", desc: "→ 건물 목록", color: "#8B5CF6" },
                   { name: "■퇴실정보", desc: "→ 퇴실 기록", color: "#F59E0B" },
                   { name: "◆관리정보", desc: "→ 호실 관리", color: "#EC4899" },
-                ].map(s => (
-                  <div key={s.name} style={{ padding: "6px 12px", borderRadius: 8, background: "#fff", border: `1px solid ${s.color}30`, fontSize: 11 }}>
-                    <span style={{ fontWeight: 700, color: s.color }}>{s.name}</span>
-                    <span style={{ color: "#8F95A3", marginLeft: 4 }}>{s.desc}</span>
+                ].map(si => (
+                  <div key={si.name} style={{ padding: "6px 12px", borderRadius: 8, background: "#fff", border: `1px solid ${si.color}30`, fontSize: 11 }}>
+                    <span style={{ fontWeight: 700, color: si.color }}>{si.name}</span>
+                    <span style={{ color: "#8F95A3", marginLeft: 4 }}>{si.desc}</span>
                   </div>
                 ))}
               </div>

@@ -1,11 +1,55 @@
 import React, { useState, useMemo } from 'react';
-import { useIsMobile, fmt } from '../utils';
+import { useIsMobile, fmt } from '@/utils';
 
 const TOTAL_PAYROLL = 25000000;
 const REPAIR_MARGIN_RATE = 0.30;
 const UTILITY_MARGIN_PER_TENANT = 5000;
 
-export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], activeVacancies = [], settlementExpenses = [], buildingData = {}, allBuildings = [] }) {
+interface BuildingInfo {
+  name: string;
+  fee?: number;
+  fixedFee?: number;
+  rooms?: number;
+  [key: string]: any;
+}
+
+interface BuildingProfitEntry {
+  name: string;
+  rooms: number;
+  tenantCount: number;
+  totalRent: number;
+  feeRate: number;
+  fixedFee: number;
+  revenue: {
+    mgmtFeePct: number;
+    mgmtFeeFixed: number;
+    utilityMargin: number;
+    repairMargin: number;
+    total: number;
+  };
+  cost: {
+    payroll: number;
+    repair: number;
+    utility: number;
+    cleaning: number;
+    total: number;
+  };
+  netProfit: number;
+  profitRate: number;
+  needsReview: boolean;
+}
+
+interface ProfitDashboardPageProps {
+  myBuildings?: string[];
+  activeTenants?: Record<string, any>[];
+  activeVacancies?: Record<string, any>[];
+  settlementExpenses?: Record<string, any>[];
+  buildingData?: Record<string, any>;
+  allBuildings?: BuildingInfo[];
+  isLoading?: boolean;
+}
+
+export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], activeVacancies = [], settlementExpenses = [], buildingData = {}, allBuildings = [], isLoading }: ProfitDashboardPageProps) {
   const isMobile = useIsMobile();
 
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -13,14 +57,14 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
   const [viewMode, setViewMode] = useState('summary');
-  const [selectedBuilding, setSelectedBuilding] = useState(null);
+  const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
 
   const monthLabel = useMemo(() => {
     const [y, m] = selectedMonth.split('-');
     return `${y}년 ${parseInt(m)}월`;
   }, [selectedMonth]);
 
-  const changeMonth = (delta) => {
+  const changeMonth = (delta: number) => {
     setSelectedMonth(prev => {
       const [y, m] = prev.split('-').map(Number);
       const d = new Date(y, m - 1 + delta, 1);
@@ -28,8 +72,8 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
     });
   };
 
-  const buildingProfitData = useMemo(() => {
-    const managedBuildings = allBuildings.length > 0 ? allBuildings : myBuildings.map(name => ({ name, fee: 0, fixedFee: 0, rooms: 0 }));
+  const buildingProfitData: BuildingProfitEntry[] = useMemo(() => {
+    const managedBuildings: BuildingInfo[] = allBuildings.length > 0 ? allBuildings : myBuildings.map(name => ({ name, fee: 0, fixedFee: 0, rooms: 0 }));
     const buildingCount = managedBuildings.length || 1;
     const payrollPerBuilding = Math.round(TOTAL_PAYROLL / buildingCount);
 
@@ -47,9 +91,9 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       const totalRent = tenants.reduce((sum, t) => sum + (t.rent || 0), 0);
 
       const bldgExpenses = monthExpenses.filter(e => e.building === name);
-      const repairExpenses = bldgExpenses.filter(e => e.category === 'repair').reduce((s, e) => s + (e.amount || 0), 0);
-      const utilityExpenses = bldgExpenses.filter(e => e.category === 'utility').reduce((s, e) => s + (e.amount || 0), 0);
-      const cleaningExpenses = bldgExpenses.filter(e => e.category === 'cleaning').reduce((s, e) => s + (e.amount || 0), 0);
+      const repairExpenses = bldgExpenses.filter(e => e.category === 'repair').reduce((s: number, e: any) => s + (e.amount || 0), 0);
+      const utilityExpenses = bldgExpenses.filter(e => e.category === 'utility').reduce((s: number, e: any) => s + (e.amount || 0), 0);
+      const cleaningExpenses = bldgExpenses.filter(e => e.category === 'cleaning').reduce((s: number, e: any) => s + (e.amount || 0), 0);
 
       // Revenue
       const mgmtFeePct = feeRate > 0 ? Math.round(totalRent * feeRate) : 0;
@@ -121,7 +165,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
   }, [selectedBuilding, buildingProfitData]);
 
   // --- Styles ---
-  const styles = {
+  const styles: Record<string, any> = {
     container: {
       padding: isMobile ? 16 : 24,
       background: '#F8FAFC',
@@ -137,9 +181,9 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       display: 'flex',
       gap: 16,
       marginBottom: 24,
-      flexWrap: 'wrap',
+      flexWrap: 'wrap' as const,
     },
-    summaryCard: (color) => ({
+    summaryCard: (color: string) => ({
       flex: '1 1 200px',
       background: '#fff',
       border: '1px solid #E8ECF0',
@@ -153,7 +197,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       fontWeight: 600,
       marginBottom: 8,
     },
-    summaryValue: (color) => ({
+    summaryValue: (color: string) => ({
       fontSize: isMobile ? 20 : 26,
       fontWeight: 800,
       color,
@@ -194,7 +238,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       gap: 8,
       marginBottom: 20,
     },
-    tab: (active) => ({
+    tab: (active: boolean) => ({
       padding: '8px 18px',
       borderRadius: 8,
       border: 'none',
@@ -214,7 +258,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
     },
     th: {
       padding: '12px 14px',
-      textAlign: 'left',
+      textAlign: 'left' as const,
       fontSize: 12,
       fontWeight: 700,
       color: '#64748B',
@@ -232,8 +276,8 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       fontSize: 13,
       color: '#1E293B',
       borderBottom: '1px solid #F1F5F9',
-      textAlign: 'right',
-      fontVariantNumeric: 'tabular-nums',
+      textAlign: 'right' as const,
+      fontVariantNumeric: 'tabular-nums' as const,
     },
     rowClickable: {
       cursor: 'pointer',
@@ -267,7 +311,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
     detailSection: {
       marginBottom: 16,
     },
-    detailSectionTitle: (color) => ({
+    detailSectionTitle: (color: string) => ({
       fontSize: 14,
       fontWeight: 700,
       color,
@@ -282,7 +326,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       fontSize: 13,
       color: '#334155',
     },
-    bar: (width, color) => ({
+    bar: (width: number, color: string) => ({
       height: 18,
       width: `${width}%`,
       background: color,
@@ -355,7 +399,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
           <span>{d.name} 수익 상세</span>
           <button style={styles.closeBtn} onClick={() => setSelectedBuilding(null)}>x</button>
         </div>
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' as const }}>
           <div style={{ flex: '1 1 280px' }}>
             <div style={styles.detailSectionTitle('#3B82F6')}>매출 항목</div>
             <div style={styles.detailSection}>
@@ -425,7 +469,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
             <span style={{ fontSize: 14, fontWeight: 700, color: '#1E293B' }}>순이익</span>
             <span style={{ fontSize: 18, fontWeight: 800, color: profitColor }}>{fmt(d.netProfit)}원</span>
           </div>
-          <div style={{ background: '#F1F5F9', borderRadius: 6, height: 24, overflow: 'hidden', position: 'relative' }}>
+          <div style={{ background: '#F1F5F9', borderRadius: 6, height: 24, overflow: 'hidden', position: 'relative' as const }}>
             {d.revenue.total > 0 && (
               <div style={{
                 height: '100%',
@@ -436,7 +480,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
               }} />
             )}
           </div>
-          <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, textAlign: 'right' }}>
+          <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, textAlign: 'right' as const }}>
             수익률 {d.profitRate !== -999 ? `${d.profitRate.toFixed(1)}%` : '-'}
           </div>
         </div>
@@ -476,9 +520,9 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
                     background: selectedBuilding === b.name ? '#EFF6FF' : (isBottom20 ? '#FFFBEB' : 'transparent'),
                   }}
                   onClick={() => setSelectedBuilding(b.name === selectedBuilding ? null : b.name)}
-                  onMouseEnter={e => { if (selectedBuilding !== b.name) e.currentTarget.style.background = '#F8FAFC'; }}
+                  onMouseEnter={e => { if (selectedBuilding !== b.name) (e.currentTarget as HTMLElement).style.background = '#F8FAFC'; }}
                   onMouseLeave={e => {
-                    if (selectedBuilding !== b.name) e.currentTarget.style.background = isBottom20 ? '#FFFBEB' : 'transparent';
+                    if (selectedBuilding !== b.name) (e.currentTarget as HTMLElement).style.background = isBottom20 ? '#FFFBEB' : 'transparent';
                   }}
                 >
                   <td style={styles.td}>{i + 1}</td>
@@ -535,14 +579,14 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
 
   const renderTrendView = () => {
     // Generate last 6 months for trend display
-    const months = [];
+    const months: string[] = [];
     for (let i = 5; i >= 0; i--) {
       const [y, m] = selectedMonth.split('-').map(Number);
       const d = new Date(y, m - 1 - i, 1);
       months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
     }
 
-    const managedBuildings = allBuildings.length > 0 ? allBuildings : myBuildings.map(name => ({ name, fee: 0, fixedFee: 0, rooms: 0 }));
+    const managedBuildings: BuildingInfo[] = allBuildings.length > 0 ? allBuildings : myBuildings.map(name => ({ name, fee: 0, fixedFee: 0, rooms: 0 }));
     const buildingCount = managedBuildings.length || 1;
     const payrollPerBuilding = Math.round(TOTAL_PAYROLL / buildingCount);
 
@@ -557,17 +601,17 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
         const tenants = activeTenants.filter(t => t.building === name);
         const totalRent = tenants.reduce((s, t) => s + (t.rent || 0), 0);
         const bldgExp = monthExp.filter(e => e.building === name);
-        const repairExp = bldgExp.filter(e => e.category === 'repair').reduce((s, e) => s + (e.amount || 0), 0);
+        const repairExp = bldgExp.filter(e => e.category === 'repair').reduce((s: number, e: any) => s + (e.amount || 0), 0);
 
-        const rev = (bInfo.fee > 0 ? Math.round(totalRent * bInfo.fee) : 0)
-          + (bInfo.fixedFee > 0 ? bInfo.fixedFee : 0)
+        const rev = (bInfo.fee && bInfo.fee > 0 ? Math.round(totalRent * bInfo.fee) : 0)
+          + (bInfo.fixedFee && bInfo.fixedFee > 0 ? bInfo.fixedFee : 0)
           + tenants.length * UTILITY_MARGIN_PER_TENANT
           + Math.round(repairExp * REPAIR_MARGIN_RATE);
 
         const cost = payrollPerBuilding
           + Math.round(repairExp * 0.7)
-          + bldgExp.filter(e => e.category === 'utility').reduce((s, e) => s + (e.amount || 0), 0)
-          + bldgExp.filter(e => e.category === 'cleaning').reduce((s, e) => s + (e.amount || 0), 0);
+          + bldgExp.filter(e => e.category === 'utility').reduce((s: number, e: any) => s + (e.amount || 0), 0)
+          + bldgExp.filter(e => e.category === 'cleaning').reduce((s: number, e: any) => s + (e.amount || 0), 0);
 
         totalRev += rev;
         totalCst += cost;

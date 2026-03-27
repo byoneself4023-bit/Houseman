@@ -1,32 +1,31 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { buildings, billingTypeMap } from '../data';
-import { getRoomType, collectionAssigneeMap, initialStaffMembers } from '../config';
+import { buildings, billingTypeMap } from '@/data';
+import { getRoomType, collectionAssigneeMap, initialStaffMembers } from '@/config';
 
-import { useIsMobile, fmt } from '../utils';
-import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, Table, StatusBadge, DunningTemplateSettings } from '../components';
-import { useLocalStorage } from '../utils/useLocalStorage';
+import { useIsMobile, fmt } from '@/utils';
+import { matchKorean } from '@/utils/koreanSearch';
+import { Card, SectionTitle, Table, StatusBadge, DunningTemplateSettings } from '@/components';
+import { useLocalStorage } from '@/utils/useLocalStorage';
 
-const rk = (t) => `${t.building}_${t.room}`;
+const rk = (t: Record<string, any>) => `${t.building}_${t.room}`;
 
 // 계좌 모드별 청구 분할 계산
-const getBillingSlots = (t, buildingAccounts, allBuildings) => {
+const getBillingSlots = (t: Record<string, any>, buildingAccounts: Record<string, any>, allBuildings: Record<string, any>[]): { label: string; amount: number; lateFee?: number }[] => {
   // 통합관리대장에서 업로드된 실제 청구 금액이 있으면 우선 사용
-  // 통합관리대장에서 올라온 데이터면 G~J열 값만 사용
   if (t.fromLedger) {
     const bill1 = (t.prevBillOwner || 0) + (t.curBillOwner || 0);
     const bill2 = (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
-    const slots = [];
-    if (bill1) slots.push({ label: "①", amount: bill1 });
-    if (bill2) slots.push({ label: "②", amount: bill2, lateFee: t.lateFeeAmount || 0 });
+    const slots: { label: string; amount: number; lateFee?: number }[] = [];
+    if (bill1) slots.push({ label: "\u2460", amount: bill1 });
+    if (bill2) slots.push({ label: "\u2461", amount: bill2, lateFee: t.lateFeeAmount || 0 });
     return slots;
   }
 
   const bldg = allBuildings.find(b => b.name === t.building);
-  const bTypes = (bldg?.type || "단기").split("+").map(s => s.trim());
+  const bTypes = (bldg?.type || "\uB2E8\uAE30").split("+").map((s: string) => s.trim());
   const roomType = getRoomType(t.building, t.room);
-  const roomAcctType = roomType === "기업시설관리" ? "관리사무소" : roomType;
-  const typeIdx = bTypes.findIndex(bt => (bt === "기업시설관리" ? "관리사무소" : bt) === roomAcctType);
+  const roomAcctType = roomType === "\uAE30\uC5C5\uC2DC\uC124\uAD00\uB9AC" ? "\uAD00\uB9AC\uC0AC\uBB34\uC18C" : roomType;
+  const typeIdx = bTypes.findIndex((bt: string) => (bt === "\uAE30\uC5C5\uC2DC\uC124\uAD00\uB9AC" ? "\uAD00\uB9AC\uC0AC\uBB34\uC18C" : bt) === roomAcctType);
   const suffix = typeIdx >= 0 ? String(typeIdx + 1) : "1";
   const bAccts = buildingAccounts[t.building] || {};
   const roomKey = `${t.building}_${t.room}`;
@@ -34,62 +33,75 @@ const getBillingSlots = (t, buildingAccounts, allBuildings) => {
   const mode = roomOverride?.mode || bAccts[`mode${suffix}`] || "";
   const rent = t.rent || 0;
   const mgmt = t.mgmt || 0;
-  if (mode === "houseman" || mode === "hm_owner1" || mode === "gs1") return [{ label: "①", amount: rent + mgmt }];
-  if (mode === "owner1" || mode === "gs2a") return [{ label: "①", amount: rent }, { label: "②", amount: mgmt }];
-  if (mode === "owner2" || mode === "gs2b") return [{ label: "①", amount: rent + mgmt }, { label: "②", amount: 0 }];
-  if (mode === "gs3") return [{ label: "①", amount: rent }, { label: "②", amount: mgmt }, { label: "③", amount: 0 }];
-  return [{ label: "①", amount: rent + mgmt }];
+  if (mode === "houseman" || mode === "hm_owner1" || mode === "gs1") return [{ label: "\u2460", amount: rent + mgmt }];
+  if (mode === "owner1" || mode === "gs2a") return [{ label: "\u2460", amount: rent }, { label: "\u2461", amount: mgmt }];
+  if (mode === "owner2" || mode === "gs2b") return [{ label: "\u2460", amount: rent + mgmt }, { label: "\u2461", amount: 0 }];
+  if (mode === "gs3") return [{ label: "\u2460", amount: rent }, { label: "\u2461", amount: mgmt }, { label: "\u2462", amount: 0 }];
+  return [{ label: "\u2460", amount: rent + mgmt }];
 };
 
-export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [], billingHistory = [] }) => {
+interface CollectionPageProps {
+  myBuildings?: string[];
+  activeTenants?: Record<string, any>[];
+  roomBalances?: Record<string, number>;
+  lateFeeOverrides?: Record<string, any>;
+  setLateFeeOverrides?: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  buildingAccounts?: Record<string, any>;
+  allBuildings?: Record<string, any>[];
+  billingHistory?: Record<string, any>[];
+  buildingData?: Record<string, any>;
+  isLoading?: boolean;
+}
+
+export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalances = {}, lateFeeOverrides = {}, setLateFeeOverrides, buildingAccounts = {}, allBuildings = [], billingHistory = [], isLoading }: CollectionPageProps) => {
   const isMobile = useIsMobile();
-  const [historyTarget, setHistoryTarget] = useState(null);
-  const [commentTarget, setCommentTarget] = useState(null);
+  const [historyTarget, setHistoryTarget] = useState<Record<string, any> | null>(null);
+  const [commentTarget, setCommentTarget] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(100);
   const [commentText, setCommentText] = useState("");
   const [viewMode, setViewMode] = useState("table");
-  const [electricCut, setElectricCut] = useLocalStorage("hm_electricCut", {});
-  const [statusFilter, setStatusFilter] = useState("전체");
-  const [sortMode, setSortMode] = useState("연체일순");
-  const [filterCollector, setFilterCollector] = useState("전체");
+  const [electricCut, setElectricCut] = useLocalStorage<Record<string, string | undefined>>("hm_electricCut", {});
+  const [statusFilter, setStatusFilter] = useState("\uC804\uCCB4");
+  const [sortMode, setSortMode] = useState("\uC5F0\uCCB4\uC77C\uC21C");
+  const [filterCollector, setFilterCollector] = useState("\uC804\uCCB4");
   const [buildingSearch, setBuildingSearch] = useState("");
-  const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
+  const [staffList] = useLocalStorage<Record<string, any>[]>("hm_staffList", initialStaffMembers);
   const collectionStaff = staffList.filter(s => s.roles.includes("collection")).map(s => s.name);
-  const collectors = ["전체", ...collectionStaff];
+  const collectors = ["\uC804\uCCB4", ...collectionStaff];
   const allMyTenants = myBuildings.length > 0 ? activeTenants.filter(t => myBuildings.includes(t.building)) : activeTenants;
-  const [comments, setComments] = useLocalStorage("hm_comments", {
-    "모던라이프_501": [{ date: "2026-02-23", tenant: "이보람", text: "2/25일에 납부한데서 최소 200만원은 되야한다함" }],
-    "지앤지2_401": [{ date: "2026-02-23", tenant: "박종호", text: "[유은혜관리] 보증금 2억으로 충분하나 수금 원칙상 독촉 진행" }],
-    "한스텔_104": [{ date: "2026-02-23", tenant: "김균엽", text: "(매달 4일 납부. 5일엔 연체수수료)" }],
-    "미래홈_104": [{ date: "2026-02-23", tenant: "김혜순", text: "2/14 9시 35분 오병천으로 10만원 입금, 나머지 2/25까지 완납약속" }],
-    "에덴빌_301": [{ date: "2026-02-23", tenant: "정소정", text: "2/25에 납부한데서 오전까지는 하라함" }],
-    "미래홈_203": [{ date: "2026-02-23", tenant: "이호경", text: "3/15퇴실, 2/23부터 25까지 완납약속. 총 596,460원중 20만원은 보증금" }],
-    "지앤지2_201": [{ date: "2026-02-23", tenant: "김기용", text: "<15일납부> 설지나고 납부날짜 다시연락준다함" }],
-    "굿모닝빌_304": [{ date: "2026-02-23", tenant: "박성욱", text: "급여날짜 10일 [11일 연체수수료 부과], 급여 밀려서 설끝나고 최대한빨리준다함" }],
-    "메종빌_202": [{ date: "2026-02-23", tenant: "박채린", text: "2/24 완납약속인데 3/8에는 이제 퇴실하라함" }],
-    "W하우스_503": [{ date: "2026-02-23", tenant: "김현우", text: "(카톡) 2/22까지 30만원 분납후 25일까지 완납약속" }],
-    "W하우스_302": [{ date: "2026-02-23", tenant: "권소정", text: "<납부일 20일로 변경> 미납3일차 수수료부과" }],
-    "다존하우스_203": [{ date: "2026-02-23", tenant: "박건희", text: "공과금만 2/28까지 완납약속. 월급이 늦어졌다함" }],
-    "다존하우스_305": [{ date: "2026-02-23", tenant: "최서연", text: "번호 카톡 다사라짐 방문해서 연락처 알려달라하기" }],
-    "리트코하우스_502": [{ date: "2026-02-23", tenant: "박소현", text: "계약서대로면 20일 납부일이라 수수료4일차 아니냐고함, 2/23 완납약속" }],
-    "모닝빌_305": [{ date: "2026-02-23", tenant: "조병익", text: "2/16 60만원 납부후 3/10 3월월세랑 같이 납부한다함, 미납 10일차" }],
-    "스타빌_403": [{ date: "2026-02-23", tenant: "송예준", text: "1/14까지 완납한다는데 12일에 30만원이상분납안되면 퇴실되야한다함" }],
-    "메종빌_301": [{ date: "2026-02-23", tenant: "최기연", text: "2월까지 한달더 연장한다고함, 1/26까지 완납안되면 연장 어렵다함" }],
-    "메종빌_601": [{ date: "2026-02-23", tenant: "박수연", text: "2/20 40만원 선납먼저함" }],
-    "W하우스_601": [{ date: "2026-02-23", tenant: "서은기", text: "12/18 완납약속" }],
-    "리트코하우스_606": [{ date: "2026-02-23", tenant: "문열매", text: "2/25까지 완납하라함" }],
+  const [comments, setComments] = useLocalStorage<Record<string, { date: string; tenant: string; text: string }[]>>("hm_comments", {
+    "\uBAA8\uB358\uB77C\uC774\uD504_501": [{ date: "2026-02-23", tenant: "\uC774\uBCF4\uB78C", text: "2/25\uC77C\uC5D0 \uB0A9\uBD80\uD55C\uB370\uC11C \uCD5C\uC18C 200\uB9CC\uC6D0\uC740 \uB3FC\uC57C\uD55C\uB2E4\uD568" }],
+    "\uC9C0\uC564\uC9C02_401": [{ date: "2026-02-23", tenant: "\uBC15\uC885\uD638", text: "[\uC720\uC740\uD61C\uAD00\uB9AC] \uBCF4\uC99D\uAE08 2\uC5B5\uC73C\uB85C \uCDA9\uBD84\uD558\uB098 \uC218\uAE08 \uC6D0\uCE59\uC0C1 \uB3C5\uCD09 \uC9C4\uD589" }],
+    "\uD55C\uC2A4\uD154_104": [{ date: "2026-02-23", tenant: "\uAE40\uADE0\uC5FD", text: "(\uB9E4\uB2EC 4\uC77C \uB0A9\uBD80. 5\uC77C\uC5D4 \uC5F0\uCCB4\uC218\uC218\uB8CC)" }],
+    "\uBBF8\uB798\uD648_104": [{ date: "2026-02-23", tenant: "\uAE40\uD61C\uC21C", text: "2/14 9\uC2DC 35\uBD84 \uC624\uBCD1\uCC9C\uC73C\uB85C 10\uB9CC\uC6D0 \uC785\uAE08, \uB098\uBA38\uC9C0 2/25\uAE4C\uC9C0 \uC644\uB0A9\uC57D\uC18D" }],
+    "\uC5D0\uB374\uBE4C_301": [{ date: "2026-02-23", tenant: "\uC815\uC18C\uC815", text: "2/25\uC5D0 \uB0A9\uBD80\uD55C\uB370\uC11C \uC624\uC804\uAE4C\uC9C0\uB294 \uD558\uB77C\uD568" }],
+    "\uBBF8\uB798\uD648_203": [{ date: "2026-02-23", tenant: "\uC774\uD638\uACBD", text: "3/15\uD1F4\uC2E4, 2/23\uBD80\uD130 25\uAE4C\uC9C0 \uC644\uB0A9\uC57D\uC18D. \uCD1D 596,460\uC6D0\uC911 20\uB9CC\uC6D0\uC740 \uBCF4\uC99D\uAE08" }],
+    "\uC9C0\uC564\uC9C02_201": [{ date: "2026-02-23", tenant: "\uAE40\uAE30\uC6A9", text: "<15\uC77C\uB0A9\uBD80> \uC124\uC9C0\uB098\uACE0 \uB0A9\uBD80\uB0A0\uC9DC \uB2E4\uC2DC\uC5F0\uB77D\uC900\uB2E4\uD568" }],
+    "\uAD7F\uBAA8\uB2DD\uBE4C_304": [{ date: "2026-02-23", tenant: "\uBC15\uC131\uC6B1", text: "\uAE09\uC5EC\uB0A0\uC9DC 10\uC77C [11\uC77C \uC5F0\uCCB4\uC218\uC218\uB8CC \uBD80\uACFC], \uAE09\uC5EC \uBC00\uB824\uC11C \uC124\uB05D\uB098\uACE0 \uCD5C\uB300\uD55C\uBE68\uB9AC\uC900\uB2E4\uD568" }],
+    "\uBA54\uC885\uBE4C_202": [{ date: "2026-02-23", tenant: "\uBC15\uCC44\uB9B0", text: "2/24 \uC644\uB0A9\uC57D\uC18D\uC778\uB370 3/8\uC5D0\uB294 \uC774\uC81C \uD1F4\uC2E4\uD558\uB77C\uD568" }],
+    "W\uD558\uC6B0\uC2A4_503": [{ date: "2026-02-23", tenant: "\uAE40\uD604\uC6B0", text: "(\uCE74\uD1A1) 2/22\uAE4C\uC9C0 30\uB9CC\uC6D0 \uBD84\uB0A9\uD6C4 25\uC77C\uAE4C\uC9C0 \uC644\uB0A9\uC57D\uC18D" }],
+    "W\uD558\uC6B0\uC2A4_302": [{ date: "2026-02-23", tenant: "\uAD8C\uC18C\uC815", text: "<\uB0A9\uBD80\uC77C 20\uC77C\uB85C \uBCC0\uACBD> \uBBF8\uB0A93\uC77C\uCC28 \uC218\uC218\uB8CC\uBD80\uACFC" }],
+    "\uB2E4\uC874\uD558\uC6B0\uC2A4_203": [{ date: "2026-02-23", tenant: "\uBC15\uAC74\uD76C", text: "\uACF5\uACFC\uAE08\uB9CC 2/28\uAE4C\uC9C0 \uC644\uB0A9\uC57D\uC18D. \uC6D4\uAE09\uC774 \uB2A6\uC5B4\uC84C\uB2E4\uD568" }],
+    "\uB2E4\uC874\uD558\uC6B0\uC2A4_305": [{ date: "2026-02-23", tenant: "\uCD5C\uC11C\uC5F0", text: "\uBC88\uD638 \uCE74\uD1A1 \uB2E4\uC0AC\uB77C\uC9D0 \uBC29\uBB38\uD574\uC11C \uC5F0\uB77D\uCC98 \uC54C\uB824\uB2EC\uB77C\uD558\uAE30" }],
+    "\uB9AC\uD2B8\uCF54\uD558\uC6B0\uC2A4_502": [{ date: "2026-02-23", tenant: "\uBC15\uC18C\uD604", text: "\uACC4\uC57D\uC11C\uB300\uB85C\uBA74 20\uC77C \uB0A9\uBD80\uC77C\uC774\uB77C \uC218\uC218\uB8CC4\uC77C\uCC28 \uC544\uB2C8\uB0D0\uACE0\uD568, 2/23 \uC644\uB0A9\uC57D\uC18D" }],
+    "\uBAA8\uB2DD\uBE4C_305": [{ date: "2026-02-23", tenant: "\uC870\uBCD1\uC775", text: "2/16 60\uB9CC\uC6D0 \uB0A9\uBD80\uD6C4 3/10 3\uC6D4\uC6D4\uC138\uB791 \uAC19\uC774 \uB0A9\uBD80\uD55C\uB2E4\uD568, \uBBF8\uB0A9 10\uC77C\uCC28" }],
+    "\uC2A4\uD0C0\uBE4C_403": [{ date: "2026-02-23", tenant: "\uC1A1\uC608\uC900", text: "1/14\uAE4C\uC9C0 \uC644\uB0A9\uD55C\uB2E4\uB294\uB370 12\uC77C\uC5D0 30\uB9CC\uC6D0\uC774\uC0C1\uBD84\uB0A9\uC548\uB418\uBA74 \uD1F4\uC2E4\uB3FC\uC57C\uD55C\uB2E4\uD568" }],
+    "\uBA54\uC885\uBE4C_301": [{ date: "2026-02-23", tenant: "\uCD5C\uAE30\uC5F0", text: "2\uC6D4\uAE4C\uC9C0 \uD55C\uB2EC\uB354 \uC5F0\uC7A5\uD55C\uB2E4\uACE0\uD568, 1/26\uAE4C\uC9C0 \uC644\uB0A9\uC548\uB418\uBA74 \uC5F0\uC7A5 \uC5B4\uB835\uB2E4\uD568" }],
+    "\uBA54\uC885\uBE4C_601": [{ date: "2026-02-23", tenant: "\uBC15\uC218\uC5F0", text: "2/20 40\uB9CC\uC6D0 \uC120\uB0A9\uBA3C\uC800\uD568" }],
+    "W\uD558\uC6B0\uC2A4_601": [{ date: "2026-02-23", tenant: "\uC11C\uC740\uAE30", text: "12/18 \uC644\uB0A9\uC57D\uC18D" }],
+    "\uB9AC\uD2B8\uCF54\uD558\uC6B0\uC2A4_606": [{ date: "2026-02-23", tenant: "\uBB38\uC5F4\uB9E4", text: "2/25\uAE4C\uC9C0 \uC644\uB0A9\uD558\uB77C\uD568" }],
   });
 
 
   // due is "M/D" format → extract day as rent day
-  const getDueDay = (t) => {
+  const getDueDay = (t: Record<string, any>) => {
     if (!t.due || !t.due.includes("/")) return 0;
     return parseInt(t.due.split("/")[1]) || 0;
   };
   const _now = new Date();
   const today = _now.getDate();
   const daysInMonth = new Date(_now.getFullYear(), _now.getMonth() + 1, 0).getDate();
-  const getDaysSinceDue = (t) => {
+  const getDaysSinceDue = (t: Record<string, any>) => {
     const dueDay = getDueDay(t);
     if (!dueDay) return 0;
     let diff = today - dueDay;
@@ -97,15 +109,13 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     return diff;
   };
 
-  const getBalance = (t) => {
-    // 통합관리대장 데이터면 임차인 데이터에서 직접 계산
+  const getBalance = (t: Record<string, any>) => {
     if (t.fromLedger) {
       return (t.prevBillOwner || 0) + (t.curBillOwner || 0) + (t.prevBillHM || 0) + (t.curBillHM || 0) + (t.lateFeeAmount || 0);
     }
-    // 기존 데이터
     return roomBalances[rk(t)] || 0;
   };
-  const calcLateFee = (t) => {
+  const calcLateFee = (t: Record<string, any>) => {
     const balance = getBalance(t);
     if (balance <= 0) return 0;
     const daysSince = getDaysSinceDue(t);
@@ -117,9 +127,9 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     if (override?.type === "discount") return Math.max(0, baseFee - (override.amount || 0));
     return baseFee;
   };
-  const calcBill = (t) => t.rent + t.mgmt + calcLateFee(t);
+  const calcBill = (t: Record<string, any>) => t.rent + t.mgmt + calcLateFee(t);
 
-  const setFeeOverride = (key, type, amount) => {
+  const setFeeOverride = (key: string, type: string | null, amount?: number) => {
     if (!setLateFeeOverrides) return;
     if (!type) {
       setLateFeeOverrides(prev => { const next = { ...prev }; delete next[key]; return next; });
@@ -129,7 +139,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
   };
 
   const filteredFinal = useMemo(() => {
-    const baseTenants = filterCollector === "전체"
+    const baseTenants = filterCollector === "\uC804\uCCB4"
       ? allMyTenants
       : allMyTenants.filter(t => collectionAssigneeMap[t.building] === filterCollector);
     const filteredByBuilding = buildingSearch
@@ -140,21 +150,16 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
       const totalBill = slots.reduce((s, sl) => s + Math.abs(sl.amount || 0), 0);
       const balance = getBalance(t);
       const days = getDaysSinceDue(t);
-      // 디버그: 에덴빌 301
-      if (t.building === "에덴빌" && t.room === "301") {
-        console.log("에덴빌301 디버그:", { fromLedger: t.fromLedger, due: t.due, days, balance, totalBill, slots, curBillHM: t.curBillHM, prevBillHM: t.prevBillHM });
+      if (t.building === "\uC5D0\uB374\uBE4C" && t.room === "301") {
+        console.log("\uC5D0\uB374\uBE4C301 \uB514\uBC84\uADF8:", { fromLedger: t.fromLedger, due: t.due, days, balance, totalBill, slots, curBillHM: t.curBillHM, prevBillHM: t.prevBillHM });
       }
-      // 퇴실자 제외
-      if (t.name === "퇴실" || t.status === "퇴실") return false;
-      // 통합관리대장 데이터: 청구금액이 있으면 무조건 표시
+      if (t.name === "\uD1F4\uC2E4" || t.status === "\uD1F4\uC2E4") return false;
       if (t.fromLedger && totalBill > 0) return true;
-      // 잔액이 있고 월세일 지남
       if (balance > 0 && days >= 0) return true;
-      // 청구 예정 (월세일 2일 전)
       if (totalBill > 0 && days >= -2) return true;
       return false;
     });
-    const getRisk = (t) => {
+    const getRisk = (t: Record<string, any>) => {
       const days = getDaysSinceDue(t);
       const balance = getBalance(t);
       const total = (t.rent || 0) + (t.mgmt || 0);
@@ -166,39 +171,34 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
     };
     const sorted = [...filteredVisible].sort((a, b) => {
       const balA = getBalance(a), balB = getBalance(b);
-      // 잔액 있는 사람 먼저
       if ((balA > 0) !== (balB > 0)) return balA > 0 ? -1 : 1;
-      // 둘 다 잔액 있으면 연체일 많은 순
       if (balA > 0 && balB > 0) {
-        if (sortMode === "위험도순") return getRisk(b) - getRisk(a);
+        if (sortMode === "\uC704\uD5D8\uB3C4\uC21C") return getRisk(b) - getRisk(a);
         return getDaysSinceDue(b) - getDaysSinceDue(a);
       }
-      // 둘 다 잔액 없으면 청구일 가까운 순
       return getDaysSinceDue(b) - getDaysSinceDue(a);
     });
-    if (statusFilter === "전체") return sorted;
-    if (statusFilter === "연체") return sorted.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0);
+    if (statusFilter === "\uC804\uCCB4") return sorted;
+    if (statusFilter === "\uC5F0\uCCB4") return sorted.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0);
     return sorted.filter(t => electricCut[rk(t)] === statusFilter);
   }, [allMyTenants, filterCollector, buildingSearch, statusFilter, electricCut, sortMode, roomBalances]);
 
   useEffect(() => { setVisibleCount(100); }, [filterCollector, buildingSearch, statusFilter]);
   const visibleFinal = useMemo(() => filteredFinal.slice(0, visibleCount), [filteredFinal, visibleCount]);
 
-  const addComment = (key, tenant) => {
+  const addComment = (key: string, tenant: string) => {
     if (!commentText.trim()) return;
     setComments(prev => ({ ...prev, [key]: [{ date: new Date().toISOString().slice(0, 10), tenant, text: commentText.trim() }, ...(prev[key] || [])] }));
     setCommentText("");
     setCommentTarget(null);
   };
 
-  // ===== 렌더링 =====
-  // 청구 이력 데이터
   const historyData = useMemo(() => {
     if (!historyTarget) return [];
     const key = rk(historyTarget);
     return billingHistory
       .filter(h => `${h.building}_${h.room}` === key)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [historyTarget, billingHistory]);
 
   return (
@@ -255,7 +255,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
         </div>
       )}
 
-      <SectionTitle sub={filterCollector === "전체" ? "수금 관리" : `${filterCollector} 전담 · ${filteredFinal.length}명`}>💰 수금 관리</SectionTitle>
+      <SectionTitle sub={filterCollector === "\uC804\uCCB4" ? "\uC218\uAE08 \uAD00\uB9AC" : `${filterCollector} \uC804\uB2F4 · ${filteredFinal.length}\uBA85`}>💰 수금 관리</SectionTitle>
 
       {/* 상단 탭 */}
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
@@ -283,8 +283,8 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 12 }}>
             {collectors.map(c => (
               <button key={c} onClick={() => setFilterCollector(c)}
-                style={{ padding: "8px 18px", borderRadius: 8, border: filterCollector === c ? "2px solid #F59E0B" : "1.5px solid #E0E3E9", background: filterCollector === c ? (c === "전체" ? "#1A1D23" : "#F59E0B") : "#fff", color: filterCollector === c ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
-                {c} {c !== "전체" && <span style={{ fontSize: 10, opacity: 0.7 }}>({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
+                style={{ padding: "8px 18px", borderRadius: 8, border: filterCollector === c ? "2px solid #F59E0B" : "1.5px solid #E0E3E9", background: filterCollector === c ? (c === "\uC804\uCCB4" ? "#1A1D23" : "#F59E0B") : "#fff", color: filterCollector === c ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                {c} {c !== "\uC804\uCCB4" && <span style={{ fontSize: 10, opacity: 0.7 }}>({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
               </button>
             ))}
           </div>
@@ -299,24 +299,24 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           {/* 정렬 & 상태 필터 */}
           <div style={{ display: "flex", gap: 6, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, marginRight: 4 }}>정렬:</span>
-            {["연체일순", "위험도순"].map(m => (
+            {["\uC5F0\uCCB4\uC77C\uC21C", "\uC704\uD5D8\uB3C4\uC21C"].map(m => (
               <button key={m} onClick={() => setSortMode(m)}
                 style={{ padding: "6px 12px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
                   background: sortMode === m ? "#1E40AF" : "#EFF6FF", color: sortMode === m ? "#fff" : "#2563EB",
                   border: `1.5px solid ${sortMode === m ? "#1E40AF" : "#BFDBFE"}` }}>
-                {m === "연체일순" ? "📅 연체일순" : "⚡ 위험도순"}
+                {m === "\uC5F0\uCCB4\uC77C\uC21C" ? "📅 연체일순" : "⚡ 위험도순"}
               </button>
             ))}
             <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, marginLeft: 8, marginRight: 4 }}>조치 필터:</span>
             {(() => {
-              const danCount = filteredFinal.filter(t => electricCut[rk(t)] === "단전").length;
-              const warnCount = filteredFinal.filter(t => electricCut[rk(t)] === "위험").length;
+              const danCount = filteredFinal.filter(t => electricCut[rk(t)] === "\uB2E8\uC804").length;
+              const warnCount = filteredFinal.filter(t => electricCut[rk(t)] === "\uC704\uD5D8").length;
               const overdueCount = filteredFinal.filter(t => getBalance(t) > 0 && getDaysSinceDue(t) >= 0).length;
               return [
-                { id: "전체", label: `전체 (${filteredFinal.length})`, bg: "#F3F4F6", activeBg: "#1A1D23", activeColor: "#fff", color: "#5F6577", border: "#E0E3E9", activeBorder: "#1A1D23" },
-                { id: "단전", label: `⚡ 단전 (${danCount})`, bg: "#FFF1F2", activeBg: "#DC2626", activeColor: "#fff", color: "#DC2626", border: "#FECACA", activeBorder: "#DC2626" },
-                { id: "위험", label: `⚠ 위험 (${warnCount})`, bg: "#FFFBEB", activeBg: "#F59E0B", activeColor: "#fff", color: "#B45309", border: "#FDE68A", activeBorder: "#F59E0B" },
-                { id: "연체", label: `🚨 연체 (${overdueCount})`, bg: "#FEF2F2", activeBg: "#EA580C", activeColor: "#fff", color: "#EA580C", border: "#FED7AA", activeBorder: "#EA580C" },
+                { id: "\uC804\uCCB4", label: `전체 (${filteredFinal.length})`, bg: "#F3F4F6", activeBg: "#1A1D23", activeColor: "#fff", color: "#5F6577", border: "#E0E3E9", activeBorder: "#1A1D23" },
+                { id: "\uB2E8\uC804", label: `⚡ 단전 (${danCount})`, bg: "#FFF1F2", activeBg: "#DC2626", activeColor: "#fff", color: "#DC2626", border: "#FECACA", activeBorder: "#DC2626" },
+                { id: "\uC704\uD5D8", label: `⚠ 위험 (${warnCount})`, bg: "#FFFBEB", activeBg: "#F59E0B", activeColor: "#fff", color: "#B45309", border: "#FDE68A", activeBorder: "#F59E0B" },
+                { id: "\uC5F0\uCCB4", label: `🚨 연체 (${overdueCount})`, bg: "#FEF2F2", activeBg: "#EA580C", activeColor: "#fff", color: "#EA580C", border: "#FED7AA", activeBorder: "#EA580C" },
               ].map(f => (
                 <button key={f.id} onClick={() => setStatusFilter(f.id)}
                   style={{ padding: "6px 14px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
@@ -329,14 +329,14 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           </div>
 
           <Card style={{ overflow: "auto" }}>
-            {statusFilter !== "전체" && (
+            {statusFilter !== "\uC804\uCCB4" && (
               <div style={{ padding: "8px 14px", marginBottom: 10, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: statusFilter === "단전" ? "#FFF1F2" : statusFilter === "위험" ? "#FFFBEB" : "#FEF2F2",
-                border: `1px solid ${statusFilter === "단전" ? "#FECACA" : statusFilter === "위험" ? "#FDE68A" : "#FED7AA"}` }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: statusFilter === "단전" ? "#DC2626" : statusFilter === "위험" ? "#B45309" : "#EA580C" }}>
-                  {statusFilter === "단전" ? "⚡" : statusFilter === "위험" ? "⚠" : "🚨"} {statusFilter} 필터 적용 중 · {filteredFinal.length}건
+                background: statusFilter === "\uB2E8\uC804" ? "#FFF1F2" : statusFilter === "\uC704\uD5D8" ? "#FFFBEB" : "#FEF2F2",
+                border: `1px solid ${statusFilter === "\uB2E8\uC804" ? "#FECACA" : statusFilter === "\uC704\uD5D8" ? "#FDE68A" : "#FED7AA"}` }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: statusFilter === "\uB2E8\uC804" ? "#DC2626" : statusFilter === "\uC704\uD5D8" ? "#B45309" : "#EA580C" }}>
+                  {statusFilter === "\uB2E8\uC804" ? "⚡" : statusFilter === "\uC704\uD5D8" ? "⚠" : "🚨"} {statusFilter} 필터 적용 중 · {filteredFinal.length}건
                 </span>
-                <button onClick={() => setStatusFilter("전체")} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, fontWeight: 700, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>필터 해제</button>
+                <button onClick={() => setStatusFilter("\uC804\uCCB4")} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, fontWeight: 700, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>필터 해제</button>
               </div>
             )}
             {isMobile ? (
@@ -350,7 +350,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                   const roomComments = comments[key] || [];
                   const days = getDaysSinceDue(t);
                   return (
-                    <Card key={i} onClick={() => setHistoryTarget(t)} style={{ padding: "10px 12px", cursor: "pointer", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
+                    <Card key={i} onClick={() => setHistoryTarget(t)} style={{ padding: "10px 12px", cursor: "pointer", background: electricCut[key] === "\uB2E8\uC804" ? "#FFF1F2" : electricCut[key] === "\uC704\uD5D8" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                         <div>
                           <span style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호</span>
@@ -379,7 +379,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                         {lateFeeOverrides[key]?.type === "exclude" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#ECFDF5", color: "#059669" }}>연체료 제외</span>}
                         {lateFeeOverrides[key]?.type === "discount" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB" }}>할인 {fmt(lateFeeOverrides[key].amount)}</span>}
                         <span style={{ fontSize: 10, fontWeight: days > 5 ? 700 : 500, color: days > 5 ? "#DC2626" : days > 0 ? "#EA580C" : "#8F95A3" }}>{days > 0 ? `+${days}일` : days < 0 ? `D${days}` : "오늘"}</span>
-                        {electricCut[key] && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: electricCut[key] === "단전" ? "#DC2626" : "#F59E0B", color: "#fff" }}>{electricCut[key]}</span>}
+                        {electricCut[key] && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: electricCut[key] === "\uB2E8\uC804" ? "#DC2626" : "#F59E0B", color: "#fff" }}>{electricCut[key]}</span>}
                         <a href={`tel:${t.phone}`} style={{ fontSize: 10, color: "#3B82F6", marginLeft: "auto" }}>📞 {t.phone}</a>
                       </div>
                       <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
@@ -387,11 +387,11 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                           style={{ flex: 1, padding: "6px", borderRadius: 6, border: "1px solid #E0E3E9", background: roomComments.length > 0 ? "#EFF6FF" : "#fff", fontSize: 11, fontWeight: 600, color: "#3B82F6", cursor: "pointer", fontFamily: "inherit" }}>
                           💬 코멘트{roomComments.length > 0 ? ` (${roomComments.length})` : ""}
                         </button>
-                        <button onClick={() => setElectricCut(prev => { const cur = prev[key]; return { ...prev, [key]: !cur ? "위험" : cur === "위험" ? "단전" : undefined }; })}
+                        <button onClick={() => setElectricCut(prev => { const cur = prev[key]; return { ...prev, [key]: !cur ? "\uC704\uD5D8" : cur === "\uC704\uD5D8" ? "\uB2E8\uC804" : undefined }; })}
                           style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, fontWeight: 600, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
                           ⚡ 조치
                         </button>
-                        {days >= 5 && getRoomType(t.building, t.room) === "단기" && (
+                        {days >= 5 && getRoomType(t.building, t.room) === "\uB2E8\uAE30" && (
                           <button onClick={() => {
                             const cur = lateFeeOverrides[key]?.type;
                             if (!cur) setFeeOverride(key, "exclude");
@@ -436,7 +436,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 <tbody>
                   {filteredFinal.length === 0 ? (
                     <tr><td colSpan={16} style={{ padding: "40px 20px", textAlign: "center", color: "#8F95A3", fontSize: 13 }}>
-                      {statusFilter === "단전" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "위험" ? "⚠ 위험 처리된 임차인이 없습니다" : "해당 조건의 임차인이 없습니다"}
+                      {statusFilter === "\uB2E8\uC804" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "\uC704\uD5D8" ? "⚠ 위험 처리된 임차인이 없습니다" : "해당 조건의 임차인이 없습니다"}
                     </td></tr>
                   ) : visibleFinal.map((t, i) => {
                     const key = rk(t);
@@ -445,25 +445,25 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                     const isOpen = commentTarget === key;
                     return (
                       <React.Fragment key={i}>
-                        <tr onClick={() => setHistoryTarget(t)} style={{ cursor: "pointer", borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "단전" ? "#FFF1F2" : electricCut[key] === "위험" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (getDaysSinceDue(t) >= -6 && getDaysSinceDue(t) < 0) ? "#FFF5F5" : "transparent" }}>
+                        <tr onClick={() => setHistoryTarget(t)} style={{ cursor: "pointer", borderBottom: "1px solid #F0F2F5", background: electricCut[key] === "\uB2E8\uC804" ? "#FFF1F2" : electricCut[key] === "\uC704\uD5D8" ? "#FFFBEB" : getBalance(t) > 0 ? "#FEF2F2" : (getDaysSinceDue(t) >= -6 && getDaysSinceDue(t) < 0) ? "#FFF5F5" : "transparent" }}>
                           <td style={{ padding: "10px 6px", textAlign: "center" }}>
                             <div onClick={() => setElectricCut(prev => {
                               const cur = prev[key];
-                              const next = !cur ? "위험" : cur === "위험" ? "단전" : null;
-                              return { ...prev, [key]: next || undefined };
+                              const next = !cur ? "\uC704\uD5D8" : cur === "\uC704\uD5D8" ? "\uB2E8\uC804" : undefined;
+                              return { ...prev, [key]: next };
                             })}
                               style={{ width: 44, height: 24, borderRadius: 6, margin: "0 auto", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, transition: "all 0.15s",
-                                background: electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#F3F4F6",
+                                background: electricCut[key] === "\uB2E8\uC804" ? "#DC2626" : electricCut[key] === "\uC704\uD5D8" ? "#F59E0B" : "#F3F4F6",
                                 color: electricCut[key] ? "#fff" : "#B0B5C1",
-                                border: `1.5px solid ${electricCut[key] === "단전" ? "#DC2626" : electricCut[key] === "위험" ? "#F59E0B" : "#D1D5DB"}` }}>
-                              {electricCut[key] === "단전" ? "단전" : electricCut[key] === "위험" ? "위험" : "—"}
+                                border: `1.5px solid ${electricCut[key] === "\uB2E8\uC804" ? "#DC2626" : electricCut[key] === "\uC704\uD5D8" ? "#F59E0B" : "#D1D5DB"}` }}>
+                              {electricCut[key] === "\uB2E8\uC804" ? "단전" : electricCut[key] === "\uC704\uD5D8" ? "위험" : "—"}
                             </div>
                           </td>
                           <td style={{ padding: "8px 4px", fontWeight: 700, fontSize: 11 }}>{t.building}</td>
                           <td style={{ padding: "8px 4px", fontSize: 11 }}>{t.room}</td>
-                          <td style={{ padding: "8px 4px", fontWeight: 700, fontSize: 11, maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "…" : t.name}</td>
+                          <td style={{ padding: "8px 4px", fontWeight: 700, fontSize: 11, maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "\u2026" : t.name}</td>
                           <td style={{ padding: "8px 4px", fontSize: 10 }}><a href={`tel:${t.phone}`} style={{ color: "#3B82F6", textDecoration: "none" }}>{t.phone}</a></td>
-                          <td style={{ padding: "8px 4px", fontSize: 10 }}>{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp - new Date()) / 86400000); return <span style={{ color: diff > 0 ? "#DC2626" : "#1A1D23", fontWeight: 600 }}>{t.expiry.slice(2)}</span>; })()}</td>
+                          <td style={{ padding: "8px 4px", fontSize: 10 }}>{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp.getTime() - new Date().getTime()) / 86400000); return <span style={{ color: diff > 0 ? "#DC2626" : "#1A1D23", fontWeight: 600 }}>{t.expiry.slice(2)}</span>; })()}</td>
                           <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>{fmt(t.deposit)}</td>
                           <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11 }}>{fmt(t.rent)}</td>
                           <td style={{ padding: "8px 4px", textAlign: "right", fontSize: 11, color: t.mgmt > 0 ? "#1A1D23" : "#B0B5C1" }}>{t.mgmt > 0 ? fmt(t.mgmt) : "—"}</td>
@@ -476,14 +476,14 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                             const colors = ["#EA580C", "#92400E", "#2563EB"];
                             return [0, 1, 2].map(si => (
                               <td key={si} style={{ padding: "8px 10px", textAlign: "right", fontSize: 11 }}>
-                                {slots[si] ? <><span style={{ fontWeight: 700, color: colors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee > 0 && <div style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>연체료 {fmt(slots[si].lateFee)}</div>}</> : <span style={{ color: "#D1D5DB" }}>—</span>}
+                                {slots[si] ? <><span style={{ fontWeight: 700, color: colors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee && slots[si].lateFee! > 0 && <div style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>연체료 {fmt(slots[si].lateFee!)}</div>}</> : <span style={{ color: "#D1D5DB" }}>—</span>}
                               </td>
                             ));
                           })()}
                           <td style={{ padding: "10px 8px", textAlign: "center" }}>
                             {(() => {
                               const days = getDaysSinceDue(t);
-                              const isShortTerm = getRoomType(t.building, t.room) === "단기";
+                              const isShortTerm = getRoomType(t.building, t.room) === "\uB2E8\uAE30";
                               const override = lateFeeOverrides[key];
                               if (days < 5 || !isShortTerm) return <span style={{ color: "#B0B5C1", fontSize: 11 }}>—</span>;
                               return (

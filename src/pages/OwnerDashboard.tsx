@@ -1,18 +1,23 @@
 import { useState, useMemo } from 'react';
-import { buildings, asItems as staticAsItems, ownerBuildings, recentTx } from '../data';
-import { patrolBuildings, patrolRecords } from '../data/patrolData';
-import { useIsMobile, fmt } from '../utils';
-import { useLocalStorage } from '../utils/useLocalStorage';
-import { Card, SectionTitle, Table, StatusBadge } from '../components';
+import { buildings, asItems as staticAsItems, ownerBuildings, recentTx } from '@/data';
+import { patrolBuildings, patrolRecords } from '@/data/patrolData';
+import { useIsMobile, fmt } from '@/utils';
+import { useLocalStorage } from '@/utils/useLocalStorage';
+import { Card, SectionTitle, Table, StatusBadge } from '@/components';
+interface OwnerDashboardProps {
+  activeTenants?: Record<string, any>[];
+  activeVacancies?: Record<string, any>[];
+  isLoading?: boolean;
+}
 
-export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => {
+export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = [], activeVacancies = [] }) => {
   const isMobile = useIsMobile();
   const myBuildings = ownerBuildings["owner"] || [];
   const myBldgData = buildings.filter(b => myBuildings.includes(b.name));
-  const [savedPatrolRecords] = useLocalStorage("hm_patrolRecords", []);
-  const allPatrolRecords = useMemo(() => [...patrolRecords, ...savedPatrolRecords].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id), [savedPatrolRecords]);
-  const [localAsItems, setLocalAsItems] = useLocalStorage("hm_asItems", []);
-  const allAsItems = useMemo(() => [...staticAsItems, ...localAsItems], [localAsItems]);
+  const [savedPatrolRecords] = useLocalStorage<Record<string, any>[]>("hm_patrolRecords", []);
+  const allPatrolRecords = useMemo(() => [...patrolRecords, ...(savedPatrolRecords as any[])].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id), [savedPatrolRecords]);
+  const [localAsItems, setLocalAsItems] = useLocalStorage<Record<string, any>[]>("hm_asItems", []);
+  const allAsItems: Record<string, any>[] = useMemo(() => [...(staticAsItems as any[]), ...localAsItems], [localAsItems]);
   const myTenants = activeTenants.filter(t => myBuildings.includes(t.building));
   const myOverdue = myTenants.filter(t => t.overdue > 0);
   const myTotalOverdue = myOverdue.reduce((s, t) => s + t.overdue, 0);
@@ -24,7 +29,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
   const occupancyRate = totalRooms > 0 ? ((totalOccupied / totalRooms) * 100).toFixed(0) : 0;
 
   const [selectedBldg, setSelectedBldg] = useState(myBuildings[0] || "");
-  const [expandedPatrol, setExpandedPatrol] = useState(null);
+  const [expandedPatrol, setExpandedPatrol] = useState<number | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -32,7 +37,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
   const pendingApprovals = myAS.filter(a => a.ownerApproval === "pending");
 
   // Handle owner approval/rejection
-  const handleApproval = (asId, decision) => {
+  const handleApproval = (asId: number, decision: string) => {
     setLocalAsItems(prev => prev.map(item => {
       if (item.id !== asId) return item;
       const actionLabel = decision === "approved" ? "건물주승인" : "건물주반려";
@@ -272,7 +277,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                 {a.steps && a.steps.length > 0 && (
                   <div style={{ padding: "12px", background: "#fff", borderRadius: 10, border: "1px solid #E8ECF0" }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 8 }}>처리 과정</div>
-                    {a.steps.map((step, si) => (
+                    {a.steps.map((step: Record<string, any>, si: number) => (
                       <div key={si} style={{ display: "flex", gap: 10, marginBottom: si < a.steps.length - 1 ? 8 : 0, paddingBottom: si < a.steps.length - 1 ? 8 : 0, borderBottom: si < a.steps.length - 1 ? "1px solid #F0F2F5" : "none" }}>
                         <div style={{ width: 8, height: 8, borderRadius: "50%", background: si === a.steps.length - 1 ? "#3B82F6" : "#D1D5DB", marginTop: 5, flexShrink: 0 }} />
                         <div style={{ flex: 1 }}>
@@ -395,7 +400,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                           <div style={{ marginBottom: 8 }}>
                             <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 4 }}>시설 점검 결과</div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                              {rec.checklist.map((c, ci) => (
+                              {rec.checklist.map((c: Record<string, any>, ci: number) => (
                                 <span key={ci} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: c.status === "이상" ? "#FEE2E2" : "#D1FAE5", color: c.status === "이상" ? "#DC2626" : "#059669", fontWeight: 600 }}>
                                   {c.status === "정상" ? "✅" : "⚠"} {c.item}{c.comment ? `: ${c.comment}` : ""}
                                 </span>
@@ -405,7 +410,7 @@ export const OwnerDashboard = ({ activeTenants = [], activeVacancies = [] }) => 
                         )}
                         <div style={{ fontSize: 12, color: "#1A1D23", lineHeight: 1.8, marginBottom: 8 }}>{rec.comment}</div>
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          {rec.photos.map((p, pi) => (
+                          {rec.photos.map((p: string, pi: number) => (
                             <div key={pi} style={{ width: 48, height: 48, borderRadius: 6, background: "#E8ECF0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#8F95A3" }}>📷</div>
                           ))}
                         </div>

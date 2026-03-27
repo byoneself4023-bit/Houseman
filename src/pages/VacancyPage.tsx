@@ -1,34 +1,50 @@
 import { useState, useMemo } from 'react';
-import { buildingFloors } from '../data';
-import { useIsMobile, fmt } from '../utils';
-import { matchKorean } from '../utils/koreanSearch';
-import { Card, SectionTitle, Table, StatusBadge } from '../components';
-import { useLocalStorage } from '../utils/useLocalStorage';
+import { buildingFloors } from '@/data';
+import { useIsMobile, fmt } from '@/utils';
+import { matchKorean } from '@/utils/koreanSearch';
+import { Card, SectionTitle, Table, StatusBadge } from '@/components';
+import { useLocalStorage } from '@/utils/useLocalStorage';
+import type { Vacancy, Tenant, CalendarEvent, Building } from '@/types';
 
-export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEvts, setPage, setPendingContract, activeVacancies = [], setActiveVacancies, buildingData = {}, activeTenants = [], setActiveTenants, pastTenantsData = {} }) => {
+interface VacancyPageProps {
+  isLoading?: boolean;
+  myBuildings?: string[];
+  calendarEvts?: CalendarEvent[];
+  setCalendarEvts: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
+  activeVacancies?: Vacancy[];
+  setActiveVacancies: React.Dispatch<React.SetStateAction<Vacancy[]>>;
+  buildingData?: Record<string, any>;
+  activeTenants?: Tenant[];
+  setActiveTenants: React.Dispatch<React.SetStateAction<Tenant[]>>;
+  pastTenantsData?: Record<string, any>;
+  setPendingContract: (contract: any) => void;
+  setPage: (page: string) => void;
+}
+
+export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEvts, setPage, setPendingContract, activeVacancies = [], setActiveVacancies, buildingData = {}, activeTenants = [], setActiveTenants, pastTenantsData = {}, isLoading }: VacancyPageProps) => {
   const isMobile = useIsMobile();
   const [tab, setTab] = useState("전체");
   const [showPrint, setShowPrint] = useState(false);
-  const [reportModal, setReportModal] = useState(null);
-  const [editRow, setEditRow] = useState(null);
+  const [reportModal, setReportModal] = useState<any>(null);
+  const [editRow, setEditRow] = useState<string | null>(null);
   const [linkModal, setLinkModal] = useState(false);
   const [linkSearch, setLinkSearch] = useState("");
   const [showHelp, setShowHelp] = useState(false);
-  const [linkedRooms, setLinkedRooms] = useLocalStorage("hm_linkedRooms", {}); // { "건물_호실": true }
+  const [linkedRooms, setLinkedRooms] = useLocalStorage<Record<string, boolean>>("hm_linkedRooms", {}); // { "건물_호실": true }
   const types = ["전체", "점검/청소중", "홍보중", "임차인연결", "계약서입력"];
 
-  const updateVacancy = (v, patch) => {
-    setActiveVacancies(prev => prev.map(x =>
+  const updateVacancy = (v: Vacancy, patch: Partial<Vacancy>) => {
+    setActiveVacancies((prev: Vacancy[]) => prev.map((x: Vacancy) =>
       x.building === v.building && x.room === v.room ? { ...x, ...patch } : x
     ));
   };
 
-  const rowKey = (r) => `${r.building}_${r.room}`;
+  const rowKey = (r: Vacancy) => `${r.building}_${r.room}`;
 
-  const handleEditSave = (r) => {
-    const g = (id) => document.getElementById(id)?.value;
+  const handleEditSave = (r: Vacancy) => {
+    const g = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value;
     const rk = rowKey(r);
-    const patch = {};
+    const patch: Record<string, any> = {};
     const fields = [
       { id: `ve-${rk}-commEvent`, key: "commEvent", num: false },
       { id: `ve-${rk}-commBroker`, key: "commBroker", num: true },
@@ -46,30 +62,30 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       const v = g(f.id);
       if (v !== undefined) patch[f.key] = f.num ? (Number(v) || 0) : v;
     });
-    updateVacancy(r, patch);
+    updateVacancy(r, patch as Partial<Vacancy>);
     setEditRow(null);
   };
 
-  const renderVal = (value, isNum) => {
+  const renderVal = (value: any, isNum: boolean) => {
     if (isNum) return value > 0 ? fmt(value) : "—";
     if (value === "포함") return <span style={{ color: "#059669", fontWeight: 600 }}>포함</span>;
     if (value === "별도") return <span style={{ color: "#DC2626", fontWeight: 600 }}>별도</span>;
     return value || "—";
   };
-  const myVacancies = myBuildings.length > 0 ? activeVacancies.filter(v => myBuildings.includes(v.building)) : activeVacancies;
-  const getStatus = (v) => {
+  const myVacancies = myBuildings.length > 0 ? activeVacancies.filter((v: Vacancy) => myBuildings.includes(v.building)) : activeVacancies;
+  const getStatus = (v: Vacancy) => {
     // 임차인연결
     if (linkedRooms[`${v.building}_${v.room}`]) return "임차인연결";
     // 캘린더에 계약 이벤트가 있을 때만 계약서입력 (단일 소스)
-    const hasContract = calendarEvts.some(ev => ev.type === "계약" && ev.building === v.building && String(ev.room) === String(v.room));
+    const hasContract = calendarEvts.some((ev: CalendarEvent) => ev.type === "계약" && ev.building === v.building && String(ev.room) === String(v.room));
     if (hasContract) return "계약서입력";
     if (v.status === "홍보중") return "홍보중";
     return "점검/청소중";
   };
-  const filtered = useMemo(() => tab === "전체" ? myVacancies : myVacancies.filter(v => getStatus(v) === tab), [tab, myVacancies, calendarEvts]);
+  const filtered = useMemo(() => tab === "전체" ? myVacancies : myVacancies.filter((v: Vacancy) => getStatus(v) === tab), [tab, myVacancies, calendarEvts]);
 
-  const handleStatusChange = (v, newStatus) => {
-    setActiveVacancies(prev => prev.map(x =>
+  const handleStatusChange = (v: Vacancy, newStatus: string) => {
+    setActiveVacancies((prev: Vacancy[]) => prev.map((x: Vacancy) =>
       x.building === v.building && x.room === v.room ? { ...x, status: newStatus } : x
     ));
   };
@@ -82,8 +98,8 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
   };
 
   if (showPrint) {
-    const grouped = {};
-    activeVacancies.filter(v => getStatus(v) !== "점검/청소중").forEach(v => {
+    const grouped: Record<string, Vacancy[]> = {};
+    activeVacancies.filter((v: Vacancy) => getStatus(v) !== "점검/청소중").forEach((v: Vacancy) => {
       if (!grouped[v.building]) grouped[v.building] = [];
       grouped[v.building].push(v);
     });
@@ -96,7 +112,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
           <div style={{ fontSize: 12, color: "#444", marginTop: 6 }}>{todayStr} 기준</div>
           <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 8 }}>
             {["점검/청소중","홍보중","계약서입력"].map(t => (
-              <span key={t} style={{ fontSize: 12, fontWeight: 700 }}>{t} <span style={{ fontSize: 16, fontWeight: 900 }}>{activeVacancies.filter(v => getStatus(v) === t).length}</span></span>
+              <span key={t} style={{ fontSize: 12, fontWeight: 700 }}>{t} <span style={{ fontSize: 16, fontWeight: 900 }}>{activeVacancies.filter((v: Vacancy) => getStatus(v) === t).length}</span></span>
             ))}
             <span style={{ fontSize: 12, fontWeight: 700 }}>전체 <span style={{ fontSize: 16, fontWeight: 900, color: "#DC2626" }}>{activeVacancies.length}</span></span>
           </div>
@@ -110,12 +126,12 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
             </tr>
           </thead>
           <tbody>
-            {activeVacancies.filter(v => getStatus(v) !== "점검/청소중").map((r, i) => (
+            {activeVacancies.filter((v: Vacancy) => getStatus(v) !== "점검/청소중").map((r: Vacancy, i: number) => (
               <tr key={i} style={{ borderBottom: "1px solid #ddd" }}>
                 <td style={{ padding: "4px 6px", textAlign: "center", fontSize: 10 }}>{r.commEvent || "—"} / {r.commBroker > 0 ? (r.commBroker < 1 ? r.commBroker + "%" : r.commBroker + "만") : "—"}</td>
                 <td style={{ padding: "4px 6px", fontWeight: 700 }}>{r.building}</td>
                 <td style={{ padding: "4px 6px", textAlign: "center" }}>{r.room}</td>
-                <td style={{ padding: "4px 6px", textAlign: "center", fontFamily: "monospace" }}>{r.commFee || "—"}</td>
+                <td style={{ padding: "4px 6px", textAlign: "center", fontFamily: "monospace" }}>{(r as any).commFee || "—"}</td>
                 <td style={{ padding: "4px 6px", textAlign: "right" }}>{fmt(r.deposit)}</td>
                 <td style={{ padding: "4px 6px", textAlign: "right" }}>{fmt(r.rent)}</td>
                 <td style={{ padding: "4px 6px", textAlign: "right", fontWeight: 700, color: r.nego < r.rent ? "#DC2626" : "#000" }}>{fmt(r.nego)}</td>
@@ -169,14 +185,14 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       {linkModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
           onClick={() => setLinkModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 520, width: "100%", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
+          <div onClick={(e: React.MouseEvent) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 520, width: "100%", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
             <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>🔗 임차인 연결</div>
             <div style={{ fontSize: 12, color: "#8F95A3", marginBottom: 16 }}>현재 입주 중인 호실을 선택하면 공실에 "임차인연결"로 등록됩니다</div>
-            <input autoFocus value={linkSearch} onChange={e => setLinkSearch(e.target.value)}
+            <input autoFocus value={linkSearch} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
               style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #E0E3E9", fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, boxSizing: "border-box" }}
-              onFocus={e => e.target.style.borderColor = "#DC2626"}
-              onBlur={e => e.target.style.borderColor = "#E0E3E9"} />
+              onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = "#DC2626"}
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = "#E0E3E9"} />
             {/* 이미 연결된 호실 */}
             {Object.keys(linkedRooms).length > 0 && (
               <div style={{ marginBottom: 12 }}>
@@ -184,15 +200,15 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {Object.keys(linkedRooms).map(key => {
                     const [b, r] = key.split("_");
-                    const tenant = activeTenants.find(t => t.building === b && String(t.room) === String(r));
+                    const tenant = activeTenants.find((t: Tenant) => t.building === b && String(t.room) === String(r));
                     return (
                       <div key={key} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px", borderRadius: 8, background: "#FEF2F2", border: "1px solid #FECACA", fontSize: 11 }}>
                         <span style={{ fontWeight: 700 }}>{b} {r}호</span>
                         {tenant && <span style={{ color: "#8F95A3" }}>{tenant.name}</span>}
                         <span onClick={() => {
-                          setLinkedRooms(prev => { const next = { ...prev }; delete next[key]; return next; });
+                          setLinkedRooms((prev: Record<string, boolean>) => { const next = { ...prev }; delete next[key]; return next; });
                           // 공실에서도 제거
-                          setActiveVacancies(prev => prev.filter(v => !(v.building === b && String(v.room) === String(r) && v.linkedTenant)));
+                          setActiveVacancies((prev: Vacancy[]) => prev.filter((v: Vacancy) => !(v.building === b && String(v.room) === String(r) && (v as any).linkedTenant)));
                         }} style={{ cursor: "pointer", color: "#DC2626", fontWeight: 800, marginLeft: 4 }}>✕</span>
                       </div>
                     );
@@ -202,29 +218,29 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
             )}
             <div style={{ flex: 1, overflowY: "auto" }}>
               {activeTenants
-                .filter(t => t.name && t.name !== "퇴실" && t.status !== "퇴실")
-                .filter(t => !linkSearch || matchKorean(t.building, linkSearch) || t.building.includes(linkSearch) || matchKorean(t.name, linkSearch))
-                .filter(t => !linkedRooms[`${t.building}_${t.room}`]) // 이미 연결된 건 제외
-                .map((t, i) => (
+                .filter((t: Tenant) => t.name && t.name !== "퇴실" && (t.status as string) !== "퇴실")
+                .filter((t: Tenant) => !linkSearch || matchKorean(t.building, linkSearch) || t.building.includes(linkSearch) || matchKorean(t.name, linkSearch))
+                .filter((t: Tenant) => !linkedRooms[`${t.building}_${t.room}`]) // 이미 연결된 건 제외
+                .map((t: Tenant, i: number) => (
                   <div key={i} onClick={() => {
                     const key = `${t.building}_${t.room}`;
                     // linkedRooms에 추가
-                    setLinkedRooms(prev => ({ ...prev, [key]: true }));
+                    setLinkedRooms((prev: Record<string, boolean>) => ({ ...prev, [key]: true }));
                     // 공실 목록에 없으면 추가
-                    const exists = activeVacancies.some(v => v.building === t.building && String(v.room) === String(t.room));
+                    const exists = activeVacancies.some((v: Vacancy) => v.building === t.building && String(v.room) === String(t.room));
                     if (!exists) {
-                      setActiveVacancies(prev => [...prev, {
+                      setActiveVacancies((prev: Vacancy[]) => [...prev, {
                         building: t.building, room: t.room, type: t.type || "단기",
                         deposit: t.deposit || 0, rent: t.rent || 0, mgmt: t.mgmt || 0,
                         nego: t.rent || 0, water: "", cable: "", exitFee: 0, days: 0,
                         commBroker: 0, commEvent: "", pw: "", status: "홍보중",
                         linkedTenant: t.name,
-                      }]);
+                      } as any]);
                     }
                   }}
                     style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: 10, marginBottom: 4, cursor: "pointer", background: "#F9FAFB", transition: "all 0.2s" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#FEF2F2"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#F9FAFB"}>
+                    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = "#FEF2F2"}
+                    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = "#F9FAFB"}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호 <span style={{ fontWeight: 500, color: "#5F6577" }}>{t.name}</span></div>
                       <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>만기: {t.expiry || "-"} · 월세: {fmt(t.rent)} · {t.type || "단기"}</div>
@@ -243,8 +259,8 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       {/* Summary badges */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
         {types.map(t => {
-          const count = t === "전체" ? myVacancies.length : myVacancies.filter(v => getStatus(v) === t).length;
-          const colors = { "전체": "#1A1D23", "점검/청소중": "#6B7280", "홍보중": "#3B82F6", "임차인연결": "#DC2626", "계약서입력": "#F59E0B" };
+          const count = t === "전체" ? myVacancies.length : myVacancies.filter((v: Vacancy) => getStatus(v) === t).length;
+          const colors: Record<string, string> = { "전체": "#1A1D23", "점검/청소중": "#6B7280", "홍보중": "#3B82F6", "임차인연결": "#DC2626", "계약서입력": "#F59E0B" };
           return (
             <button key={t} onClick={() => setTab(t)}
               style={{ padding: "7px 16px", borderRadius: 8, border: tab === t ? `2px solid ${colors[t]}` : "1px solid #E0E3E9", background: tab === t ? `${colors[t]}10` : "#fff", color: tab === t ? colors[t] : "#5F6577", fontWeight: 600, fontSize: 12.5, cursor: "pointer", fontFamily: "inherit" }}>
@@ -266,7 +282,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
             </tr>
           </thead>
           <tbody>
-            {filtered.map((r, i) => {
+            {filtered.map((r: Vacancy, i: number) => {
               const negoDiscount = r.nego < r.rent;
               const st = getStatus(r);
               const contracted = st === "계약서입력";
@@ -274,7 +290,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
               const cellOpacity = contracted ? 0.5 : 1;
               const rk = rowKey(r);
               const isEditing = editRow === rk;
-              const inpSt = { width: "100%", padding: "4px 6px", borderRadius: 4, border: "1.5px solid #93C5FD", fontSize: 11, fontFamily: "inherit", outline: "none", background: "#EFF6FF" };
+              const inpSt: React.CSSProperties = { width: "100%", padding: "4px 6px", borderRadius: 4, border: "1.5px solid #93C5FD", fontSize: 11, fontFamily: "inherit", outline: "none", background: "#EFF6FF" };
               return (
                 <tr key={i} style={{ borderBottom: "1px solid #F0F2F5", position: "relative", background: isEditing ? "#FAFBFF" : "transparent" }}
                   onMouseEnter={e => { if (!isEditing) e.currentTarget.style.background = contracted ? "#F0FDF4" : "#F9FAFB"; }}
@@ -337,7 +353,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                     <td key={fi} style={{ padding: "4px 4px" }}><input id={`ve-${rk}-${f.field}`} defaultValue={f.value ?? ""} style={{ ...inpSt, textAlign: "right" }} /></td>
                   ) : (
                     <td key={fi} style={{ padding: "10px 8px", textAlign: "right", textDecoration: cellDeco, opacity: cellOpacity, ...(f.extra || {}), fontSize: !f.num ? 11 : undefined }}>
-                      {f.field === "days" ? (f.value > 0 ? <span style={{ fontWeight: 700, color: f.value > 30 ? "#DC2626" : f.value > 14 ? "#EA580C" : "#1A1D23" }}>{f.value}</span> : <span style={{ color: "#10B981", fontWeight: 600, fontSize: 11 }}>신규</span>) : renderVal(f.value, f.num)}
+                      {f.field === "days" ? (Number(f.value) > 0 ? <span style={{ fontWeight: 700, color: Number(f.value) > 30 ? "#DC2626" : Number(f.value) > 14 ? "#EA580C" : "#1A1D23" }}>{f.value}</span> : <span style={{ color: "#10B981", fontWeight: 600, fontSize: 11 }}>신규</span>) : renderVal(f.value, f.num)}
                     </td>
                   ))}
                   {/* 상태 버튼 (맨뒤) */}
@@ -392,7 +408,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
         return (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
             onClick={() => setReportModal(null)}>
-            <div onClick={e => e.stopPropagation()}
+            <div onClick={(e: React.MouseEvent) => e.stopPropagation()}
               style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
               <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>📩 건물주 보고 — {rv.building} {rv.room}호</span>
@@ -401,7 +417,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
               <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
-                {owners.map((o, oi) => (
+                {owners.map((o: any, oi: number) => (
                   <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
                     <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
                     <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
@@ -417,7 +433,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => {
-                  const msg = document.getElementById("report-msg")?.value || msgText;
+                  const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
                   if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
                   const smsUrl = `sms:${ownerPhone}?body=${encodeURIComponent(msg)}`;
                   window.open(smsUrl, "_blank");
@@ -428,7 +444,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                   📱 문자 보내기
                 </button>
                 <button onClick={() => {
-                  const msg = document.getElementById("report-msg")?.value || msgText;
+                  const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
                   if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
                   const kakaoUrl = `https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`;
                   window.open(kakaoUrl, "_blank");
@@ -439,7 +455,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                   💬 카카오톡
                 </button>
                 <button onClick={() => {
-                  const msg = document.getElementById("report-msg")?.value || msgText;
+                  const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
                   navigator.clipboard.writeText(msg);
                   alert("메시지가 클립보드에 복사되었습니다.");
                 }}

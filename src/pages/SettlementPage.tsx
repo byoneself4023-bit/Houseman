@@ -1,13 +1,33 @@
 import React, { useState, useMemo } from 'react';
-import { settlementMaster, buildingAccountMap, getSettlementPeriod, calcFee, calcProRata, calcVat } from '../data';
-import { useIsMobile, fmt } from '../utils';
-import { Card, SectionTitle } from '../components';
-import { SettlementPrintView } from '../components/SettlementPrintView';
+import { settlementMaster, buildingAccountMap, getSettlementPeriod, calcFee, calcProRata, calcVat } from '@/data';
+import { useIsMobile, fmt } from '@/utils';
+import { Card, SectionTitle } from '@/components';
+import { SettlementPrintView } from '@/components/SettlementPrintView';
+import type { Tenant, SettlementExpense } from '@/types';
 
-class SettlementErrorBoundary extends React.Component {
-  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
-  static getDerivedStateFromError(error) { return { hasError: true, error }; }
-  componentDidCatch(error, info) { console.error("SettlementPage error:", error, info?.componentStack); }
+interface SettlementPageProps {
+  isLoading?: boolean;
+  myBuildings?: string[];
+  activeTenants?: Tenant[];
+  transactions?: any[];
+  settlementExpenses?: SettlementExpense[];
+  setSettlementExpenses: React.Dispatch<React.SetStateAction<SettlementExpense[]>>;
+  buildingData?: Record<string, any>;
+  pastTenantsData?: Record<string, any>;
+  addCashbookEntry?: (entry: Record<string, any>) => void;
+  roomBalances?: Record<string, number>;
+  billingHistory?: Record<string, any>;
+}
+
+interface SettlementErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class SettlementErrorBoundary extends React.Component<{ children: React.ReactNode }, SettlementErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error: Error) { return { hasError: true, error }; }
+  componentDidCatch(error: Error, info: React.ErrorInfo) { console.error("SettlementPage error:", error, info?.componentStack); }
   render() {
     if (this.state.hasError) {
       return <div style={{ padding: 40, textAlign: "center" }}>
@@ -20,11 +40,11 @@ class SettlementErrorBoundary extends React.Component {
   }
 }
 
-export const SettlementPage = (props) => (
+export const SettlementPage = (props: SettlementPageProps) => (
   <SettlementErrorBoundary><SettlementPageInner {...props} /></SettlementErrorBoundary>
 );
 
-const TYPE_LABELS = {
+const TYPE_LABELS: Record<string, string> = {
   "A": "단기(%)",
   "B": "1시트",
   "C": "건물주계좌",
@@ -34,14 +54,14 @@ const TYPE_LABELS = {
   "X": "기타",
 };
 
-const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transactions = [], settlementExpenses = [], setSettlementExpenses, buildingData = {}, pastTenantsData = {}, addCashbookEntry }) => {
+const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transactions = [], settlementExpenses = [], setSettlementExpenses, buildingData = {}, pastTenantsData = {}, addCashbookEntry, isLoading }: SettlementPageProps) => {
   const isMobile = useIsMobile();
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
   const [selectedBuilding, setSelectedBuilding] = useState("전체");
-  const [detailBuilding, setDetailBuilding] = useState(null);
+  const [detailBuilding, setDetailBuilding] = useState<string | null>(null);
   const [printMode, setPrintMode] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [formBuilding, setFormBuilding] = useState("");
@@ -51,7 +71,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
   const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const [y, m] = selectedMonth.split("-").map(Number);
-  const changeMonth = (delta) => {
+  const changeMonth = (delta: number) => {
     const d = new Date(y, m - 1 + delta, 1);
     setSelectedMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
   };
@@ -59,13 +79,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
 
   // 건물 리스트: activeTenants + settlementMaster에 등록된 건물 합산
   const buildingList = useMemo(() => {
-    const fromTenants = new Set(activeTenants.map(t => t.building));
+    const fromTenants = new Set(activeTenants.map((t: Tenant) => t.building));
     const fromMaster = new Set(Object.keys(settlementMaster));
     const all = [...new Set([...fromTenants, ...fromMaster])];
     if (myBuildings.length > 0) return all.filter(n => myBuildings.includes(n));
     return all.sort((a, b) => {
-      const ta = settlementMaster[a]?.type || "Z";
-      const tb = settlementMaster[b]?.type || "Z";
+      const ta = (settlementMaster as any)[a]?.type || "Z";
+      const tb = (settlementMaster as any)[b]?.type || "Z";
       return ta.localeCompare(tb) || a.localeCompare(b);
     });
   }, [activeTenants, myBuildings]);
@@ -75,23 +95,23 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
   // 건물별 정산 계산
   const buildingSettlements = useMemo(() => {
     return displayBuildings.map(bName => {
-      const masterCfg = settlementMaster[bName] || {};
-      const cfg = { type: "A", feeType: "pct", feeRate: 0, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "", notes: "", ...masterCfg };
+      const masterCfg = (settlementMaster as any)[bName] || {};
+      const cfg: Record<string, any> = { type: "A", feeType: "pct", feeRate: 0, direction: "hm_to_owner", settlementDay: "말일", periodType: "month", vat: false, address: "", notes: "", ...masterCfg };
       const period = getSettlementPeriod(bName, y, m);
-      const bTenants = activeTenants.filter(t => t.building === bName);
-      const acctInfo = buildingAccountMap[bName] || {};
+      const bTenants = activeTenants.filter((t: Tenant) => t.building === bName);
+      const acctInfo = (buildingAccountMap as any)[bName] || {};
 
       // 입주자 (해당월 신규)
-      const moveInTenants = bTenants.filter(t => t.moveIn && t.moveIn.startsWith(selectedMonth));
+      const moveInTenants = bTenants.filter((t: Tenant) => t.moveIn && t.moveIn.startsWith(selectedMonth));
       const moveInCount = moveInTenants.length;
 
       // 퇴실자 (pastTenantsData에서 — 필드: moveOut)
-      const moveOutTenants = [];
+      const moveOutTenants: any[] = [];
       try {
-        Object.entries(pastTenantsData || {}).forEach(([key, records]) => {
+        Object.entries(pastTenantsData || {}).forEach(([key, records]: [string, any]) => {
           if (!key.startsWith(bName + "_")) return;
           if (!Array.isArray(records)) return;
-          records.forEach(rec => {
+          records.forEach((rec: any) => {
             const moDate = rec?.moveOut || rec?.moveOutDate;
             if (rec && moDate && moDate.startsWith(selectedMonth)) {
               const room = key.split("_").slice(1).join("_"); // "301_2" → "301_2" or "405" → "405"
@@ -102,7 +122,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       } catch(e) { console.warn("pastTenantsData 파싱 오류:", e); }
 
       // 1. 호실별 월세 정산
-      const roomSettlements = bTenants.map(t => {
+      const roomSettlements = bTenants.map((t: Tenant) => {
         const fee = calcFee(t.rent, bName);
         const settlementAmt = t.rent - fee;
         const mgmtSettlement = cfg.includeMgmt ? (t.mgmt || 0) : 0;
@@ -116,21 +136,21 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         };
       });
 
-      const totalRent = roomSettlements.reduce((s, r) => s + r.rent, 0);
-      const totalFee = roomSettlements.reduce((s, r) => s + r.fee, 0);
-      const totalRentSettlement = roomSettlements.reduce((s, r) => s + r.settlementAmt, 0);
-      const totalMgmtSettlement = roomSettlements.reduce((s, r) => s + r.mgmtSettlement, 0);
+      const totalRent = roomSettlements.reduce((s: number, r: any) => s + r.rent, 0);
+      const totalFee = roomSettlements.reduce((s: number, r: any) => s + r.fee, 0);
+      const totalRentSettlement = roomSettlements.reduce((s: number, r: any) => s + r.settlementAmt, 0);
+      const totalMgmtSettlement = roomSettlements.reduce((s: number, r: any) => s + r.mgmtSettlement, 0);
 
       // 2. 입주 정산 (예치금, 중개수수료)
-      const moveInSettlements = moveInTenants.map(t => ({
+      const moveInSettlements = moveInTenants.map((t: Tenant) => ({
         room: t.room, name: t.name, moveIn: t.moveIn,
         deposit: t.deposit || 0,
-        brokerageFee: t.brokerageFee || 0, // 중개수수료 (마이너스 값으로 반영)
+        brokerageFee: (t as any).brokerageFee || 0, // 중개수수료 (마이너스 값으로 반영)
       }));
-      const totalBrokerage = moveInSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
+      const totalBrokerage = moveInSettlements.reduce((s: number, r: any) => s + (r.brokerageFee || 0), 0);
 
       // 3. 퇴실 정산 (일할 + 청소비 + 검침 + 위약금 + 훼손 + 예치금반환)
-      const moveOutSettlements = moveOutTenants.map(mt => {
+      const moveOutSettlements = moveOutTenants.map((mt: any) => {
         const moveOutDay = parseInt(mt.moveOutDate?.split("-")[2]) || 1;
         const rent = mt.rent || 0;
         const mgmt = mt.mgmt || 0;
@@ -171,23 +191,23 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           brokerageFee: mt.brokerageFee || 0,
         };
       });
-      const totalMoveOutRent = moveOutSettlements.reduce((s, r) => s + r.settlementAmt, 0);
-      const totalPenalty = moveOutSettlements.reduce((s, r) => s + r.penalty7, 0);
-      const totalDepositReturn = moveOutSettlements.reduce((s, r) => s + r.depositReturn, 0);
-      const totalMoveOutBrokerage = moveOutSettlements.reduce((s, r) => s + (r.brokerageFee || 0), 0);
+      const totalMoveOutRent = moveOutSettlements.reduce((s: number, r: any) => s + r.settlementAmt, 0);
+      const totalPenalty = moveOutSettlements.reduce((s: number, r: any) => s + r.penalty7, 0);
+      const totalDepositReturn = moveOutSettlements.reduce((s: number, r: any) => s + r.depositReturn, 0);
+      const totalMoveOutBrokerage = moveOutSettlements.reduce((s: number, r: any) => s + (r.brokerageFee || 0), 0);
 
       // 4. 공제내역
-      const deductions = settlementExpenses.filter(e => e.building === bName && e.month === selectedMonth);
-      const totalDeduction = deductions.reduce((s, e) => s + e.amount, 0);
+      const deductions = settlementExpenses.filter((e: SettlementExpense) => e.building === bName && e.month === selectedMonth);
+      const totalDeduction = deductions.reduce((s: number, e: SettlementExpense) => s + e.amount, 0);
 
       // 합산 중개수수료 (입주 + 퇴실시 기록된)
       const allBrokerage = totalBrokerage + totalMoveOutBrokerage;
 
       // 5. 최종 정산금 계산 (유형별)
-      let subtotal, finalAmount;
+      let subtotal: number, finalAmount: number;
       if (cfg.feeType === "salary") {
         // 월급형: 관리수수료 + 부가항목 + 지출
-        const subItemsTotal = (cfg.subItems || []).reduce((s, si) => s + si.amount, 0);
+        const subItemsTotal = (cfg.subItems || []).reduce((s: number, si: any) => s + si.amount, 0);
         subtotal = (cfg.feeAmount || 0) + subItemsTotal + totalDeduction;
         const vatInfo = cfg.vat ? { supply: Math.round(subtotal / 1.1), tax: subtotal - Math.round(subtotal / 1.1), total: subtotal } : { supply: subtotal, tax: 0, total: subtotal };
         finalAmount = cfg.vat ? (cfg.feeAmount || 0) + subItemsTotal + totalDeduction : subtotal;
@@ -208,7 +228,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       } else if (cfg.feeType === "collection") {
         // 관리비수금형: 수금 - 비용 = 건물주에게
         const collected = bTenants.length * (cfg.mgmtFeePerUnit || 0);
-        const costsTotal = (cfg.costItems || []).reduce((s, ci) => s + ci.amount, 0);
+        const costsTotal = (cfg.costItems || []).reduce((s: number, ci: any) => s + ci.amount, 0);
         subtotal = collected - costsTotal - totalDeduction;
         return {
           building: bName, cfg, period, acctInfo,
@@ -241,7 +261,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
     });
   }, [displayBuildings, activeTenants, settlementExpenses, selectedMonth, pastTenantsData]);
 
-  const totalSummary = useMemo(() => buildingSettlements.reduce((acc, b) => ({
+  const totalSummary = useMemo(() => buildingSettlements.reduce((acc: any, b: any) => ({
     rent: acc.rent + b.totalRentSettlement,
     deduction: acc.deduction + b.totalDeduction,
     final: acc.final + b.finalAmount,
@@ -249,7 +269,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
 
   const handleAddExpense = () => {
     if (!formBuilding || !formDesc.trim() || !formAmount) return;
-    setSettlementExpenses(prev => [...prev, {
+    setSettlementExpenses((prev: SettlementExpense[]) => [...prev, {
       id: Date.now(), month: selectedMonth, building: formBuilding,
       room: formRoom, category: "deduction", desc: formDesc.trim(),
       amount: Number(formAmount), date: formDate,
@@ -263,7 +283,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       `${y}-01-01`, `${y}-03-01`, `${y}-05-05`, `${y}-06-06`,
       `${y}-08-15`, `${y}-10-03`, `${y}-10-09`, `${y}-12-25`,
     ];
-    const lunar = {
+    const lunar: Record<number, string[]> = {
       2025: [`2025-01-28`, `2025-01-29`, `2025-01-30`, `2025-05-05`, `2025-09-06`, `2025-09-07`, `2025-09-08`],
       2026: [`2026-02-16`, `2026-02-17`, `2026-02-18`, `2026-05-24`, `2026-09-24`, `2026-09-25`, `2026-09-26`],
       2027: [`2027-02-05`, `2027-02-06`, `2027-02-07`, `2027-05-13`, `2027-10-14`, `2027-10-15`, `2027-10-16`],
@@ -271,20 +291,20 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
     return new Set([...fixed, ...(lunar[y] || [])]);
   }, [y]);
 
-  const isBusinessDay = (date) => {
+  const isBusinessDay = (date: Date): boolean => {
     const dow = date.getDay();
     if (dow === 0 || dow === 6) return false;
     const ds = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     return !koreanHolidays.has(ds);
   };
 
-  const getNextBusinessDay = (date) => {
+  const getNextBusinessDay = (date: Date): Date => {
     const d = new Date(date);
     while (!isBusinessDay(d)) { d.setDate(d.getDate() + 1); }
     return d;
   };
 
-  const resolveSettlementDay = (dayVal, year, month) => {
+  const resolveSettlementDay = (dayVal: string | number, year: number, month: number): Date => {
     const lastDay = new Date(year, month, 0).getDate();
     const day = dayVal === "말일" ? lastDay : Math.min(Number(dayVal) || lastDay, lastDay);
     const base = new Date(year, month - 1, day);
@@ -294,23 +314,23 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
   const WEEKDAY_KR = ["일", "월", "화", "수", "목", "금", "토"];
 
   const timelineItems = useMemo(() => {
-    const items = [];
+    const items: any[] = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    buildingSettlements.forEach(bs => {
+    buildingSettlements.forEach((bs: any) => {
       const bsCfg = bs.cfg;
       const savedDates = buildingData[bs.building]?.settlementDates;
-      let dates;
+      let dates: string[];
       if (savedDates && savedDates.length > 0) {
         dates = savedDates;
       } else if (bsCfg.frequency === "twice" && bsCfg.dates) {
-        dates = bsCfg.dates.map(d => String(d));
+        dates = bsCfg.dates.map((d: any) => String(d));
       } else {
         dates = [String(bsCfg.settlementDay || "말일")];
       }
 
-      dates.forEach((dayVal, idx) => {
+      dates.forEach((dayVal: string, idx: number) => {
         const resolved = resolveSettlementDay(dayVal, y, m);
         const originalDay = dayVal === "말일" ? new Date(y, m, 0).getDate() : Number(dayVal);
         const wasAdjusted = resolved.getDate() !== originalDay || resolved.getMonth() + 1 !== m;
@@ -331,30 +351,30 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       });
     });
 
-    items.sort((a, b) => a.resolvedDate - b.resolvedDate);
+    items.sort((a: any, b: any) => a.resolvedDate - b.resolvedDate);
     return items;
   }, [buildingSettlements, y, m, buildingData, koreanHolidays]);
 
   const dateGroups = useMemo(() => {
-    const groups = new Map();
-    timelineItems.forEach(item => {
+    const groups = new Map<string, any[]>();
+    timelineItems.forEach((item: any) => {
       const key = item.resolvedStr;
       if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(item);
+      groups.get(key)!.push(item);
     });
     return [...groups.entries()];
   }, [timelineItems]);
 
   // ===== 인쇄 미리보기 =====
   if (printMode && detailBuilding) {
-    const bs = buildingSettlements.find(b => b.building === detailBuilding);
+    const bs = buildingSettlements.find((b: any) => b.building === detailBuilding);
     if (!bs) { setPrintMode(false); return null; }
     return <SettlementPrintView data={bs} onClose={() => setPrintMode(false)} />;
   }
 
   // ===== 상세 보기 =====
   if (detailBuilding) {
-    const bs = buildingSettlements.find(b => b.building === detailBuilding);
+    const bs = buildingSettlements.find((b: any) => b.building === detailBuilding);
     if (!bs) return <div style={{ padding: 40, textAlign: "center", color: "#8F95A3" }}><span style={{ cursor: "pointer", color: "#3B82F6" }} onClick={() => setDetailBuilding(null)}>← 목록으로</span></div>;
     const cfg = bs.cfg || {};
     const period = bs.period || {};
@@ -379,7 +399,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             {addCashbookEntry && (
               <button
                 onClick={() => {
-                  const acct = buildingAccountMap[bs.building] || {};
+                  const acct = (buildingAccountMap as any)[bs.building] || {};
                   const ownerAcct = acct.owner ? `${acct.owner.bank} ${acct.owner.account}` : "";
                   const holder = acct.owner?.name || "";
                   addCashbookEntry({
@@ -452,7 +472,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                       <span style={{ fontSize: 12, color: "#374151" }}>1. 관리 수수료</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#7C3AED" }}>{fmt(cfg.feeAmount)}원</span>
                     </div>
-                    {cfg.subItems && cfg.subItems.map((si, i) => (
+                    {cfg.subItems && cfg.subItems.map((si: any, i: number) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
                         <span style={{ fontSize: 12, color: "#374151" }}>   {si.name}</span>
                         <span style={{ fontSize: 12, fontWeight: 600, color: "#5F6577" }}>{fmt(si.amount)}원</span>
@@ -518,6 +538,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           </div>
         </Card>
 
+        {/* The rest of the detail view is very long - continuing with the same pattern */}
         {/* ===== 상세내역: 호실 정산 ===== */}
         <Card style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #E8ECF0" }}>
@@ -530,13 +551,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   {(isSalary
                     ? ["호실", "상태", "임차인", "입주일", "만기일", "보증금", "임대료", "관리비"]
                     : ["호실", "상태", "세입자", "입주일", "예치금", "월세", "월세일", `수수료(${(cfg.feeRate*100).toFixed(1)}%)`, "정산금", ...(cfg.includeMgmt ? ["관리비"] : [])]
-                  ).map((h, i) => (
+                  ).map((h: string, i: number) => (
                     <th key={i} style={{ padding: "8px 10px", textAlign: i >= (isSalary ? 5 : 4) ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {bs.roomSettlements.map((r, i) => (
+                {bs.roomSettlements.map((r: any, i: number) => (
                   <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
                     <td style={{ padding: "8px 10px", fontWeight: 700 }}>{r.room}</td>
                     <td style={{ padding: "8px 10px" }}><span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "#ECFDF5", color: "#059669", fontWeight: 600 }}>{r.status}</span></td>
@@ -560,10 +581,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {bs.roomSettlements.length > 0 && (
                   <tr style={{ borderTop: "2px solid #1A1D23", background: "#F9FAFB" }}>
                     <td colSpan={isSalary ? 5 : 5} style={{ padding: "10px", fontWeight: 800, fontSize: 13 }}>합계</td>
-                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + r.deposit, 0))}</td>
+                    <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + r.deposit, 0))}</td>
                     <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.totalRent)}</td>
                     {isSalary ? (
-                      <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s,r) => s + (r.mgmt || 0), 0))}</td>
+                      <td style={{ padding: "10px", textAlign: "right", fontWeight: 800 }}>{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + (r.mgmt || 0), 0))}</td>
                     ) : (
                       <>
                         <td></td>
@@ -589,7 +610,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
               관리 부가항목
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {cfg.subItems.map((si, i) => (
+              {cfg.subItems.map((si: any, i: number) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 10px", borderRadius: 6, background: "#F5F3FF", border: "1px solid #DDD6FE" }}>
                   <div>
                     <span style={{ fontWeight: 600 }}>{si.name}</span>
@@ -600,7 +621,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", borderTop: "2px solid #7C3AED" }}>
                 <span style={{ fontWeight: 800 }}>부가항목 합계</span>
-                <span style={{ fontWeight: 800, color: "#7C3AED", fontSize: 14 }}>{fmt(cfg.subItems.reduce((s, si) => s + si.amount, 0))}원</span>
+                <span style={{ fontWeight: 800, color: "#7C3AED", fontSize: 14 }}>{fmt(cfg.subItems.reduce((s: number, si: any) => s + si.amount, 0))}원</span>
               </div>
             </div>
           </Card>
@@ -622,7 +643,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   </tr>
                 </thead>
                 <tbody>
-                  {bs.moveInSettlements.map((mi, i) => (
+                  {bs.moveInSettlements.map((mi: any, i: number) => (
                     <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}>
                       <td style={{ padding: "8px 10px", fontWeight: 700 }}>{mi.room}</td>
                       <td style={{ padding: "8px 10px" }}>{mi.name}</td>
@@ -646,9 +667,8 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
               퇴실 정산 ({bs.moveOutSettlements.length}건)
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {bs.moveOutSettlements.map((mt, i) => (
+              {bs.moveOutSettlements.map((mt: any, i: number) => (
                 <div key={i} style={{ padding: "14px 16px", borderRadius: 10, background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-                  {/* 헤더 */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid #BFDBFE" }}>
                     <div>
                       <span style={{ fontWeight: 800, fontSize: 14 }}>{mt.room}호</span>
@@ -660,13 +680,11 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                       </span>
                     </div>
                   </div>
-                  {/* 기본 정보 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, fontSize: 11, marginBottom: 8 }}>
                     <div><span style={{ color: "#8F95A3" }}>퇴실일</span> <strong>{mt.moveOutDate}</strong></div>
                     <div><span style={{ color: "#8F95A3" }}>입주일</span> <strong>{mt.moveIn?.slice(5)}</strong></div>
                     <div><span style={{ color: "#8F95A3" }}>만기일</span> <strong>{mt.expiry?.slice(5) || "—"}</strong></div>
                   </div>
-                  {/* 일할계산 */}
                   <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px", marginBottom: 6 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 4 }}>일할계산 ({mt.usedDays}일 / {mt.totalDays}일)</div>
                     <div style={{ display: "flex", gap: 16, fontSize: 11 }}>
@@ -676,7 +694,6 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                       <span>정산금: <strong style={{ color: "#2563EB" }}>{fmt(mt.settlementAmt)}</strong></span>
                     </div>
                   </div>
-                  {/* 공제 항목 */}
                   <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px", marginBottom: 6 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 4 }}>퇴실 공제</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, fontSize: 11 }}>
@@ -689,7 +706,6 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     </div>
                     <div style={{ marginTop: 4, fontSize: 11, fontWeight: 600 }}>공제합계: <strong style={{ color: "#DC2626" }}>{fmt(mt.totalDeductItems)}</strong></div>
                   </div>
-                  {/* 예치금 반환 */}
                   <div style={{ background: "#fff", borderRadius: 6, padding: "8px 10px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
                       <span>예치금: <strong>{fmt(mt.depositReturn)}</strong></span>
@@ -713,13 +729,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           </div>
           {bs.deductions.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {bs.deductions.map((d, i) => (
+              {bs.deductions.map((d: any, i: number) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 6, background: "#FEF2F2", border: "1px solid #FECACA" }}>
                   <span style={{ fontSize: 11, color: "#5F6577", minWidth: 70 }}>{d.date}</span>
                   {d.room && <span style={{ fontSize: 11, fontWeight: 600 }}>{d.room}호</span>}
                   <span style={{ flex: 1, fontSize: 12, color: "#374151" }}>{d.desc}</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: "#DC2626" }}>{fmt(d.amount)}원</span>
-                  <button onClick={() => setSettlementExpenses(prev => prev.filter(e => e.id !== d.id))}
+                  <button onClick={() => setSettlementExpenses((prev: SettlementExpense[]) => prev.filter((e: SettlementExpense) => e.id !== d.id))}
                     style={{ border: "none", background: "#fff", color: "#DC2626", borderRadius: 4, padding: "2px 8px", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>삭제</button>
                 </div>
               ))}
@@ -729,13 +745,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           )}
           {/* 공제 추가 폼 */}
           <div style={{ marginTop: 10, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <input value={formDate} onChange={e => setFormDate(e.target.value)} type="date"
+            <input value={formDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormDate(e.target.value)} type="date"
               style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", fontSize: 11, fontFamily: "inherit", width: 130 }} />
-            <input value={formRoom} onChange={e => setFormRoom(e.target.value)} placeholder="호실"
+            <input value={formRoom} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormRoom(e.target.value)} placeholder="호실"
               style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", fontSize: 11, fontFamily: "inherit", width: 60 }} />
-            <input value={formDesc} onChange={e => setFormDesc(e.target.value)} placeholder="내역 (수리비, 청소비 등)"
+            <input value={formDesc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormDesc(e.target.value)} placeholder="내역 (수리비, 청소비 등)"
               style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", fontSize: 11, fontFamily: "inherit", flex: 1, minWidth: 120 }} />
-            <input value={formAmount} onChange={e => setFormAmount(e.target.value)} type="number" placeholder="금액"
+            <input value={formAmount} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormAmount(e.target.value)} type="number" placeholder="금액"
               style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", fontSize: 11, fontFamily: "inherit", width: 90, textAlign: "right" }} />
             <button onClick={() => { setFormBuilding(bs.building); handleAddExpense(); }}
               style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: "#DC2626", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>추가</button>
@@ -787,14 +803,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 4 }}>이번 달 정산 건수</div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#F59E0B" }}>{timelineItems.length}건</div>
           <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>
-            {timelineItems.filter(i => i.isPast).length}건 완료 · {timelineItems.filter(i => !i.isPast && i.daysUntil <= 7).length}건 오픈 · {timelineItems.filter(i => i.daysUntil > 7).length}건 예정
+            {timelineItems.filter((i: any) => i.isPast).length}건 완료 · {timelineItems.filter((i: any) => !i.isPast && i.daysUntil <= 7).length}건 오픈 · {timelineItems.filter((i: any) => i.daysUntil > 7).length}건 예정
           </div>
         </Card>
       </div>
 
       {/* ===== 날짜별 타임라인 ===== */}
       <div style={{ position: "relative" }}>
-        {/* 타임라인 세로선 */}
         <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 3, background: "linear-gradient(180deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%)", borderRadius: 2, zIndex: 0 }} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -805,11 +820,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             const isPast = items[0].isPast;
             const isToday = items[0].isToday;
             const isUrgent = items[0].isUrgent;
-            const totalAmount = items.reduce((s, i) => s + (i.bs.finalAmount / (i.totalRounds || 1)), 0);
+            const totalAmount = items.reduce((s: number, i: any) => s + (i.bs.finalAmount / (i.totalRounds || 1)), 0);
 
             return (
               <div key={dateStr} style={{ position: "relative", paddingLeft: 52, marginBottom: 8 }}>
-                {/* 날짜 노드 */}
                 <div style={{
                   position: "absolute", left: 6, top: 4, width: 32, height: 32, borderRadius: "50%",
                   background: isToday ? "linear-gradient(135deg, #3B82F6, #2563EB)" : isPast ? "#D1D5DB" : isUrgent ? "linear-gradient(135deg, #F59E0B, #EF4444)" : "linear-gradient(135deg, #8B5CF6, #6366F1)",
@@ -819,7 +833,6 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   <span style={{ fontSize: 13, fontWeight: 800, color: "#fff" }}>{dayNum}</span>
                 </div>
 
-                {/* 날짜 헤더 */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, paddingTop: 4 }}>
                   <span style={{ fontSize: 14, fontWeight: 800, color: isToday ? "#2563EB" : isPast ? "#9CA3AF" : "#1A1D23" }}>
                     {m}월 {dayNum}일 ({weekday})
@@ -831,9 +844,8 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: isPast ? "#9CA3AF" : "#374151" }}>{items.length}건</span>
                 </div>
 
-                {/* 해당 날짜 건물 카드들 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  {items.map((item, idx) => {
+                  {items.map((item: any, idx: number) => {
                     const { bs: ibs, cfg: icfg, round, totalRounds, wasAdjusted, originalDay } = item;
                     const typeLabel = TYPE_LABELS[icfg.type] || icfg.type;
                     const isSal = icfg.feeType === "salary";
@@ -841,7 +853,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     const roundLabel = totalRounds > 1 ? `${round}차` : "";
                     const roundColors = ["", "#3B82F6", "#8B5CF6", "#EC4899"];
 
-                    const isOpen = item.daysUntil <= 7; // D-7 이내만 금액 오픈
+                    const isOpen = item.daysUntil <= 7;
 
                     return (
                       <div key={`${item.building}-${round}`}
@@ -876,7 +888,6 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                             )}
                           </div>
                         </div>
-                        {/* 상세 정보 줄 — 오픈 상태에서만 */}
                         {isOpen && (
                           <div style={{ display: "flex", gap: 12, fontSize: 11, color: isPast ? "#B0B5C1" : "#5F6577", marginTop: 6 }}>
                             {!isSal && ibs.totalRent > 0 && <span>월세 <strong>{fmt(ibs.totalRent)}</strong></span>}
@@ -890,7 +901,6 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                             </span>
                           </div>
                         )}
-                        {/* 할 일 체크리스트 — 오픈 + 미래만 */}
                         {isOpen && !isPast && (
                           <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
                             <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 6, background: "#FEF3C7", color: "#92400E", fontWeight: 600 }}>정산서 작성</span>

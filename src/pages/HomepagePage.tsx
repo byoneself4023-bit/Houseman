@@ -1,26 +1,35 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { vacancies } from '../data';
-import { roomMasterData } from '../data/roomMasterData';
-import { useIsMobile, fmt } from '../utils';
-import '../styles/homepage.css';
+import { vacancies } from '@/data';
+import { roomMasterData } from '@/data/roomMasterData';
+import { useIsMobile, fmt } from '@/utils';
+import '@/styles/homepage.css';
 
 /* ─── Scroll reveal hook ─── */
 const useReveal = (threshold = 0.1) => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current; if (!el) return;
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } }, { threshold });
     obs.observe(el); return () => obs.disconnect();
   }, []); return ref;
 };
-const Reveal = ({ children, cls = "hm-reveal", delay = 0, style = {} }) => {
+interface RevealProps {
+  children: React.ReactNode;
+  cls?: string;
+  className?: string;
+  delay?: number;
+  style?: React.CSSProperties;
+  [key: string]: any;
+}
+
+const Reveal = ({ children, cls, className, delay = 0, style = {}, ...rest }: RevealProps) => {
   const ref = useReveal();
-  return <div ref={ref} className={cls} style={{ transitionDelay: `${delay}s`, ...style }}>{children}</div>;
+  return <div ref={ref} className={cls || className || "hm-reveal"} style={{ transitionDelay: `${delay}s`, ...style }}>{children}</div>;
 };
 
 /* ─── CountUp ─── */
-const CountUp = ({ end, suffix = "" }) => {
-  const [v, setV] = useState(0); const ref = useRef(null); const started = useRef(false);
+const CountUp = ({ end, suffix = "" }: { end: number; suffix?: string }) => {
+  const [v, setV] = useState(0); const ref = useRef<HTMLSpanElement>(null); const started = useRef(false);
   useEffect(() => {
     const el = ref.current; if (!el) return;
     const obs = new IntersectionObserver(([e]) => {
@@ -36,8 +45,8 @@ const CountUp = ({ end, suffix = "" }) => {
 const SITE = { phone: "1544-4150", kakao: "https://pf.kakao.com/_hYmxjn/chat", blog: "https://blog.naver.com/houseman842", email: "rokmc842@hanmail.net", address: "서울시 강남구 학동로8길 9, 5층", ceo: "박종호", bizNo: "206-16-25497" };
 
 const LS_HP = "hm_homepage_content";
-const loadContent = () => { try { return JSON.parse(localStorage.getItem(LS_HP)) || {}; } catch { return {}; } };
-const saveContent = (c) => localStorage.setItem(LS_HP, JSON.stringify(c));
+const loadContent = (): Record<string, any> => { try { return JSON.parse(localStorage.getItem(LS_HP) || '{}') || {}; } catch { return {}; } };
+const saveContent = (c: Record<string, any>) => localStorage.setItem(LS_HP, JSON.stringify(c));
 
 const DEFAULT_SERVICES = [
   { id: "building", icon: "🏢", title: "중소형 빌딩 관리", desc: "하우스맨은 중개보수를 쉐어하지 않습니다. 그래서 더 많은 중개사가 움직이고, 공실은 더 빨리 사라집니다.", img: "/svc3.jpg", heroImg: "/sv3-intro.jpg",
@@ -57,15 +66,24 @@ const DEFAULT_SERVICES = [
     features: [{ t: "순회 방문 관리", d: "민원 처리, 공용시설 점검, 입퇴실 관리" }, { t: "입주민 만족도 향상", d: "체계적인 소통 채널 운영" }, { t: "합리적 비용 구조", d: "관리사무소 인건비 대비 절감" }, { t: "맞춤형 서비스", d: "건물 특성에 맞는 서비스 선택 가능" }] },
 ];
 
-export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendarEvts = [], setCalendarEvts, isAdmin = false }) => {
+interface HomepagePageProps {
+  buildingData?: Record<string, any>;
+  activeVacancies?: Record<string, any>[];
+  calendarEvts?: Record<string, any>[];
+  setCalendarEvts?: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
+  isAdmin?: boolean;
+  isLoading?: boolean;
+}
+
+export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendarEvts = [], setCalendarEvts, isAdmin = false, isLoading }: HomepagePageProps) => {
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [vacancyFilter, setVacancyFilter] = useState("전체");
-  const [detailRoom, setDetailRoom] = useState(null);
+  const [detailRoom, setDetailRoom] = useState<Record<string, any> | null>(null);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [heroIdx, setHeroIdx] = useState(0);
-  const [serviceDetail, setServiceDetail] = useState(null); // 서비스 상세 페이지
+  const [serviceDetail, setServiceDetail] = useState<Record<string, any> | null>(null); // 서비스 상세 페이지
   const [editMode, setEditMode] = useState(false); // 관리자 편집 모드
   const [vacancyPage, setVacancyPage] = useState(0);
   const VACANCY_PER_PAGE = isMobile ? 6 : 12;
@@ -73,10 +91,10 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
     try { return JSON.parse(localStorage.getItem("hm_vacancyOrder") || "null"); } catch { return null; }
   });
   // 계약하기 플로우
-  const [contractStep, setContractStep] = useState(null); // null | "verify" | "form"
+  const [contractStep, setContractStep] = useState<string | null>(null); // null | "verify" | "form"
   const [contractPhone, setContractPhone] = useState("");
-  const [contractBroker, setContractBroker] = useState(null); // matched broker
-  const [contractForm, setContractForm] = useState({});
+  const [contractBroker, setContractBroker] = useState<Record<string, any> | null>(null); // matched broker
+  const [contractForm, setContractForm] = useState<Record<string, any>>({});
   const [contractError, setContractError] = useState("");
   const [editContent, setEditContent] = useState(loadContent);
   const SERVICES = DEFAULT_SERVICES.map(s => ({ ...s, ...((editContent.services || {})[s.id] || {}) }));
@@ -111,7 +129,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
   }, [calendarEvts]);
 
   const pub = useMemo(() => {
-    const visible = src.filter(v => v.status !== "점검/청소중");
+    const visible = src.filter((v: any) => v.status !== "점검/청소중");
     const sorted = [...visible].sort((a, b) => {
       const ka = `${a.building}_${a.room}`;
       const kb = `${b.building}_${b.room}`;
@@ -120,14 +138,14 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       const cb = contractSet.has(kb) ? 0 : 1;
       if (ca !== cb) return ca - cb;
       // 2순위: 일반임대 → 앞으로
-      const typeOrder = { "일반임대": 0, "근생": 1, "단기": 2 };
+      const typeOrder: Record<string, number> = { "일반임대": 0, "근생": 1, "단기": 2 };
       const ta = typeOrder[a.type] ?? 3;
       const tb = typeOrder[b.type] ?? 3;
       if (ta !== tb) return ta - tb;
       // 3순위: 수동 순서
       if (vacancyOrder) {
-        const orderMap = {};
-        vacancyOrder.forEach((key, idx) => { orderMap[key] = idx; });
+        const orderMap: Record<string, number> = {};
+        vacancyOrder.forEach((key: any, idx: any) => { orderMap[key] = idx; });
         const ia = orderMap[ka] ?? 9999;
         const ib = orderMap[kb] ?? 9999;
         return ia - ib;
@@ -143,12 +161,12 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
   const pagedVacancies = filtered.slice(vacancyPage * VACANCY_PER_PAGE, (vacancyPage + 1) * VACANCY_PER_PAGE);
 
   // 순서 저장
-  const saveVacancyOrder = (newList) => {
-    const order = newList.map(v => `${v.building}_${v.room}`);
+  const saveVacancyOrder = (newList: any[]) => {
+    const order = newList.map((v: any) => `${v.building}_${v.room}`);
     setVacancyOrder(order);
     localStorage.setItem("hm_vacancyOrder", JSON.stringify(order));
   };
-  const moveVacancy = (idx, dir) => {
+  const moveVacancy = (idx: number, dir: number) => {
     const list = [...pub];
     const newIdx = idx + dir;
     if (newIdx < 0 || newIdx >= list.length) return;
@@ -170,17 +188,17 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
     return () => clearInterval(t);
   }, []);
 
-  const scrollTo = useCallback(id => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }, []);
-  const getPhotos = (b, r) => (buildingData[b] || {})[`roomPhotos_${r}`] || [];
-  const badgeColor = t => t === "단기" ? "#d4a853" : t === "근생" ? "#34c759" : "#0071e3";
+  const scrollTo = useCallback((id: string) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }, []);
+  const getPhotos = (b: string, r: string) => (buildingData[b] || {})[`roomPhotos_${r}`] || [];
+  const badgeColor = (t: string) => t === "단기" ? "#d4a853" : t === "근생" ? "#34c759" : "#0071e3";
   const navItems = [{ l: "소개", id: "about" }, { l: "서비스", id: "services" }, { l: "공실", id: "vacancy" }, { l: "사례", id: "cases" }, { l: "문의", id: "contact" }];
 
   // 관리자 편집 저장
-  const saveEdit = (key, val) => {
+  const saveEdit = (key: string, val: any) => {
     const next = { ...editContent, [key]: val };
     setEditContent(next); saveContent(next);
   };
-  const EditableText = ({ field, defaultVal, tag: Tag = "p", style = {} }) => {
+  const EditableText = ({ field, defaultVal, tag: Tag = "p" as any, style = {} }: { field: string; defaultVal: any; tag?: any; style?: React.CSSProperties }) => {
     const val = editContent[field] ?? defaultVal;
     if (!editMode) return <Tag style={style}>{val}</Tag>;
     return <textarea value={val} onChange={e => saveEdit(field, e.target.value)}
@@ -211,7 +229,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             <h2 className="hm-headline" style={{ fontSize: isMobile ? 24 : 32, margin: "0 0 32px" }}>HOUSEMAN이 제공하는 관리</h2>
           </Reveal>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginBottom: 56 }}>
-            {s.features.map((f, i) => (
+            {s.features.map((f: any, i: number) => (
               <Reveal key={i} className="hm-reveal-scale" delay={i * 0.08}>
                 <div className="hm-svc-card" style={{ padding: isMobile ? 24 : 32 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: "var(--clr-black)", marginBottom: 8, letterSpacing: "-0.01em" }}>{f.t}</div>
@@ -245,7 +263,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
   // ─── VACANCY DETAIL VIEW ───
   // 공실 카드 클릭 → 새 탭으로 상세 페이지 열기
-  const openVacancyDetail = (v) => {
+  const openVacancyDetail = (v: any) => {
     if (editMode) return;
     const key = encodeURIComponent(`${v.building}_${v.room}`);
     window.open(`${window.location.pathname}?vacancy=${key}`, '_blank');
@@ -258,8 +276,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
     if (!key) return null;
     const decoded = decodeURIComponent(key);
     const [building, room] = decoded.split('_');
-    return pub.find(v => v.building === building && String(v.room) === String(room))
-      || src.find(v => v.building === building && String(v.room) === String(room));
+    return pub.find((v: any) => v.building === building && String(v.room) === String(room))
+      || src.find((v: any) => v.building === building && String(v.room) === String(room));
   }, [pub, src]);
 
   if (urlVacancy || detailRoom) {
@@ -276,7 +294,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
     const isContract = contractSet.has(`${v.building}_${v.room}`);
     const depositLabel = v.type === "단기" ? "예치금" : "보증금";
     // 금액: 공실 데이터 → roomInfo 기준금액 fallback
-    const parseNum = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
+    const parseNum = (s: any) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
     const vDeposit = v.deposit || parseNum(roomInfo.deposit) / 10000;
     const vRent = v.rent || parseNum(roomInfo.rent) / 10000;
     const vMgmt = v.mgmt || parseNum(roomInfo.mgmt) / 10000;
@@ -323,7 +341,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           {/* 썸네일 */}
           {photos.length > 1 && (
             <div style={{ display: "flex", gap: 4, marginBottom: 28, overflowX: "auto", paddingBottom: 4 }}>
-              {photos.map((p, pi) => (
+              {photos.map((p: any, pi: number) => (
                 <div key={pi} onClick={() => setPhotoIdx(pi)} style={{
                   width: 64, height: 48, overflow: "hidden", cursor: "pointer", flexShrink: 0,
                   border: pi === idx ? "2px solid #c41230" : "2px solid transparent",
@@ -457,14 +475,14 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       const pageData = JSON.parse(localStorage.getItem("pageData") || "{}");
                       brokers = pageData["hm_brokerList"] || [];
                     } catch {}
-                    const normalize = (p) => (p || "").replace(/[-\s()]/g, "");
-                    const matched = brokers.find(b => normalize(b.phone) === normalize(phone));
+                    const normalize = (p: any) => (p || "").replace(/[-\s()]/g, "");
+                    const matched = brokers.find((b: any) => normalize(b.phone) === normalize(phone));
                     if (!matched) { setContractError("등록되지 않은 부동산입니다. HOUSEMAN에 문의하세요."); return; }
                     setContractBroker(matched);
                     // 폼 초기값 설정
                     const now = new Date();
-                    const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
-                    const fmtD = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+                    const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+                    const fmtD = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
                     const isDangi = v.type === "단기";
                     const defaultMoveIn = isDangi ? fmtD(addDays(now, 5)) : fmtD(addDays(now, 14));
                     const calcContractDeposit = Math.ceil(vRent * 7 / 30 / 10) * 10; // 월세 7일치, 10만원 단위 올림
@@ -630,7 +648,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   }
 
                   // 단기: 모드별 입주금 계산
-                  const fmtA = (n) => n >= 10000 ? `${(n/10000)}만` : n > 0 ? `${n.toLocaleString()}원` : "-";
+                  const fmtA = (n: number) => n >= 10000 ? `${(n/10000)}만` : n > 0 ? `${n.toLocaleString()}원` : "-";
                   const allItems = [
                     { l: "예치금", v: dep }, { l: "임대료", v: rent }, { l: "관리비", v: mgmt },
                     { l: "수도", v: water }, { l: "인터넷", v: cable },
@@ -638,7 +656,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   const total = allItems.reduce((a, x) => a + x.v, 0);
 
                   // 계좌별 항목 분배
-                  let rows = []; // { l, v, acct: "owner"|"hm"|"deferred" }
+                  let rows: { l: string; v: number; acct: string }[] = []; // { l, v, acct: "owner"|"hm"|"deferred" }
                   let desc = "";
                   if (acctMode === "houseman" || !acctMode) {
                     desc = "전체 → 하우스맨계좌";
@@ -667,8 +685,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   const hmTotal = hmRows.reduce((a, x) => a + x.v, 0);
                   const payTotal = acctMode === "owner3" ? ownerTotal : total;
 
-                  const acctColor = { owner: "#EA580C", hm: "#2563EB", deferred: "#92400E" };
-                  const acctDot = (type) => ({ width: 6, height: 6, borderRadius: "50%", background: acctColor[type], flexShrink: 0 });
+                  const acctColor: Record<string, string> = { owner: "#EA580C", hm: "#2563EB", deferred: "#92400E" };
+                  const acctDot = (type: string) => ({ width: 6, height: 6, borderRadius: "50%", background: acctColor[type], flexShrink: 0 });
 
                   return (
                     <div style={{ marginBottom: 16, border: "1px solid #D1D5DB", overflow: "hidden" }}>
@@ -727,7 +745,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     const existingEvts = calendarEvts.length > 0 ? calendarEvts : (() => {
                       try { const ad = JSON.parse(localStorage.getItem("appData") || "{}"); return ad["hm_calendarEvts"] || []; } catch { return []; }
                     })();
-                    const duplicate = existingEvts.find(e => e.type === "계약" && e.building === v.building && String(e.room) === String(v.room));
+                    const duplicate = existingEvts.find((e: any) => e.type === "계약" && e.building === v.building && String(e.room) === String(v.room));
                     if (duplicate) { alert(`${v.building} ${v.room}호는 이미 계약이 등록되어 있습니다.`); return; }
                     const now = new Date();
                     const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
@@ -998,7 +1016,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
               const _rmKey = `${v.building}_${v.room}`;
               const _savedRoom = (buildingData[v.building] || {})[`room_${v.room}`] || {};
               const _roomInfo = { ...(roomMasterData[_rmKey] || {}), ..._savedRoom };
-              const _pn = (s) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
+              const _pn = (s: any) => { if (!s) return 0; const n = parseFloat(String(s).replace(/,/g, '')); return isNaN(n) ? 0 : n; };
               const _dep = v.deposit || _pn(_roomInfo.deposit) / 10000;
               const _rent = v.rent || _pn(_roomInfo.rent) / 10000;
               const _mgmt = v.mgmt || _pn(_roomInfo.mgmt) / 10000;

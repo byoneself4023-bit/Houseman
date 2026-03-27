@@ -1,14 +1,22 @@
 import { useState, useMemo } from 'react';
-import { buildings } from '../data';
-import { useIsMobile } from '../utils';
-import { matchKorean, getChosung, CHOSUNG } from '../utils/koreanSearch';
-import { Card, SectionTitle, Table } from '../components';
-import { inputStyle } from '../components/Field';
+import { buildings } from '@/data';
+import { useIsMobile } from '@/utils';
+import { matchKorean, getChosung, CHOSUNG } from '@/utils/koreanSearch';
+import { Card, SectionTitle, Table } from '@/components';
+import { inputStyle } from '@/components/Field';
 
-export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo, setParkingInfo }) => {
+interface ParkingPageProps {
+  myBuildings?: string[];
+  activeTenants?: Record<string, any>[];
+  parkingInfo: Record<string, any>;
+  setParkingInfo: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  isLoading?: boolean;
+}
+
+export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo, setParkingInfo, isLoading }: ParkingPageProps) => {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editCarNumber, setEditCarNumber] = useState("");
   const [editCarType, setEditCarType] = useState("");
 
@@ -22,7 +30,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     !["퇴실", "건물주", "전세"].includes(t.name)
   ), [allTenants]);
 
-  const getCar = (t) => ({
+  const getCar = (t: Record<string, any>) => ({
     carNumber: parkingInfo[t.id]?.carNumber ?? t.carNumber ?? "",
     carType: parkingInfo[t.id]?.carType ?? t.carType ?? "",
   });
@@ -58,20 +66,20 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
   const buildingNames = [...new Set(realTenants.map(t => t.building))];
 
   // Stats per building
-  const buildingCarCounts = {};
+  const buildingCarCounts: Record<string, number> = {};
   tenantsWithCars.forEach(t => {
     buildingCarCounts[t.building] = (buildingCarCounts[t.building] || 0) + 1;
   });
 
   // Building parking totals lookup
-  const getBuildingParkingTotal = (bName) => {
+  const getBuildingParkingTotal = (bName: string) => {
     const b = buildings.find(bd => bd.name === bName);
-    return b?.parkingTotal ?? 0;
+    return (b as any)?.parkingTotal ?? 0;
   };
   const totalParkingCapacity = buildingNames.reduce((sum, bName) => sum + getBuildingParkingTotal(bName), 0);
 
   // Buildings matched by search keyword (starts-with matching for chosung)
-  const matchBuildingStart = (target, query) => {
+  const matchBuildingStart = (target: string, query: string) => {
     if (!query) return false;
     const q = query.toLowerCase();
     const t = target.toLowerCase();
@@ -91,14 +99,14 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     ? buildingNames.filter(bName => matchBuildingStart(bName, search))
     : [];
 
-  const startEdit = (t) => {
+  const startEdit = (t: Record<string, any>) => {
     const car = getCar(t);
     setEditingId(t.id);
     setEditCarNumber(car.carNumber);
     setEditCarType(car.carType);
   };
 
-  const saveEdit = (id) => {
+  const saveEdit = (id: string) => {
     setParkingInfo(prev => ({
       ...prev,
       [id]: { ...prev[id], carNumber: editCarNumber, carType: editCarType }
@@ -222,8 +230,8 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     { label: "건물", key: "building", width: "5%" },
     { label: "호실", key: "room", width: "3%" },
     { label: "입주자", key: "name", width: "3%" },
-    { label: "연락처", key: "phone", width: "5%", render: (row) => <span style={{ fontSize: 12, color: "#5F6577" }}>{row.phone || "-"}</span> },
-    { label: "차번호", key: "carNumber", width: "5%", render: (row) => {
+    { label: "연락처", key: "phone", width: "5%", render: (row: Record<string, any>) => <span style={{ fontSize: 12, color: "#5F6577" }}>{row.phone || "-"}</span> },
+    { label: "차번호", key: "carNumber", width: "5%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
           placeholder="123가 4567" autoFocus
@@ -232,7 +240,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const car = getCar(row);
       return <span style={{ fontWeight: 700, letterSpacing: "0.5px" }}>{car.carNumber || <span style={{ color: "#D1D5DB" }}>-</span>}</span>;
     }},
-    { label: "차종", key: "carType", width: "5%", render: (row) => {
+    { label: "차종", key: "carType", width: "5%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
           placeholder="현대 아반떼"
@@ -241,7 +249,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const car = getCar(row);
       return car.carType || <span style={{ color: "#D1D5DB" }}>-</span>;
     }},
-    { label: "", key: "action", width: "3%", render: (row) => {
+    { label: "", key: "action", width: "3%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return (
           <div style={{ display: "flex", gap: 4 }}>
