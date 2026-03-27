@@ -1,0 +1,12 @@
+package com.houseman.global.sse
+
+enum class SseEventType {
+    CONNECTED,
+    OVERDUE_ALERT,
+    BILLING_CONFIRMED,
+    CONTRACT_EXPIRING,
+    MOVE_IN_SCHEDULED,
+    MOVE_OUT_SCHEDULED,
+    VACANCY_CREATED,
+    PAYMENT_RECEIVED,
+}

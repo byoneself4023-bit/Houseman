@@ -1,0 +1,181 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.5rem;
+  --background: oklch(0.967 0.003 264.542);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(0.985 0.002 247.858);
+  --secondary: oklch(0.967 0.003 264.542);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.003 264.542);
+  --muted-foreground: oklch(0.553 0.013 264.364);
+  --accent: oklch(0.967 0.003 264.542);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 264.542);
+  --input: oklch(0.92 0.004 264.542);
+  --ring: oklch(0.546 0.245 262.881);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar-background: oklch(0.985 0.002 247.858);
+  --sidebar-foreground: oklch(0.553 0.013 264.364);
+  --sidebar-primary: oklch(0.21 0.006 285.885);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247.858);
+  --sidebar-accent: oklch(0.967 0.003 264.542);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 264.542);
+  --sidebar-ring: oklch(0.546 0.245 262.881);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0.002 247.858);
+  --card: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.985 0.002 247.858);
+  --popover: oklch(0.141 0.005 285.823);
+  --popover-foreground: oklch(0.985 0.002 247.858);
+  --primary: oklch(0.985 0.002 247.858);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.21 0.006 285.885);
+  --secondary-foreground: oklch(0.985 0.002 247.858);
+  --muted: oklch(0.21 0.006 285.885);
+  --muted-foreground: oklch(0.716 0.007 264.529);
+  --accent: oklch(0.21 0.006 285.885);
+  --accent-foreground: oklch(0.985 0.002 247.858);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.985 0.002 247.858);
+  --border: oklch(0.21 0.006 285.885);
+  --input: oklch(0.21 0.006 285.885);
+  --ring: oklch(0.716 0.007 264.529);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar-background: oklch(0.141 0.005 285.823);
+  --sidebar-foreground: oklch(0.716 0.007 264.529);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247.858);
+  --sidebar-accent: oklch(0.21 0.006 285.885);
+  --sidebar-accent-foreground: oklch(0.716 0.007 264.529);
+  --sidebar-border: oklch(0.21 0.006 285.885);
+  --sidebar-ring: oklch(0.546 0.245 262.881);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-bell-ring: bell-ring 0.6s ease-in-out;
+
+  /* Houseman custom colors */
+  --color-hm-sidebar: #1B1F2E;
+  --color-hm-sidebar-active: #2A3352;
+  --color-hm-sidebar-border: #2A2F42;
+  --color-hm-sidebar-muted: #4B5563;
+  --color-hm-sidebar-text: #9CA3B0;
+  --color-hm-text: #1A1D23;
+  --color-hm-text-muted: #8F95A3;
+  --color-hm-text-sub: #5F6577;
+  --color-hm-border: #E8ECF0;
+  --color-hm-bg: #F3F4F8;
+  --color-hm-bg-hover: #F9FAFB;
+  --color-hm-bg-muted: #F7F8FA;
+  --color-hm-success: #059669;
+  --color-hm-success-bg: #ECFDF5;
+  --color-hm-success-border: #A7F3D0;
+  --color-hm-warning: #EA580C;
+  --color-hm-warning-bg: #FFF7ED;
+  --color-hm-warning-border: #FED7AA;
+  --color-hm-danger: #DC2626;
+  --color-hm-danger-bg: #FEF2F2;
+  --color-hm-danger-border: #FECACA;
+}
+
+/* ── Global base styles ── */
+/* Note: Tailwind v4 preflight already resets box-sizing, margin, and padding.
+   Do NOT add `* { margin: 0; padding: 0; }` here — it overrides Tailwind utility classes. */
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-15deg); }
+  60% { transform: rotate(8deg); }
+  80% { transform: rotate(-8deg); }
+}

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16-alpine:///houseman
+    username: houseman
+    password: houseman
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  flyway:
+    enabled: true
+  jpa:
+    show-sql: true
+
+jwt:
+  secret: houseman-test-jwt-secret-key-minimum-256-bits-long-for-testing
+  access-expiration: 3600000
+  refresh-expiration: 604800000

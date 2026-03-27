@@ -1,9 +1,0 @@
-export const recentTx = [
-  { date: "2026-02-22", building: "W하우스", room: "501", type: "입금", cat: "청구금액 입금", amount: 500000, desc: "W501" },
-  { date: "2026-02-22", building: "한스텔", room: "201", type: "입금", cat: "청구금액 입금", amount: 900000, desc: "한스201" },
-  { date: "2026-02-22", building: "한스텔", room: "201", type: "입금", cat: "청구 관리비 입금", amount: 316880, desc: "한스201" },
-  { date: "2026-02-21", building: "문화빌딩", room: "", type: "지출", cat: "건물 청소비", amount: 220000, desc: "크린하우스" },
-  { date: "2026-02-21", building: "한스텔", room: "301", type: "입금", cat: "청구금액 입금", amount: 1000000, desc: "한스301" },
-  { date: "2026-02-21", building: "와이원빈티지", room: "303", type: "입금", cat: "청구금액 입금", amount: 950000, desc: "김준범" },
-  { date: "2026-02-20", building: "미래홈", room: "403", type: "입금", cat: "청구금액 입금", amount: 592800, desc: "미래홈 403" },
-];
