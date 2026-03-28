@@ -1,5 +1,6 @@
 import React from 'react';
 import { inputStyle } from '@/components/Field';
+import { persistUpdate, persistDelete } from '../calendarApi';
 
 interface EventDetailModalProps {
   editEvent: { idx: number; evt: Record<string, any>; edits: Record<string, any> } | null;
@@ -86,11 +87,11 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
                 {fld("부동산", "broker")}
                 {fld("부동산 연락처", "brokerPhone")}
               </div>
-              {(edits.water != null || edits.cable != null || edits.exitFee != null || edits.commBroker != null) && (
+              {(edits.waterFee != null || edits.cable != null || edits.exitFee != null || edits.commBroker != null) && (
                 <>
                   <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginTop: 4 }}>단기 전용</div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                    {fld("수도", "water")}
+                    {fld("수도", "waterFee")}
                     {fld("인터넷/케이블", "cable")}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -121,7 +122,13 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
-          <button onClick={() => { const idx = editEvent.idx; setEditEvent(null); setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx)); }}
+          <button onClick={() => {
+            const { idx, evt } = editEvent;
+            if (evt.type === "퇴실" && evt.externalCheckDone) return alert("퇴실체크가 완료된 일정은 삭제할 수 없습니다.");
+            persistDelete(evt.supabaseId);
+            setEditEvent(null);
+            setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx));
+          }}
             style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
             일정삭제
           </button>
@@ -130,7 +137,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
               style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
               취소
             </button>
-            <button onClick={saveEditEvent}
+            <button onClick={() => { persistUpdate(editEvent.evt.supabaseId, editEvent.edits); saveEditEvent(); }}
               style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
               저장
             </button>

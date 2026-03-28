@@ -2,6 +2,7 @@ import React from 'react';
 import { inputStyle } from '@/components/Field';
 import { useIsMobile } from '@/utils';
 import { TYPE_COLORS } from '../constants';
+import { persistInsert } from '../calendarApi';
 
 interface ContractEventFormProps {
   showForm: boolean;
@@ -54,7 +55,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                 <tr key={vi} onClick={() => {
                   setSelectedVacancy(vi);
                   const edits: Record<string, any> = { deposit: v.deposit, rent: v.rent, nego: v.nego, mgmt: v.mgmt };
-                  if (v.type === "단기") { edits.water = v.water; edits.cable = v.cable; edits.exitFee = v.exitFee; edits.commBroker = v.commBroker; }
+                  if (v.type === "단기") { edits.waterFee = v.waterFee; edits.cable = v.cable; edits.exitFee = v.exitFee; edits.commBroker = v.commBroker; }
                   setVacancyEdits(edits);
                 }}
                   style={{ background: isSelected ? "#EFF6FF" : vi % 2 === 0 ? "#fff" : "#FAFBFC", cursor: "pointer", transition: "background 0.1s" }}>
@@ -196,7 +197,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 8, marginBottom: 10 }}>
                 <div>
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#8F95A3", marginBottom: 3 }}>수도</div>
-                  <input value={vacancyEdits.water ?? ""} onChange={e => setVacancyEdits((prev: any) => ({ ...prev, water: e.target.value }))}
+                  <input value={vacancyEdits.waterFee ?? ""} onChange={e => setVacancyEdits((prev: any) => ({ ...prev, waterFee: e.target.value }))}
                     style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
                 </div>
                 <div>
@@ -235,12 +236,17 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                   broker: vacancyEdits.broker || "", brokerPhone: vacancyEdits.brokerPhone || "",
                   moveIn: formDate, expiry: vacancyEdits.expiry || "",
                   ...(isDangi ? {
-                    water: vacancyEdits.water ?? sv.water,
+                    waterFee: vacancyEdits.waterFee ?? sv.waterFee,
                     cable: vacancyEdits.cable ?? sv.cable,
                     exitFee: Number(vacancyEdits.exitFee) || sv.exitFee,
                     commBroker: Number(vacancyEdits.commBroker) || sv.commBroker,
                   } : {}),
                 };
+                persistInsert(newEvt).then((result) => {
+                  if (result?.data?.id) {
+                    setEvents((prev: any[]) => prev.map((e: any) => e === newEvt ? { ...e, supabaseId: result.data.id, source: 'supabase' } : e));
+                  }
+                });
                 setEvents((prev: any[]) => [...prev, newEvt]);
                 if (setActiveVacancies) {
                   setActiveVacancies((prev: any[]) => prev.map((x: any) =>

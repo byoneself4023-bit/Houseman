@@ -2,6 +2,7 @@ import React from 'react';
 import { buildingFloors } from '@/data';
 import { getRoomType } from '@/config';
 import { Card } from '@/components';
+import { persistUpdate } from '../calendarApi';
 
 interface MoveOutStatusPanelProps {
   calendarEvents: Record<string, any>[];
@@ -127,7 +128,9 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                 }
                 const fee = prompt("청소비 가중치 (없으면 빈칸):");
                 const comment = prompt("청소 코멘트 (없으면 빈칸):");
-                setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, cleaningDone: true, cleaningFeeExtra: fee || null, cleaningComment: comment || null } : e));
+                const cleaningPatch = { cleaningDone: true, cleaningFeeExtra: fee || null, cleaningComment: comment || null };
+                persistUpdate(ev._origEvent?.supabaseId, cleaningPatch);
+                setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, ...cleaningPatch } : e));
               }},
             { label: "입주체크", icon: "\uD83D\uDCF7", done: ev.hasCheckPhotos,
               onClick: () => {
@@ -139,7 +142,9 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                 if (!ev.settled) return alert("정산서 완료가 필요합니다.");
                 if (!ev.hasCheckPhotos) return alert("입주체크사진 등록이 필요합니다.");
                 if (confirm("공실로 전환하시겠습니까? (금액체크 상태로 공실에 등록됩니다)")) {
-                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, vacantConfirmed: true, isCompleted: true } : e));
+                  const vacantPatch = { vacantConfirmed: true, isCompleted: true };
+                  persistUpdate(ev._origEvent?.supabaseId, vacantPatch);
+                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, ...vacantPatch } : e));
                   setActiveVacancies?.((prev: any[]) => [...prev, { building: ev.building, room: ev.room, type: "단기", status: "금액체크", deposit: "", rent: "", managementFee: "" }]);
                 }
               }},

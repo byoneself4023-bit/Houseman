@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { calendarEvents as defaultEvents, buildingFloors } from '@/data';
+import { persistUpdate, persistDelete } from './calendarApi';
 import { Card, SectionTitle } from '@/components';
 import { MSG_TEMPLATES, fillBuildingContractMsg, STATIC_BUILDING_NAMES } from './constants';
 
@@ -77,7 +78,8 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
   };
   const saveEditEvent = () => {
     if (!editEvent || !setEvents) return;
-    const { idx, edits } = editEvent;
+    const { idx, evt, edits } = editEvent;
+    persistUpdate(evt.supabaseId, edits);
     setEvents((prev: any[]) => prev.map((e: any, i: number) => i === idx ? { ...e, ...edits } : e));
     setEditEvent(null);
   };
@@ -113,6 +115,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       return false;
     });
     if (toRemove.length > 0) {
+      toRemove.forEach((ev: any) => persistDelete(ev.supabaseId));
       const removeSet = new Set(toRemove);
       setEvents((prev: any[]) => prev.filter((ev: any) => !removeSet.has(ev)));
     }

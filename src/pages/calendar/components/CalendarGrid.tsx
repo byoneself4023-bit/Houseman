@@ -1,6 +1,7 @@
 import React from 'react';
 import { TYPE_BG, TYPE_COLORS, TYPE_ICON } from '../constants';
 import { useIsMobile } from '@/utils';
+import { persistUpdate } from '../calendarApi';
 
 interface CalendarGridProps {
   days: (number | null)[];
@@ -66,6 +67,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                       matched = true;
                       const updated = { ...evt, date: newDate };
                       if (evt.moveIn && evt.moveIn === d.date) updated.moveIn = newDate;
+                      persistUpdate(evt.supabaseId, { date: newDate, ...(updated.moveIn !== evt.moveIn ? { moveIn: updated.moveIn } : {}) });
                       return updated;
                     }
                     return evt;

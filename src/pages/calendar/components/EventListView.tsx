@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from '@/components';
 import { TYPE_COLORS, TYPE_BG, TYPE_BORDER, TYPE_ICON } from '../constants';
+import { persistDelete } from '../calendarApi';
 
 interface EventListViewProps {
   selectedDay: number | null;
@@ -44,7 +45,11 @@ export const EventListView: React.FC<EventListViewProps> = ({
                   </button>
                 )}
                 {setEvents && (
-                  <button onClick={() => { const idx = calendarEvents.indexOf(evt); if (idx > -1) setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx)); }}
+                  <button onClick={() => {
+                    if (evt.type === "퇴실" && evt.externalCheckDone) return alert("퇴실체크가 완료된 일정은 삭제할 수 없습니다.");
+                    const idx = calendarEvents.indexOf(evt);
+                    if (idx > -1) { persistDelete(evt.supabaseId); setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx)); }
+                  }}
                     style={{ padding: "3px 10px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                     삭제
                   </button>

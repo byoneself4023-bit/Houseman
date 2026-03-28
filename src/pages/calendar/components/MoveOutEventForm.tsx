@@ -2,6 +2,7 @@ import React from 'react';
 import { inputStyle } from '@/components/Field';
 import { matchKorean } from '@/utils/koreanSearch';
 import { TYPE_COLORS } from '../constants';
+import { persistInsert } from '../calendarApi';
 
 interface MoveOutEventFormProps {
   showForm: boolean;
@@ -92,7 +93,13 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
           if (isVacant) return alert("해당 호실은 공실관리에 등록된 호실입니다.\n공실에는 퇴실등록을 할 수 없습니다.");
           const now = new Date();
           const registeredAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-          setEvents((prev: any[]) => [...prev, { date: formDate, type: "퇴실", building: formBuilding, room: formRoom, name: "", color: TYPE_COLORS["퇴실"], registeredAt, registeredBy: currentStaff?.name || "알수없음" }]);
+          const newEvt = { date: formDate, type: "퇴실", building: formBuilding, room: formRoom, name: "", color: TYPE_COLORS["퇴실"], registeredAt, registeredBy: currentStaff?.name || "알수없음" };
+          persistInsert(newEvt).then((result) => {
+            if (result?.data?.id) {
+              setEvents((prev: any[]) => prev.map((e: any) => e === newEvt ? { ...e, supabaseId: result.data.id, source: 'supabase' } : e));
+            }
+          });
+          setEvents((prev: any[]) => [...prev, newEvt]);
           setFormDate(""); setFormBuilding(""); setFormBuildingSearch(""); setFormRoom(""); setShowForm(false);
         }}
           style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: "#EF4444", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>

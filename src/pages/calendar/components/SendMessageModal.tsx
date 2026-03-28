@@ -26,7 +26,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
   const dep = Number(evt.deposit) || 0;
   const rent = Number(evt.rent) || 0;
   const mgmt = Number(evt.mgmt) || 0;
-  const water = typeof evt.water === "string" && !isNaN(Number(evt.water)) ? Number(evt.water) : 0;
+  const water = typeof evt.waterFee === "string" && !isNaN(Number(evt.waterFee)) ? Number(evt.waterFee) : 0;
   const cable = typeof evt.cable === "string" && !isNaN(Number(evt.cable)) ? Number(evt.cable) : 0;
   const total = dep + rent + mgmt + water + cable;
 

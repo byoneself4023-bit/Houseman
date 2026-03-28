@@ -1,6 +1,7 @@
 import React from 'react';
 import { inputStyle } from '@/components/Field';
 import { TYPE_COLORS } from '../constants';
+import { persistInsert } from '../calendarApi';
 
 interface VacationEventFormProps {
   showForm: boolean;
@@ -42,7 +43,13 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
           if (!formName) return alert("이름을 입력하세요");
           const now = new Date();
           const registeredAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-          setEvents((prev: any[]) => [...prev, { date: formDate, type: "휴무", name: formName, color: TYPE_COLORS["휴무"], registeredAt, registeredBy: currentStaff?.name || "알수없음" }]);
+          const newEvt = { date: formDate, type: "휴무", name: formName, color: TYPE_COLORS["휴무"], registeredAt, registeredBy: currentStaff?.name || "알수없음" };
+          persistInsert(newEvt).then((result) => {
+            if (result?.data?.id) {
+              setEvents((prev: any[]) => prev.map((e: any) => e === newEvt ? { ...e, supabaseId: result.data.id, source: 'supabase' } : e));
+            }
+          });
+          setEvents((prev: any[]) => [...prev, newEvt]);
           setFormDate(""); setFormName(""); setShowForm(false);
         }}
           style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: "#8B5CF6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>

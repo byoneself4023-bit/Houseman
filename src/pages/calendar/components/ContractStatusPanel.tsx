@@ -2,6 +2,7 @@ import React from 'react';
 import { buildingFloors } from '@/data';
 import { Card } from '@/components';
 import { TYPE_COLORS } from '../constants';
+import { persistUpdate, persistDelete } from '../calendarApi';
 
 interface ContractStatusPanelProps {
   calendarEvents: Record<string, any>[];
@@ -90,6 +91,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 {/* 계약금 확인 */}
                 <span onClick={() => {
                   if (ev.depositConfirmed) return;
+                  persistUpdate(ev.supabaseId, { depositConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, depositConfirmed: true } : e));
                 }}
                   style={{ fontSize: 10, fontWeight: 700, color: ev.depositConfirmed ? "#9CA3AF" : "#0369A1", padding: "4px 10px", borderRadius: 6, border: ev.depositConfirmed ? "1px solid #D1D5DB" : "1px solid #BAE6FD", background: ev.depositConfirmed ? "#F3F4F6" : "#F0F9FF", cursor: ev.depositConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.depositConfirmed ? "line-through" : "none" }}>
@@ -130,6 +132,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 <span onClick={() => {
                   if (ev.balanceConfirmed) return;
                   if (!ev.reported) return alert("건물주보고가 완료되어야 잔금확인이 가능합니다.");
+                  persistUpdate(ev.supabaseId, { balanceConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, balanceConfirmed: true } : e));
                 }}
                   style={{ fontSize: 10, fontWeight: 700, color: ev.balanceConfirmed ? "#9CA3AF" : "#059669", padding: "4px 10px", borderRadius: 6, border: ev.balanceConfirmed ? "1px solid #D1D5DB" : "1px solid #A7F3D0", background: ev.balanceConfirmed ? "#F3F4F6" : "#ECFDF5", cursor: ev.balanceConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.balanceConfirmed ? "line-through" : "none" }}>
@@ -141,6 +144,8 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     if (!ev.reported) return alert("건물주보고가 완료되어야 계약서입력이 가능합니다.");
                     const vacancy = activeVacancies.find((v: any) => v.building === ev.building && String(v.room) === String(ev.room));
                     setPendingContract({ ...ev, vacancyData: vacancy || {} });
+                    // 해당 건물/호실의 계약 이벤트 Supabase에서도 삭제
+                    calendarEvents.filter((e: any) => e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)).forEach((e: any) => persistDelete(e.supabaseId));
                     setEvents?.((prev: any[]) => prev.filter((e: any) => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
                     setPage("tenants");
                   }}
@@ -169,6 +174,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                         `감사합니다.`,
                         `- 하우스맨`,
                       ].join("\n");
+                      persistDelete(ev.supabaseId);
                       setEvents((prev: any[]) => prev.filter((e: any) => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
                       setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
                       setBreakReport({ ev, owners: [{ name: ev.broker || "부동산", phone: ev.brokerPhone }], msgText: brokerMsg, targetBroker: true });
@@ -193,6 +199,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                       `감사합니다.`,
                       `- 하우스맨 드림`,
                     ].filter(Boolean);
+                    persistDelete(ev.supabaseId);
                     setEvents((prev: any[]) => prev.filter((e: any) => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
                     setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
                     setBreakReport({ ev, owners, msgText: msgLines.join("\n") });

@@ -1,5 +1,8 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
+import { persistUploadPhotos } from '../calendarApi';
+import { supabase } from '@/lib/supabase';
 
 interface PhotoModalProps {
   photoModalTenant: Record<string, any> | null;
@@ -27,8 +30,10 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
           label="퇴실사진" color="#DC2626" maxPhotos={50}
           photos={photoModalTenant.moveOutPhotos || []}
           onZoom={(idx: number) => setZoomPhoto({ photos: photoModalTenant.moveOutPhotos || [], index: idx, zoom: 1 })}
-          onAdd={(newPhotos: any[]) => {
-            const updated = [...(photoModalTenant.moveOutPhotos || []), ...newPhotos];
+          onAdd={async (newPhotos: any[]) => {
+            const uploadedUrls = await persistUploadPhotos(newPhotos, photoModalTenant.building, photoModalTenant.room, "move-out");
+            const photosToAdd = uploadedUrls.length > 0 ? uploadedUrls : newPhotos;
+            const updated = [...(photoModalTenant.moveOutPhotos || []), ...photosToAdd];
             setPhotoModalTenant((prev: any) => ({ ...prev, moveOutPhotos: updated }));
             if (photoModalTenant._isPastTenant) {
               const hk = `${photoModalTenant.building}_${photoModalTenant.room}`;
@@ -44,6 +49,12 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
                   ? { ...t, moveOutPhotos: updated } : t
               ));
             }
+            // Supabase tenants 테이블 업데이트
+            const sbId = photoModalTenant.supabaseId;
+            if (sbId && supabase) {
+              supabase.from('tenants').update({ move_out_photos: updated }).eq('id', sbId);
+            }
+            if (uploadedUrls.length > 0) toast.success(`퇴실사진 ${uploadedUrls.length}장 업로드 완료`);
           }}
           onRemove={(idx: number) => {
             const updated = (photoModalTenant.moveOutPhotos || []).filter((_: any, j: number) => j !== idx);
@@ -101,8 +112,10 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
           label="입주체크사진" color="#F59E0B" maxPhotos={50}
           photos={checkPhotoModalTenant.moveOutCheckPhotos || []}
           onZoom={(idx: number) => setZoomPhoto({ photos: checkPhotoModalTenant.moveOutCheckPhotos || [], index: idx, zoom: 1 })}
-          onAdd={(newPhotos: any[]) => {
-            const updated = [...(checkPhotoModalTenant.moveOutCheckPhotos || []), ...newPhotos];
+          onAdd={async (newPhotos: any[]) => {
+            const uploadedUrls = await persistUploadPhotos(newPhotos, checkPhotoModalTenant.building, checkPhotoModalTenant.room, "move-in-check");
+            const photosToAdd = uploadedUrls.length > 0 ? uploadedUrls : newPhotos;
+            const updated = [...(checkPhotoModalTenant.moveOutCheckPhotos || []), ...photosToAdd];
             setCheckPhotoModalTenant((prev: any) => ({ ...prev, moveOutCheckPhotos: updated }));
             if (checkPhotoModalTenant._isPastTenant) {
               const hk = `${checkPhotoModalTenant.building}_${checkPhotoModalTenant.room}`;
@@ -118,6 +131,11 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
                   ? { ...t, moveOutCheckPhotos: updated } : t
               ));
             }
+            const sbId = checkPhotoModalTenant.supabaseId;
+            if (sbId && supabase) {
+              supabase.from('tenants').update({ move_in_photos: updated }).eq('id', sbId);
+            }
+            if (uploadedUrls.length > 0) toast.success(`입주체크사진 ${uploadedUrls.length}장 업로드 완료`);
           }}
           onRemove={(idx: number) => {
             const updated = (checkPhotoModalTenant.moveOutCheckPhotos || []).filter((_: any, j: number) => j !== idx);
