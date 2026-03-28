@@ -18,6 +18,8 @@ import { SendMessageModal } from './components/SendMessageModal';
 import { SendLinkModal } from './components/SendLinkModal';
 import { PhotoModal, CheckPhotoModal, ZoomPhotoModal, CompareModal } from './components/PhotoModals';
 import { ContractReportModal, MoveOutOwnerReportModal, BreakReportModal, MoveOutMsgModal } from './components/OwnerReportModals';
+import { DirectInputModal } from './components/DirectInputModal';
+import { ExternalCheckModal } from './components/ExternalCheckModal';
 
 // 현재 단계 깜빡임 애니메이션 (side-effect: injects CSS keyframes)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -338,6 +340,14 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       />
       <SendLinkModal
         sendLinkModal={sendLinkModal} setSendLinkModal={setSendLinkModal}
+      />
+      <DirectInputModal
+        directInputModal={directInputModal} setDirectInputModal={setDirectInputModal}
+        setEvents={setEvents}
+      />
+      <ExternalCheckModal
+        externalCheckModal={externalCheckModal} setExternalCheckModal={setExternalCheckModal}
+        setEvents={setEvents} setActiveTenants={setActiveTenants} setZoomPhoto={setZoomPhoto}
       />
     </div>
   );
