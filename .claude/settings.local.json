@@ -113,7 +113,8 @@
       "Bash(cp \"/c/Users/legen/OneDrive/바탕 화면/sv1-intro.jpg\" \"/c/Users/legen/OneDrive/바탕 화면/sv2-intro.jpg\" \"/c/Users/legen/OneDrive/바탕 화면/sv3-intro.jpg\" \"/c/Users/legen/OneDrive/바탕 화면/sv4-intro.jpg\" \"/c/Users/legen/OneDrive/바탕 화면/sv5-intro.jpg\" \"/c/Users/legen/OneDrive/바탕 화면/클로드코드수업/260228/public/\")",
       "Bash(ls -la \"/c/Users/legen/OneDrive/바탕 화면/클로드코드수업/260228/public/\"*.jpg)",
       "Bash(curl -sL -o \"logo-test.svg\" \"https://www.houseman.co.kr/resource/images/logo/logo-edit-w.svg\")",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

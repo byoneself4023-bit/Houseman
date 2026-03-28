@@ -1,20 +1,27 @@
-import { useState } from 'react';
-import { tenants, vacancies, asItems } from '@/data';
-import { staffRoles, initialStaffMembers } from '@/config';
-import { useLocalStorage } from '@/utils/useLocalStorage';
-import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '@/config/accountConfig';
-import { useIsMobile, fmt, feeLabel } from '@/utils';
-import { matchKorean } from '@/utils/koreanSearch';
-import { Card, SectionTitle, StatusBadge, PhotoDropZone, Field } from '@/components';
-import { inputStyle } from '@/components/Field';
+// @ts-nocheck
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { asItems } from '../data';
+import { staffRoles, initialStaffMembers } from '../config';
+import { useLocalStorage } from '../utils/useLocalStorage';
+import { insertBuilding, insertRooms } from '../lib/supabaseData';
+import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '../config/accountConfig';
+import { useIsMobile, fmt, feeLabel } from '../utils';
+import { SearchInput, matchKorean } from '../components/SearchInput';
+import { Card, SectionTitle, RoomFormSection } from '../components';
+import { inputStyle } from '../components/Field';
+import { BuildingTypeCards, BuildingInfoSection, OwnerSection, SettlementBillingSection, DocumentSection } from '../components/BuildingFormSections';
+import { useMyBuildings } from '../hooks/useMyBuildings';
+import { useBuildingStore, useTenantStore, useCalendarStore } from '../stores';
 
-const emptyVendor = (withManager: boolean) => ({
+const emptyVendor = (withManager) => ({
   company: "", phone: "", contact: "", contactPhone: "",
   ...(withManager ? { manager: "", managerPhone: "", managerNote: "" } : {}),
 });
 
-const initialRegForm: Record<string, any> = {
-  name: "", address: "", types: [] as string[],
+const initialRegForm = {
+  name: "", address: "",
+  isShortTermRental: false, isLongTermRental: false, isCommercial: false, isManagementAgency: false, isCorporateFacility: false,
   feeType: "pct", fee: "", fixedFee: "",
   owners: [{ name: "", phone: "", ssn: "", address: "", settlement: "" }],
   startDate: "", approvalDate: "", entrancePw: "",
@@ -42,21 +49,66 @@ const initialRegForm: Record<string, any> = {
   },
   // 건물 특이사항
   buildingNotes: "",
+  // ── BuildingDetailPage 필드들 ──
+  buildingName: "", buildingNickname: "",
+  contractStartDate: "", entranceDoorPassword: "",
+  addressRoad: "", addressOld: "", approvedDate: "",
+  buildingAreaTotal: "",
+  cctvRoomLocation: "", cctvInstallInfo: "",
+  electricCommonCustomerNumber: "", waterCommonCustomerNumber: "",
+  electricContractPower: "", internetProvider: "",
+  parkingGatePassword: "", electricMeterBoxPassword: "",
+  rooftopAccessMethod: "", parkingTotalSpaces: "",
+  septicTankCleaningMonth1: "", septicTankCleaningMonth2: "",
+  monthlyInspectionCount: "", isFireInspectionSelf: false,
+  // 단기 전용
+  isResidentRegistrationAllowed: false, isStandardContract: false,
+  isRenthomeWritingAgency: false, isStorageAvailable: false,
+  penalty7daysOwnership: "", freeRepairLimit: "",
+  waterBillingType: "", internetBillingType: "",
+  // 건물주
+  ownerName: "", ownerResidentNumber: "", ownerPhone: "",
+  ownerEmail: "", ownerEmail2: "", ownerHomeAddress: "", ownerHomeAddressDetail: "",
+  ownerBusinessRegistrationNumber: "", ownerBusinessName: "", ownerBusinessAddress: "",
+  ownerBusinessType: "", ownerBusinessItem: "", ownerEntityType: "",
+  owner2Name: "", owner2ResidentNumber: "", owner2Phone: "", owner2Email: "", owner2HomeAddress: "", owner2HomeAddressDetail: "",
+  owner3Name: "", owner3ResidentNumber: "", owner3Phone: "", owner3Email: "", owner3HomeAddress: "", owner3HomeAddressDetail: "",
+  coOwnerMemo: "",
+  // 건물주 정산계좌
+  settlementAccount1Bank: "", settlementAccount1: "", settlementAccount1Holder: "",
+  settlementAccount2Bank: "", settlementAccount2: "", settlementAccount2Holder: "",
+  settlementSplitType: "", settlementSplitValue: "",
+  // 연락 담당자
+  contactPersonName: "", contactPersonPhone: "", contactPersonEmail: "",
+  isContactPersonPrimary: false,
+  siteManagerName: "", siteManagerPhone: "", siteManagerEmail: "",
+  // 정산/청구
+  managementFeeType: "", managementFeeRate: "", managementFeeFixedAmount: "",
+  settlementDay1: "", settlementCount: "", settlementDay2: "",
+  rentBillingType: "", managementFeeBillingType: "",
+  tenantAccountType: "", hasVariableManagementFee: false, billingCycle: "",
+  // 임차인 청구 계좌
+  housemanBillingAccount: "",
+  billingAccount1Bank: "", billingAccount1: "", billingAccount1Holder: "",
+  billingAccount2Bank: "", billingAccount2: "", billingAccount2Holder: "",
+  billingAccount3Bank: "", billingAccount3: "", billingAccount3Holder: "",
+  // 항목별 입금 계좌 지정
+  rentAccountTarget: "", managementFeeAccountTarget: "", utilityAccountTarget: "", electricGasAccountTarget: "",
+  // 예치금 설정
+  depositManagementAmount: "",
+  // 서류 (base64)
+  fireInsuranceDocumentUrl: null, fireInsuranceDocumentUrlName: null, fireInsuranceDocumentUrlType: null,
+  documentBuildingRegisterUrl: null, documentBuildingRegisterUrlName: null, documentBuildingRegisterUrlType: null,
+  documentManagementContractUrl: null, documentManagementContractUrlName: null, documentManagementContractUrlType: null,
+  documentBusinessRegistrationUrl: null, documentBusinessRegistrationUrlName: null, documentBusinessRegistrationUrlType: null,
+  documentCompletionDrawingUrl: null, documentCompletionDrawingUrlName: null, documentCompletionDrawingUrlType: null,
   // 호실
   roomList: [],
   newFloor: "", newFrom: "", newTo: "", editIdx: null,
 };
 
 /* ── 접기/펼치기 Card 헤더 ── */
-interface SectionHeaderProps {
-  icon: string;
-  title: string;
-  subtitle?: string;
-  open: boolean;
-  onToggle: () => void;
-}
-
-const SectionHeader = ({ icon, title, subtitle, open, onToggle }: SectionHeaderProps) => (
+const SectionHeader = ({ icon, title, subtitle, open, onToggle }) => (
   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: open ? 12 : 0, cursor: "pointer" }} onClick={onToggle}>
     <div style={{ flex: 1 }}>
       <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>{icon} {title}</div>
@@ -66,22 +118,92 @@ const SectionHeader = ({ icon, title, subtitle, open, onToggle }: SectionHeaderP
   </div>
 );
 
-interface BuildingsPageProps {
-  onSelectBuilding: (building: string) => void;
-  myBuildings?: string[];
-  customBuildings?: Record<string, any>[];
-  setCustomBuildings?: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
-  allBuildings?: Record<string, any>[];
-  setAllBuildings?: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
-  activeTenants?: Record<string, any>[];
-  activeVacancies?: Record<string, any>[];
-  buildingData?: Record<string, any>;
-  setBuildingData?: React.Dispatch<React.SetStateAction<Record<string, any>>>;
-  parkingInfo?: Record<string, any>;
-  isLoading?: boolean;
-}
+/* ── Helper: label with DB column hint ── */
+const RegDbLabel = ({ label, col }) => (
+  <div style={{ fontSize: 11, color: "#8F95A3", marginBottom: 2 }}>{label}</div>
+);
 
-export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildings = [], setCustomBuildings, allBuildings = [], setAllBuildings, activeTenants = [], activeVacancies = [], isLoading }: BuildingsPageProps) => {
+/* ── Helper: text input bound to regForm.field via setRegField ── */
+const RegInput = ({ saved, field, updateBD, placeholder, type, style: extraStyle, ...rest }) => (
+  <input type={type || "text"} value={saved[field] || ""} onChange={e => updateBD({ [field]: type === "number" ? e.target.value : e.target.value })}
+    placeholder={placeholder} style={{ ...inputStyle, padding: "8px 12px", fontSize: 12, ...extraStyle }} {...rest} />
+);
+
+/* ── Helper: checkbox bound to regForm.field via setRegField ── */
+const RegCheck = ({ saved, field, updateBD, label, col }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <input type="checkbox" checked={!!saved[field]} onChange={e => updateBD({ [field]: e.target.checked })} />
+    <div style={{ fontSize: 12, color: "#8F95A3" }}>{label}</div>
+  </div>
+);
+
+/* ── Helper: select bound to regForm.field via setRegField ── */
+const RegSelect = ({ saved, field, updateBD, options, style: extraStyle }) => (
+  <select value={saved[field] || ""} onChange={e => updateBD({ [field]: e.target.value })} style={{ ...inputStyle, padding: "8px 12px", fontSize: 12, ...extraStyle }}>
+    <option value="">선택</option>
+    {options.map(o => typeof o === "string" ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
+  </select>
+);
+
+/* ── Helper: textarea bound to regForm.field via setRegField ── */
+const RegTextarea = ({ saved, field, updateBD, placeholder, rows }) => (
+  <textarea value={saved[field] || ""} onChange={e => updateBD({ [field]: e.target.value })}
+    placeholder={placeholder} rows={rows || 3}
+    style={{ ...inputStyle, padding: "8px 12px", fontSize: 12, minHeight: 60, width: "100%", resize: "vertical" }} />
+);
+
+/* ── Helper: file upload with thumbnail ── */
+const RegFileUpload = ({ saved, field, label, col, updateBD }) => {
+  const fileRef = useRef(null);
+  const value = saved[field];
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { alert('파일 크기는 5MB 이하만 가능합니다.'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateBD({ [field]: reader.result, [field + 'Name']: file.name, [field + 'Type']: file.type });
+    };
+    reader.readAsDataURL(file);
+  };
+  const isPdf = saved[field + 'Type']?.includes('pdf');
+  const fileName = saved[field + 'Name'] || '파일';
+  return (
+    <div>
+      <RegDbLabel label={label} col={col} />
+      <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={handleUpload} style={{ display: 'none' }} />
+      {!value ? (
+        <button onClick={() => fileRef.current?.click()}
+          style={{ width: '100%', padding: '20px 12px', borderRadius: 8, border: '1.5px dashed #D1D5DB', background: '#F9FAFB', color: '#6B7280', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center' }}>
+          파일 첨부 (이미지/PDF)
+        </button>
+      ) : (
+        <div style={{ position: 'relative' }}>
+          <div style={{ width: '100%', height: 80, borderRadius: 8, border: '1px solid #E5E7EB', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB' }}>
+            {isPdf ? (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 28 }}>PDF</div>
+                <div style={{ fontSize: 9, color: '#6B7280', marginTop: 2 }}>{fileName}</div>
+              </div>
+            ) : (
+              <img src={value} alt={label} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+            )}
+          </div>
+          <button onClick={(e) => { e.stopPropagation(); updateBD({ [field]: null, [field + 'Name']: null, [field + 'Type']: null }); }}
+            style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', border: 'none', background: '#EF4444', color: '#fff', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>X</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const BuildingsPage = () => {
+  const navigate = useNavigate();
+  const onSelectBuilding = (name) => navigate(`/buildings/${encodeURIComponent(name)}`);
+  const { myBuildings } = useMyBuildings();
+  const { customBuildings, setCustomBuildings, allBuildings, setAllBuildings, buildingData } = useBuildingStore();
+  const { activeTenants } = useTenantStore();
+  const { activeVacancies } = useCalendarStore();
   const isMobile = useIsMobile();
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
   const filteredBuildings = myBuildings.length > 0 ? allBuildings.filter(b => myBuildings.includes(b.name)) : allBuildings;
@@ -91,29 +213,30 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
   const [regDone, setRegDone] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // 섹션 접기/펼치기 state
-  const [sec1Open, setSec1Open] = useState(true);   // 기본 정보
-  const [sec2Open, setSec2Open] = useState(true);   // 건물주 정보
-  const [sec3Open, setSec3Open] = useState(false);  // 건물 계좌 정보
-  const [sec4Open, setSec4Open] = useState(false);  // 담당자 & 계약 조건
-  const [sec5Open, setSec5Open] = useState(false);  // 협력업체
-  const [sec6Open, setSec6Open] = useState(false);  // 건물 특이사항
-  const [sec7Open, setSec7Open] = useState(true);   // 호실 등록
+  // 섹션 접기/펼치기 state (BuildingDetailPage 구조와 일치)
+  const [sec1Open, setSec1Open] = useState(true);     // 건물 정보
+  const [sec3Open, setSec3Open] = useState(true);     // 건물주
+  const [showOwner2, setShowOwner2] = useState(false);
+  const [showOwner3, setShowOwner3] = useState(false);
+  const [sec12Open, setSec12Open] = useState(true);   // 정산·청구
+  const [sec16Open, setSec16Open] = useState(true);   // 서류
+  const [sec7Open, setSec7Open] = useState(true);     // 호실 등록
   const [fireMode, setFireMode] = useState("direct"); // "direct" 직접관리 | "vendor" 협력업체관리
 
-  const set = (patch: Record<string, any>) => setRegForm(f => ({ ...f, ...patch }));
-  const setOwner = (idx: number, field: string, value: any) => setRegForm(f => {
+  const set = (patch) => setRegForm(f => ({ ...f, ...patch }));
+  const setRegField = (patch) => setRegForm(prev => ({ ...prev, ...patch }));
+  const setOwner = (idx, field, value) => setRegForm(f => {
     const updated = [...f.owners];
     updated[idx] = { ...updated[idx], [field]: value };
     return { ...f, owners: updated };
   });
   const addOwner = () => setRegForm(f => f.owners.length < 4 ? { ...f, owners: [...f.owners, { name: "", phone: "", ssn: "", address: "", settlement: "" }] } : f);
-  const removeOwner = (idx: number) => setRegForm(f => f.owners.length > 1 ? { ...f, owners: f.owners.filter((_: any, i: number) => i !== idx) } : f);
-  const setVendor = (key: string, field: string, value: any) => setRegForm(f => ({
+  const removeOwner = (idx) => setRegForm(f => f.owners.length > 1 ? { ...f, owners: f.owners.filter((_, i) => i !== idx) } : f);
+  const setVendor = (key, field, value) => setRegForm(f => ({
     ...f,
     vendors: { ...f.vendors, [key]: { ...f.vendors[key], [field]: value } }
   }));
-  const toggleVendor = (key: string) => setRegForm(f => ({
+  const toggleVendor = (key) => setRegForm(f => ({
     ...f,
     vendorEnabled: { ...f.vendorEnabled, [key]: !f.vendorEnabled[key] }
   }));
@@ -122,25 +245,27 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
     const f = regForm.newFloor;
     const from = parseInt(regForm.newFrom);
     const to = parseInt(regForm.newTo || regForm.newFrom);
-    if (!f || isNaN(from)) return;
+    if (!f || isNaN(from)) { alert("층과 시작 호를 입력하세요."); return; }
+    if (!isNaN(to) && to < from) { alert(`시작 호(${from})가 끝 호(${to})보다 큽니다. 순서를 확인하세요.`); return; }
+    if (!isNaN(to) && (to - from) > 50) { alert(`한 번에 50개 이상의 호실은 추가할 수 없습니다.`); return; }
     const newRooms = [];
     for (let i = from; i <= to; i++) {
       const roomNum = `${f.startsWith("B") || f.startsWith("b") ? f.toUpperCase() : f}${String(i).padStart(2, "0")}`;
-      if (!regForm.roomList.find((r: any) => r.room === roomNum)) {
-        newRooms.push({ room: roomNum, roomType: "", buildingType: "", area: "", rent: "", mgmt: "", deposit: "", water: "", internet: "", cleanFee: "", elecNo: "", gasNo: "", commFee: "", photos: [] });
+      if (!regForm.roomList.find(r => r.room === roomNum)) {
+        newRooms.push({ room: roomNum, roomType: "", buildingType: "", area: "", standardRent: "", standardManagementFee: "", standardDeposit: "", standardWaterFee: "", standardInternetFee: "", standardCleaningFee: "", electricCustomerNumber: "", gasCustomerNumber: "", standardBrokerFee: "", photos: [] });
       }
     }
     const startIdx = regForm.roomList.length;
     set({ roomList: [...regForm.roomList, ...newRooms], newFloor: "", newFrom: "", newTo: "", editIdx: startIdx });
   };
 
-  const updateRoom = (idx: number, field: string, value: any) => {
+  const updateRoom = (idx, field, value) => {
     const updated = [...regForm.roomList];
     updated[idx] = { ...updated[idx], [field]: value };
     set({ roomList: updated });
   };
 
-  const removeRoom = (idx: number) => {
+  const removeRoom = (idx) => {
     const updated = [...regForm.roomList];
     updated.splice(idx, 1);
     const newIdx = updated.length === 0 ? null : idx >= updated.length ? updated.length - 1 : idx;
@@ -148,22 +273,36 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
   };
 
   const handlePreview = () => {
-    if (!regForm.name || !regForm.address || regForm.roomList.length === 0) return;
+    const errors = [];
+    if (!regForm.name?.trim()) errors.push("건물명");
+    if (!(regForm.addressOld || regForm.addressRoad)) errors.push("주소(도로명 또는 지번)");
+    if (regForm.roomList.length === 0) errors.push("호실 (최소 1개)");
+    const hasType = regForm.isShortTermRental || regForm.isLongTermRental || regForm.isCommercial || regForm.isManagementAgency || regForm.isCorporateFacility;
+    if (!hasType) errors.push("건물유형 (최소 1개 선택)");
+    if (errors.length > 0) {
+      alert("다음 항목을 확인해주세요:\n• " + errors.join("\n• "));
+      return;
+    }
+    // 중복 건물명 체크
+    if (allBuildings.some(b => b.name === regForm.name.trim())) {
+      alert(`"${regForm.name}" 건물이 이미 존재합니다.`);
+      return;
+    }
     setShowPreview(true);
   };
 
-  const handleReg = () => {
+  const handleReg = async () => {
     // 건물 데이터 구조에 맞게 변환하여 저장
     const newBuilding = {
       name: regForm.name,
       rooms: regForm.roomList.length,
       occupied: 0,
-      type: regForm.types.join("+"),
-      feeType: regForm.feeType,
-      fee: regForm.feeType === "pct" ? parseFloat(regForm.fee) / 100 || 0 : 0,
-      fixedFee: regForm.feeType === "fixed" ? parseInt(String(regForm.fixedFee).replace(/,/g, "")) || 0 : 0,
+      type: [regForm.isShortTermRental && "단기", regForm.isLongTermRental && "일반임대", regForm.isCommercial && "근생", regForm.isManagementAgency && "관리사무소", regForm.isCorporateFacility && "기업시설관리"].filter(Boolean).join("+"),
+      feeType: regForm.managementFeeType === "percent" ? "pct" : regForm.managementFeeType === "fixed" ? "fixed" : "pct",
+      fee: regForm.managementFeeType === "percent" || regForm.managementFeeType === "hybrid" ? parseFloat(regForm.managementFeeRate) / 100 || 0 : 0,
+      fixedFee: regForm.managementFeeType === "fixed" || regForm.managementFeeType === "hybrid" ? parseInt(String(regForm.managementFeeFixedAmount).replace(/,/g, "")) || 0 : 0,
       special: null,
-      parkingTotal: parseInt(regForm.parkingTotal) || 0,
+      parkingTotal: parseInt(regForm.parkingTotalSpaces) || 0,
       // 추가 정보 보존
       _custom: true,
       _regForm: { ...regForm },
@@ -174,15 +313,35 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
     if (setAllBuildings) {
       setAllBuildings(prev => [...prev, newBuilding]);
     }
+
+    // Supabase에도 저장
+    const sbBuilding = await insertBuilding(regForm);
+    if (sbBuilding) {
+      // 호실도 Supabase에 저장
+      if (regForm.roomList.length > 0) {
+        await insertRooms(sbBuilding.id, regForm.roomList);
+      }
+      newBuilding.supabaseId = sbBuilding.id;
+      newBuilding.source = 'supabase';
+      console.info(`[Supabase] 건물 "${regForm.name}" + 호실 ${regForm.roomList.length}개 저장 완료`);
+    }
+
     setShowPreview(false);
     setRegDone(true);
     setTimeout(() => { setRegDone(false); setSubTab("list"); setRegForm({ ...initialRegForm }); }, 1500);
   };
 
-  // 건물유형 배열 → 계좌타입 직접 파생
-  const allBuildingTypes = ["단기", "일반임대", "근생", "관리사무소", "기업시설관리"];
-  const buildingTypeLabel: Record<string, string> = { "단기": "단기", "일반임대": "일반임대(주택)", "근생": "근생", "관리사무소": "관리사무소", "기업시설관리": "기업시설관리" };
-  const acctTypes = regForm.types.map((t: string) => t === "기업시설관리" ? "관리사무소" : t);
+  // 건물유형 boolean → 문자열 배열 파생 (계좌타입, 표시용)
+  const regFormTypes = [regForm.isShortTermRental && "단기", regForm.isLongTermRental && "일반임대", regForm.isCommercial && "근생", regForm.isManagementAgency && "관리사무소", regForm.isCorporateFacility && "기업시설관리"].filter(Boolean);
+  const acctTypes = regFormTypes.map(t => t === "기업시설관리" ? "관리사무소" : t);
+
+  // ── Conditional field visibility helpers (BuildingDetailPage 동일) ──
+  const anyTypeChecked = regForm.isShortTermRental || regForm.isLongTermRental || regForm.isCommercial || regForm.isManagementAgency || regForm.isCorporateFacility;
+  const isType = (...types) => !anyTypeChecked || types.some(t => regForm[t]);
+  const notCorporateOnly = isType('isShortTermRental', 'isLongTermRental', 'isCommercial', 'isManagementAgency');
+  const isRentalOrCommercial = isType('isShortTermRental', 'isLongTermRental', 'isCommercial');
+  const isCommercialOrAgency = isType('isCommercial', 'isManagementAgency');
+  const corporateOnly = anyTypeChecked && regForm.isCorporateFacility && !regForm.isShortTermRental && !regForm.isLongTermRental && !regForm.isCommercial && !regForm.isManagementAgency;
 
   return (
     <div>
@@ -208,15 +367,18 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
         <div>
           {/* 건물 검색 */}
           {/* NOTE: 건물 목록 렌더 시작 */}
-          <div style={{ position: "relative", marginBottom: 12 }}>
-            <input value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="건물 검색 (초성 가능: ㅅㅌ → 스타빌, ㄷㅎ → 더힐하우스)"
-              style={{ width: "100%", padding: "10px 14px 10px 36px", borderRadius: 10, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", background: "#F8FAFC", outline: "none", boxSizing: "border-box" }} />
-            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 15, color: "#8F95A3" }}>🔍</span>
-            {searchText && <button onClick={() => setSearchText("")} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", fontSize: 14, color: "#8F95A3", cursor: "pointer" }}>✕</button>}
+          <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
+            <div style={{ flex: 1 }}>
+              <SearchInput value={searchText} onChange={setSearchText} placeholder="건물 검색 (초성 가능: ㅅㅌ → 스타빌, ㄷㅎ → 더힐하우스)" />
+            </div>
           </div>
-          {searchText && <div style={{ fontSize: 11, color: "#8F95A3", marginBottom: 8 }}>검색결과: {filteredBuildings.filter(b => matchKorean(b.name, searchText)).length}개</div>}
+          {(() => {
+            const bd = buildingData || {};
+            const visibleBuildings = filteredBuildings.filter(b => matchKorean(b.name, searchText));
+            return (<>
+              {searchText && <div style={{ fontSize: 11, color: "#8F95A3", marginBottom: 8 }}>검색결과: {visibleBuildings.length}개</div>}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(1, 1fr)" : "repeat(3, 1fr)", gap: 12 }}>
-          {filteredBuildings.filter(b => matchKorean(b.name, searchText)).map((b, i) => {
+          {visibleBuildings.map((b, i) => {
             const dynOccupied = activeTenants.filter(t => t.building === b.name).length;
             const dynVacant = activeVacancies.filter(v => v.building === b.name).length;
             const pendingCount = asItems.filter(a => a.building === b.name && a.status !== "완료").length;
@@ -226,6 +388,9 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{ fontWeight: 800, fontSize: 15, color: "#1A1D23" }}>{b.name}</span>
+                      {b.source === "supabase" && (
+                        <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#DCFCE7", color: "#16A34A", border: "1px solid #BBF7D0" }}>DB</span>
+                      )}
                       {b._custom && (
                         <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 7px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB", border: "1px solid #BFDBFE" }}>신규</span>
                       )}
@@ -235,7 +400,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{b.type}{feeLabel(b as any) && ` · ${feeLabel(b as any)}`}</div>
+                    <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{b.type}{feeLabel(b) && ` · ${feeLabel(b)}`}</div>
                   </div>
                   {pendingCount > 0 ? (
                     <div style={{ background: "#FEF2F2", color: "#DC2626", padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>🔧 {pendingCount}건</div>
@@ -252,6 +417,8 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             );
           })}
         </div>
+            </>);
+          })()}
         </div>
       ) : regDone ? (
         <Card style={{ padding: "40px 20px", textAlign: "center" }}>
@@ -267,7 +434,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
               <div style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>📋 등록 미리보기</div>
               <div style={{ fontSize: 11, color: "#A0AEC0", marginTop: 2 }}>입력하신 내용을 확인하세요</div>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setShowPreview(false)} style={{ padding: "8px 20px", borderRadius: 8, border: "1.5px solid #A0AEC0", background: "transparent", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>← 수정하기</button>
               <button onClick={handleReg} style={{ padding: "8px 24px", borderRadius: 8, border: "none", background: "#10B981", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(16,185,129,0.4)" }}>등록 확인</button>
             </div>
@@ -276,19 +443,19 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
           {/* 미리보기: 기본 정보 */}
           <Card style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📋 기본 정보</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {[
                 { l: "건물명", v: regForm.name },
-                { l: "건물 유형", v: regForm.types.join(" + ") },
-                { l: "주소", v: regForm.address },
-                { l: "도로명 주소", v: regForm.roadAddress },
-                { l: "관리 시작일", v: regForm.startDate },
-                { l: "사용승인일", v: regForm.approvalDate },
-                { l: "현관 비밀번호", v: regForm.entrancePw },
+                { l: "건물 유형", v: regFormTypes.join(" + ") },
+                { l: "지번 주소", v: regForm.addressOld },
+                { l: "도로명 주소", v: regForm.addressRoad },
+                { l: "관리 시작일", v: regForm.contractStartDate },
+                { l: "사용승인일", v: regForm.approvedDate },
+                { l: "현관 비밀번호", v: regForm.entranceDoorPassword },
                 { l: "CCTV 대수", v: regForm.cctvCount ? `${regForm.cctvCount}대` : "" },
-                { l: "건물주차총대수", v: regForm.parkingTotal ? `${regForm.parkingTotal}대` : "" },
+                { l: "주차 총 대수", v: regForm.parkingTotalSpaces ? `${regForm.parkingTotalSpaces}대` : "" },
               ].filter(x => x.v).map((x, i) => (
-                <div key={i} style={{ display: "flex", gap: 8, padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
+                <div key={i} style={{ display: "flex", gap: 10, padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
                   <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, minWidth: 90 }}>{x.l}</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{x.v}</span>
                 </div>
@@ -297,17 +464,21 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
           </Card>
 
           {/* 미리보기: 건물주 정보 */}
-          {regForm.owners.some((ow: any) => ow.name) && (
+          {regForm.ownerName && (
             <Card style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>👤 건물주 정보</div>
               {(() => {
+                const owners = [
+                  { name: regForm.ownerName, ssn: regForm.ownerResidentNumber, phone: regForm.ownerPhone, email: regForm.ownerEmail, address: regForm.ownerHomeAddress },
+                  regForm.owner2Name ? { name: regForm.owner2Name, ssn: regForm.owner2ResidentNumber, phone: regForm.owner2Phone, email: regForm.owner2Email, address: regForm.owner2HomeAddress } : null,
+                  regForm.owner3Name ? { name: regForm.owner3Name, ssn: regForm.owner3ResidentNumber, phone: regForm.owner3Phone, email: regForm.owner3Email, address: regForm.owner3HomeAddress } : null,
+                ].filter(Boolean);
                 const ownerColors = [
                   { bg: "#F0F4FF", color: "#2563EB", label: "주" },
                   { bg: "#F5F3FF", color: "#7C3AED", label: "부" },
-                  { bg: "#FFF7ED", color: "#EA580C", label: "" },
                   { bg: "#F0FDF4", color: "#059669", label: "" },
                 ];
-                return regForm.owners.filter((ow: any) => ow.name).map((ow: any, oi: number) => {
+                return owners.map((ow, oi) => {
                   const c = ownerColors[oi] || ownerColors[0];
                   return (
                     <div key={oi} style={{ padding: "8px 12px", background: c.bg, borderRadius: 8, marginBottom: 8 }}>
@@ -318,7 +489,6 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                         ))}
                       </div>
                       {ow.address && <div style={{ marginTop: 4 }}><span style={{ fontSize: 9, color: "#8F95A3" }}>주소</span><div style={{ fontSize: 12, fontWeight: 700 }}>{ow.address}</div></div>}
-                      {ow.settlement && <div style={{ marginTop: 2 }}><span style={{ fontSize: 9, color: "#8F95A3" }}>정산계좌</span><div style={{ fontSize: 12, fontWeight: 700 }}>{ow.settlement}</div></div>}
                     </div>
                   );
                 });
@@ -331,7 +501,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             <Card style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏦 건물 계좌 정보</div>
               <div style={{ display: "grid", gridTemplateColumns: acctTypes.length === 3 ? "1fr 1fr 1fr" : acctTypes.length === 2 ? "1fr 1fr" : "1fr", gap: 10 }}>
-                {acctTypes.map((aType: string, ai: number) => {
+                {acctTypes.map((aType, ai) => {
                   const suffix = String(ai + 1);
                   const currentMode = regForm[`acctMode${suffix}`];
                   if (!currentMode) return null;
@@ -369,40 +539,19 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             </Card>
           )}
 
-          {/* 미리보기: 담당자 & 계약 조건 */}
+          {/* 미리보기: 정산·청구 */}
           <Card style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏢 담당자 & 계약 조건</div>
-            {/* 담당자 */}
-            {(() => {
-              const mgrs = [
-                { key: "internalMgr", role: "internal" },
-                { key: "externalMgr", role: "external" },
-                { key: "collectionMgr", role: "collection" },
-                { key: "contractMgr", role: "contract" },
-                { key: "generalMgr", role: "general" },
-              ].filter(m => regForm[m.key]);
-              return mgrs.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
-                  {mgrs.map(m => {
-                    const sr = staffRoles.find(r => r.id === m.role)!;
-                    return (
-                      <span key={m.key} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: sr?.color + "15", color: sr?.color, border: `1px solid ${sr?.color}40` }}>
-                        {sr?.icon} {sr?.label}: {regForm[m.key]}
-                      </span>
-                    );
-                  })}
-                </div>
-              );
-            })()}
+            <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>💰 정산·청구</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
               {[
-                { l: "수수료", v: regForm.feeType === "pct" ? (regForm.fee ? `${regForm.fee}%` : "") : (regForm.fixedFee ? `${regForm.fixedFee}원` : "") },
-                regForm.types.includes("단기") ? { l: "7일패널티", v: regForm.penaltyOwner } : null,
-                { l: "부가가치세", v: regForm.vatType },
-                (regForm.types.includes("단기") || regForm.types.includes("일반임대")) ? { l: "표준임대차", v: regForm.standardLease } : null,
-                { l: "순회주기", v: regForm.visitCycle },
-                { l: "E-MAIL", v: regForm.email },
-              ].filter(x => x && x.v).map((x: any, i: number) => (
+                { l: "수수료 방식", v: regForm.managementFeeType === "percent" ? "%" : regForm.managementFeeType === "fixed" ? "고정" : regForm.managementFeeType === "hybrid" ? "혼합" : "" },
+                { l: "수수료율", v: regForm.managementFeeRate ? `${regForm.managementFeeRate}%` : "" },
+                { l: "고정 수수료", v: regForm.managementFeeFixedAmount },
+                { l: "정산일", v: regForm.settlementDay1 },
+                { l: "정산일 2", v: regForm.settlementDay2 },
+                { l: "임대료 선후불", v: regForm.rentBillingType === "prepaid" ? "선불" : regForm.rentBillingType === "postpaid" ? "후불" : "" },
+                { l: "관리비 선후불", v: regForm.managementFeeBillingType === "prepaid" ? "선불" : regForm.managementFeeBillingType === "postpaid" ? "후불" : "" },
+              ].filter(x => x.v).map((x, i) => (
                 <div key={i} style={{ padding: "4px 0", borderBottom: "1px solid #F3F4F6" }}>
                   <span style={{ fontSize: 10, color: "#8F95A3" }}>{x.l}</span>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{x.v}</div>
@@ -411,69 +560,35 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
             </div>
           </Card>
 
-          {/* 미리보기: 협력업체 */}
-          {Object.values(regForm.vendorEnabled).some(v => v) && (
-            <Card style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🔧 협력업체</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {[
-                  { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
-                  { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
-                  { key: "fire", label: "소방", icon: "🔥", color: "#DC2626" },
-                  { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1" },
-                  { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6" },
-                  { key: "custom1", label: "기타1", icon: "📋", color: "#64748B" },
-                  { key: "custom2", label: "기타2", icon: "📋", color: "#64748B" },
-                ].filter(v => regForm.vendorEnabled[v.key]).map(v => {
-                  const vd = regForm.vendors[v.key];
-                  const displayLabel = v.label.startsWith("기타") ? (vd.label || v.label) : v.label;
-                  return (
-                    <div key={v.key} style={{ padding: "8px 12px", background: v.color + "08", borderRadius: 8, border: `1px solid ${v.color}30` }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: v.color, marginBottom: 4 }}>{v.icon} {displayLabel}</div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 4, fontSize: 11 }}>
-                        {[
-                          { l: "업체명", v: vd.company },
-                          { l: "연락처", v: vd.phone },
-                          { l: "담당자", v: vd.contact },
-                          { l: "담당자 휴대폰", v: vd.contactPhone },
-                        ].filter(x => x.v).map((x, i) => (
-                          <div key={i}><span style={{ fontSize: 9, color: "#8F95A3" }}>{x.l}</span><div style={{ fontWeight: 600 }}>{x.v}</div></div>
-                        ))}
-                      </div>
-                      {vd.manager && (
-                        <div style={{ marginTop: 4, paddingTop: 4, borderTop: `1px dashed ${v.color}40`, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, fontSize: 11 }}>
-                          {[
-                            { l: "안전관리자", v: vd.manager },
-                            { l: "연락처", v: vd.managerPhone },
-                            { l: "자격/비고", v: vd.managerNote },
-                          ].filter(x => x.v).map((x, i) => (
-                            <div key={i}><span style={{ fontSize: 9, color: "#8F95A3" }}>{x.l}</span><div style={{ fontWeight: 600 }}>{x.v}</div></div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-          )}
-
-          {/* 미리보기: 건물 특이사항 */}
-          {regForm.buildingNotes && (
-            <Card style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📝 건물 특이사항</div>
-              <div style={{ fontSize: 12, color: "#3D4251", lineHeight: 1.8, whiteSpace: "pre-wrap", padding: "10px 12px", background: "#FAFBFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                {regForm.buildingNotes}
-              </div>
-            </Card>
-          )}
+          {/* 미리보기: 서류 */}
+          {(() => {
+            const docs = [
+              { label: "화재보험 증권", field: "fireInsuranceDocumentUrl" },
+              { label: "건축물대장", field: "documentBuildingRegisterUrl" },
+              { label: "관리용역계약서", field: "documentManagementContractUrl" },
+              { label: "사업자등록증", field: "documentBusinessRegistrationUrl" },
+              { label: "준공도면", field: "documentCompletionDrawingUrl" },
+            ].filter(d => regForm[d.field]);
+            return docs.length > 0 && (
+              <Card style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📎 서류</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {docs.map(d => (
+                    <span key={d.field} style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" }}>
+                      {d.label} ({regForm[d.field + 'Name'] || '첨부됨'})
+                    </span>
+                  ))}
+                </div>
+              </Card>
+            );
+          })()}
 
           {/* 미리보기: 호실 목록 */}
           <Card style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🚪 호실 등록 ({regForm.roomList.length}개)</div>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 8 }}>
-              {regForm.roomList.map((r: any, i: number) => {
-                const filled = r.roomType && r.rent;
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 10 }}>
+              {regForm.roomList.map((r, i) => {
+                const filled = r.roomType && r.standardRent;
                 return (
                   <div key={i} style={{ padding: "10px 12px", borderRadius: 8, border: `1.5px solid ${filled ? "#A7F3D0" : "#FBBF24"}`, background: filled ? "#F0FDF4" : "#FFFBEB" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
@@ -486,9 +601,9 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                     {acctTypes.length > 1 && (r.buildingType || acctTypes[0]) && (
                       <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, background: acctTypeBg[r.buildingType || acctTypes[0]], color: acctTypeColor[r.buildingType || acctTypes[0]], fontWeight: 600 }}>{r.buildingType || acctTypes[0]}</span>
                     )}
-                    {(r.rent || r.deposit || r.mgmt) && (
+                    {(r.standardRent || r.standardDeposit || r.standardManagementFee) && (
                       <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>
-                        {[r.deposit && `예치금 ${r.deposit}`, r.rent && `임대료 ${r.rent}`, r.mgmt && `관리비 ${r.mgmt}`].filter(Boolean).join(" · ")}
+                        {[r.standardDeposit && `예치금 ${r.standardDeposit}`, r.standardRent && `임대료 ${r.standardRent}`, r.standardManagementFee && `관리비 ${r.standardManagementFee}`].filter(Boolean).join(" · ")}
                       </div>
                     )}
                     {r.photos.length > 0 && <div style={{ fontSize: 10, color: "#3B82F6", marginTop: 2 }}>📸 사진 {r.photos.length}장</div>}
@@ -512,423 +627,57 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
         </div>
       ) : (
         <div>
-          {/* ── Section 1: 기본 정보 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="📋" title="기본 정보" subtitle="건물명 · 주소 · 유형 · 시설" open={sec1Open} onToggle={() => setSec1Open(!sec1Open)} />
-            {sec1Open && <div>
-              <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>건물명 <span style={{ color: "#DC2626" }}>*</span></div>
-                <input value={regForm.name} onChange={e => set({name: e.target.value})} placeholder="예: 스타빌" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>건물 유형 (최대 3개) <span style={{ color: "#DC2626" }}>*</span></div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
-                    {(() => {
-                      const firstType = regForm.types[0] || "";
-                      const acctKey = firstType === "기업시설관리" ? "관리사무소" : firstType;
-                      return (
-                        <select value={firstType} onChange={e => {
-                          const v = e.target.value;
-                          if (!v) { set({ types: [] }); return; }
-                          const updated = [...regForm.types];
-                          if (updated.length === 0) updated.push(v); else updated[0] = v;
-                          set({ types: updated });
-                        }}
-                          style={{ ...inputStyle, width: "auto", padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", background: firstType ? (acctTypeBg[acctKey] || "#F3F4F6") : "#fff", color: firstType ? (acctTypeColor[acctKey] || "#5F6577") : "#8F95A3", borderColor: firstType ? (acctTypeColor[acctKey] || "#E0E3E9") + "60" : "#E0E3E9" }}>
-                          <option value="">-- 유형 선택 --</option>
-                          {allBuildingTypes.map(bt => (
-                            <option key={bt} value={bt} disabled={regForm.types.includes(bt) && regForm.types[0] !== bt}>{buildingTypeLabel[bt]}</option>
-                          ))}
-                        </select>
-                      );
-                    })()}
-                    {regForm.types.slice(1).map((t: string, ti: number) => {
-                      const realIdx = ti + 1;
-                      const acctKey = t === "기업시설관리" ? "관리사무소" : t;
-                      return (
-                        <div key={realIdx} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <select value={t} onChange={e => { const updated = [...regForm.types]; updated[realIdx] = e.target.value; set({ types: updated }); }}
-                            style={{ ...inputStyle, width: "auto", padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", background: acctTypeBg[acctKey] || "#F3F4F6", color: acctTypeColor[acctKey] || "#5F6577", borderColor: (acctTypeColor[acctKey] || "#E0E3E9") + "60" }}>
-                            {allBuildingTypes.map(bt => (
-                              <option key={bt} value={bt} disabled={bt !== t && regForm.types.includes(bt)}>{buildingTypeLabel[bt]}</option>
-                            ))}
-                          </select>
-                          <button onClick={() => set({ types: regForm.types.filter((_: any, i: number) => i !== realIdx) })}
-                            style={{ width: 20, height: 20, borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", cursor: "pointer", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, fontFamily: "inherit" }}>✕</button>
-                        </div>
-                      );
-                    })}
-                    {regForm.types.length >= 1 && regForm.types.length < 3 && (
-                      <button onClick={() => { const remaining = allBuildingTypes.filter(bt => !regForm.types.includes(bt)); if (remaining.length > 0) set({ types: [...regForm.types, remaining[0]] }); }}
-                        style={{ padding: "5px 12px", borderRadius: 6, border: "1.5px dashed #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                        ＋ 유형 추가
-                      </button>
-                    )}
-                  </div>
+          {/* ── 등록 진행률 ── */}
+          {(() => {
+            const checks = [
+              { label: "건물유형", done: regForm.isShortTermRental || regForm.isLongTermRental || regForm.isCommercial || regForm.isManagementAgency || regForm.isCorporateFacility },
+              { label: "건물명", done: !!regForm.name?.trim() },
+              { label: "주소", done: !!(regForm.addressOld || regForm.addressRoad) },
+              { label: "건물주", done: !!regForm.ownerName?.trim() },
+              { label: "수수료", done: !!regForm.managementFeeType },
+              { label: "정산일", done: regForm.settlementDay1 !== undefined && regForm.settlementDay1 !== "" },
+              { label: "호실", done: regForm.roomList?.length > 0 },
+            ];
+            const done = checks.filter(c => c.done).length;
+            const pct = Math.round((done / checks.length) * 100);
+            return (
+              <div style={{ marginBottom: 16, padding: "10px 14px", background: "#F8FAFC", borderRadius: 10, border: "1px solid #E8ECF0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>등록 진행률</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: pct === 100 ? "#059669" : "#D97706" }}>{done}/{checks.length} ({pct}%)</span>
                 </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리시작일 <span style={{ color: "#DC2626" }}>*</span></div>
-                  <input type="date" value={regForm.startDate} onChange={e => set({startDate: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
+                <div style={{ height: 6, background: "#E5E7EB", borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
+                  <div style={{ width: `${pct}%`, height: "100%", background: pct === 100 ? "#10B981" : "#F59E0B", borderRadius: 3, transition: "width 0.3s" }} />
                 </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>🔑 현관 비밀번호</div>
-                  <input value={regForm.entrancePw} onChange={e => set({entrancePw: e.target.value})} placeholder="비밀번호" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, fontFamily: "monospace", letterSpacing: 1 }} />
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {checks.map(c => (
+                    <span key={c.label} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: c.done ? "#ECFDF5" : "#FEF2F2", color: c.done ? "#065F46" : "#991B1B", fontWeight: 600 }}>
+                      {c.done ? "✓" : "○"} {c.label}
+                    </span>
+                  ))}
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주소 <span style={{ color: "#DC2626" }}>*</span></div>
-                  <input value={regForm.address} onChange={e => set({address: e.target.value})} placeholder="예: 서울 관악구 봉천동 123-45" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>도로명 주소</div>
-                  <input value={regForm.roadAddress} onChange={e => set({roadAddress: e.target.value})} placeholder="도로명 주소" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>시설</div>
-                  <div style={{ display: "flex", gap: 8, padding: "6px 0", alignItems: "center" }}>
-                    <span style={{ fontSize: 10, color: "#3D4251" }}>CCTV</span>
-                    <input type="number" min="0" value={regForm.cctvCount} onChange={e => set({cctvCount: e.target.value})} placeholder="0" style={{ ...inputStyle, width: 44, padding: "4px 6px", fontSize: 10, textAlign: "center" }} />
-                    <span style={{ fontSize: 9, color: "#8F95A3" }}>대</span>
-                    <span style={{ fontSize: 10, color: "#3D4251", marginLeft: 6 }}>건물주차총대수</span>
-                    <input type="number" min="0" value={regForm.parkingTotal} onChange={e => set({parkingTotal: e.target.value})} placeholder="0" style={{ ...inputStyle, width: 44, padding: "4px 6px", fontSize: 10, textAlign: "center" }} />
-                    <span style={{ fontSize: 9, color: "#8F95A3" }}>대</span>
-                  </div>
-                </div>
-              </div>
-            </div>}
-          </Card>
+            );
+          })()}
 
-          {/* ── Section 2: 건물주 정보 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="👤" title="건물주 정보" subtitle={`건물주 ${regForm.owners.length}명 · 최대 4명`} open={sec2Open} onToggle={() => setSec2Open(!sec2Open)} />
-            {sec2Open && <div>
-              {(() => {
-                const ownerColors = [
-                  { bg: "#F0F4FF", border: "#BFDBFE", color: "#2563EB", label: "주" },
-                  { bg: "#F5F3FF", border: "#DDD6FE", color: "#7C3AED", label: "부" },
-                  { bg: "#FFF7ED", border: "#FED7AA", color: "#EA580C", label: "" },
-                  { bg: "#F0FDF4", border: "#BBF7D0", color: "#059669", label: "" },
-                ];
-                return regForm.owners.map((ow: any, oi: number) => {
-                  const c = ownerColors[oi] || ownerColors[0];
-                  return (
-                    <div key={oi} style={{ padding: "10px 12px", background: c.bg, borderRadius: 8, border: `1px solid ${c.border}`, marginBottom: oi < regForm.owners.length - 1 ? 10 : 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: c.color }}>건물주 {oi + 1}{c.label ? ` (${c.label})` : ""}</span>
-                          {oi === 0 && regForm.owners.length < 4 && (
-                            <button onClick={addOwner}
-                              style={{ padding: "2px 10px", borderRadius: 5, border: `1.5px dashed ${c.color}`, background: "transparent", color: c.color, fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>＋ 건물주 추가</button>
-                          )}
-                        </div>
-                        {oi > 0 && (
-                          <button onClick={() => removeOwner(oi)}
-                            style={{ padding: "2px 8px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✕ 삭제</button>
-                        )}
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 6 }}>
-                        <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>이름</div><input value={ow.name} onChange={e => setOwner(oi, "name", e.target.value)} placeholder="홍길동" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                        <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주민등록번호</div><input value={ow.ssn} onChange={e => setOwner(oi, "ssn", e.target.value)} placeholder="000000-0000000" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontFamily: "monospace" }} /></div>
-                        <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>전화번호</div><input value={ow.phone} onChange={e => setOwner(oi, "phone", e.target.value)} placeholder="010-0000-0000" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      </div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주소</div><input value={ow.address} onChange={e => setOwner(oi, "address", e.target.value)} placeholder="건물주 주소" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div style={{ marginTop: 6 }}><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>정산계좌</div><input value={ow.settlement} onChange={e => setOwner(oi, "settlement", e.target.value)} placeholder="은행명 + 계좌번호 + 예금주" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    </div>
-                  );
-                });
-              })()}
-            </div>}
-          </Card>
+          {/* ── 건물 유형 (shared component) ── */}
+          <BuildingTypeCards data={regForm} onChange={setRegField} />
 
-          {/* ── Section 3: 건물 계좌 정보 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="🏦" title="건물 계좌 정보" subtitle={`기본정보 건물유형(${regForm.types.join(" + ")})에서 자동 반영 · 호실이 자동으로 상속합니다`} open={sec3Open} onToggle={() => setSec3Open(!sec3Open)} />
-            {sec3Open && <div>
-              <div style={{ display: "grid", gridTemplateColumns: acctTypes.length === 3 ? "1fr 1fr 1fr" : acctTypes.length === 2 ? "1fr 1fr" : "1fr", gap: 12 }}>
-                {acctTypes.map((aType: string, ai: number) => {
-                  const suffix = String(ai + 1);
-                  const modeKey = `acctMode${suffix}`;
-                  const hmKey = `housemanAccount${suffix}`;
-                  const ownerKey = `ownerAccounts${suffix}`;
-                  const currentOptions = modeOptions[aType] || [];
-                  const currentMode = currentOptions.find(o => o.id === regForm[modeKey]) ? regForm[modeKey] : "";
-                  const currentOwnerFields = ownerFieldCfg[currentMode] || [];
-                  const currentHmUsage = housemanUsageMap[currentMode];
-                  return (
-                    <div key={aType} style={{ padding: "10px 12px", background: acctTypeBg[aType], borderRadius: 8, border: `1.5px solid ${acctTypeColor[aType]}40` }}>
-                      <div style={{ fontSize: 12, fontWeight: 800, color: acctTypeColor[aType], marginBottom: 8 }}>{aType}</div>
-                      {/* 모드 선택 */}
-                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: currentMode ? 8 : 0 }}>
-                        {currentOptions.map(opt => (
-                          <button key={opt.id} onClick={() => set({ [modeKey]: opt.id, [ownerKey]: {} })}
-                            style={{ padding: "5px 10px", borderRadius: 6, border: currentMode === opt.id ? "1.5px solid #F59E0B" : "1px solid #E0E3E9", background: currentMode === opt.id ? "#FEF3C7" : "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: currentMode === opt.id ? "#92400E" : "#5F6577" }}
-                            title={opt.desc}>
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                      {/* 계좌 입력 */}
-                      {currentMode && (() => {
-                        const hmSection = currentHmUsage && (
-                          <div key="hm" style={{ padding: "8px 10px", background: "#F0F4FF", borderRadius: 6, border: "1px solid #BFDBFE" }}>
-                            <div style={{ fontSize: 9, fontWeight: 700, color: "#2563EB", marginBottom: 4 }}>🏗️ 하우스맨 계좌 <span style={{ color: "#8F95A3", fontWeight: 500 }}>({currentHmUsage})</span></div>
-                            <input value={regForm[hmKey]} onChange={e => set({ [hmKey]: e.target.value })}
-                              style={{ ...inputStyle, padding: "6px 10px", fontSize: 11, width: "100%", fontFamily: "monospace" }} />
-                          </div>
-                        );
-                        const ownerSection = currentOwnerFields.length > 0 && (
-                          <div key="owner" style={{ padding: "8px 10px", background: "#FFF7ED", borderRadius: 6, border: "1px solid #FED7AA" }}>
-                            <div style={{ fontSize: 9, fontWeight: 700, color: "#EA580C", marginBottom: 4 }}>👤 건물주 계좌</div>
-                            {currentOwnerFields.map(f => (
-                              <div key={f.key} style={{ marginBottom: 4 }}>
-                                <div style={{ fontSize: 8, fontWeight: 700, color: "#EA580C", marginBottom: 2 }}>{f.label}</div>
-                                <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 70px", gap: 4 }}>
-                                  <select value={(regForm[ownerKey] || {})[f.key + "_bank"] || ""} onChange={e => set({ [ownerKey]: { ...regForm[ownerKey], [f.key + "_bank"]: e.target.value } })}
-                                    style={{ ...inputStyle, padding: "5px 6px", fontSize: 10, cursor: "pointer" }}>
-                                    <option value="">은행</option>
-                                    {banks.map(b => <option key={b} value={b}>{b}</option>)}
-                                  </select>
-                                  <input value={(regForm[ownerKey] || {})[f.key] || ""} onChange={e => set({ [ownerKey]: { ...regForm[ownerKey], [f.key]: e.target.value } })}
-                                    placeholder="계좌번호" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontFamily: "monospace" }} />
-                                  <input value={(regForm[ownerKey] || {})[f.key + "_holder"] || ""} onChange={e => set({ [ownerKey]: { ...regForm[ownerKey], [f.key + "_holder"]: e.target.value } })}
-                                    placeholder="예금주" style={{ ...inputStyle, padding: "5px 8px", fontSize: 10 }} />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                        return (
-                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                            {ownerFirstModes[currentMode] ? <>{ownerSection}{hmSection}</> : <>{hmSection}{ownerSection}</>}
-                            <div style={{ fontSize: 10, color: "#5F6577", padding: "4px 0" }}>💡 {flowMap[currentMode]}</div>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>}
-          </Card>
+          {/* ── 건물 정보 (shared component) ── */}
+          <BuildingInfoSection data={regForm} onChange={(patch) => { setRegField(patch); if (patch.buildingName !== undefined) set({ name: patch.buildingName }); }} editMode={true} isMobile={isMobile} defaultOpen={sec1Open} buildingNamePlaceholder={regForm.name || "건물명"} />
 
-          {/* ── Section 4: 담당자 & 계약 조건 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="🏢" title="담당자 & 계약 조건" subtitle="역할별 담당자 · 수수료 · 순회주기 · 정산계좌 · 이메일" open={sec4Open} onToggle={() => setSec4Open(!sec4Open)} />
-            {sec4Open && <div>
-              {/* 담당자 배정 */}
-              <div style={{ padding: "8px 12px", background: "#F0F4FF", borderRadius: 8, marginBottom: 12, border: "1px solid #BFDBFE" }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", marginBottom: 6 }}>👤 담당자 배정</div>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: 6 }}>
-                  {[
-                    { key: "internalMgr", role: "internal" },
-                    { key: "externalMgr", role: "external" },
-                    { key: "collectionMgr", role: "collection" },
-                    { key: "contractMgr", role: "contract" },
-                    { key: "generalMgr", role: "general" },
-                  ].map(m => {
-                    const sr = staffRoles.find(r => r.id === m.role)!;
-                    return (
-                      <div key={m.key}>
-                        <div style={{ fontSize: 9, color: sr?.color, fontWeight: 700, marginBottom: 2 }}>{sr?.icon} {sr?.label}</div>
-                        <select value={regForm[m.key]} onChange={e => set({[m.key]: e.target.value})} style={{...inputStyle, padding: "5px 8px", fontSize: 10, cursor: "pointer"}}>
-                          <option value="">선택</option>
-                          {staffList.filter(s => s.roles.includes(m.role)).map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
-                        </select>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              {/* 수수료 & 계약조건 */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수수료 유형</div>
-                  <select value={regForm.feeType} onChange={e => set({feeType: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                    <option value="pct">수수료율 (%)</option>
-                    <option value="fixed">정액제 (원)</option>
-                  </select>
-                </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{regForm.feeType === "pct" ? "수수료율" : "정액 금액"}</div>
-                  {regForm.feeType === "pct" ? (
-                    <input value={regForm.fee} onChange={e => set({fee: e.target.value})} placeholder="예: 7.0%" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, textAlign: "right" }} />
-                  ) : (
-                    <input value={regForm.fixedFee} onChange={e => set({fixedFee: e.target.value})} placeholder="예: 1,500,000" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, textAlign: "right" }} />
-                  )}
-                </div>
-                {regForm.types.includes("단기") && <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>7일패널티 소유</div>
-                  <select value={regForm.penaltyOwner} onChange={e => set({penaltyOwner: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                    {["건물주", "하우스맨", "해당없음"].map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>}
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부가가치세</div>
-                  <select value={regForm.vatType} onChange={e => set({vatType: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                    {["포함", "별도", "없음"].map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-                {(regForm.types.includes("단기") || regForm.types.includes("일반임대")) && <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>표준임대차</div>
-                  <select value={regForm.standardLease} onChange={e => set({standardLease: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                    {["사용", "미사용"].map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>}
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>🚶 순회주기</div>
-                  <select value={regForm.visitCycle} onChange={e => set({visitCycle: e.target.value})} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                    <option value="">선택</option>
-                    {["매일", "격일", "주2회", "주1회", "월4회", "월3회", "월2회", "월1회", "없음"].map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>E-MAIL</div>
-                  <input value={regForm.email} onChange={e => set({email: e.target.value})} placeholder="example@email.com" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
-                </div>
-              </div>
-            </div>}
-          </Card>
+          {/* ── 건물주 (shared component) ── */}
+          <OwnerSection data={regForm} onChange={setRegField} editMode={true} defaultOpen={sec3Open} />
 
-          {/* ── Section 5: 협력업체 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="🔧" title="협력업체" subtitle="소방 · 승강기 · 청소 · 소독 등 외주업체" open={sec5Open} onToggle={() => setSec5Open(!sec5Open)} />
-            {sec5Open && <div>
-              {/* 체크박스 선택 */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12, padding: "10px 14px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                {[
-                  { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
-                  { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
-                  { key: "fire", label: "소방", icon: "🔥", color: "#DC2626" },
-                  { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1" },
-                  { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6" },
-                  { key: "custom1", label: "기타1", icon: "📋", color: "#64748B" },
-                  { key: "custom2", label: "기타2", icon: "📋", color: "#64748B" },
-                ].map(v => (
-                  <label key={v.key} onClick={() => toggleVendor(v.key)}
-                    style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 700, transition: "all 0.15s",
-                      background: regForm.vendorEnabled[v.key] ? (v.color + "15") : "#fff",
-                      border: `1.5px solid ${regForm.vendorEnabled[v.key] ? v.color : "#E0E3E9"}`,
-                      color: regForm.vendorEnabled[v.key] ? v.color : "#8F95A3" }}>
-                    <input type="checkbox" checked={regForm.vendorEnabled[v.key]} readOnly
-                      style={{ accentColor: v.color, cursor: "pointer" }} />
-                    <span>{v.icon}</span> {v.label}
-                  </label>
-                ))}
-              </div>
 
-              {/* 선택된 업체 입력 폼 (순서: 청소→승강기→소방→기계식승강기→소독→기타1→기타2) */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {/* 관리자 있는 업체: 소방/승강기/기계식승강기 */}
-                {[
-                  { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981", type: "simple" },
-                  { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6", person: "승강기안전관리자", type: "withManager" },
-                  { key: "fire", label: "소방", icon: "🔥", color: "#DC2626", person: "소방안전관리자", type: "withManager" },
-                  { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1", person: "기계식승강기안전관리자", type: "withManager" },
-                  { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6", type: "simple" },
-                  { key: "custom1", label: "custom1", icon: "📋", color: "#64748B", type: "simple" },
-                  { key: "custom2", label: "custom2", icon: "📋", color: "#64748B", type: "simple" },
-                ].filter(v => regForm.vendorEnabled[v.key]).map((v, i) => v.key === "fire" ? (
-                  <div key={v.key} style={{ padding: "10px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6 }}>
-                        <span>{v.icon}</span> {v.label}
-                      </div>
-                      <div style={{ display: "flex", gap: 4 }}>
-                        {[{ id: "direct", label: "직접관리" }, { id: "vendor", label: "협력업체관리" }].map(m => (
-                          <button key={m.id} onClick={() => setFireMode(m.id)}
-                            style={{ padding: "4px 12px", borderRadius: 6, border: fireMode === m.id ? "1.5px solid #DC2626" : "1px solid #E0E3E9", background: fireMode === m.id ? "#FEF2F2" : "#fff", color: fireMode === m.id ? "#DC2626" : "#8F95A3", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                            {m.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 10, color: "#DC2626", fontWeight: 600 }}>사용승인일</span>
-                      <div><input type="date" value={regForm.approvalDate} onChange={e => set({approvalDate: e.target.value})} style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, maxWidth: 180 }} /></div>
-                    </div>
-                    {fireMode === "vendor" && (
-                      <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 1fr", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                        <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>협력업체</span>
-                        <div><input value={regForm.vendors[v.key].company} onChange={e => setVendor(v.key, "company", e.target.value)} placeholder="업체명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                        <div><input value={regForm.vendors[v.key].phone} onChange={e => setVendor(v.key, "phone", e.target.value)} placeholder="업체 연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                        <div><input value={regForm.vendors[v.key].contact} onChange={e => setVendor(v.key, "contact", e.target.value)} placeholder="업체 담당자" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                        <div><input value={regForm.vendors[v.key].contactPhone} onChange={e => setVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      </div>
-                    )}
-                    <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr", gap: 8, alignItems: "center", padding: "6px 0 0 0", borderTop: `1px dashed ${v.color}40` }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: v.color }}>👤 소방안전관리자</span>
-                      <div><input value={regForm.vendors[v.key].manager} onChange={e => setVendor(v.key, "manager", e.target.value)} placeholder="성명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].managerPhone} onChange={e => setVendor(v.key, "managerPhone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].managerNote} onChange={e => setVendor(v.key, "managerNote", e.target.value)} placeholder="자격/비고" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    </div>
-                  </div>
-                ) : v.type === "withManager" ? (
-                  <div key={v.key} style={{ padding: "10px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                      <span>{v.icon}</span> {v.label}
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 1fr", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>협력업체</span>
-                      <div><input value={regForm.vendors[v.key].company} onChange={e => setVendor(v.key, "company", e.target.value)} placeholder="업체명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].phone} onChange={e => setVendor(v.key, "phone", e.target.value)} placeholder="업체 연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].contact} onChange={e => setVendor(v.key, "contact", e.target.value)} placeholder="업체 담당자" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].contactPhone} onChange={e => setVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr", gap: 8, alignItems: "center", padding: "6px 0 0 0", borderTop: `1px dashed ${v.color}40` }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: v.color }}>👤 {v.person}</span>
-                      <div><input value={regForm.vendors[v.key].manager} onChange={e => setVendor(v.key, "manager", e.target.value)} placeholder="성명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].managerPhone} onChange={e => setVendor(v.key, "managerPhone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].managerNote} onChange={e => setVendor(v.key, "managerNote", e.target.value)} placeholder="자격/비고" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={v.key} style={{ padding: "8px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "160px 1fr 1fr 1fr 1fr", gap: 8, alignItems: "center" }}>
-                      {v.label.startsWith("custom") ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <span>{v.icon}</span>
-                          <input value={regForm.vendors[v.key].label || ""} onChange={e => setVendor(v.key, "label", e.target.value)} placeholder={`기타${v.label.slice(-1)} (입력)`} style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontWeight: 700 }} />
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6 }}>
-                          <span>{v.icon}</span> {v.label}
-                        </div>
-                      )}
-                      <div><input value={regForm.vendors[v.key].company} onChange={e => setVendor(v.key, "company", e.target.value)} placeholder="회사명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].phone} onChange={e => setVendor(v.key, "phone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].contact} onChange={e => setVendor(v.key, "contact", e.target.value)} placeholder="담당자명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                      <div><input value={regForm.vendors[v.key].contactPhone} onChange={e => setVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* ── 정산·청구 (shared component) ── */}
+          <SettlementBillingSection data={regForm} onChange={setRegField} editMode={true} isMobile={isMobile} defaultOpen={sec12Open} buildingTypes={regFormTypes} />
 
-              {/* 아무것도 선택 안 했을 때 안내 */}
-              {!Object.values(regForm.vendorEnabled).some(v => v) && (
-                <div style={{ padding: "20px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>
-                  위 체크박스를 선택하면 해당 협력업체 입력란이 표시됩니다
-                </div>
-              )}
-            </div>}
-          </Card>
+          {/* ── 서류 (shared component) ── */}
+          <DocumentSection data={regForm} onChange={setRegField} editMode={true} defaultOpen={sec16Open} />
 
-          {/* ── Section 6: 건물 특이사항 ── */}
-          <Card style={{ marginBottom: 16 }}>
-            <SectionHeader icon="📝" title="건물 특이사항" subtitle="관리 참고사항 · 이력 기록" open={sec6Open} onToggle={() => setSec6Open(!sec6Open)} />
-            {sec6Open &&
-              <textarea value={regForm.buildingNotes} onChange={e => set({buildingNotes: e.target.value})}
-                placeholder={"건물 특이사항을 순차적으로 기록하세요.\n\n예시:\n- 2024.03 관리 시작. 1층 상가 분리 계량기 없어 공용전기에서 차감\n- 2024.05 옥상 방수공사 완료 (건물주 부담)\n- 2024.08 3층 배관 노후로 전체 교체\n- 세무사: 홍길동 세무사 (010-1234-5678)\n- 2025.01 소방점검 지적사항: 2층 비상구 표지등 불량\n..."}
-                rows={12}
-                style={{ ...inputStyle, resize: "vertical", lineHeight: 1.8, fontSize: 12, padding: "12px 14px", minHeight: 200 }} />
-            }
-          </Card>
-
-          {/* ── Section 7: 호실 등록 ── */}
-          <Card style={{ marginBottom: 16 }}>
+          {/* ── Section 7: 호실 등록 (기업시설관리 제외) ── */}
+          {!corporateOnly && <Card style={{ marginBottom: 16 }}>
             <SectionHeader icon="🚪" title={`호실 등록 (${regForm.roomList.length}개)`} subtitle="층별 호실 추가 · 상세 정보 입력" open={sec7Open} onToggle={() => setSec7Open(!sec7Open)} />
             {sec7Open && <div>
               {/* Add rooms by floor */}
@@ -961,10 +710,73 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
               {/* Room Detail */}
               {regForm.roomList.length > 0 ? (
                 <div>
-                  {/* Room tags */}
+                  {/* 보기 모드 토글: 개별 / 일괄 */}
+                  <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                    <button onClick={() => set({ roomViewMode: "individual" })}
+                      style={{ padding: "6px 14px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                        background: (regForm.roomViewMode || "individual") === "individual" ? "#1A1D23" : "#F3F4F6",
+                        color: (regForm.roomViewMode || "individual") === "individual" ? "#fff" : "#6B7280",
+                        border: "none" }}>
+                      개별 편집
+                    </button>
+                    <button onClick={() => set({ roomViewMode: "bulk" })}
+                      style={{ padding: "6px 14px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                        background: regForm.roomViewMode === "bulk" ? "#1A1D23" : "#F3F4F6",
+                        color: regForm.roomViewMode === "bulk" ? "#fff" : "#6B7280",
+                        border: "none" }}>
+                      일괄 편집
+                    </button>
+                  </div>
+
+                  {/* 일괄 편집 테이블 */}
+                  {regForm.roomViewMode === "bulk" ? (
+                    <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid #E5E7EB" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                        <thead>
+                          <tr style={{ background: "#F3F4F6" }}>
+                            <th style={{ padding: "8px 10px", textAlign: "left", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>호실</th>
+                            <th style={{ padding: "8px 10px", textAlign: "left", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>유형</th>
+                            <th style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>면적(㎡)</th>
+                            <th style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>보증금</th>
+                            <th style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>월세</th>
+                            <th style={{ padding: "8px 10px", textAlign: "right", fontWeight: 700, color: "#374151", borderBottom: "1px solid #E5E7EB", whiteSpace: "nowrap" }}>관리비</th>
+                            <th style={{ padding: "8px 6px", textAlign: "center", fontWeight: 700, color: "#DC2626", borderBottom: "1px solid #E5E7EB" }}>삭제</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {regForm.roomList.map((r, i) => {
+                            const cellStyle = { padding: "4px 6px", borderBottom: "1px solid #F3F4F6" };
+                            const inpStyle = { ...inputStyle, padding: "6px 8px", fontSize: 11, width: "100%", textAlign: "right" };
+                            return (
+                              <tr key={i}>
+                                <td style={{ ...cellStyle, fontWeight: 700, fontSize: 12, color: "#1F2937" }}>{r.room}</td>
+                                <td style={cellStyle}>
+                                  <select value={r.roomType || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], roomType: e.target.value }; set({ roomList: updated }); }}
+                                    style={{ ...inputStyle, padding: "6px 4px", fontSize: 11, width: "100%" }}>
+                                    <option value="">선택</option>
+                                    <option value="원룸">원룸</option><option value="투룸">투룸</option><option value="쓰리룸">쓰리룸</option>
+                                    <option value="근생">근생</option><option value="사무실">사무실</option>
+                                  </select>
+                                </td>
+                                <td style={cellStyle}><input value={r.area || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], area: e.target.value }; set({ roomList: updated }); }} style={inpStyle} placeholder="19.8" /></td>
+                                <td style={cellStyle}><input value={r.standardDeposit || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardDeposit: e.target.value }; set({ roomList: updated }); }} style={inpStyle} placeholder="0" /></td>
+                                <td style={cellStyle}><input value={r.standardRent || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardRent: e.target.value }; set({ roomList: updated }); }} style={inpStyle} placeholder="0" /></td>
+                                <td style={cellStyle}><input value={r.standardManagementFee || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardManagementFee: e.target.value }; set({ roomList: updated }); }} style={inpStyle} placeholder="0" /></td>
+                                <td style={{ ...cellStyle, textAlign: "center" }}>
+                                  <button onClick={() => removeRoom(i)} style={{ background: "none", border: "none", color: "#DC2626", cursor: "pointer", fontSize: 14 }}>✕</button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                  <div>
+                  {/* Room tags (개별 편집 모드) */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 16 }}>
-                    {regForm.roomList.map((r: any, i: number) => {
-                      const filled = r.roomType && r.rent;
+                    {regForm.roomList.map((r, i) => {
+                      const filled = r.roomType && r.standardRent;
                       const selected = regForm.editIdx === i;
                       return (
                         <div key={i} onClick={() => set({editIdx: i})}
@@ -992,7 +804,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                           <div style={{ display: "flex", gap: 6 }}>
                             {idx > 0 && <button onClick={() => set({editIdx: idx - 1})} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>← 이전</button>}
                             {idx < regForm.roomList.length - 1 && <button onClick={() => set({editIdx: idx + 1})} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>다음 →</button>}
-                            <button onClick={() => removeRoom(idx)} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>삭제</button>
+                            <button onClick={() => { if (window.confirm(`${r.room}호를 삭제하시겠습니까?`)) removeRoom(idx); }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>삭제</button>
                           </div>
                         </div>
 
@@ -1005,7 +817,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                           <div style={{ marginBottom: 10, padding: "8px 12px", background: "#F0F4FF", borderRadius: 8, border: "1px solid #BFDBFE", display: "flex", alignItems: "center", gap: 10 }}>
                             <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", whiteSpace: "nowrap" }}>🏢 호실 유형</div>
                             <div style={{ display: "flex", gap: 4 }}>
-                              {acctTypes.map((at: string) => (
+                              {acctTypes.map(at => (
                                 <button key={at} onClick={() => updateRoom(idx, "buildingType", at)}
                                   style={{ padding: "5px 14px", borderRadius: 6, border: (r.buildingType || acctTypes[0]) === at ? `1.5px solid ${acctTypeColor[at]}` : "1px solid #E0E3E9", background: (r.buildingType || acctTypes[0]) === at ? acctTypeBg[at] : "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", color: (r.buildingType || acctTypes[0]) === at ? acctTypeColor[at] : "#8F95A3" }}>
                                   {at}
@@ -1015,46 +827,24 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                           </div>
                         )}
 
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                          <div>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-                              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>방형태</div>
-                                <select value={r.roomType} onChange={e => updateRoom(idx, "roomType", e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
-                                  <option value="">선택</option>
-                                  {["원룸","투룸","쓰리룸","복층","상가","사무실"].map(t => <option key={t} value={t}>{t}</option>)}
-                                </select></div>
-                              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>면적 (㎡)</div>
-                                <input value={r.area} onChange={e => updateRoom(idx, "area", e.target.value)} placeholder="26.4" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} /></div>
-                              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부동산수수료</div>
-                                <input value={r.commFee} onChange={e => updateRoom(idx, "commFee", e.target.value)} placeholder="200,000" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, textAlign: "right" }} /></div>
-                            </div>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 6 }}>💰 기준 금액</div>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 10 }}>
-                              {[
-                                { key: "deposit", label: "예치금", ph: "650,000" },
-                                { key: "rent", label: "임대료", ph: "650,000" },
-                                { key: "mgmt", label: "관리비", ph: "80,000" },
-                                { key: "water", label: "수도", ph: "10,000" },
-                                { key: "internet", label: "인터넷", ph: "20,000" },
-                                { key: "cleanFee", label: "퇴실청소비", ph: "150,000" },
-                              ].map(f => (
-                                <div key={f.key}><div style={{ fontSize: 8, color: "#059669", marginBottom: 2 }}>{f.label}</div>
-                                  <input value={r[f.key]} onChange={e => updateRoom(idx, f.key, e.target.value)} placeholder={f.ph} style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, textAlign: "right" }} /></div>
-                              ))}
-                            </div>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", marginBottom: 6 }}>🔌 고객번호</div>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                              <div><div style={{ fontSize: 8, color: "#6366F1", marginBottom: 2 }}>전기</div>
-                                <input value={r.elecNo} onChange={e => updateRoom(idx, "elecNo", e.target.value)} placeholder="고객번호" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontFamily: "monospace" }} /></div>
-                              <div><div style={{ fontSize: 8, color: "#6366F1", marginBottom: 2 }}>가스</div>
-                                <input value={r.gasNo} onChange={e => updateRoom(idx, "gasNo", e.target.value)} placeholder="고객번호" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontFamily: "monospace" }} /></div>
-                            </div>
-                          </div>
-                          <PhotoDropZone photos={r.photos} maxPhotos={30} label="호실 사진"
-                            onAdd={(dataUrls) => updateRoom(idx, "photos", [...r.photos, ...dataUrls].slice(0, 30))}
-                            onRemove={(pi) => { const updated = [...r.photos]; updated.splice(pi, 1); updateRoom(idx, "photos", updated); }}
-                          />
-                        </div>
+                        <RoomFormSection
+                          data={r}
+                          onChange={(patch) => {
+                            const updated = [...regForm.roomList];
+                            updated[idx] = { ...updated[idx], ...patch };
+                            set({ roomList: updated });
+                          }}
+                          buildingData={regForm}
+                          editMode={true}
+                          roomType={(() => {
+                            const roomBldgType = acctTypes.length > 1 ? (r.buildingType || acctTypes[0]) : acctTypes[0];
+                            return roomBldgType;
+                          })()}
+                          buildingTypes={acctTypes}
+                          photos={r.photos}
+                          onAddPhotos={(dataUrls) => updateRoom(idx, "photos", [...r.photos, ...dataUrls].slice(0, 30))}
+                          onRemovePhoto={(pi) => { const updated = [...r.photos]; updated.splice(pi, 1); updateRoom(idx, "photos", updated); }}
+                        />
 
                         {/* 🏦 호실 계좌 정보 — 건물 기본값 상속 + 호실 개별 설정 */}
                         {(() => {
@@ -1071,7 +861,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                             updateRoom(idx, "roomAcctCustom", { mode1: regForm[`acctMode${s}`], housemanAccount1: regForm[`housemanAccount${s}`], ownerAccounts1: { ...regForm[`ownerAccounts${s}`] } });
                           };
                           const disableRoomCustom = () => updateRoom(idx, "roomAcctCustom", null);
-                          const updateRoomAcctField = (field: string, value: any) => updateRoom(idx, "roomAcctCustom", { ...r.roomAcctCustom, [field]: value });
+                          const updateRoomAcctField = (field, value) => updateRoom(idx, "roomAcctCustom", { ...r.roomAcctCustom, [field]: value });
                           return (
                             <div style={{ marginTop: 14, padding: "10px 14px", background: "#FFFBF0", borderRadius: 10, border: "1px solid #FDE68A" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
@@ -1202,7 +992,7 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
 
                         {/* 👤 호실 담당자 오버라이드 */}
                         {(() => {
-                          const mgrKeyMap: Record<string, string> = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
+                          const mgrKeyMap = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
                           return (
                             <div style={{ marginTop: 14, padding: "10px 14px", background: "#F0F4FF", borderRadius: 10, border: "1px solid #BFDBFE" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
@@ -1234,6 +1024,8 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                     );
                   })()}
                 </div>
+                )}
+                </div>
               ) : (
                 <div style={{ padding: "30px 20px", textAlign: "center", color: "#B0B5C1", background: "#FAFBFC", borderRadius: 10, border: "1.5px dashed #E0E3E9" }}>
                   <span style={{ fontSize: 28 }}>🚪</span>
@@ -1241,13 +1033,13 @@ export const BuildingsPage = ({ onSelectBuilding, myBuildings = [], customBuildi
                 </div>
               )}
             </div>}
-          </Card>
+          </Card>}
 
           {/* Submit Buttons - always visible */}
           {(() => {
-            const canSave = !!(regForm.name && regForm.address && regForm.roadAddress && regForm.startDate && regForm.entrancePw);
-            const canPreview = canSave && regForm.roomList.length > 0;
-            const missingFields = [!regForm.name && "건물명", !regForm.address && "주소", !regForm.roadAddress && "도로명주소", !regForm.startDate && "관리시작일", !regForm.entrancePw && "현관비번"].filter(Boolean);
+            const canSave = !!(regForm.name && (regForm.addressOld || regForm.addressRoad) && regForm.contractStartDate);
+            const canPreview = canSave && (corporateOnly || regForm.roomList.length > 0);
+            const missingFields = [!regForm.name && "건물명", !(regForm.addressOld || regForm.addressRoad) && "주소", !regForm.contractStartDate && "관리시작일"].filter(Boolean);
             return (
               <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
                 <button onClick={handlePreview}

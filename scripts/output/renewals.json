@@ -1,0 +1,352 @@
+[
+  {
+    "building_name": "에이스빌딩",
+    "room_number": "B01",
+    "name": "김유정(찬들컴퍼니)",
+    "expiry": null,
+    "contract_date": "2024-06-22",
+    "rent": 46102,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "우진빌딩",
+    "room_number": "1층",
+    "name": "반가흑돈(김창용)",
+    "expiry": "2026-03-31",
+    "contract_date": "2024-04-15",
+    "rent": 46126,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "대치칼텍빌딩",
+    "room_number": "1층",
+    "name": "KNS에듀",
+    "expiry": "2026-04-15",
+    "contract_date": "2024-04-15",
+    "rent": 46126,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "대치칼텍빌딩",
+    "room_number": "4-5층",
+    "name": "KNS에듀",
+    "expiry": "2026-04-15",
+    "contract_date": "2024-04-15",
+    "rent": 46126,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "집현전빌딩",
+    "room_number": "102",
+    "name": "두자매부동산(최선영)",
+    "expiry": "2026-04-15",
+    "contract_date": "2024-04-15",
+    "rent": 45761,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "평해빌딩",
+    "room_number": "B01",
+    "name": "홍무석(물음표노래방)",
+    "expiry": null,
+    "contract_date": "2019-04-15",
+    "rent": 43935,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "평해빌딩",
+    "room_number": "B02",
+    "name": "홍무석",
+    "expiry": null,
+    "contract_date": "2018-04-16",
+    "rent": 43570,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "이례빌딩",
+    "room_number": "602",
+    "name": "㈜동우솔루션",
+    "expiry": "2026-03-31",
+    "contract_date": "2011-10-26",
+    "rent": 46142,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "KMC코리아",
+    "room_number": "5층",
+    "name": "㈜그레이드헬스체인",
+    "expiry": "2026-03-28",
+    "contract_date": "2024-05-01",
+    "rent": 46142,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "우영빌딩",
+    "room_number": "B02",
+    "name": "또바기(서용원)",
+    "expiry": "2026-04-01",
+    "contract_date": "2024-05-07",
+    "rent": 46148,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "평해빌딩",
+    "room_number": "101",
+    "name": "김종대(김선생조개집)",
+    "expiry": "2026-03-20",
+    "contract_date": "2019-05-20",
+    "rent": 44335,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "B01",
+    "name": "박관석",
+    "expiry": "2026-03-31",
+    "contract_date": "2024-05-23",
+    "rent": 45799,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "401",
+    "name": "릿업핏(한지훈)",
+    "expiry": "2026-03-31",
+    "contract_date": "2022-05-30",
+    "rent": 45441,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "103",
+    "name": "하정(구본관)",
+    "expiry": "2026-03-28",
+    "contract_date": "2022-05-30",
+    "rent": 45442,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "이례빌딩",
+    "room_number": "B01",
+    "name": "주식회사 폴리체",
+    "expiry": "2026-03-31",
+    "contract_date": "2025-06-11",
+    "rent": 46173,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "이례빌딩",
+    "room_number": "5층",
+    "name": "오렌지무역",
+    "expiry": "2026-03-31",
+    "contract_date": "2017-06-01",
+    "rent": 46173,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "KMC코리아",
+    "room_number": "2층",
+    "name": "주식회사 더리더(정이조영어)",
+    "expiry": "2026-03-31",
+    "contract_date": "2023-06-01",
+    "rent": 45808,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "제이에스하우스",
+    "room_number": "3층",
+    "name": "네일제이(이진주)",
+    "expiry": "2026-04-03",
+    "contract_date": "2021-11-03",
+    "rent": 44713,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "어반그레이",
+    "room_number": "4층",
+    "name": "사고링크손해사정(주)",
+    "expiry": null,
+    "contract_date": "2025-06-09",
+    "rent": 46181,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "KMC코리아",
+    "room_number": "B01",
+    "name": "탑테니스(안봉근)",
+    "expiry": "2026-03-31",
+    "contract_date": "2022-06-15",
+    "rent": 45457,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "문화빌딩",
+    "room_number": "4층",
+    "name": "루멘테라피(이승민)",
+    "expiry": "2026-03-21",
+    "contract_date": "2024-06-21",
+    "rent": 46188,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "유석빌딩",
+    "room_number": "B01",
+    "name": "김혜진",
+    "expiry": null,
+    "contract_date": "2024-06-25",
+    "rent": 46197,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "이례빌딩",
+    "room_number": "601",
+    "name": "치아미치과",
+    "expiry": "2026-03-31",
+    "contract_date": "2011-01-25",
+    "rent": 45838,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "102",
+    "name": "육회바른연어(강지수)",
+    "expiry": "2026-03-28",
+    "contract_date": "2025-06-30",
+    "rent": 46203,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "우진빌딩",
+    "room_number": "3층",
+    "name": "로지트코리아 유한회사",
+    "expiry": "2026-03-31",
+    "contract_date": "2024-07-29",
+    "rent": 46231,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "우영빌딩",
+    "room_number": "3층",
+    "name": "㈜마크커뮤니케이션",
+    "expiry": "2026-04-01",
+    "contract_date": "2023-08-16",
+    "rent": 46249,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "문화빌딩",
+    "room_number": "3층",
+    "name": "조니워커(김눈)",
+    "expiry": "2026-04-18",
+    "contract_date": "2024-08-18",
+    "rent": 46251,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "어반그레이",
+    "room_number": "3층",
+    "name": "그램엔터테이먼트(김용)",
+    "expiry": null,
+    "contract_date": "2025-08-18",
+    "rent": 46252,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "201",
+    "name": "세모(신승희) / 관악상사",
+    "expiry": "2026-03-28",
+    "contract_date": "2022-08-23",
+    "rent": 45526,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "에이스빌딩",
+    "room_number": "6층",
+    "name": "(주)뚝딱컴퍼니",
+    "expiry": "2026-04-15",
+    "contract_date": "2023-09-05",
+    "rent": 45904,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "301",
+    "name": "현이 피아노(박현우)",
+    "expiry": null,
+    "contract_date": "2021-12-15",
+    "rent": 45274,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "101",
+    "name": "솥뚜껑(오점례)",
+    "expiry": "2026-03-31",
+    "contract_date": "2019-12-30",
+    "rent": 44194,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "이례빌딩",
+    "room_number": "8층",
+    "name": "㈜빅디컴퍼니",
+    "expiry": "2026-03-31",
+    "contract_date": "2015-06-15",
+    "rent": 46022,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "에이스빌딩",
+    "room_number": "7층",
+    "name": "박준엽(골프)",
+    "expiry": null,
+    "contract_date": "2024-01-10",
+    "rent": 46031,
+    "mgmt": 0,
+    "memo": ""
+  },
+  {
+    "building_name": "양지빌딩",
+    "room_number": "202",
+    "name": "보라매 수 치과(최경민)",
+    "expiry": "2026-03-31",
+    "contract_date": "2023-02-27",
+    "rent": 45348,
+    "mgmt": 0,
+    "memo": ""
+  }
+]

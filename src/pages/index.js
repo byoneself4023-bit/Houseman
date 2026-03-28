@@ -1,7 +1,7 @@
 export { DashboardPage } from './DashboardPage';
-export { BuildingDetailPage } from './BuildingDetailPage';
+export { BuildingDetailPage } from './buildings/detail';
 export { BuildingsPage } from './BuildingsPage';
-export { TenantsPage } from './TenantsPage';
+export { TenantsPage } from './tenants';
 export { VacancyPage } from './VacancyPage';
 export { StaffPage } from './StaffPage';
 export { CollectionPage } from './CollectionPage';
@@ -10,7 +10,7 @@ export { PatrolPage } from './PatrolPage';
 export { UtilityBillingPage } from './UtilityBillingPage';
 export { TransactionPage } from './TransactionPage';
 export { ParkingPage } from './ParkingPage';
-export { CalendarPage } from './CalendarPage';
+export { CalendarPage } from './calendar';
 export { HomepagePage } from './HomepagePage';
 export { OwnerDashboard } from './OwnerDashboard';
 export { SettlementPage } from './SettlementPage';

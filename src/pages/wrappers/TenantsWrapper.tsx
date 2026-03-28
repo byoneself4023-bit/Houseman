@@ -1,34 +1,41 @@
 import { useAppContext } from '@/types/appContext';
-import { TenantsPage as _TenantsPage } from '../TenantsPage';
-
-const TenantsPage: React.ComponentType<any> = _TenantsPage;
+import { useContracts, usePastContracts, useVacancies, useCalendarEvents, useBillingRecords } from '@/hooks/queries';
+import { useApiOr } from '@/hooks/useApiOr';
+import { USE_API } from '@/lib/featureFlag';
+import { TenantsPage } from '../tenants';
 
 export function TenantsWrapper() {
   const ctx = useAppContext();
+  const contractsQ = useContracts();
+  const pastContractsQ = usePastContracts();
+  const vacanciesQ = useVacancies();
+  const calendarQ = useCalendarEvents();
+  const billingQ = useBillingRecords();
 
   return (
     <TenantsPage
       myBuildings={ctx.myBuildings}
       parkingInfo={ctx.parkingInfo}
-      setParkingInfo={ctx.setParkingInfo}
+      setParkingInfo={USE_API ? undefined : ctx.setParkingInfo}
       pendingContract={ctx.pendingContract}
       setPendingContract={ctx.setPendingContract}
       pendingMoveout={ctx.pendingMoveout}
       setPendingMoveout={ctx.setPendingMoveout}
       buildingAccounts={ctx.buildingAccounts}
       allBuildings={ctx.allBuildings}
-      activeTenants={ctx.activeTenants}
-      setActiveTenants={ctx.setActiveTenants}
-      pastTenantsData={ctx.pastTenantsData}
-      setPastTenantsData={ctx.setPastTenantsData}
-      activeVacancies={ctx.activeVacancies}
-      setActiveVacancies={ctx.setActiveVacancies}
-      calendarEvts={ctx.calendarEvts}
-      setCalendarEvts={ctx.setCalendarEvts}
-      billingHistory={ctx.billingHistory}
+      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
+      setActiveTenants={USE_API ? undefined : ctx.setActiveTenants as any}
+      pastTenantsData={useApiOr(pastContractsQ.data, ctx.pastTenantsData)}
+      setPastTenantsData={USE_API ? undefined : ctx.setPastTenantsData as any}
+      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
+      setActiveVacancies={USE_API ? undefined : ctx.setActiveVacancies as any}
+      calendarEvts={useApiOr(calendarQ.data, ctx.calendarEvts)}
+      setCalendarEvts={USE_API ? undefined : ctx.setCalendarEvts as any}
+      billingHistory={useApiOr(billingQ.data, ctx.billingHistory)}
       roomBalances={ctx.roomBalances}
       lateFeeOverrides={ctx.lateFeeOverrides}
       buildingData={ctx.buildingData}
+      isLoading={USE_API && (contractsQ.isLoading || vacanciesQ.isLoading)}
     />
   );
 }

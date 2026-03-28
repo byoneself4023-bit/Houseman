@@ -1,0 +1,23 @@
+insert into buildings (building_name, is_short_term_rental, fee_type, fee_rate, total_rooms, parking_gate_info)
+values
+  ('제이앤제이', true, 'pct', 0, 5, '3대'),
+  ('스타빌', true, 'pct', 0.05, 16, '8대'),
+  ('아페이론', true, 'pct', 0.05, 10, '6대'),
+  ('다존하우스', true, 'pct', 0, 0, null),
+  ('미래홈', true, 'pct', 0, 0, null),
+  ('한스텔', true, 'pct', 0, 0, null),
+  ('모던라이프', true, 'pct', 0, 0, null),
+  ('신림프리미어', true, 'pct', 0, 0, null),
+  ('포유빌', true, 'pct', 0, 0, null),
+  ('굿모닝빌', true, 'pct', 0, 0, null),
+  ('W하우스', true, 'pct', 0, 0, null),
+  ('모닝빌', true, 'pct', 0, 0, null),
+  ('지앤지2', true, 'pct', 0, 0, null),
+  ('에덴빌', true, 'pct', 0, 0, null),
+  ('토브미하우스', true, 'pct', 0, 0, null),
+  ('풍림빌딩', true, 'pct', 0, 0, null),
+  ('서연빌', true, 'pct', 0, 0, null),
+  ('어반그레이', true, 'pct', 0, 0, null),
+  ('와이원빈티지', true, 'pct', 0, 0, null),
+  ('모던하우스', true, 'pct', 0, 0, null),
+  ('리트코하우스', true, 'pct', 0, 0, null);

@@ -1,0 +1,9 @@
+node_modules
+dist
+houseman-server
+.git
+.github
+scripts
+*.md
+.env
+.env.local

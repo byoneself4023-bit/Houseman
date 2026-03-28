@@ -9,6 +9,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { MobileNav } from './MobileNav';
 import { queryClient } from '@/lib/queryClient';
+import { useSse } from '@/hooks/useSse';
 import type { AppData } from '@/types/appContext';
 
 export function AppLayout() {
@@ -17,6 +18,7 @@ export function AppLayout() {
   const navigate = useNavigate();
   const navigateTo = useNavigateCompat();
   const appData = useAppData();
+  useSse();
   const buildingMatch = useMatch('/buildings/:name');
   const selectedBuilding = buildingMatch?.params.name ?? null;
   const { pathname } = useLocation();

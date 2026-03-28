@@ -15,9 +15,9 @@ import { getStaffBuildings } from './utils/helpers';
 // Pages — SettlementPage eager, rest lazy
 import { SettlementPage } from './pages/SettlementPage';
 
-const BuildingDetailPage = React.lazy(() => import('./pages/BuildingDetailPage').then(m => ({ default: m.BuildingDetailPage })));
+const BuildingDetailPage = React.lazy(() => import('./pages/buildings/detail').then(m => ({ default: m.BuildingDetailPage })));
 const BuildingsPage = React.lazy(() => import('./pages/BuildingsPage').then(m => ({ default: m.BuildingsPage })));
-const TenantsPage = React.lazy(() => import('./pages/TenantsPage').then(m => ({ default: m.TenantsPage })));
+const TenantsPage = React.lazy(() => import('./pages/tenants').then(m => ({ default: m.TenantsPage })));
 const VacancyPage = React.lazy(() => import('./pages/VacancyPage').then(m => ({ default: m.VacancyPage })));
 const StaffPage = React.lazy(() => import('./pages/StaffPage').then(m => ({ default: m.StaffPage })));
 const CollectionPage = React.lazy(() => import('./pages/CollectionPage').then(m => ({ default: m.CollectionPage })));
@@ -26,7 +26,7 @@ const PatrolPage = React.lazy(() => import('./pages/PatrolPage').then(m => ({ de
 const UtilityBillingPage = React.lazy(() => import('./pages/UtilityBillingPage').then(m => ({ default: m.UtilityBillingPage })));
 const TransactionPage = React.lazy(() => import('./pages/TransactionPage').then(m => ({ default: m.TransactionPage })));
 const ParkingPage = React.lazy(() => import('./pages/ParkingPage').then(m => ({ default: m.ParkingPage })));
-const CalendarPage = React.lazy(() => import('./pages/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const CalendarPage = React.lazy(() => import('./pages/calendar').then(m => ({ default: m.CalendarPage })));
 const HomepagePage = React.lazy(() => import('./pages/HomepagePage').then(m => ({ default: m.HomepagePage })));
 const HomepageEditPage = React.lazy(() => import('./pages/HomepageEditPage').then(m => ({ default: m.HomepageEditPage })));
 const OwnerDashboard = React.lazy(() => import('./pages/OwnerDashboard').then(m => ({ default: m.OwnerDashboard })));

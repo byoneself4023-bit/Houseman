@@ -15,6 +15,7 @@ import { initialStaffMembers } from '@/config/staff';
 import { getStaffBuildings } from '@/utils/helpers';
 import { useAuthStore } from '@/stores/authStore';
 import { useUiStore } from '@/stores/uiStore';
+import { USE_API } from '@/lib/featureFlag';
 
 // ── localStorage helpers (from App.jsx lines 48-62) ──
 
@@ -51,6 +52,7 @@ const loadLS = <T>(key: string, fallback: T): T => {
 };
 
 const saveLS = (key: string, value: any) => {
+  if (USE_API) return; // API 모드에서는 localStorage 쓰기 차단
   try {
     _appCache[key] = value;
     saveAppData(_appCache);
