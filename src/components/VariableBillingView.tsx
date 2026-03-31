@@ -2,7 +2,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { truncate10 } from '@/data';
 import { calculateApportion, saveBillingRecord, updateBillingStatus, saveReading } from '@/lib/billingEngine';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 // ── 금액 포맷 ──

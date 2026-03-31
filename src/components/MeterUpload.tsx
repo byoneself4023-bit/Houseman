@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback } from 'react';
 import * as XLSX from 'xlsx';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import { truncate10 } from '@/data';
 
 interface MeterUploadProps {
@@ -25,28 +25,9 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
   const [uploadType, setUploadType] = useState<'elec' | 'gas'>('elec');
 
   // ── rooms 테이블에서 고객번호 매핑 로드 ──
-  const loadCustomerMap = useCallback(async (type: 'elec' | 'gas') => {
-    const field = type === 'elec' ? 'electric_customer_number' : 'gas_customer_number';
-    const { data, error } = await supabase!
-      .from('rooms')
-      .select(`id, room_number, building_id, ${field}, buildings!inner(building_name)`)
-      .not(field, 'is', null)
-      .neq(field, '');
-    if (error) { console.error('고객번호 매핑 로드 실패:', error); return {}; }
-
-    const map: Record<string, any[]> = {};
-    (data || []).forEach((r: any) => {
-      const customerNum = r[field];
-      if (!customerNum) return;
-      if (!map[customerNum]) map[customerNum] = [];
-      map[customerNum].push({
-        roomId: r.id,
-        roomNumber: r.room_number,
-        buildingId: r.building_id,
-        buildingName: r.buildings?.building_name || '',
-      });
-    });
-    return map;
+  // TODO Phase 6: API endpoint 필요 (GET /api/rooms?withCustomerNumber=true)
+  const loadCustomerMap = useCallback(async (_type: 'elec' | 'gas') => {
+    return {} as Record<string, any[]>;
   }, []);
 
   // ── 엑셀 컬럼 자동 감지 ──
@@ -222,24 +203,11 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
             source: 'upload',
           };
 
-          const { error } = await supabase!
-            .from('meter_readings')
-            .upsert(record, { onConflict: 'room_id,type,billing_month,customer_number', ignoreDuplicates: false })
-            .select()
-            .single();
+          // TODO Phase 6: API endpoint 필요 (POST /api/meter-readings)
+          const error = null as any;
 
           if (error) {
-            // upsert 충돌 키가 없으면 일반 insert
-            const { error: insertError } = await supabase!
-              .from('meter_readings')
-              .insert(record)
-              .select()
-              .single();
-            if (insertError) {
-              errors.push(`${room.buildingName} ${room.roomNumber}: ${insertError.message}`);
-            } else {
-              matched.push({ ...room, amount: sharedAmount, usage: sharedUsage });
-            }
+            errors.push(`${room.buildingName} ${room.roomNumber}: API not implemented`);
           } else {
             matched.push({ ...room, amount: sharedAmount, usage: sharedUsage });
           }

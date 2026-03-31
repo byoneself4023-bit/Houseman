@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { api } from '@/lib/api';
 
 /**
  * 임차인 퇴실 링크 페이지 (외부 — 인증 없이 접근)
@@ -37,20 +37,21 @@ export const MoveOutLinkPage = () => {
   // 이벤트 로드
   useEffect(() => {
     if (!eventId) { setError('잘못된 링크입니다.'); setLoading(false); return; }
-    supabase
-      .from('calendar_events')
-      .select('*')
-      .eq('id', eventId)
-      .single()
-      .then(({ data, error: err }) => {
-        if (err || !data) {
+    // TODO Phase 6: 공개 API endpoint 필요 (GET /api/move-out-link/:eventId)
+    api.get(`/api/calendar/${eventId}`)
+      .then((data) => {
+        if (!data) {
           setError('퇴실 정보를 찾을 수 없습니다.');
-        } else if (data.move_out_link_completed) {
+        } else if ((data as any).moveOutLinkCompleted) {
           setSubmitted(true);
           setEvent(data);
         } else {
           setEvent(data);
         }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('퇴실 정보를 찾을 수 없습니다.');
         setLoading(false);
       });
   }, [eventId]);
@@ -63,17 +64,20 @@ export const MoveOutLinkPage = () => {
     if (!agreed) return alert('주의사항을 확인해주세요.');
 
     const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    const { error: err } = await supabase
-      .from('calendar_events')
-      .update({
-        move_out_link_completed: true,
-        move_out_link_completed_at: now,
-        door_password: doorPassword,
-        refund_bank: refundBank,
-        refund_account: refundAccount,
-        refund_holder: refundHolder,
-      })
-      .eq('id', eventId);
+    // TODO Phase 6: 공개 API endpoint 필요 (PUT /api/move-out-link/:eventId)
+    let err = null;
+    try {
+      await api.put(`/api/calendar/${eventId}`, {
+        moveOutLinkCompleted: true,
+        moveOutLinkCompletedAt: now,
+        doorPassword,
+        refundBank,
+        refundAccount,
+        refundHolder,
+      });
+    } catch (e) {
+      err = e;
+    }
 
     if (err) {
       alert('저장에 실패했습니다. 다시 시도해주세요.');

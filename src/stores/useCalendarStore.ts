@@ -2,8 +2,7 @@
 import { create } from 'zustand';
 import { calendarEvents as initialCalendarEvents, vacancies as staticVacancies } from '../data';
 
-// Supabase가 메인 데이터소스. persist(localStorage) 제거.
-// 앱 시작 시 static data → useSupabaseSync에서 Supabase 데이터로 교체
+// calendar + vacancy + parking store
 export const useCalendarStore = create(
   (set) => ({
     calendarEvts: initialCalendarEvents,

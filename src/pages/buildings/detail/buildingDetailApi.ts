@@ -1,111 +1,60 @@
 /**
- * 건물 상세 Supabase CRUD 래퍼 — feature flag로 분기
+ * 건물 상세 CRUD 래퍼 — Supabase 제거됨
  *
  * USE_API=true  → no-op (Spring Boot API는 TanStack Query mutation에서 처리)
- * USE_API=false → Supabase 직접 호출 (대표님 방식)
+ * USE_API=false → no-op (Supabase 삭제됨)
  */
-import { USE_API } from '@/lib/featureFlag';
-import {
-  updateBuildingPatch,
-  updateBuildingDataByName,
-  deleteBuilding,
-  fetchBuildingStaff,
-  upsertBuildingStaff,
-  updateRoom,
-  findRoom,
-} from '@/lib/supabaseData';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * 건물 정보 저장 → Supabase patch
- * supabaseId 있으면 직접, 없으면 buildingName으로 fallback
+ * 건물 정보 저장 → no-op
  */
 export async function persistBuildingPatch(
-  supabaseId: string | undefined | null,
-  buildingName: string,
-  patch: Record<string, any>
+  _supabaseId: string | undefined | null,
+  _buildingName: string,
+  _patch: Record<string, any>
 ) {
-  if (USE_API) return;
-  try {
-    if (supabaseId) {
-      await updateBuildingPatch(supabaseId, patch);
-    } else {
-      await updateBuildingDataByName(buildingName, patch);
-    }
-  } catch (e) {
-    console.error('[buildingDetailApi] persistBuildingPatch 실패:', e);
-  }
+  return;
 }
 
 /**
- * 건물 삭제 → Supabase delete (FK cascade: rooms, tenants 등)
- * @returns 성공 여부
+ * 건물 삭제 → no-op
  */
 export async function persistDeleteBuilding(
-  supabaseId: string | undefined | null
+  _supabaseId: string | undefined | null
 ): Promise<boolean> {
-  if (USE_API || !supabaseId) return true;
-  try {
-    const ok = await deleteBuilding(supabaseId);
-    return !!ok;
-  } catch (e) {
-    console.error('[buildingDetailApi] persistDeleteBuilding 실패:', e);
-    return false;
-  }
+  return true;
 }
 
 /**
- * 건물 담당자 조회 → Supabase fetch
- * @returns { [role]: name } 매핑
+ * 건물 담당자 조회 → no-op
  */
 export async function persistFetchStaff(
-  supabaseId: string | undefined | null
+  _supabaseId: string | undefined | null
 ): Promise<Record<string, string>> {
-  if (USE_API || !supabaseId) return {};
-  try {
-    const rows = await fetchBuildingStaff(supabaseId);
-    const map: Record<string, string> = {};
-    (rows || []).forEach((r: any) => {
-      map[r.assignment_role] = r.assigned_name || '';
-    });
-    return map;
-  } catch (e) {
-    console.error('[buildingDetailApi] persistFetchStaff 실패:', e);
-    return {};
-  }
+  return {};
 }
 
 /**
- * 건물 담당자 배정 → Supabase upsert
+ * 건물 담당자 배정 → no-op
  */
 export async function persistUpsertStaff(
-  supabaseId: string | undefined | null,
-  role: string,
-  name: string,
-  phone: string
+  _supabaseId: string | undefined | null,
+  _role: string,
+  _name: string,
+  _phone: string
 ) {
-  if (USE_API || !supabaseId) return;
-  try {
-    await upsertBuildingStaff(supabaseId, role, name, phone);
-  } catch (e) {
-    console.error('[buildingDetailApi] persistUpsertStaff 실패:', e);
-  }
+  return;
 }
 
 /**
- * 호실 수정 → Supabase update (findRoom → updateRoom)
+ * 호실 수정 → no-op
  */
 export async function persistUpdateRoom(
-  buildingName: string,
-  roomNumber: string,
-  patch: Record<string, any>
+  _buildingName: string,
+  _roomNumber: string,
+  _patch: Record<string, any>
 ) {
-  if (USE_API) return;
-  try {
-    const room = await findRoom(buildingName, roomNumber);
-    if (room?.id) {
-      await updateRoom(room.id, patch);
-    }
-  } catch (e) {
-    console.error('[buildingDetailApi] persistUpdateRoom 실패:', e);
-  }
+  return;
 }

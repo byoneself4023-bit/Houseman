@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { toast } from 'sonner';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { persistUploadPhotos } from '../calendarApi';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 
 interface PhotoModalProps {
   photoModalTenant: Record<string, any> | null;
@@ -49,10 +49,10 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
                   ? { ...t, moveOutPhotos: updated } : t
               ));
             }
-            // Supabase tenants 테이블 업데이트
-            const sbId = photoModalTenant.supabaseId;
-            if (sbId && supabase) {
-              supabase.from('tenants').update({ move_out_photos: updated }).eq('id', sbId);
+            // API tenants 업데이트
+            const sbId = photoModalTenant.supabaseId || photoModalTenant.id;
+            if (sbId) {
+              api.put(`/api/contracts/${sbId}`, { moveOutPhotos: updated }).catch(() => {});
             }
             if (uploadedUrls.length > 0) toast.success(`퇴실사진 ${uploadedUrls.length}장 업로드 완료`);
           }}
@@ -131,9 +131,9 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
                   ? { ...t, moveOutCheckPhotos: updated } : t
               ));
             }
-            const sbId = checkPhotoModalTenant.supabaseId;
-            if (sbId && supabase) {
-              supabase.from('tenants').update({ move_in_photos: updated }).eq('id', sbId);
+            const sbId = checkPhotoModalTenant.supabaseId || checkPhotoModalTenant.id;
+            if (sbId) {
+              api.put(`/api/contracts/${sbId}`, { moveInPhotos: updated }).catch(() => {});
             }
             if (uploadedUrls.length > 0) toast.success(`입주체크사진 ${uploadedUrls.length}장 업로드 완료`);
           }}

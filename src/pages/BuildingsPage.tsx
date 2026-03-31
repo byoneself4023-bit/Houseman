@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { asItems } from '../data';
 import { staffRoles, initialStaffMembers } from '../config';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { insertBuilding, insertRooms } from '../lib/supabaseData';
+import { api } from '@/lib/api';
 import { modeOptions, ownerFieldCfg, housemanUsageMap, ownerFirstModes, flowMap, banks, acctTypeBg, acctTypeColor, defaultHousemanAccount } from '../config/accountConfig';
 import { useIsMobile, fmt, feeLabel } from '../utils';
 import { SearchInput, matchKorean } from '../components/SearchInput';
@@ -318,16 +318,16 @@ export const BuildingsPage = ({
       setAllBuildings(prev => [...prev, newBuilding]);
     }
 
-    // Supabase에도 저장
-    const sbBuilding = await insertBuilding(regForm);
-    if (sbBuilding) {
-      // 호실도 Supabase에 저장
-      if (regForm.roomList.length > 0) {
-        await insertRooms(sbBuilding.id, regForm.roomList);
+    // API에도 저장
+    try {
+      const sbBuilding = await api.post<any>('/api/buildings', regForm);
+      if (sbBuilding) {
+        newBuilding.supabaseId = sbBuilding.id;
+        newBuilding.source = 'api';
+        console.info(`[API] 건물 "${regForm.name}" + 호실 ${regForm.roomList.length}개 저장 완료`);
       }
-      newBuilding.supabaseId = sbBuilding.id;
-      newBuilding.source = 'supabase';
-      console.info(`[Supabase] 건물 "${regForm.name}" + 호실 ${regForm.roomList.length}개 저장 완료`);
+    } catch (e) {
+      console.error('[API] 건물 저장 실패:', e);
     }
 
     setShowPreview(false);

@@ -11,12 +11,7 @@
 // 6. 청구서 생성
 // ============================================================
 
-import { supabase as _supabase } from '@/lib/supabase';
-import { deactivateTenant } from '@/lib/supabaseData';
 import { truncate10, calcDueAmounts } from '@/data';
-
-// supabase client — non-null assertion (runtime에서는 항상 초기화됨)
-const supabase = _supabase!;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Types
@@ -187,50 +182,18 @@ export const getBillingSurcharges = (billingSettings: BillingSettings = {}, isSh
 /**
  * 퇴실 시 청구 설정을 기본값으로 리셋합니다.
  */
-export const resetBillingSettingsOnMoveOut = async (roomId: number): Promise<void> => {
-  const { error } = await supabase
-    .from('billing_settings')
-    .update({
-      tenant_id: null,
-      billing_case: null,
-      elec_billing_fee: DEFAULT_ELEC_FEE,
-      gas_billing_fee: DEFAULT_GAS_FEE,
-      elec_payment_method: 'proxy',
-      gas_payment_method: 'proxy',
-      late_fee_rate: null,
-      late_fee_apply_type: null,
-      late_fee_apply_value: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('room_id', roomId);
-  if (error) console.error('billing_settings 리셋 실패:', error);
+export const resetBillingSettingsOnMoveOut = async (_roomId: number): Promise<void> => {
+  // TODO Phase 6: API mutation으로 전환
+  return;
 };
 
 /**
  * 퇴실 확정 통합 함수 — 모든 상태를 한 번에 처리
  * CalendarPage, TenantsPage 어디서든 이 함수 하나만 호출
  */
-export async function confirmMoveOut({ tenantId, roomId, moveOutDate }: { tenantId: number; roomId: number; moveOutDate: string }): Promise<{ ok: boolean; errors: string[] }> {
-  const errors: string[] = [];
-
-  // 1) 임차인 비활성화 (is_active=false + move_out_date)
-  const { error: e1 } = await deactivateTenant(tenantId, moveOutDate);
-  if (e1) errors.push('tenant: ' + e1.message);
-
-  if (roomId) {
-    // 2) billing_settings 리셋 (수수료/케이스 초기화)
-    await resetBillingSettingsOnMoveOut(roomId);
-
-    // 3) rooms.vacancy_status = '금액체크' (DB 직접 저장)
-    const { error: e3 } = await supabase
-      .from('rooms')
-      .update({ vacancy_status: '금액체크' })
-      .eq('id', roomId);
-    if (e3) errors.push('vacancy: ' + e3.message);
-  }
-
-  if (errors.length) console.error('[confirmMoveOut] 일부 실패:', errors);
-  return { ok: errors.length === 0, errors };
+export async function confirmMoveOut(_params: { tenantId: number; roomId: number; moveOutDate: string }): Promise<{ ok: boolean; errors: string[] }> {
+  // TODO Phase 6: useMoveOut mutation으로 전환
+  return { ok: false, errors: ['use API mutation'] };
 }
 
 // ── billing_initial_setup CRUD ──
@@ -238,65 +201,41 @@ export async function confirmMoveOut({ tenantId, roomId, moveOutDate }: { tenant
 /**
  * 건물의 초기설정을 조회합니다.
  */
-export const getBillingInitialSetup = async (buildingId: number): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('billing_initial_setup')
-    .select('*')
-    .eq('building_id', buildingId)
-    .maybeSingle();
-  if (error) { console.error('billing_initial_setup 조회 실패:', error); return null; }
-  return data;
+export const getBillingInitialSetup = async (_buildingId: number): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 /**
  * 건물의 초기설정을 저장(upsert)합니다.
  */
-export const saveBillingInitialSetup = async (setup: any): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('billing_initial_setup')
-    .upsert(setup, { onConflict: 'building_id' })
-    .select()
-    .single();
-  if (error) { console.error('billing_initial_setup 저장 실패:', error); return null; }
-  return data;
+export const saveBillingInitialSetup = async (_setup: any): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 /**
  * 특정 호실의 billing_settings를 조회합니다.
  */
-export const getBillingSettings = async (roomId: number): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('billing_settings')
-    .select('*')
-    .eq('room_id', roomId)
-    .maybeSingle();
-  if (error) { console.error('billing_settings 조회 실패:', error); return null; }
-  return data;
+export const getBillingSettings = async (_roomId: number): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 /**
  * 특정 건물의 모든 호실 billing_settings를 조회합니다.
  */
-export const getBillingSettingsByBuilding = async (buildingId: number): Promise<any[]> => {
-  const { data, error } = await supabase
-    .from('billing_settings')
-    .select('*')
-    .eq('building_id', buildingId);
-  if (error) { console.error('billing_settings 조회 실패:', error); return []; }
-  return data || [];
+export const getBillingSettingsByBuilding = async (_buildingId: number): Promise<any[]> => {
+  // TODO Phase 6: API 전환
+  return [];
 };
 
 /**
  * billing_settings를 저장(upsert)합니다.
  */
-export const saveBillingSettings = async (settings: any): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('billing_settings')
-    .upsert({ ...settings, updated_at: new Date().toISOString() }, { onConflict: 'room_id' })
-    .select()
-    .single();
-  if (error) { console.error('billing_settings 저장 실패:', error); return null; }
-  return data;
+export const saveBillingSettings = async (_settings: any): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -315,34 +254,9 @@ export const emptyUnpaid = (): UnpaidItems => ({
  * billing_records에서 미납 항목을 집계합니다.
  * status가 'sent' 또는 'overdue'이고 완납되지 않은 건
  */
-export const getUnpaidByItems = async (roomId: number, excludeMonth = ''): Promise<UnpaidItems> => {
-  const { data, error } = await supabase
-    .from('billing_records')
-    .select('*')
-    .eq('room_id', roomId)
-    .in('status', ['sent', 'overdue', 'partial'])
-    .neq('billing_month', excludeMonth)
-    .order('billing_month', { ascending: true });
-
-  if (error || !data) return emptyUnpaid();
-
-  const unpaid = emptyUnpaid();
-  data.forEach((r: any) => {
-    unpaid.rent += r.rent || 0;
-    unpaid.mgmt += r.management_fee || 0;
-    unpaid.elec += r.electric_fee || 0;
-    unpaid.gas += r.gas_fee || 0;
-    unpaid.water += r.water_fee || 0;
-    unpaid.internet += r.internet_fee || 0;
-    unpaid.parking += r.parking_fee || 0;
-    unpaid.surcharge += (r.elec_billing_surcharge || 0) + (r.gas_billing_surcharge || 0);
-    unpaid.lateFee += r.late_fee || 0;
-    unpaid.extra += r.extra_charge || 0;
-  });
-  unpaid.total = unpaid.rent + unpaid.mgmt + unpaid.elec + unpaid.gas +
-    unpaid.water + unpaid.internet + unpaid.parking + unpaid.surcharge +
-    unpaid.lateFee + unpaid.extra;
-  return unpaid;
+export const getUnpaidByItems = async (_roomId: number, _excludeMonth = ''): Promise<UnpaidItems> => {
+  // TODO Phase 6: API 전환
+  return emptyUnpaid();
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -352,64 +266,25 @@ export const getUnpaidByItems = async (roomId: number, excludeMonth = ''): Promi
 /**
  * 특정 호실의 마지막 검침을 조회합니다.
  */
-export const getLastReading = async (roomId: number, type: 'elec' | 'gas' | 'water'): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('meter_readings')
-    .select('*')
-    .eq('room_id', roomId)
-    .eq('type', type)
-    .order('reading_date', { ascending: false })
-    .limit(1)
-    .single();
-  if (error) return null;
-  return data;
+export const getLastReading = async (_roomId: number, _type: 'elec' | 'gas' | 'water'): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 /**
  * 검침 데이터를 저장합니다.
  */
-export const saveReading = async (reading: any): Promise<boolean> => {
-  const { error } = await supabase
-    .from('meter_readings')
-    .insert(reading);
-  if (error) console.error('검침 저장 실패:', error);
-  return !error;
+export const saveReading = async (_reading: any): Promise<boolean> => {
+  // TODO Phase 6: API 전환
+  return false;
 };
 
 /**
  * 같은 달에 2건의 검침이 있으면 계량기 교체로 판단하고 사용량을 합산합니다.
  */
-export const getMonthlyUsage = async (roomId: number, type: 'elec' | 'gas' | 'water', billingMonth: string): Promise<MeterUsageResult> => {
-  const { data, error } = await supabase
-    .from('meter_readings')
-    .select('*')
-    .eq('room_id', roomId)
-    .eq('type', type)
-    .eq('billing_month', billingMonth)
-    .order('reading_date', { ascending: true });
-
-  if (error || !data || data.length === 0) {
-    return { usage: 0, amount: 0, isMeterReplaced: false, matched: false };
-  }
-
-  if (data.length === 1) {
-    return {
-      usage: data[0].usage || 0,
-      amount: data[0].amount || 0,
-      isMeterReplaced: false,
-      matched: true,
-    };
-  }
-
-  // 같은 달 2건 이상 → 계량기 교체, 사용량 합산
-  const totalUsage = data.reduce((sum: number, r: any) => sum + (r.usage || 0), 0);
-  const totalAmount = data.reduce((sum: number, r: any) => sum + (r.amount || 0), 0);
-  return {
-    usage: totalUsage,
-    amount: totalAmount,
-    isMeterReplaced: true,
-    matched: true,
-  };
+export const getMonthlyUsage = async (_roomId: number, _type: 'elec' | 'gas' | 'water', _billingMonth: string): Promise<MeterUsageResult> => {
+  // TODO Phase 6: API 전환
+  return { usage: 0, amount: 0, isMeterReplaced: false, matched: false };
 };
 
 /**
@@ -688,32 +563,17 @@ export const generateBillingRecord = ({
 /**
  * billing_records를 Supabase에 저장합니다.
  */
-export const saveBillingRecord = async (record: any): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('billing_records')
-    .upsert({ billing_type: 'full', ...record }, { onConflict: 'room_id,billing_month,billing_type' })
-    .select()
-    .single();
-  if (error) {
-    console.error('청구 기록 저장 실패:', error);
-    return null;
-  }
-  return data;
+export const saveBillingRecord = async (_record: any): Promise<any | null> => {
+  // TODO Phase 6: API 전환 (useGenerateBilling mutation)
+  return null;
 };
 
 /**
  * 특정 청구월의 모든 billing_records를 조회합니다.
  */
-export const getBillingRecords = async (billingMonth: string, buildingId: number | null = null): Promise<any[]> => {
-  let query = supabase
-    .from('billing_records')
-    .select('*')
-    .eq('billing_month', billingMonth)
-    .order('room_id');
-  if (buildingId) query = query.eq('building_id', buildingId);
-  const { data, error } = await query;
-  if (error) { console.error('billing_records 조회 실패:', error); return []; }
-  return data || [];
+export const getBillingRecords = async (_billingMonth: string, _buildingId: number | null = null): Promise<any[]> => {
+  // TODO Phase 6: API 전환 (useBillingRecords query)
+  return [];
 };
 
 /**
@@ -732,17 +592,9 @@ export const getBillingKpi = async (billingMonth: string): Promise<BillingKpi> =
 /**
  * 청구서 상태를 업데이트합니다.
  */
-export const updateBillingStatus = async (recordId: number, status: string, extra: any = {}): Promise<boolean> => {
-  const updates: any = { status, ...extra };
-  if (status === 'confirmed') updates.confirmed_at = new Date().toISOString();
-  if (status === 'sent') updates.sent_at = new Date().toISOString();
-
-  const { error } = await supabase
-    .from('billing_records')
-    .update(updates)
-    .eq('id', recordId);
-  if (error) console.error('청구 상태 업데이트 실패:', error);
-  return !error;
+export const updateBillingStatus = async (_recordId: number, _status: string, _extra: any = {}): Promise<boolean> => {
+  // TODO Phase 6: API 전환 (useConfirmBilling/useSendBilling mutation)
+  return false;
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -760,152 +612,21 @@ export const autoGenerateBillingRecords = async (
   getRoomTypeFn: ((building: string, room: string) => string) | null,
   calendarEvents: any[] = [],
 ): Promise<{ created: number; skipped: number; reviewRequired: number }> => {
-  let created = 0, skipped = 0, reviewRequired = 0;
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  for (const t of tenants) {
-    if (t.isActive === false) continue;
-    // 미래 입주일 제외
-    const moveIn = t.moveInDate || t.move_in_date;
-    if (moveIn && moveIn > today) { skipped++; continue; }
-    const bld = buildingDataMap[t.building] || {};
-    const roomType = getRoomTypeFn ? getRoomTypeFn(t.building, t.room) : '단기';
-    const isShort = roomType === '단기';
-    const isFixed = roomType === '일반임대' || roomType === '근생';
-    const isVariable = !isShort && !isFixed && bld.hasVariableManagementFee;
-    const roomId = t.roomId || t.room_id;
-    const months = getMonthsSinceMoveIn(t.moveInDate || t.move_in_date, billingMonth);
-
-    // 변동관리비는 별도 처리 (파이프라인)
-    if (isVariable) { skipped++; continue; }
-
-    // 퇴실 예정 체크: ID 기반 맵 룩업
-    const moveoutEvent = calendarEvents.find((e: any) =>
-      e.type === '퇴실' && (e.buildingId || e.building_id) === bld._supabaseId && (e.roomId || e.room_id) === roomId
-    );
-    const moveoutDate = moveoutEvent?.date || moveoutEvent?.moveOutDate;
-    const isMoveoutOverdue = moveoutDate && new Date(moveoutDate) < new Date(today);
-
-    // 이미 billing_records가 있으면 스킵
-    const { data: existing } = await supabase
-      .from('billing_records')
-      .select('id')
-      .eq('room_id', roomId)
-      .eq('billing_month', billingMonth)
-      .eq('billing_type', 'full')
-      .maybeSingle();
-    if (existing) { skipped++; continue; }
-
-    // 2달차 → 승인 필요이므로 자동 생성하되 status='draft'
-    // 나머지 → status='confirmed' (자동발송 대기)
-    const needsApproval = isShort && months === 2;
-
-    // 전기/가스 금액 (1달차는 0, 고정관리비도 0)
-    let elecAmt = 0, gasAmt = 0;
-    if (isShort && months >= 2) {
-      const elecReading = meterReadings.find((m: any) => m.room_id === roomId && m.type === 'elec');
-      const gasReading = meterReadings.find((m: any) => m.room_id === roomId && m.type === 'gas');
-      elecAmt = elecReading?.amount || 0;
-      gasAmt = gasReading?.amount || 0;
-    }
-
-    const rent = truncate10(t.rent || 0);
-    const mgmt = truncate10(t.managementFee || t.management_fee || 0);
-    const water = truncate10(t.waterFee || t.water_fee || 0);
-    const internet = truncate10(t.internetFee || t.internet_fee || 0);
-    const parking = truncate10(t.parkingFee || 0);
-    const surcharges = getBillingSurcharges({}, isShort);
-    const elecSur = isShort && elecAmt > 0 ? surcharges.elecFee : 0;
-    const gasSur = isShort && gasAmt > 0 ? surcharges.gasFee : 0;
-    const total = rent + mgmt + truncate10(elecAmt) + truncate10(gasAmt) + water + internet + parking + elecSur + gasSur;
-
-    const dueDay = t.paymentDueDay || t.payment_due_day || new Date(t.moveInDate || t.move_in_date || '2026-01-01').getDate();
-    const now = new Date();
-    const dueDate = new Date(now.getFullYear(), now.getMonth(), dueDay);
-    if (dueDate < now) dueDate.setMonth(dueDate.getMonth() + 1);
-
-    const record: any = {
-      building_id: bld._supabaseId,
-      room_id: roomId,
-      tenant_id: t.supabaseId || t.id,
-      tenant_name: t.name || '',
-      tenant_phone: t.phone || '',
-      room_number: t.room || t.roomNumber || '',
-      building_name: bld.buildingName || bld.building_name || '',
-      billing_month: billingMonth,
-      billing_type: 'full',
-      rent, management_fee: mgmt,
-      electric_fee: truncate10(elecAmt), gas_fee: truncate10(gasAmt),
-      water_fee: water, internet_fee: internet, parking_fee: parking,
-      elec_billing_surcharge: elecSur, gas_billing_surcharge: gasSur,
-      total, total_within_due: total, total_after_due: total,
-      due_date: dueDate.toISOString().slice(0, 10),
-      status: needsApproval ? 'draft' : 'confirmed',
-      confirmed_at: needsApproval ? null : new Date().toISOString(),
-      review_required: isMoveoutOverdue ? true : false,
-    };
-
-    const saved = await saveBillingRecord(record);
-    if (saved) {
-      created++;
-      if (isMoveoutOverdue) reviewRequired++;
-    } else {
-      skipped++;
-    }
-  }
-
-  return { created, skipped, reviewRequired };
+  // TODO Phase 6: useGenerateBilling mutation으로 전환
+  return { created: 0, skipped: 0, reviewRequired: 0 };
 };
 
 /**
  * confirmed 상태인 전체 건 일괄 발송
  */
 export const bulkSendBilling = async (
-  billingMonth: string,
-  buildingDataMap: any,
-  tenants: any[],
-  onProgress?: (current: number, total: number) => void,
+  _billingMonth: string,
+  _buildingDataMap: any,
+  _tenants: any[],
+  _onProgress?: (current: number, total: number) => void,
 ): Promise<{ sent: number; failed: number }> => {
-  const records = await getBillingRecords(billingMonth);
-  const confirmed = records.filter((r: any) => r.status === 'confirmed' && !r.review_required);
-  let sent = 0, failed = 0;
-
-  // O(1) 룩업 맵 생성
-  const tenantMap: Record<string, any> = Object.fromEntries(
-    tenants.map((t: any) => [t.supabaseId || t.id, t])
-  );
-  // building_id → buildingData 맵 (문자열 키가 아닌 id 키)
-  const buildingById: Record<string, any> = Object.fromEntries(
-    Object.values(buildingDataMap).filter((b: any) => b._supabaseId).map((b: any) => [b._supabaseId, b])
-  );
-
-  for (let i = 0; i < confirmed.length; i++) {
-    const r = confirmed[i];
-    // id 기반 조회 (O(1))
-    const tenant = tenantMap[r.tenant_id];
-    const bld = buildingById[r.building_id] || {};
-    const accountInfo = resolveAccountInfo(bld);
-    // 스냅샷 우선, 폴백은 tenant/building 객체
-    const tenantForMsg = { name: r.tenant_name || tenant?.name || '' };
-    const bldName = r.building_name || bld.buildingName || bld.building_name || '';
-
-    const settings = await getBillingSettings(r.room_id);
-    const billingCase = settings?.billing_case || 'A';
-    const message = generateCaseMessage(
-      r, tenantForMsg, { buildingName: bldName }, r.room_number || tenant?.room || '', accountInfo, billingCase
-    );
-
-    const ok = await updateBillingStatus(r.id, 'sent', {
-      sent_message_simple: message,
-      account_info: accountInfo,
-    });
-
-    if (ok) sent++; else failed++;
-    if (onProgress) onProgress(i + 1, confirmed.length);
-  }
-
-  return { sent, failed };
+  // TODO Phase 6: useSendBilling mutation으로 전환
+  return { sent: 0, failed: 0 };
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1301,59 +1022,9 @@ export const resolveAccountInfo = (building: any): AccountInfo => {
 /**
  * 연체료 해제 + billing_records 수정 + 메시지 재생성
  */
-export const waiveLateFee = async (recordId: number, building: any = {}, tenant: any = {}): Promise<{ success: boolean; record: any | null }> => {
-  // 1. 기존 레코드 조회
-  const { data: record, error: fetchErr } = await supabase
-    .from('billing_records')
-    .select('*')
-    .eq('id', recordId)
-    .single();
-  if (fetchErr || !record) return { success: false, record: null };
-
-  // 2. 연체료 0, total 재계산
-  const newTotal = record.total - (record.late_fee || 0);
-  const updates: any = {
-    late_fee: 0,
-    total: newTotal,
-    total_within_due: newTotal,
-    total_after_due: newTotal, // 납기후 = 납기내 (연체료 없으니까)
-  };
-
-  // 3. 메시지 재생성
-  const accountInfo = resolveAccountInfo(building);
-  const updatedRecord = { ...record, ...updates };
-  const newMessage = generateSimpleMessage(
-    updatedRecord,
-    { name: record.tenant_name || tenant.name || '' },
-    { buildingName: record.building_name || '' },
-    record.room_number || '',
-    accountInfo,
-  );
-  updates.sent_message_simple = newMessage;
-  updates.sent_at = new Date().toISOString(); // 재발송 시간
-
-  // 4. DB 업데이트
-  const { data, error } = await supabase
-    .from('billing_records')
-    .update(updates)
-    .eq('id', recordId)
-    .select()
-    .single();
-
-  if (error) { console.error('연체료 해제 실패:', error); return { success: false, record: null }; }
-
-  // 5. collection_notes에 해제 기록
-  await supabase.from('collection_notes').insert({
-    building_id: record.building_id,
-    room_id: record.room_id,
-    tenant_id: record.tenant_id,
-    billing_month: record.billing_month,
-    type: 'late_fee_waiver',
-    content: `연체수수료 ${(record.late_fee || 0).toLocaleString()}원 면제. 재발송 완료.`,
-    created_by: 'admin',
-  });
-
-  return { success: true, record: data };
+export const waiveLateFee = async (_recordId: number, _building: any = {}, _tenant: any = {}): Promise<{ success: boolean; record: any | null }> => {
+  // TODO Phase 6: API 전환
+  return { success: false, record: null };
 };
 
 /**
@@ -1412,39 +1083,23 @@ export const getPowerCutStage = (record: any): PowerCutStageResult => {
 /**
  * 수금 노트 저장
  */
-export const saveCollectionNote = async (note: any): Promise<any | null> => {
-  const { data, error } = await supabase
-    .from('collection_notes')
-    .insert(note)
-    .select()
-    .single();
-  if (error) { console.error('수금 노트 저장 실패:', error); return null; }
-  return data;
+export const saveCollectionNote = async (_note: any): Promise<any | null> => {
+  // TODO Phase 6: API 전환
+  return null;
 };
 
 /**
  * 특정 호실의 수금 노트 히스토리 조회
  */
-export const getCollectionNotes = async (roomId: number): Promise<any[]> => {
-  const { data, error } = await supabase
-    .from('collection_notes')
-    .select('*')
-    .eq('room_id', roomId)
-    .order('created_at', { ascending: false });
-  if (error) { console.error('수금 노트 조회 실패:', error); return []; }
-  return data || [];
+export const getCollectionNotes = async (_roomId: number): Promise<any[]> => {
+  // TODO Phase 6: API 전환
+  return [];
 };
 
 /**
  * 오늘 약속인 건 조회 (스케줄러용)
  */
 export const getTodayPromises = async (): Promise<any[]> => {
-  const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await supabase
-    .from('collection_notes')
-    .select('*, buildings(building_name), rooms(room_number), tenants(name, phone)')
-    .eq('type', 'promise')
-    .eq('promise_date', today);
-  if (error) { console.error('오늘 약속 조회 실패:', error); return []; }
-  return data || [];
+  // TODO Phase 6: API 전환
+  return [];
 };

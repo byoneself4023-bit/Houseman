@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from 'react';
 import { getBillingInitialSetup, saveBillingInitialSetup } from '@/lib/billingEngine';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const VARIABLE_FEE_OPTIONS = [
@@ -102,18 +101,8 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
 
     const saved = await saveBillingInitialSetup(setup);
 
-    // 연체수수료 → buildings 테이블 저장
-    if (lateFeeEnabled) {
-      await supabase!.from('buildings').update({
-        late_fee_rate: lateFeeRate,
-        late_fee_apply_type: lateFeeType,
-        late_fee_apply_value: lateFeeValue,
-      }).eq('id', buildingId);
-    } else {
-      await supabase!.from('buildings').update({
-        late_fee_rate: null,
-      }).eq('id', buildingId);
-    }
+    // TODO Phase 6: 연체수수료 → API mutation으로 전환
+    // lateFeeEnabled, lateFeeRate, lateFeeType, lateFeeValue → PUT /api/buildings/{id}
 
     setSaving(false);
 

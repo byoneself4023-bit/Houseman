@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { pastTenants as staticPastTenants } from '../data';
 
-// Supabase가 단일 원본 — useSupabaseSync에서 채워짐. localStorage 미사용.
+// tenants store
 export const useTenantStore = create(
   (set) => ({
     activeTenants: [],

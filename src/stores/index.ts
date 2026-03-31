@@ -7,4 +7,3 @@ export { useFinanceStore } from './useFinanceStore';
 export { useCalendarStore } from './useCalendarStore';
 export { usePendingStore } from './usePendingStore';
 export { useMigrations } from './useMigrations';
-export { useSupabaseSync } from './useSupabaseSync';

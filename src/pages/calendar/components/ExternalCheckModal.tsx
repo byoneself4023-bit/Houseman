@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { persistUpdate, persistUploadPhotos } from '../calendarApi';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 
 const ISSUE_ITEMS = [
   { key: "외부업체", label: "외부업체 수리 필요", color: "#DC2626" },
@@ -127,9 +127,9 @@ export const ExternalCheckModal = ({
                   setActiveTenants((prev: any[]) => prev.map((x: any) =>
                     x.building === ecEv.building && String(x.room) === String(ecEv.room) ? { ...x, moveOutPhotos: merged } : x));
                 }
-                const sbId = ecTm?.supabaseId;
-                if (sbId && supabase) {
-                  supabase.from('tenants').update({ move_out_photos: merged }).eq('id', sbId);
+                const sbId = ecTm?.supabaseId || ecTm?.id;
+                if (sbId) {
+                  api.put(`/api/contracts/${sbId}`, { moveOutPhotos: merged }).catch(() => {});
                 }
                 updateEcm({ tm: { ...ecTm, moveOutPhotos: merged } });
               }}

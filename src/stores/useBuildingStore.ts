@@ -1,8 +1,7 @@
 // @ts-nocheck
 import { create } from 'zustand';
 
-// buildings: Supabase 전용 (localStorage 사용 안 함)
-// 앱 시작 시 빈 상태 → useSupabaseSync에서 Supabase 데이터로 채움
+// buildings store
 export const useBuildingStore = create(
   (set) => ({
     allBuildings: [],

@@ -1,86 +1,51 @@
 /**
- * 캘린더 Supabase CRUD 래퍼 — feature flag로 분기
+ * 캘린더 CRUD 래퍼 — Supabase 제거됨
  *
  * USE_API=true  → no-op (Spring Boot API는 TanStack Query mutation에서 처리)
- * USE_API=false → Supabase 직접 호출 (대표님 방식)
+ * USE_API=false → no-op (Supabase 삭제됨)
  */
-import { USE_API } from '@/lib/featureFlag';
-import {
-  insertCalendarEvent,
-  updateCalendarEvent,
-  deleteCalendarEvent,
-} from '@/lib/supabaseData';
-import { uploadPhotos, deletePhoto } from '@/lib/photoStorage';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * 이벤트 생성 → Supabase insert
- * @returns { data, error } 또는 null (USE_API=true일 때)
+ * 이벤트 생성 → no-op (API mutation은 컴포넌트에서 직접 호출)
  */
-export async function persistInsert(evt: Record<string, any>) {
-  if (USE_API) return null;
-  try {
-    const result = await insertCalendarEvent(evt);
-    return result;
-  } catch (e) {
-    console.error('[calendarApi] persistInsert 실패:', e);
-    return { data: null, error: e };
-  }
+export async function persistInsert(_evt: Record<string, any>): Promise<{ data: any; error: any } | null> {
+  return null;
 }
 
 /**
- * 이벤트 수정 → Supabase update
+ * 이벤트 수정 → no-op
  */
 export async function persistUpdate(
-  supabaseId: string | undefined | null,
-  patch: Record<string, any>
+  _supabaseId: string | undefined | null,
+  _patch: Record<string, any>
 ) {
-  if (USE_API || !supabaseId) return;
-  try {
-    await updateCalendarEvent(supabaseId, patch);
-  } catch (e) {
-    console.error('[calendarApi] persistUpdate 실패:', e);
-  }
+  return;
 }
 
 /**
- * 이벤트 삭제 → Supabase delete
+ * 이벤트 삭제 → no-op
  */
-export async function persistDelete(supabaseId: string | undefined | null) {
-  if (USE_API || !supabaseId) return;
-  try {
-    await deleteCalendarEvent(supabaseId);
-  } catch (e) {
-    console.error('[calendarApi] persistDelete 실패:', e);
-  }
+export async function persistDelete(_supabaseId: string | undefined | null) {
+  return;
 }
 
 /**
- * 사진 업로드 → Supabase Storage
- * @returns 업로드된 사진 URL 배열
+ * 사진 업로드 → no-op (Phase 6에서 별도 스토리지 연결)
  */
 export async function persistUploadPhotos(
-  dataUrls: string[],
-  building: string,
-  room: string,
-  type: string
+  _dataUrls: string[],
+  _building: string,
+  _room: string,
+  _type: string
 ): Promise<string[]> {
-  if (USE_API) return [];
-  try {
-    return await uploadPhotos(dataUrls, building, room, type);
-  } catch (e) {
-    console.error('[calendarApi] persistUploadPhotos 실패:', e);
-    return [];
-  }
+  return [];
 }
 
 /**
- * 사진 삭제 → Supabase Storage
+ * 사진 삭제 → no-op
  */
-export async function persistDeletePhoto(publicUrl: string) {
-  if (USE_API) return;
-  try {
-    await deletePhoto(publicUrl);
-  } catch (e) {
-    console.error('[calendarApi] persistDeletePhoto 실패:', e);
-  }
+export async function persistDeletePhoto(_publicUrl: string) {
+  return;
 }

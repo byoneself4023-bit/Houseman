@@ -4,7 +4,7 @@ import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useTenantStore } from '@/stores/useTenantStore';
 import { useCalendarStore } from '@/stores/useCalendarStore';
 import { useFinanceStore } from '@/stores/useFinanceStore';
-import { updateTenant } from '@/lib/supabaseData';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 /* ── Field map: camelCase key -> { label (Korean), col (DB column) } ── */
@@ -265,8 +265,8 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
         if (action.field === 'phone' && action.value && action.value !== t.phone && t.phone) {
           const today = new Date().toISOString().slice(0, 10);
           const updated = { ...t, phone: action.value, phonePrevious1: t.phone, phonePrevious2: t.phonePrevious1 || "" };
-          if (t.supabaseId) {
-            updateTenant(t.supabaseId, { phone: action.value, phone_previous_1: t.phone, phone_previous_2: t.phonePrevious1 || "", phone_previous_1_date: today }).catch((e: any) => console.error('[Supabase] phone shift failed:', e));
+          if (t.id) {
+            api.put(`/api/contracts/${t.id}`, { phone: action.value, phonePrevious1: t.phone, phonePrevious2: t.phonePrevious1 || "" }).catch((e: any) => console.error('[API] phone shift failed:', e));
           }
           return updated;
         }

@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 
 /**
  * 앱 시작 시 1회 실행 — 레거시 localStorage 정리만 수행.
- * 건물/호실/임차인/공실 데이터는 전부 Supabase가 단일 원본 (useSupabaseSync에서 처리).
  */
 export function useMigrations() {
   const ran = useRef(false);
