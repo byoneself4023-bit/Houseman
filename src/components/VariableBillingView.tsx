@@ -205,62 +205,62 @@ export default function VariableBillingView({
   return (
     <div>
       {/* 헤더 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <button className="billing-btn ghost" onClick={onBack} style={{ padding: '6px 12px' }}>
+      <div className="flex items-center gap-3 mb-6">
+        <button className="billing-btn ghost px-3 py-1.5" onClick={onBack}>
           ← 목록
         </button>
-        <h2 style={{ fontSize: 17, fontWeight: 800, color: '#111', margin: 0 }}>
+        <h2 className="text-[17px] font-extrabold text-hm-text m-0">
           {buildingName}
         </h2>
         <span className="billing-type-badge variable">변동관리비</span>
-        <span style={{ fontSize: 12, color: '#888', marginLeft: 'auto' }}>
+        <span className="text-xs text-hm-text-muted ml-auto">
           {tenants.length}호실 · {billingMonth}
         </span>
       </div>
 
       {/* 2열 레이아웃: 청구서 입력 + 안분 결과 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: 20, alignItems: 'start' }}>
+      <div className="grid grid-cols-[360px_1fr] gap-5 items-start">
 
         {/* ── 좌측: 청구서 정보 입력 ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
 
           {/* 전기 청구서 */}
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 16 }}>⚡</span> 전기 청구서
-              {elecVerified && <span style={{ fontSize: 10, color: '#059669', fontWeight: 700, background: '#ECFDF5', padding: '2px 6px', borderRadius: 4 }}>✓ 일치</span>}
+          <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
+            <div className="text-[13px] font-extrabold text-hm-text mb-3.5 flex items-center gap-1.5">
+              <span className="text-base">⚡</span> 전기 청구서
+              {elecVerified && <span className="text-[10px] text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>총 금액 (원)</span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
-                  type="number" style={inputStyleObj}
+                  type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.totalAmount || ''}
                   onChange={e => updateBill('elec', 'totalAmount', e.target.value)}
                   placeholder="0"
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>총 사용량 (kWh)</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 사용량 (kWh)</span>
                 <input
-                  type="number" style={inputStyleObj}
+                  type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.totalUsage || ''}
                   onChange={e => updateBill('elec', 'totalUsage', e.target.value)}
                   placeholder="0"
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>사용기간 시작</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
                 <input
-                  type="date" style={inputStyleObj}
+                  type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.periodStart}
                   onChange={e => updateBill('elec', 'periodStart', e.target.value)}
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>사용기간 종료</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
                 <input
-                  type="date" style={inputStyleObj}
+                  type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.periodEnd}
                   onChange={e => updateBill('elec', 'periodEnd', e.target.value)}
                 />
@@ -269,42 +269,42 @@ export default function VariableBillingView({
           </div>
 
           {/* 수도 청구서 */}
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 16 }}>💧</span> 수도 청구서
-              {waterVerified && <span style={{ fontSize: 10, color: '#059669', fontWeight: 700, background: '#ECFDF5', padding: '2px 6px', borderRadius: 4 }}>✓ 일치</span>}
+          <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
+            <div className="text-[13px] font-extrabold text-hm-text mb-3.5 flex items-center gap-1.5">
+              <span className="text-base">💧</span> 수도 청구서
+              {waterVerified && <span className="text-[10px] text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>총 금액 (원)</span>
+            <div className="grid grid-cols-2 gap-2.5">
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
-                  type="number" style={inputStyleObj}
+                  type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.totalAmount || ''}
                   onChange={e => updateBill('water', 'totalAmount', e.target.value)}
                   placeholder="0"
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>총 사용량 (㎥)</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 사용량 (㎥)</span>
                 <input
-                  type="number" style={inputStyleObj}
+                  type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.totalUsage || ''}
                   onChange={e => updateBill('water', 'totalUsage', e.target.value)}
                   placeholder="0"
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>사용기간 시작</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
                 <input
-                  type="date" style={inputStyleObj}
+                  type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.periodStart}
                   onChange={e => updateBill('water', 'periodStart', e.target.value)}
                 />
               </label>
-              <label style={labelStyleObj}>
-                <span style={labelTextStyle}>사용기간 종료</span>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
                 <input
-                  type="date" style={inputStyleObj}
+                  type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.periodEnd}
                   onChange={e => updateBill('water', 'periodEnd', e.target.value)}
                 />
@@ -313,48 +313,40 @@ export default function VariableBillingView({
           </div>
 
           {/* 관리자 메모 */}
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 10 }}>관리자 메모</div>
+          <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
+            <div className="text-[13px] font-extrabold text-hm-text mb-2.5">관리자 메모</div>
             <textarea
               value={memoText}
               onChange={e => setMemoText(e.target.value)}
               placeholder="검침일 오차, 특이사항 등..."
-              style={{
-                width: '100%', height: 80, padding: 10, borderRadius: 8,
-                border: '1px solid #CCCCCC', fontSize: 12, fontFamily: 'inherit',
-                resize: 'vertical', outline: 'none',
-              }}
+              className="w-full h-20 p-2.5 rounded-lg border border-[#CCCCCC] text-xs font-[inherit] resize-y outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             />
           </div>
         </div>
 
         {/* ── 우측: 안분 결과 테이블 ── */}
-        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #E5E5E5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#111' }}>호실별 검침 & 안분 결과</span>
-            <div style={{ display: 'flex', gap: 8 }}>
+        <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden">
+          <div className="px-5 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
+            <span className="text-sm font-extrabold text-hm-text">호실별 검침 & 안분 결과</span>
+            <div className="flex gap-2">
               {elecApportion && (
-                <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-                  background: elecVerified ? '#ECFDF5' : '#FEF2F2',
-                  color: elecVerified ? '#059669' : '#E52528',
-                }}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                  elecVerified ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'
+                }`}>
                   전기 {elecVerified ? '✓' : '✗'} {fmtAmt(utilityBill.elec.totalAmount)}원
                 </span>
               )}
               {waterApportion && (
-                <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4,
-                  background: waterVerified ? '#ECFDF5' : '#FEF2F2',
-                  color: waterVerified ? '#059669' : '#E52528',
-                }}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                  waterVerified ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'
+                }`}>
                   수도 {waterVerified ? '✓' : '✗'} {fmtAmt(utilityBill.water.totalAmount)}원
                 </span>
               )}
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 300px)' }}>
+          <div className="overflow-x-auto max-h-[calc(100vh-300px)]">
             <table className="billing-table">
               <thead>
                 <tr>
@@ -368,7 +360,7 @@ export default function VariableBillingView({
                   <th className="amount">수도 사용량</th>
                   <th className="amount">수도 금액</th>
                   <th className="amount">공용수도</th>
-                  <th className="amount" style={{ fontWeight: 800 }}>합계</th>
+                  <th className="amount font-extrabold">합계</th>
                 </tr>
               </thead>
               <tbody>
@@ -380,8 +372,8 @@ export default function VariableBillingView({
 
                   return (
                     <tr key={roomId}>
-                      <td style={{ fontWeight: 700 }}>{t.room}</td>
-                      <td style={{ fontSize: 12, color: '#333' }}>{t.name}</td>
+                      <td className="font-bold">{t.room}</td>
+                      <td className="text-xs text-[#333]">{t.name}</td>
                       {/* 전기 검침 입력 */}
                       <td className="amount">
                         <input
@@ -393,9 +385,9 @@ export default function VariableBillingView({
                           style={{ width: 70 }}
                         />
                       </td>
-                      <td className="amount" style={{ color: '#666' }}>{elecRoom?.usage || '-'}</td>
+                      <td className="amount text-[#666]">{elecRoom?.usage || '-'}</td>
                       <td className="amount">{elecRoom ? fmtAmt(elecRoom.amount) : '-'}</td>
-                      <td className="amount" style={{ color: '#346aff', fontSize: 11 }}>
+                      <td className="amount text-[#346aff] text-[11px]">
                         {elecRoom ? fmtAmt(elecRoom.commonAmount) : '-'}
                       </td>
                       {/* 수도 검침 입력 */}
@@ -409,12 +401,12 @@ export default function VariableBillingView({
                           style={{ width: 70 }}
                         />
                       </td>
-                      <td className="amount" style={{ color: '#666' }}>{waterRoom?.usage || '-'}</td>
+                      <td className="amount text-[#666]">{waterRoom?.usage || '-'}</td>
                       <td className="amount">{waterRoom ? fmtAmt(waterRoom.amount) : '-'}</td>
-                      <td className="amount" style={{ color: '#346aff', fontSize: 11 }}>
+                      <td className="amount text-[#346aff] text-[11px]">
                         {waterRoom ? fmtAmt(waterRoom.commonAmount) : '-'}
                       </td>
-                      <td className="amount" style={{ fontWeight: 800, color: '#111' }}>
+                      <td className="amount font-extrabold text-hm-text">
                         {total > 0 ? fmtAmt(total) : '-'}
                       </td>
                     </tr>
@@ -423,37 +415,37 @@ export default function VariableBillingView({
                 {/* 합계 행 */}
                 {(elecApportion || waterApportion) && (
                   <>
-                    <tr style={{ background: '#F7F8FA', fontWeight: 700 }}>
-                      <td colSpan={2} style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>호실 합계</td>
+                    <tr className="bg-hm-bg font-bold">
+                      <td colSpan={2} className="text-xs font-extrabold text-hm-text">호실 합계</td>
                       <td className="amount" />
                       <td className="amount">{elecApportion ? elecApportion.rooms.reduce((s: number, r: any) => s + r.usage, 0) : '-'}</td>
                       <td className="amount">{elecApportion ? fmtAmt(elecApportion.rooms.reduce((s: number, r: any) => s + r.amount, 0)) : '-'}</td>
-                      <td className="amount" style={{ color: '#346aff' }}>
+                      <td className="amount text-[#346aff]">
                         {elecApportion ? fmtAmt(elecApportion.rooms.reduce((s: number, r: any) => s + r.commonAmount, 0)) : '-'}
                       </td>
                       <td className="amount" />
                       <td className="amount">{waterApportion ? waterApportion.rooms.reduce((s: number, r: any) => s + r.usage, 0) : '-'}</td>
                       <td className="amount">{waterApportion ? fmtAmt(waterApportion.rooms.reduce((s: number, r: any) => s + r.amount, 0)) : '-'}</td>
-                      <td className="amount" style={{ color: '#346aff' }}>
+                      <td className="amount text-[#346aff]">
                         {waterApportion ? fmtAmt(waterApportion.rooms.reduce((s: number, r: any) => s + r.commonAmount, 0)) : '-'}
                       </td>
-                      <td className="amount" style={{ fontWeight: 800 }}>
+                      <td className="amount font-extrabold">
                         {fmtAmt((elecApportion?.rooms.reduce((s: number, r: any) => s + r.total, 0) || 0) + (waterApportion?.rooms.reduce((s: number, r: any) => s + r.total, 0) || 0))}
                       </td>
                     </tr>
                     {/* 건물주 부담 (공실분) */}
                     {((elecApportion?.ownerBurden || 0) + (waterApportion?.ownerBurden || 0)) > 0 && (
-                      <tr style={{ background: '#FFF7ED' }}>
-                        <td colSpan={2} style={{ fontSize: 11, fontWeight: 700, color: '#EA580C' }}>건물주 부담 (공실분)</td>
+                      <tr className="bg-hm-warning-bg">
+                        <td colSpan={2} className="text-[11px] font-bold text-hm-warning">건물주 부담 (공실분)</td>
                         <td className="amount" colSpan={3} />
-                        <td className="amount" style={{ color: '#EA580C' }}>
+                        <td className="amount text-hm-warning">
                           {elecApportion ? fmtAmt(elecApportion.ownerBurden) : '-'}
                         </td>
                         <td className="amount" colSpan={3} />
-                        <td className="amount" style={{ color: '#EA580C' }}>
+                        <td className="amount text-hm-warning">
                           {waterApportion ? fmtAmt(waterApportion.ownerBurden) : '-'}
                         </td>
-                        <td className="amount" style={{ color: '#EA580C', fontWeight: 800 }}>
+                        <td className="amount text-hm-warning font-extrabold">
                           {fmtAmt((elecApportion?.ownerBurden || 0) + (waterApportion?.ownerBurden || 0))}
                         </td>
                       </tr>
@@ -465,17 +457,15 @@ export default function VariableBillingView({
           </div>
 
           {/* 승인 영역 */}
-          <div style={{
-            padding: '16px 20px', borderTop: '1px solid #E5E5E5',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: isConfirmed ? '#ECFDF5' : '#fff',
-          }}>
-            <div style={{ fontSize: 12, color: '#666' }}>
+          <div className={`px-5 py-4 border-t border-[#E5E5E5] flex items-center justify-between ${
+            isConfirmed ? 'bg-hm-success-bg' : 'bg-white'
+          }`}>
+            <div className="text-xs text-[#666]">
               {isConfirmed
-                ? <span style={{ color: '#059669', fontWeight: 700 }}>✓ 관리자 확인 완료</span>
+                ? <span className="text-hm-success font-bold">✓ 관리자 확인 완료</span>
                 : '변동관리비는 관리자 확인 후 발송됩니다'}
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="flex gap-2.5">
               {!isConfirmed ? (
                 <button
                   className="billing-btn primary"
@@ -508,12 +498,3 @@ export default function VariableBillingView({
     </div>
   );
 }
-
-// ── 스타일 ──
-const labelStyleObj: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 3 };
-const labelTextStyle: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: '#888', letterSpacing: '0.02em' };
-const inputStyleObj: React.CSSProperties = {
-  padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC',
-  fontSize: 12, fontFamily: 'inherit', outline: 'none', width: '100%',
-  fontVariantNumeric: 'tabular-nums',
-};

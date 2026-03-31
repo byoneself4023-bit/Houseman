@@ -14,30 +14,35 @@ export const TenantSearchBar: React.FC<TenantSearchBarProps> = ({
   search, setSearch, statusFilter, setStatusFilter, buildingFilter, setBuildingFilter, buildingNames,
 }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+    <div className="flex items-center gap-2.5 mb-4 flex-wrap">
       <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름, 건물, 호실 검색..."
-        style={{ width: 200, padding: "7px 14px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
+        className="w-[200px] py-[7px] px-3.5 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:border-hm-blue focus:ring-1 focus:ring-hm-blue/30 transition-colors" />
       <select value={buildingFilter} onChange={e => setBuildingFilter(e.target.value)}
-        style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", color: buildingFilter === "전체" ? "#8F95A3" : "#1A1D23" }}>
+        className={`py-[7px] px-3 rounded-lg border border-hm-input-border text-xs font-[inherit] transition-colors ${buildingFilter === "전체" ? "text-hm-text-muted" : "text-hm-text"}`}>
         <option value="전체">전체 건물</option>
         {buildingNames.map(name => <option key={name} value={name}>{name}</option>)}
       </select>
-      <div style={{ display: "flex", gap: 4 }}>
-        {["전체", "정상", "연체"].map(s => (
-          <button key={s} onClick={() => setStatusFilter(s)}
-            style={{
-              padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
-              background: statusFilter === s ? (s === "연체" ? "#FEF2F2" : s === "정상" ? "#ECFDF5" : "#F3F4F6") : "#fff",
-              color: statusFilter === s ? (s === "연체" ? "#DC2626" : s === "정상" ? "#059669" : "#374151") : "#8F95A3",
-              border: statusFilter === s ? `1.5px solid ${s === "연체" ? "#FECACA" : s === "정상" ? "#A7F3D0" : "#D1D5DB"}` : "1px solid #E0E3E9",
-            }}>
-            {s}
-          </button>
-        ))}
+      <div className="flex gap-1">
+        {["전체", "정상", "연체"].map(s => {
+          const isActive = statusFilter === s;
+          const bgMap: Record<string, string> = { "연체": "bg-hm-danger-bg", "정상": "bg-hm-success-bg", "전체": "bg-gray-100" };
+          const colorMap: Record<string, string> = { "연체": "text-hm-danger", "정상": "text-hm-success", "전체": "text-gray-700" };
+          const borderMap: Record<string, string> = { "연체": "border-hm-danger-border", "정상": "border-hm-success-border", "전체": "border-gray-300" };
+          return (
+            <button key={s} onClick={() => setStatusFilter(s)}
+              className={`px-3 py-[5px] rounded-md text-[11px] font-bold cursor-pointer font-[inherit] transition-colors ${
+                isActive
+                  ? `${bgMap[s]} ${colorMap[s]} ${borderMap[s]} border-[1.5px]`
+                  : "bg-white text-hm-text-muted border border-hm-input-border hover:bg-hm-bg-hover"
+              }`}>
+              {s}
+            </button>
+          );
+        })}
       </div>
       {(buildingFilter !== "전체" || statusFilter !== "전체" || search) && (
         <button onClick={() => { setBuildingFilter("전체"); setStatusFilter("전체"); setSearch(""); }}
-          style={{ padding: "5px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#F9FAFB", fontSize: 10, fontWeight: 600, color: "#6B7280", cursor: "pointer", fontFamily: "inherit" }}>
+          className="px-2.5 py-[5px] rounded-md border border-hm-input-border bg-hm-bg-hover text-[10px] font-semibold text-gray-500 cursor-pointer font-[inherit] hover:bg-gray-200 transition-colors">
           초기화
         </button>
       )}

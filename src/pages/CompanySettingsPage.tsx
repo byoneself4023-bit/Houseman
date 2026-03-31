@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useState, useCallback } from 'react';
 import { Card, SectionTitle } from '../components';
-import { inputStyle } from '../components/Field';
+import { inputClassName } from '../components/Field';
 import { useLocalStorage } from '../utils/useLocalStorage';
 import { useIsMobile } from '../utils/useIsMobile';
 
@@ -81,8 +81,6 @@ export const CompanySettingsPage = () => {
     }).open();
   };
 
-  const labelStyle = { fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 };
-
   return (
     <div>
       <SectionTitle sub="하우스맨 회사 기본정보를 관리합니다">
@@ -91,54 +89,50 @@ export const CompanySettingsPage = () => {
 
       {/* Company Info */}
       <Card style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 16 }}>{"📋"}</span> 회사 정보
+        <div className="text-sm font-extrabold text-hm-text mb-4 flex items-center gap-2">
+          <span className="text-base">{"📋"}</span> 회사 정보
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
           <div>
-            <div style={labelStyle}>회사명</div>
+            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">회사명</div>
             <input
               value={settings.company_name || ""}
               onChange={e => update("company_name", e.target.value)}
               placeholder="예: (주)하우스맨"
-              style={{ ...inputStyle, padding: "10px 14px" }}
+              className={`${inputClassName} px-3.5 py-2.5`}
             />
           </div>
           <div>
-            <div style={labelStyle}>대표 전화번호</div>
+            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표 전화번호</div>
             <input
               value={settings.company_phone || ""}
               onChange={e => update("company_phone", e.target.value)}
               placeholder="예: 02-1234-5678"
-              style={{ ...inputStyle, padding: "10px 14px" }}
+              className={`${inputClassName} px-3.5 py-2.5`}
             />
           </div>
           <div>
-            <div style={labelStyle}>대표 이메일</div>
+            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표 이메일</div>
             <input
               value={settings.company_email || ""}
               onChange={e => update("company_email", e.target.value)}
               placeholder="예: info@houseman.co.kr"
-              style={{ ...inputStyle, padding: "10px 14px" }}
+              className={`${inputClassName} px-3.5 py-2.5`}
             />
           </div>
           <div>
-            <div style={labelStyle}>회사 주소</div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">회사 주소</div>
+            <div className="flex gap-2">
               <input
                 value={settings.company_address || ""}
                 onChange={e => update("company_address", e.target.value)}
                 placeholder="주소를 입력하거나 검색하세요"
-                style={{ ...inputStyle, padding: "10px 14px", flex: 1 }}
+                className={`${inputClassName} px-3.5 py-2.5 flex-1`}
               />
               <button
                 onClick={openPostcodeSearch}
-                style={{
-                  padding: "10px 16px", borderRadius: 8, border: "1.5px solid #3B82F6",
-                  background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 12,
-                  cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0
-                }}
+                className="px-4 py-2.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-xs cursor-pointer font-[inherit] whitespace-nowrap shrink-0 hover:bg-blue-100 transition-colors"
               >
                 {"🔍"} 주소검색
               </button>
@@ -149,48 +143,34 @@ export const CompanySettingsPage = () => {
 
       {/* Bank Accounts */}
       <Card style={{ marginBottom: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16 }}>{"🏦"}</span> 하우스맨 계좌 목록
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#8F95A3" }}>({accounts.length}개)</span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-sm font-extrabold text-hm-text flex items-center gap-2">
+            <span className="text-base">{"🏦"}</span> 하우스맨 계좌 목록
+            <span className="text-xs font-semibold text-hm-text-muted">({accounts.length}개)</span>
           </div>
           <button
             onClick={addAccount}
-            style={{
-              padding: "8px 20px", borderRadius: 8, border: "1.5px solid #3B82F6",
-              background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 12,
-              cursor: "pointer", fontFamily: "inherit"
-            }}
+            className="px-5 py-2 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-xs cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors"
           >
             + 계좌 추가
           </button>
         </div>
 
         {accounts.length === 0 && (
-          <div style={{ textAlign: "center", padding: "32px 0", color: "#8F95A3", fontSize: 13 }}>
+          <div className="text-center py-8 text-hm-text-muted text-[13px]">
             등록된 계좌가 없습니다. 위의 &quot;계좌 추가&quot; 버튼을 눌러 추가하세요.
           </div>
         )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {accounts.map((acc, idx) => {
             const statusCfg = STATUS_OPTIONS.find(s => s.value === acc.status) || STATUS_OPTIONS[0];
             return (
-              <div key={acc.id || idx} style={{
-                padding: 16, borderRadius: 12, border: "1px solid #E8ECF0", background: "#FAFBFC",
-                position: "relative"
-              }}>
+              <div key={acc.id || idx} className="p-4 rounded-xl border border-hm-border bg-[#FAFBFC] relative">
                 {/* Remove button */}
                 <button
                   onClick={() => removeAccount(idx)}
-                  style={{
-                    position: "absolute", top: 10, right: 10,
-                    width: 28, height: 28, borderRadius: "50%",
-                    border: "1px solid #FECACA", background: "#FEF2F2",
-                    color: "#DC2626", fontSize: 14, fontWeight: 700,
-                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "inherit", lineHeight: 1
-                  }}
+                  className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full border border-red-200 bg-hm-danger-bg text-hm-danger text-sm font-bold cursor-pointer flex items-center justify-center font-[inherit] leading-none hover:bg-red-100 transition-colors"
                   title="계좌 삭제"
                 >
                   x
@@ -198,86 +178,87 @@ export const CompanySettingsPage = () => {
 
                 {/* 대표계좌 표시 */}
                 {acc.isPrimary && (
-                  <div style={{ marginBottom: 8 }}>
-                    <span style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", background: "#EFF6FF", padding: "2px 8px", borderRadius: 4, border: "1px solid #BFDBFE" }}>★ 대표계좌</span>
+                  <div className="mb-2">
+                    <span className="text-[10px] font-extrabold text-hm-blue-dark bg-hm-blue-bg px-2 py-0.5 rounded border border-blue-200">★ 대표계좌</span>
                   </div>
                 )}
 
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-4'} gap-3 mb-3`}>
                   <div>
-                    <div style={labelStyle}>별칭 (용도)</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">별칭 (용도)</div>
                     <input
                       value={acc.alias || ""}
                       onChange={e => updateAccount(idx, "alias", e.target.value)}
                       placeholder="예: 관리비통장, 월세통장"
-                      style={{ ...inputStyle, padding: "9px 12px" }}
+                      className={`${inputClassName} px-3 py-[9px]`}
                     />
                   </div>
                   <div>
-                    <div style={labelStyle}>은행명</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">은행명</div>
                     <select
                       value={acc.bank || "국민은행"}
                       onChange={e => updateAccount(idx, "bank", e.target.value)}
-                      style={{ ...inputStyle, padding: "9px 12px", cursor: "pointer" }}
+                      className={`${inputClassName} px-3 py-[9px] cursor-pointer`}
                     >
                       {BANK_LIST.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
                   </div>
                   <div>
-                    <div style={labelStyle}>계좌번호</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">계좌번호</div>
                     <input
                       value={acc.account_number || ""}
                       onChange={e => updateAccount(idx, "account_number", e.target.value)}
                       placeholder="예: 123-456-789012"
-                      style={{ ...inputStyle, padding: "9px 12px" }}
+                      className={`${inputClassName} px-3 py-[9px]`}
                     />
                   </div>
                   <div>
-                    <div style={labelStyle}>예금주</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">예금주</div>
                     <input
                       value={acc.holder || ""}
                       onChange={e => updateAccount(idx, "holder", e.target.value)}
                       placeholder="예: 박종호"
-                      style={{ ...inputStyle, padding: "9px 12px" }}
+                      className={`${inputClassName} px-3 py-[9px]`}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr 2fr", gap: 12 }}>
+                <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-[auto_1fr_2fr]'} gap-3`}>
                   <div>
-                    <div style={labelStyle}>대표계좌</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표계좌</div>
                     <button
                       onClick={() => {
                         if (acc.isPrimary) return;
                         const updated = accounts.map((a, i) => ({ ...a, isPrimary: i === idx }));
                         update("houseman_bank_accounts", updated);
                       }}
+                      className="font-[inherit] transition-colors"
                       style={{
                         padding: "7px 14px", borderRadius: 7, fontSize: 11, fontWeight: 700,
                         border: acc.isPrimary ? "1.5px solid #2563EB" : "1px solid #E0E3E9",
                         background: acc.isPrimary ? "#EFF6FF" : "#fff",
                         color: acc.isPrimary ? "#2563EB" : "#8F95A3",
-                        cursor: acc.isPrimary ? "default" : "pointer", fontFamily: "inherit",
+                        cursor: acc.isPrimary ? "default" : "pointer",
                       }}
                     >
                       {acc.isPrimary ? "★ 대표" : "대표로 설정"}
                     </button>
                   </div>
                   <div>
-                    <div style={labelStyle}>상태</div>
-                    <div style={{ display: "flex", gap: 6 }}>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">상태</div>
+                    <div className="flex gap-1.5">
                       {STATUS_OPTIONS.map(opt => {
                         const selected = acc.status === opt.value;
                         return (
                           <button
                             key={opt.value}
                             onClick={() => updateAccount(idx, "status", opt.value)}
+                            className="flex-1 font-[inherit] cursor-pointer transition-colors"
                             style={{
-                              flex: 1, padding: "7px 8px", borderRadius: 7, fontSize: 11, fontWeight: selected ? 700 : 500,
+                              padding: "7px 8px", borderRadius: 7, fontSize: 11, fontWeight: selected ? 700 : 500,
                               border: selected ? `1.5px solid ${opt.color}` : "1px solid #E0E3E9",
                               background: selected ? opt.bg : "#fff",
                               color: selected ? opt.color : "#8F95A3",
-                              cursor: "pointer", fontFamily: "inherit"
                             }}
                           >
                             {opt.label}
@@ -287,20 +268,20 @@ export const CompanySettingsPage = () => {
                     </div>
                   </div>
                   <div>
-                    <div style={labelStyle}>메모</div>
+                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">메모</div>
                     <input
                       value={acc.note || ""}
                       onChange={e => updateAccount(idx, "note", e.target.value)}
                       placeholder="예: 자동이체 연결됨, 예비 계좌"
-                      style={{ ...inputStyle, padding: "9px 12px" }}
+                      className={`${inputClassName} px-3 py-[9px]`}
                     />
                   </div>
                 </div>
 
                 {/* Status indicator bar */}
-                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: statusCfg.color }} />
-                  <span style={{ fontSize: 11, color: statusCfg.color, fontWeight: 600 }}>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ background: statusCfg.color }} />
+                  <span className="text-[11px] font-semibold" style={{ color: statusCfg.color }}>
                     {acc.bank} {acc.account_number ? `(${acc.account_number})` : ""} - {statusCfg.label}
                   </span>
                 </div>
@@ -311,17 +292,10 @@ export const CompanySettingsPage = () => {
       </Card>
 
       {/* Save Button */}
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+      <div className="flex justify-end gap-3">
         <button
           onClick={handleSave}
-          style={{
-            padding: "12px 40px", borderRadius: 10, border: "none",
-            background: saved ? "#16A34A" : "#2563EB",
-            color: "#fff", fontWeight: 800, fontSize: 14,
-            cursor: "pointer", fontFamily: "inherit",
-            transition: "all 0.2s",
-            boxShadow: "0 2px 8px rgba(37,99,235,0.25)"
-          }}
+          className={`px-10 py-3 rounded-[10px] border-none text-white font-extrabold text-sm cursor-pointer font-[inherit] transition-all duration-200 shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.35)] ${saved ? 'bg-green-600' : 'bg-hm-blue-dark'}`}
         >
           {saved ? "저장 완료!" : "저장"}
         </button>

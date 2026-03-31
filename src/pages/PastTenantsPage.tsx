@@ -4,7 +4,7 @@ import { buildings } from '@/data';
 import { useIsMobile, fmt } from '@/utils';
 import { matchKorean } from '@/utils/koreanSearch';
 import { Card, SectionTitle, Table } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 
 const REASON_COLORS: Record<string, { bg: string; c: string }> = {
   "만기퇴실": { bg: "#F0FDF4", c: "#059669" },
@@ -159,9 +159,9 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
     const pn = (v: any): number => Number(String(v).replace(/,/g, "")) || 0;
 
     const SRow: React.FC<SRowProps> = ({ label, sub, value, color, bold }) => (
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
-        <div><span style={{ fontSize: 11, color: color || "#5F6577", fontWeight: bold ? 700 : 400 }}>{label}</span>{sub && <span style={{ fontSize: 9, color: "#B0B5C1", marginLeft: 6 }}>{sub}</span>}</div>
-        <span style={{ fontSize: 12, fontWeight: bold ? 800 : 600, color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
+      <div className="flex justify-between items-center py-[5px] border-b border-gray-100">
+        <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "#5F6577" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
+        <span className={`text-xs ${bold ? 'font-extrabold' : 'font-semibold'}`} style={{ color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
       </div>
     );
 
@@ -173,19 +173,17 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, cursor: "pointer" }} onClick={() => { setSelected(null); setViewMode("info"); }}>
-          <span style={{ fontSize: 20 }}>←</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>퇴실정보 목록으로</span>
+        <div className="flex items-center gap-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => { setSelected(null); setViewMode("info"); }}>
+          <span className="text-xl">←</span>
+          <span className="text-sm font-bold text-hm-blue">퇴실정보 목록으로</span>
         </div>
 
         {/* 탭 */}
         {tabs.length > 1 && (
-          <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+          <div className="flex gap-1 mb-4">
             {tabs.map(tab => (
               <button key={tab.key} onClick={() => setViewMode(tab.key)}
-                style={{ padding: "8px 20px", borderRadius: 8, border: viewMode === tab.key ? "2px solid #3B82F6" : "1.5px solid #E0E3E9",
-                  background: viewMode === tab.key ? "#EFF6FF" : "#fff", color: viewMode === tab.key ? "#2563EB" : "#5F6577",
-                  fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className={`px-5 py-2 rounded-lg font-bold text-xs font-[inherit] cursor-pointer transition-all ${viewMode === tab.key ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
                 {tab.label}
               </button>
             ))}
@@ -195,106 +193,106 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
         {/* ── 기본정보 탭 ── */}
         {viewMode === "info" && (
           <>
-            <Card style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <Card className="mb-4">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#1A1D23" }}>{r.name}</div>
-                  <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 2 }}>{r.building} {r.room}호 · {r.phone || "-"}{r.roomType ? ` · ${r.roomType}` : ""}</div>
+                  <div className="text-xl font-extrabold text-hm-text">{r.name}</div>
+                  <div className="text-xs text-hm-text-muted mt-0.5">{r.building} {r.room}호 · {r.phone || "-"}{r.roomType ? ` · ${r.roomType}` : ""}</div>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 6, background: rc.bg, color: rc.c }}>{r.reason}</span>
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-md" style={{ background: rc.bg, color: rc.c }}>{r.reason}</span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주일</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{r.moveIn || "-"}</div>
+              <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2.5 mb-3`}>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">입주일</div>
+                  <div className="text-[13px] font-bold">{r.moveIn || "-"}</div>
                 </div>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{r.expiry || "-"}</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div>
+                  <div className="text-[13px] font-bold">{r.expiry || "-"}</div>
                 </div>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{r.reason === "재계약" ? "재계약일" : "퇴실일"}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{r.moveOut || "-"}</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">{r.reason === "재계약" ? "재계약일" : "퇴실일"}</div>
+                  <div className="text-[13px] font-bold">{r.moveOut || "-"}</div>
                 </div>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>정산일</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{r.settlementDate || "-"}</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">정산일</div>
+                  <div className="text-[13px] font-bold">{r.settlementDate || "-"}</div>
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{depositLabel}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{fmt(r.deposit)}원</div>
+              <div className="grid grid-cols-3 gap-2.5 mb-4">
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">{depositLabel}</div>
+                  <div className="text-[13px] font-bold">{fmt(r.deposit)}원</div>
                 </div>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>월세</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{fmt(r.rent)}원</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">월세</div>
+                  <div className="text-[13px] font-bold">{fmt(r.rent)}원</div>
                 </div>
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비</div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{fmt(r.mgmt || 0)}원</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">관리비</div>
+                  <div className="text-[13px] font-bold">{fmt(r.mgmt || 0)}원</div>
                 </div>
               </div>
 
               {/* 최종 정산 요약 */}
               {hasSettlement && (
-                <div style={{ background: (r.finalSettlement! >= 0) ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", marginBottom: 16, border: `2px solid ${(r.finalSettlement! >= 0) ? "#BBF7D0" : "#FECACA"}` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: (r.finalSettlement! >= 0) ? "#065F46" : "#991B1B" }}>{(r.finalSettlement! >= 0) ? "반환금액" : "추가청구"}</span>
-                    <span style={{ fontSize: 24, fontWeight: 900, color: (r.finalSettlement! >= 0) ? "#059669" : "#DC2626" }}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span style={{ fontSize: 12 }}>원</span></span>
+                <div className={`rounded-[10px] px-[18px] py-3.5 mb-4 border-2 ${(r.finalSettlement! >= 0) ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-extrabold ${(r.finalSettlement! >= 0) ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{(r.finalSettlement! >= 0) ? "반환금액" : "추가청구"}</span>
+                    <span className={`text-2xl font-black ${(r.finalSettlement! >= 0) ? 'text-hm-success' : 'text-hm-danger'}`}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span className="text-xs">원</span></span>
                   </div>
                 </div>
               )}
 
               {!hasSettlement && r.reason !== "재계약" && (
-                <div style={{ padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0", marginBottom: 16 }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>정산 상태</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: r.settlement === "정산완료" ? "#059669" : "#DC2626" }}>{r.settlement || "-"}</div>
+                <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border mb-4">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">정산 상태</div>
+                  <div className={`text-[13px] font-bold ${r.settlement === "정산완료" ? 'text-hm-success' : 'text-hm-danger'}`}>{r.settlement || "-"}</div>
                 </div>
               )}
 
               {r.renewedAt && (
-                <div style={{ padding: "10px 12px", background: "#EFF6FF", borderRadius: 8, border: "1px solid #BFDBFE", marginBottom: 16 }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>재계약 처리일</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#2563EB" }}>{r.renewedAt}</div>
+                <div className="p-2.5 px-3 bg-hm-blue-bg rounded-lg border border-[#BFDBFE] mb-4">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">재계약 처리일</div>
+                  <div className="text-[13px] font-bold text-hm-blue-dark">{r.renewedAt}</div>
                 </div>
               )}
 
               {currentTenant && (
-                <div style={{ padding: "12px 14px", background: "#F0FDF4", borderRadius: 8, border: "1px solid #BBF7D0", marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 4 }}>현재 임차인</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23" }}>{currentTenant.name} · {currentTenant.phone}</div>
-                  <div style={{ fontSize: 11, color: "#5F6577", marginTop: 2 }}>입주일 {currentTenant.moveIn || "-"} · 만기 {currentTenant.expiry || "-"} · 월세 {fmt(currentTenant.rent)}원</div>
+                <div className="px-3.5 py-3 bg-[#F0FDF4] rounded-lg border border-hm-success-border mb-4">
+                  <div className="text-[10px] font-bold text-hm-success mb-1">현재 임차인</div>
+                  <div className="text-[13px] font-bold text-hm-text">{currentTenant.name} · {currentTenant.phone}</div>
+                  <div className="text-[11px] text-hm-text-sub mt-0.5">입주일 {currentTenant.moveIn || "-"} · 만기 {currentTenant.expiry || "-"} · 월세 {fmt(currentTenant.rent)}원</div>
                 </div>
               )}
 
               {/* 계약서 파일 */}
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>📎 계약서</div>
+              <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">📎 계약서</div>
               {r.contractFiles && r.contractFiles.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div className="flex flex-col gap-1">
                   {r.contractFiles.map((f, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#F8FAFC", borderRadius: 6, border: "1px solid #E8ECF0" }}>
-                      <span style={{ fontSize: 12, color: "#3B82F6" }}>📄</span>
-                      <span style={{ fontSize: 12, color: "#1A1D23", flex: 1 }}>{f}</span>
+                    <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-hm-bg-slate rounded-md border border-hm-border">
+                      <span className="text-xs text-hm-blue">📄</span>
+                      <span className="text-xs text-hm-text flex-1">{f}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>첨부된 계약서가 없습니다</div>
+                <div className="py-4 text-center text-[#B0B5C1] text-xs">첨부된 계약서가 없습니다</div>
               )}
 
               {/* 입주사진 */}
               {(r.moveInPhotos || []).length > 0 && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#059669", marginBottom: 8, paddingBottom: 6, borderBottom: "2px solid #D1FAE5" }}>🏠 입주사진 ({r.moveInPhotos!.length}장) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{r.moveIn || ""}</span></div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
+                <div className="mt-4">
+                  <div className="text-[11px] font-extrabold text-hm-success mb-2 pb-1.5 border-b-2 border-[#D1FAE5]">🏠 입주사진 ({r.moveInPhotos!.length}장) <span className="text-[9px] text-hm-text-muted font-semibold">{r.moveIn || ""}</span></div>
+                  <div className="grid grid-cols-6 gap-1.5">
                     {r.moveInPhotos!.map((src, pi) => (
-                      <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #BBF7D0", overflow: "hidden", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div key={pi} className="aspect-square rounded-md border-[1.5px] border-hm-success-border overflow-hidden bg-[#F0FDF4] flex items-center justify-center">
                         {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
-                          <img src={src} alt={`입주 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <img src={src} alt={`입주 ${pi+1}`} className="w-full h-full object-cover" />
                         ) : (
-                          <span style={{ fontSize: 14 }}>🏠</span>
+                          <span className="text-sm">🏠</span>
                         )}
                       </div>
                     ))}
@@ -304,45 +302,45 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
               {/* 시작 → 끝 비교: 입주체크사진 + 퇴실사진 */}
               {((r.moveInCheckPhotos || []).length > 0 || (r.moveOutPhotos || []).length > 0) && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", marginBottom: 10, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>📸 호실 상태 비교 (시작 → 끝)</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div className="mt-4">
+                  <div className="text-xs font-extrabold text-hm-text mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📸 호실 상태 비교 (시작 → 끝)</div>
+                  <div className="grid grid-cols-2 gap-3">
                     {/* 시작: 입주체크사진 */}
-                    <div style={{ border: "2px solid #FED7AA", borderRadius: 12, padding: 12, background: "#FFF7ED" }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8 }}>📋 입주체크사진 (시작) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{(r.moveInCheckPhotos || []).length}장</span></div>
+                    <div className="border-2 border-hm-warning-border rounded-xl p-3 bg-hm-warning-bg">
+                      <div className="text-[11px] font-extrabold text-hm-warning mb-2">📋 입주체크사진 (시작) <span className="text-[9px] text-hm-text-muted font-semibold">{(r.moveInCheckPhotos || []).length}장</span></div>
                       {(r.moveInCheckPhotos || []).length > 0 ? (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+                        <div className="grid grid-cols-3 gap-1">
                           {r.moveInCheckPhotos!.map((src, pi) => (
-                            <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #FED7AA", overflow: "hidden", background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div key={pi} className="aspect-square rounded-md border-[1.5px] border-hm-warning-border overflow-hidden bg-hm-warning-bg flex items-center justify-center">
                               {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
-                                <img src={src} alt={`체크 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <img src={src} alt={`체크 ${pi+1}`} className="w-full h-full object-cover" />
                               ) : (
-                                <span style={{ fontSize: 14 }}>📋</span>
+                                <span className="text-sm">📋</span>
                               )}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 11 }}>사진 없음</div>
+                        <div className="py-4 text-center text-[#B0B5C1] text-[11px]">사진 없음</div>
                       )}
                     </div>
                     {/* 끝: 퇴실사진 */}
-                    <div style={{ border: "2px solid #FECACA", borderRadius: 12, padding: 12, background: "#FEF2F2" }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", marginBottom: 8 }}>🚪 퇴실사진 (끝) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{(r.moveOutPhotos || []).length}장</span></div>
+                    <div className="border-2 border-hm-danger-border rounded-xl p-3 bg-hm-danger-bg">
+                      <div className="text-[11px] font-extrabold text-hm-danger mb-2">🚪 퇴실사진 (끝) <span className="text-[9px] text-hm-text-muted font-semibold">{(r.moveOutPhotos || []).length}장</span></div>
                       {(r.moveOutPhotos || []).length > 0 ? (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+                        <div className="grid grid-cols-3 gap-1">
                           {r.moveOutPhotos!.map((src, pi) => (
-                            <div key={pi} style={{ aspectRatio: "1", borderRadius: 6, border: "1.5px solid #FECACA", overflow: "hidden", background: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div key={pi} className="aspect-square rounded-md border-[1.5px] border-hm-danger-border overflow-hidden bg-hm-danger-bg flex items-center justify-center">
                               {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
-                                <img src={src} alt={`퇴실 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <img src={src} alt={`퇴실 ${pi+1}`} className="w-full h-full object-cover" />
                               ) : (
-                                <span style={{ fontSize: 14 }}>🚪</span>
+                                <span className="text-sm">🚪</span>
                               )}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 11 }}>사진 없음</div>
+                        <div className="py-4 text-center text-[#B0B5C1] text-[11px]">사진 없음</div>
                       )}
                     </div>
                   </div>
@@ -357,17 +355,17 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
               return (
                 <Card>
                   <SectionTitle sub={`${r.building} ${r.room}호`}>📋 해당 호실 전체 이력</SectionTitle>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div className="flex flex-col gap-1.5">
                     {[...roomRecords].reverse().map((rec: Record<string, any>, i: number) => {
                       const rcs = getReasonStyle(rec.reason);
                       return (
-                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
+                        <div key={i} className="flex justify-between items-center px-3 py-2 bg-hm-bg-slate rounded-lg border border-hm-border">
                           <div>
-                            <span style={{ fontSize: 13, fontWeight: 700 }}>{rec.name}</span>
-                            <span style={{ fontSize: 11, color: "#5F6577", marginLeft: 8 }}>{rec.phone || ""}</span>
-                            <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>{rec.moveIn || "-"} ~ {rec.moveOut || "-"} · 월세 {fmt(rec.rent)}원</div>
+                            <span className="text-[13px] font-bold">{rec.name}</span>
+                            <span className="text-[11px] text-hm-text-sub ml-2">{rec.phone || ""}</span>
+                            <div className="text-[10px] text-hm-text-muted mt-0.5">{rec.moveIn || "-"} ~ {rec.moveOut || "-"} · 월세 {fmt(rec.rent)}원</div>
                           </div>
-                          <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: rcs.bg, color: rcs.c }}>{rec.reason}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: rcs.bg, color: rcs.c }}>{rec.reason}</span>
                         </div>
                       );
                     })}
@@ -382,28 +380,25 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
         {viewMode === "settlement" && hasSettlement && (
           <>
             {/* 프린트/다운로드 버튼 */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+            <div className="flex gap-2 mb-3">
               <button onClick={handleCapture} disabled={capturing}
-                style={{ padding: "10px 24px", borderRadius: 8, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", opacity: capturing ? 0.5 : 1 }}>
+                className="px-6 py-2.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-xs cursor-pointer font-[inherit] hover:shadow-md transition-all disabled:opacity-50">
                 {capturing ? "캡처중..." : "🖨 이미지 다운로드"}
               </button>
             </div>
 
             {/* 정산서 본문 (캡처 대상) */}
-            <Card ref={settlementRef} style={{ maxWidth: 720 }}>
+            <Card ref={settlementRef} className="max-w-[720px]">
               {/* Header */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div className="flex justify-between items-start mb-4">
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#DC2626", display: "flex", alignItems: "center", gap: 10 }}>
+                  <div className="text-lg font-extrabold text-hm-danger flex items-center gap-2.5">
                     🚪 퇴실정산서
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#F3F4F6", color: "#5F6577" }}>{r.roomType || ""}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-hm-text-sub">{r.roomType || ""}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 4 }}>{r.building} {r.room}호 · {r.name} · {r.phone}</div>
+                  <div className="text-xs text-hm-text-muted mt-1">{r.building} {r.room}호 · {r.name} · {r.phone}</div>
                 </div>
-                <div style={{ padding: "8px 18px", borderRadius: 8, fontSize: 14, fontWeight: 800,
-                  background: r.reason === "만기전퇴실" ? "#FEF2F2" : "#F0FDF4",
-                  color: r.reason === "만기전퇴실" ? "#DC2626" : "#059669",
-                  border: `1.5px solid ${r.reason === "만기전퇴실" ? "#FECACA" : "#BBF7D0"}` }}>
+                <div className={`px-[18px] py-2 rounded-lg text-sm font-extrabold border-[1.5px] ${r.reason === "만기전퇴실" ? 'bg-hm-danger-bg text-hm-danger border-hm-danger-border' : 'bg-[#F0FDF4] text-hm-success border-hm-success-border'}`}>
                   {r.reason}
                 </div>
               </div>
@@ -411,49 +406,49 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
               {isManOff ? (
                 /* 관리사무소: 간소 */
                 <>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>입주자 정보</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-                    <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주자</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600 }}>{r.name}</div></div>
-                    <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.phone}</div></div>
+                  <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
+                    <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
                   </div>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>보증금 반환</div>
-                  <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "14px 18px", border: "2px solid #BBF7D0" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "#065F46" }}>반환금액 (보증금)</span>
-                      <span style={{ fontSize: 24, fontWeight: 900, color: "#059669" }}>{fmt(r.deposit)}<span style={{ fontSize: 12 }}>원</span></span>
+                  <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
+                  <div className="bg-[#F0FDF4] rounded-[10px] px-[18px] py-3.5 border-2 border-hm-success-border">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-extrabold text-[#065F46]">반환금액 (보증금)</span>
+                      <span className="text-2xl font-black text-hm-success">{fmt(r.deposit)}<span className="text-xs">원</span></span>
                     </div>
                   </div>
                 </>
               ) : (
                 /* 일반: 2컬럼 레이아웃 */
-                <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16 }}>
+                <div className="grid grid-cols-[3fr_2fr] gap-4">
                   {/* Left */}
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>입주자 정보</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주자</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600 }}>{r.name}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.phone}</div></div>
+                    <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
                     </div>
 
-                    <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>사용 기간</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.moveIn || "-"}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.expiry || "-"}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 700, color: "#DC2626", textAlign: "center" }}>{r.moveOut}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>사용기간</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#EFF6FF", fontSize: 12, fontWeight: 700, color: "#2563EB", textAlign: "center" }}>{r.usagePeriod || (() => { if (!r.moveIn || !r.moveOut) return "-"; const a = new Date(r.moveIn), b = new Date(r.moveOut); let m = (b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); let d = b.getDate()-a.getDate(); if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();} return `${m}개월 ${d}일`; })()}</div></div>
+                    <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">사용 기간</div>
+                    <div className="grid grid-cols-4 gap-2 mb-3">
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.moveIn || "-"}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">퇴실일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-bold text-hm-danger text-center">{r.moveOut}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-blue-bg text-xs font-bold text-hm-blue-dark text-center">{r.usagePeriod || (() => { if (!r.moveIn || !r.moveOut) return "-"; const a = new Date(r.moveIn), b = new Date(r.moveOut); let m = (b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); let d = b.getDate()-a.getDate(); if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();} return `${m}개월 ${d}일`; })()}</div></div>
                     </div>
 
-                    <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>계약 정보</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{depositLabel}</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F0FDF4", fontSize: 12, fontWeight: 700, color: "#059669", textAlign: "right" }}>{fmt(r.deposit)}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>월세 <span style={{ fontSize: 8, color: r.isRentPrepaid ? "#059669" : "#DC2626" }}>({r.isRentPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(r.rent)}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비 <span style={{ fontSize: 8, color: r.isMgmtPrepaid ? "#059669" : "#DC2626" }}>({r.isMgmtPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(r.mgmt || 0)}</div></div>
+                    <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">계약 정보</div>
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(r.deposit)}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${r.isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.rent)}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${r.isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.mgmt || 0)}</div></div>
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: (r.cleanFee ?? 0) > 0 ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                      {(r.cleanFee ?? 0) > 0 && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실청소비</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 600, textAlign: "right", color: "#DC2626" }}>{fmt(r.cleanFee!)}</div></div>}
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수도</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(r.waterAmt || 0)}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>TV/인터넷</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(r.internetAmt || 0)}</div></div>
-                      <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{r.expiry || "-"}</div></div>
+                    <div className={`grid gap-2 mb-3 ${(r.cleanFee ?? 0) > 0 ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                      {(r.cleanFee ?? 0) > 0 && <div><div className="text-[9px] text-hm-text-muted mb-0.5">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(r.cleanFee!)}</div></div>}
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.waterAmt || 0)}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.internetAmt || 0)}</div></div>
+                      <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
                     </div>
 
                     {/* 수기 입력 내역 */}
@@ -461,70 +456,70 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                       const hasManual = (r.manElec||[]).some((x: any)=>pn(x.amt)>0) || (r.manGas||[]).some((x: any)=>pn(x.amt)>0) || (r.manRepair ?? 0)>0 || (r.manWaste ?? 0)>0 || (r.manOther||[]).some((x: any)=>pn(x.amt)>0) || (r.manRestoration ?? 0)>0;
                       if (!hasManual) return null;
                       return (<>
-                        <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #FED7AA" }}>✏️ 수기 입력 내역</div>
+                        <div className="text-[11px] font-extrabold text-hm-warning mb-2 pb-1.5 border-b-[1.5px] border-hm-warning-border">✏️ 수기 입력 내역</div>
                         {(r.manElec||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
-                          <div key={`e${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#EA580C" }}>전기{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
+                          <div key={`e${i}`} className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-hm-warning">전기{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
+                            <span className="text-xs font-semibold">{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
                         {(r.manGas||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
-                          <div key={`g${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#EA580C" }}>가스{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
+                          <div key={`g${i}`} className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-hm-warning">가스{row.period ? ` (${row.period})` : ` ${i+1}`}</span>
+                            <span className="text-xs font-semibold">{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
                         {(r.manRepair ?? 0) > 0 && (
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#EA580C" }}>수리비{r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRepair!)}</span>
+                          <div className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-hm-warning">수리비{r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}</span>
+                            <span className="text-xs font-semibold">{fmt(r.manRepair!)}</span>
                           </div>
                         )}
                         {(r.manWaste ?? 0) > 0 && (
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#EA580C" }}>폐기물{r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manWaste!)}</span>
+                          <div className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-hm-warning">폐기물{r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}</span>
+                            <span className="text-xs font-semibold">{fmt(r.manWaste!)}</span>
                           </div>
                         )}
                         {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && (
-                          <div key={`o${i}`} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#EA580C" }}>기타{i+1}{row.desc ? ` (${row.desc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(pn(row.amt))}</span>
+                          <div key={`o${i}`} className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-hm-warning">기타{i+1}{row.desc ? ` (${row.desc})` : ""}</span>
+                            <span className="text-xs font-semibold">{fmt(pn(row.amt))}</span>
                           </div>
                         ))}
                         {(r.manRestoration ?? 0) > 0 && (
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #FEF2F2" }}>
-                            <span style={{ fontSize: 11, color: "#7C3AED" }}>원상복구비{r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600 }}>{fmt(r.manRestoration!)}</span>
+                          <div className="flex justify-between py-1 border-b border-hm-danger-bg">
+                            <span className="text-[11px] text-[#7C3AED]">원상복구비{r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}</span>
+                            <span className="text-xs font-semibold">{fmt(r.manRestoration!)}</span>
                           </div>
                         )}
-                        <div style={{ height: 12 }} />
+                        <div className="h-3" />
                       </>);
                     })()}
                   </div>
 
                   {/* Right - 정산 계산 */}
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>정산 내역</div>
-                    <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>기산일: {r.startDay}일 · 월 일수: {r.daysInMonth}일 · 당월 사용: {r.usedDays}일</div>
+                    <div className="text-[11px] font-extrabold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">정산 내역</div>
+                    <div className="text-[9px] text-hm-text-muted mb-1">기산일: {r.startDay}일 · 월 일수: {r.daysInMonth}일 · 당월 사용: {r.usedDays}일</div>
 
                     {/* 반환 */}
-                    <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #BBF7D0" }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 4 }}>반환 항목</div>
+                    <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-success-border">
+                      <div className="text-[10px] font-bold text-hm-success mb-1">반환 항목</div>
                       <SRow label={depositLabel} value={r.deposit} color="#059669" bold />
                       {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="#059669" />}
                       {(r.netMgmt ?? 0) < 0 && <SRow label="관리비 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netMgmt!} color="#059669" />}
                       {(r.netWater ?? 0) < 0 && <SRow label="수도 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netWater!} color="#059669" />}
                       {(r.netInternet ?? 0) < 0 && <SRow label="TV/인터넷 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netInternet!} color="#059669" />}
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #BBF7D0" }}>
-                        <span style={{ fontSize: 12, fontWeight: 800, color: "#065F46" }}>반환소계</span>
-                        <span style={{ fontSize: 14, fontWeight: 900, color: "#059669" }}>{fmt(r.deposit + (r.totalRefund || 0))}</span>
+                      <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-success-border">
+                        <span className="text-xs font-extrabold text-[#065F46]">반환소계</span>
+                        <span className="text-sm font-black text-hm-success">{fmt(r.deposit + (r.totalRefund || 0))}</span>
                       </div>
                     </div>
 
                     {/* 공제 */}
-                    <div style={{ background: "#FEF2F2", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #FECACA" }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", marginBottom: 4 }}>공제 항목</div>
+                    <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
+                      <div className="text-[10px] font-bold text-hm-danger mb-1">공제 항목</div>
                       {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="#DC2626" />}
                       {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="#DC2626" />}
                       {(r.netWater ?? 0) > 0 && <SRow label="수도" sub={`${r.usedDays}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netWater!} color="#DC2626" />}
@@ -537,31 +532,31 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                       {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`o${i}`} label={`기타${i+1}${row.desc ? ` (${row.desc})` : ""}`} value={pn(row.amt)} color="#DC2626" />)}
                       {(r.manRestoration ?? 0) > 0 && <SRow label={`원상복구비${r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}`} value={r.manRestoration!} color="#7C3AED" />}
                       {((r.penalty7 ?? 0) > 0 || (r.penaltyComm ?? 0) > 0) && <>
-                        <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
+                        <div className="h-px bg-hm-danger-border my-1" />
                         {(r.penalty7 ?? 0) > 0 && <SRow label="7일패널티" value={r.penalty7!} color="#DC2626" />}
                         {(r.penaltyComm ?? 0) > 0 && <SRow label="중개수수료" value={r.penaltyComm!} color="#DC2626" />}
                       </>}
                       {(r.lateFee ?? 0) > 0 && <SRow label="연체수수료" sub="미납임대료 5%" value={r.lateFee!} color="#DC2626" />}
                       {(r.prevUnpaid ?? 0) > 0 && <>
-                        <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
+                        <div className="h-px bg-hm-danger-border my-1" />
                         <SRow label="전월 미납금" value={r.prevUnpaid!} color="#DC2626" bold />
                       </>}
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #FECACA" }}>
-                        <span style={{ fontSize: 12, fontWeight: 800, color: "#991B1B" }}>공제소계</span>
-                        <span style={{ fontSize: 14, fontWeight: 900, color: "#DC2626" }}>-{fmt(r.totalDeduct || 0)}</span>
+                      <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-danger-border">
+                        <span className="text-xs font-extrabold text-[#991B1B]">공제소계</span>
+                        <span className="text-sm font-black text-hm-danger">-{fmt(r.totalDeduct || 0)}</span>
                       </div>
                     </div>
 
                     {/* 최종 정산 */}
-                    <div style={{ background: r.finalSettlement! >= 0 ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", border: `2px solid ${r.finalSettlement! >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: r.finalSettlement! >= 0 ? "#065F46" : "#991B1B" }}>{r.finalSettlement! >= 0 ? "반환금액" : "추가청구"}</span>
-                        <span style={{ fontSize: 24, fontWeight: 900, color: r.finalSettlement! >= 0 ? "#059669" : "#DC2626" }}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span style={{ fontSize: 12 }}>원</span></span>
+                    <div className={`rounded-[10px] px-[18px] py-3.5 border-2 ${r.finalSettlement! >= 0 ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm font-extrabold ${r.finalSettlement! >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{r.finalSettlement! >= 0 ? "반환금액" : "추가청구"}</span>
+                        <span className={`text-2xl font-black ${r.finalSettlement! >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span className="text-xs">원</span></span>
                       </div>
                     </div>
 
                     {r.reason === "만기전퇴실" && ((r.penalty7 ?? 0) > 0 || (r.penaltyComm ?? 0) > 0) && (
-                      <div style={{ marginTop: 8, padding: "6px 10px", background: "#FEF2F2", borderRadius: 6, border: "1px solid #FECACA", fontSize: 10, color: "#DC2626", fontWeight: 600 }}>
+                      <div className="mt-2 px-2.5 py-1.5 bg-hm-danger-bg rounded-md border border-hm-danger-border text-[10px] text-hm-danger font-semibold">
                         ⚠️ 만기전퇴실 위약금: {(r.penalty7 ?? 0) > 0 ? `${fmt(r.penalty7!)}원` : ""}{(r.penaltyComm ?? 0) > 0 ? ` + 중개수수료 ${fmt(r.penaltyComm!)}원` : ""}
                       </div>
                     )}
@@ -581,43 +576,44 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+      <div className="flex justify-between items-start mb-4">
         <SectionTitle sub="">📦 퇴실정보</SectionTitle>
       </div>
 
       {/* Summary tab badges */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+      <div className="flex gap-2 mb-4 flex-wrap">
         {reasons.map(r => (
           <button key={r} onClick={() => setFilterReason(r)}
-            style={{ padding: "7px 16px", borderRadius: 8, border: filterReason === r ? `2px solid ${reasonColors[r]}` : "1px solid #E0E3E9", background: filterReason === r ? `${reasonColors[r]}10` : "#fff", color: filterReason === r ? reasonColors[r] : "#5F6577", fontWeight: 600, fontSize: 12.5, cursor: "pointer", fontFamily: "inherit" }}>
-            {r} <span style={{ fontWeight: 800 }}>{reasonCounts[r]}</span>
+            className="px-4 py-[7px] rounded-lg font-semibold text-[12.5px] cursor-pointer font-[inherit] transition-all hover:shadow-sm"
+            style={{ border: filterReason === r ? `2px solid ${reasonColors[r]}` : "1px solid #E0E3E9", background: filterReason === r ? `${reasonColors[r]}10` : "#fff", color: filterReason === r ? reasonColors[r] : "#5F6577" }}>
+            {r} <span className="font-extrabold">{reasonCounts[r]}</span>
           </button>
         ))}
       </div>
 
       {/* Search + Building filter */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="flex gap-2 mb-4 items-center flex-wrap">
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름, 건물, 호실, 연락처 검색..."
-          style={{ width: 240, padding: "8px 14px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
+          className="w-60 px-3.5 py-2 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
         <select value={filterBld} onChange={e => setFilterBld(e.target.value)}
-          style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontWeight: 600, fontFamily: "inherit" }}>
+          className="px-3 py-2 rounded-lg border-[1.5px] border-hm-input-border text-xs font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
           {buildingNames.map(b => <option key={b}>{b}</option>)}
         </select>
       </div>
 
       {/* Main Table */}
       {filtered.length === 0 ? (
-        <Card style={{ textAlign: "center", padding: 48, color: "#8F95A3" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📦</div>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>{search || filterBld !== "전체" || filterReason !== "전체" ? "검색 결과가 없습니다" : "퇴실 이력이 없습니다"}</div>
+        <Card className="text-center p-12 text-hm-text-muted">
+          <div className="text-[40px] mb-3">📦</div>
+          <div className="text-sm font-semibold">{search || filterBld !== "전체" || filterReason !== "전체" ? "검색 결과가 없습니다" : "퇴실 이력이 없습니다"}</div>
         </Card>
       ) : (
-        <Card style={{ overflow: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <Card className="overflow-auto">
+          <table className="w-full border-collapse text-xs">
             <thead>
-              <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+              <tr className="border-b-2 border-hm-border">
                 {["건물명","호실","입주자","연락처","퇴실일","정산금액","사유"].map((h, i) => (
-                  <th key={i} style={{ padding: "10px 8px", textAlign: i === 5 ? "right" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
+                  <th key={i} className={`px-2 py-2.5 text-[11px] font-bold text-hm-text-muted whitespace-nowrap ${i === 5 ? 'text-right' : 'text-left'}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -626,20 +622,17 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                 const rc = getReasonStyle(r.reason);
                 return (
                   <tr key={i} onClick={() => { setSelected(r); setViewMode("info"); }}
-                    style={{ borderBottom: "1px solid #F0F2F5", cursor: "pointer" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "#F9FAFB"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-                    <td style={{ padding: "10px 8px", fontWeight: 700 }}>{r.building}</td>
-                    <td style={{ padding: "10px 8px" }}>{r.room}</td>
-                    <td style={{ padding: "10px 8px", fontWeight: 700 }}>{r.name}</td>
-                    <td style={{ padding: "10px 8px", fontSize: 11, color: "#5F6577" }}>{r.phone || "-"}</td>
-                    <td style={{ padding: "10px 8px", fontSize: 11 }}>{r.moveOut ? r.moveOut.slice(2) : "-"}</td>
-                    <td style={{ padding: "10px 8px", textAlign: "right", fontWeight: 700,
-                      color: r.finalSettlement !== undefined ? (r.finalSettlement >= 0 ? "#059669" : "#DC2626") : "#8F95A3" }}>
+                    className="border-b border-[#F0F2F5] cursor-pointer hover:bg-hm-bg-hover transition-colors">
+                    <td className="px-2 py-2.5 font-bold">{r.building}</td>
+                    <td className="px-2 py-2.5">{r.room}</td>
+                    <td className="px-2 py-2.5 font-bold">{r.name}</td>
+                    <td className="px-2 py-2.5 text-[11px] text-hm-text-sub">{r.phone || "-"}</td>
+                    <td className="px-2 py-2.5 text-[11px]">{r.moveOut ? r.moveOut.slice(2) : "-"}</td>
+                    <td className={`px-2 py-2.5 text-right font-bold ${r.finalSettlement !== undefined ? (r.finalSettlement >= 0 ? 'text-hm-success' : 'text-hm-danger') : 'text-hm-text-muted'}`}>
                       {r.finalSettlement !== undefined ? (r.finalSettlement < 0 ? `-${fmt(Math.abs(r.finalSettlement))}` : fmt(r.finalSettlement)) : "-"}
                     </td>
-                    <td style={{ padding: "10px 8px" }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: rc.bg, color: rc.c, whiteSpace: "nowrap" }}>{r.reason}</span>
+                    <td className="px-2 py-2.5">
+                      <span className="text-[10px] font-bold px-2 py-[3px] rounded-[5px] whitespace-nowrap" style={{ background: rc.bg, color: rc.c }}>{r.reason}</span>
                     </td>
                   </tr>
                 );

@@ -3,7 +3,7 @@ import { asItems as staticAsItems } from '@/data';
 import { buildings } from '@/data/buildings';
 import { useIsMobile, fmt } from '@/utils';
 import { Card, SectionTitle, Table, StatusBadge, PhotoDropZone } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { initialStaffMembers } from '@/config';
 import { useLocalStorage } from '@/utils/useLocalStorage';
 
@@ -204,7 +204,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     const c = cfg[status];
     if (!c) return null;
     return (
-      <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+      <span className="text-[11px] font-bold px-2.5 py-[3px] rounded-md" style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
         {c.label}
       </span>
     );
@@ -218,20 +218,20 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} style={{ width: 40, height: 40, borderRadius: 10, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0 }}>‹</button>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>AS #{as_.id}</h1>
+        <div className="flex items-center gap-3 mb-5">
+          <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h1 className="text-lg font-extrabold text-hm-text">AS #{as_.id}</h1>
               <StatusBadge status={as_.status} />
               <ApprovalBadge status={as_.ownerApproval} />
             </div>
-            <p style={{ fontSize: 12, color: "#8F95A3", marginTop: 3 }}>{as_.building} {as_.room}호 · {as_.date}</p>
+            <p className="text-xs text-hm-text-muted mt-[3px]">{as_.building} {as_.room}호 · {as_.date}</p>
           </div>
         </div>
 
         {/* Status + Cost Quick Bar */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 16, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4 }}>
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
           {[
             ...(as_.priority === "높음" ? [{ label: "긴급도", value: "높음", bg: "#FEF2F2", color: "#DC2626" }] : []),
             { label: "유/무상", value: as_.paid, bg: as_.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: as_.paid === "유상" ? "#DC2626" : "#059669" },
@@ -239,47 +239,47 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             { label: "담당", value: as_.assignee, bg: "#EFF6FF", color: "#2563EB" },
             ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
-            <div key={i} style={{ flexShrink: 0, padding: "10px 14px", borderRadius: 10, background: chip.bg, textAlign: "center", minWidth: 80 }}>
-              <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 3 }}>{chip.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: chip.color }}>{chip.value}</div>
+            <div key={i} className="shrink-0 px-3.5 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
+              <div className="text-[10px] text-hm-text-muted font-semibold mb-[3px]">{chip.label}</div>
+              <div className="text-sm font-extrabold" style={{ color: chip.color }}>{chip.value}</div>
             </div>
           ))}
         </div>
 
         {/* Paid Alert Banner */}
         {as_.paid === "유상" && (
-          <div style={{ marginBottom: 16, padding: "14px 16px", borderRadius: 12, background: "#FEF2F2", border: "1.5px solid #FECACA", display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 28, flexShrink: 0 }}>💰</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#991B1B" }}>유상 수리 · 세입자 부담</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#DC2626" }}>{fmt(as_.cost)}<span style={{ fontSize: 12, fontWeight: 500 }}>원</span></div>
+          <div className="mb-4 px-4 py-3.5 rounded-xl bg-hm-danger-bg border-[1.5px] border-hm-danger-border flex items-center gap-3">
+            <span className="text-[28px] shrink-0">💰</span>
+            <div className="flex-1">
+              <div className="text-xs font-semibold text-[#991B1B]">유상 수리 · 세입자 부담</div>
+              <div className="text-xl font-extrabold text-hm-danger">{fmt(as_.cost)}<span className="text-xs font-medium">원</span></div>
             </div>
-            <div style={{ padding: "6px 12px", background: "#fff", borderRadius: 8, border: "1px solid #FECACA", textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: "#8F95A3" }}>업체</div>
-              <div style={{ fontSize: 12, fontWeight: 700 }}>{as_.vendor}</div>
+            <div className="px-3 py-1.5 bg-white rounded-lg border border-hm-danger-border text-center">
+              <div className="text-[9px] text-hm-text-muted">업체</div>
+              <div className="text-xs font-bold">{as_.vendor}</div>
             </div>
           </div>
         )}
 
         {/* Content Card */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 8 }}>📋 접수 내용</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1D23", marginBottom: 8, lineHeight: 1.4 }}>{as_.content || as_.title}</div>
-          <div style={{ fontSize: 13, color: "#5F6577", lineHeight: 1.7, padding: "12px 14px", background: "#F9FAFB", borderRadius: 10 }}>{as_.detail || as_.desc}</div>
-          <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-            <div style={{ padding: "8px 14px", background: "#F3F4F6", borderRadius: 8, fontSize: 12 }}>
-              🏷️ <span style={{ fontWeight: 700 }}>{as_.category || "기타"}</span>
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2">📋 접수 내용</div>
+          <div className="text-base font-bold text-hm-text mb-2 leading-snug">{as_.content || as_.title}</div>
+          <div className="text-[13px] text-hm-text-sub leading-relaxed px-3.5 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
+          <div className="flex gap-2 mt-3 flex-wrap">
+            <div className="px-3.5 py-2 bg-hm-bg rounded-lg text-xs">
+              🏷️ <span className="font-bold">{as_.category || "기타"}</span>
             </div>
-            <div style={{ padding: "8px 14px", background: "#F3F4F6", borderRadius: 8, fontSize: 12 }}>
-              🏪 <span style={{ fontWeight: 700 }}>{as_.vendor || "자체처리"}</span>
+            <div className="px-3.5 py-2 bg-hm-bg rounded-lg text-xs">
+              🏪 <span className="font-bold">{as_.vendor || "자체처리"}</span>
             </div>
           </div>
         </Card>
 
         {/* Before/After Photos */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 12 }}>📸 현장 사진</div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }}>
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-3">📸 현장 사진</div>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5`}>
             <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="#DC2626"
               onAdd={(dataUrls: string[]) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(pi: number) => setAsBeforePhotos(prev => prev.filter((_, i) => i !== pi))} />
@@ -290,25 +290,25 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         </Card>
 
         {/* Timeline */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 12 }}>🔄 처리 과정</div>
-          <div style={{ position: "relative", paddingLeft: 24 }}>
-            <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "#E5E7EB" }} />
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-3">🔄 처리 과정</div>
+          <div className="relative pl-6">
+            <div className="absolute left-[9px] top-2 bottom-2 w-0.5 bg-gray-200" />
             {steps.map((step, i) => {
               const ac = actionColors[step.action] || { bg: "#F3F4F6", color: "#5F6577", icon: "📌" };
               const isLast = i === steps.length - 1;
               return (
-                <div key={i} style={{ position: "relative", marginBottom: i < steps.length - 1 ? 16 : 0 }}>
-                  <div style={{ position: "absolute", left: -20, top: 6, width: 16, height: 16, borderRadius: "50%", background: isLast ? ac.color : "#fff", border: `2.5px solid ${ac.color}`, zIndex: 1 }} />
-                  <div style={{ padding: "10px 12px", background: isLast ? ac.bg : "#fff", borderRadius: 10, border: `1px solid ${isLast ? ac.color + "40" : "#E8ECF0"}` }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 14 }}>{ac.icon}</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: ac.color }}>{step.action}</span>
+                <div key={i} className={`relative ${i < steps.length - 1 ? 'mb-4' : ''}`}>
+                  <div className="absolute w-4 h-4 rounded-full z-[1]" style={{ left: -20, top: 6, background: isLast ? ac.color : "#fff", border: `2.5px solid ${ac.color}` }} />
+                  <div className="px-3 py-2.5 rounded-[10px]" style={{ background: isLast ? ac.bg : "#fff", border: `1px solid ${isLast ? ac.color + "40" : "#E8ECF0"}` }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm">{ac.icon}</span>
+                        <span className="text-[13px] font-bold" style={{ color: ac.color }}>{step.action}</span>
                       </div>
-                      <span style={{ fontSize: 11, color: "#B0B5C1" }}>{step.date}</span>
+                      <span className="text-[11px] text-[#B0B5C1]">{step.date}</span>
                     </div>
-                    <div style={{ fontSize: 12.5, color: "#3D4251", lineHeight: 1.6 }}>{step.note}</div>
+                    <div className="text-[12.5px] text-[#3D4251] leading-relaxed">{step.note}</div>
                   </div>
                 </div>
               );
@@ -317,7 +317,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Status Update Buttons */}
           {as_.status !== "완료" && canEdit && (
-            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+            <div className="flex gap-2 mt-4">
               {as_.status === "대기" && (
                 <button onClick={() => {
                   updateLocalItem(as_.id, item => ({
@@ -332,13 +332,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                     steps: [...(prev.steps || []), { date: today, action: "진행시작", note: "AS 처리 진행 시작" }],
                   }) : null);
                 }}
-                  style={{ flex: 1, padding: "14px", borderRadius: 10, border: "2px solid #EA580C", background: "#FFF7ED", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#EA580C", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-warning bg-hm-warning-bg cursor-pointer text-[13px] font-bold text-hm-warning font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ▶️ 진행중으로 변경
                 </button>
               )}
               {(as_.status === "대기" || as_.status === "진행중") && (
                 <button onClick={() => setShowStatusModal("완료")}
-                  style={{ flex: 1, padding: "14px", borderRadius: 10, border: "2px solid #059669", background: "#ECFDF5", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#059669", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-success bg-hm-success-bg cursor-pointer text-[13px] font-bold text-hm-success font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ✅ 완료 처리
                 </button>
               )}
@@ -347,7 +347,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Status change for static items - just shows button but no-op with note */}
           {as_.status !== "완료" && !canEdit && (
-            <button style={{ width: "100%", marginTop: 16, padding: "14px", borderRadius: 10, border: "2px dashed #3B82F6", background: "#EFF6FF", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#2563EB", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <button className="w-full mt-4 py-3.5 rounded-[10px] border-2 border-dashed border-hm-blue bg-hm-blue-bg cursor-pointer text-[13px] font-bold text-hm-blue-dark font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
               ⏭️ 다음 단계 기록하기
             </button>
           )}
@@ -355,34 +355,34 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Complete Status Modal */}
         {showStatusModal === "완료" && canEdit && (
-          <Card style={{ marginBottom: 16, border: "2px solid #059669" }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginBottom: 12 }}>✅ 완료 처리</div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <Card className="mb-4 border-2 border-hm-success">
+            <div className="text-xs font-bold text-hm-success mb-3">✅ 완료 처리</div>
+            <div className="flex gap-2 mb-3">
               {["무상", "유상"].map(p => (
                 <button key={p} onClick={() => setCompletePaid(p)}
-                  style={{ flex: 1, padding: "10px", borderRadius: 8, border: completePaid === p ? `2px solid ${p === "유상" ? "#DC2626" : "#059669"}` : "1.5px solid #E0E3E9", background: completePaid === p ? (p === "유상" ? "#FEF2F2" : "#ECFDF5") : "#fff", color: completePaid === p ? (p === "유상" ? "#DC2626" : "#059669") : "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  className={`flex-1 py-2.5 rounded-lg font-bold text-[13px] cursor-pointer font-[inherit] transition-all ${completePaid === p ? (p === "유상" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-success bg-hm-success-bg text-hm-success') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
                   {p}
                 </button>
               ))}
             </div>
             {completePaid === "유상" && (
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>비용 (원)</div>
+              <div className="mb-3">
+                <div className="text-[11px] font-bold text-hm-text-sub mb-1">비용 (원)</div>
                 <input value={completeCost} onChange={e => setCompleteCost(e.target.value)} placeholder="85000" type="number"
-                  style={{ ...inputStyle, width: "100%" }} />
+                  className={inputClassName} />
               </div>
             )}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>처리업체</div>
+            <div className="mb-3">
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">처리업체</div>
               <select value={completeVendor} onChange={e => setCompleteVendor(e.target.value)}
-                style={{ ...inputStyle, width: "100%" }}>
+                className={inputClassName}>
                 <option value="">자체처리</option>
                 {vendors.map((v, i) => <option key={i} value={v.name}>{v.name} ({v.specialty})</option>)}
               </select>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="flex gap-2">
               <button onClick={() => setShowStatusModal(null)}
-                style={{ flex: 1, padding: "10px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className="flex-1 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                 취소
               </button>
               <button onClick={() => {
@@ -409,7 +409,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                 setCompleteCost("");
                 setCompleteVendor("");
               }}
-                style={{ flex: 1, padding: "10px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className="flex-1 py-2.5 rounded-lg border-none bg-hm-success text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                 완료 처리
               </button>
             </div>
@@ -418,35 +418,35 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Owner Approval Section */}
         {as_.status !== "완료" && canEdit && (
-          <Card style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#D97706", letterSpacing: "0.05em" }}>🏠 건물주 승인</div>
+          <Card className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-[10px] font-bold text-[#D97706] tracking-wider">🏠 건물주 승인</div>
               {as_.ownerApproval && <ApprovalBadge status={as_.ownerApproval} />}
             </div>
             {!as_.ownerApproval && !showApprovalForm && (
               <button onClick={() => setShowApprovalForm(true)}
-                style={{ width: "100%", padding: "12px", borderRadius: 10, border: "1.5px solid #FDE68A", background: "#FFFBEB", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#D97706", fontFamily: "inherit" }}>
+                className="w-full py-3 rounded-[10px] border-[1.5px] border-[#FDE68A] bg-[#FFFBEB] cursor-pointer text-[13px] font-bold text-[#D97706] font-[inherit] hover:shadow-md transition-all">
                 📩 건물주 승인 요청
               </button>
             )}
             {showApprovalForm && !as_.ownerApproval && (
               <div>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>예상 비용 (원)</div>
+                <div className="mb-2.5">
+                  <div className="text-[11px] font-bold text-hm-text-sub mb-1">예상 비용 (원)</div>
                   <input value={approvalCost} onChange={e => setApprovalCost(e.target.value)} placeholder="예상 수리 비용" type="number"
-                    style={{ ...inputStyle, width: "100%" }} />
+                    className={inputClassName} />
                 </div>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>처리업체</div>
+                <div className="mb-2.5">
+                  <div className="text-[11px] font-bold text-hm-text-sub mb-1">처리업체</div>
                   <select value={approvalVendor} onChange={e => setApprovalVendor(e.target.value)}
-                    style={{ ...inputStyle, width: "100%" }}>
+                    className={inputClassName}>
                     <option value="">선택</option>
                     {vendors.map((v, i) => <option key={i} value={v.name}>{v.name} ({v.specialty})</option>)}
                   </select>
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="flex gap-2">
                   <button onClick={() => setShowApprovalForm(false)}
-                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                     취소
                   </button>
                   <button onClick={() => {
@@ -470,24 +470,24 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                     setApprovalCost("");
                     setApprovalVendor("");
                   }}
-                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "none", background: "#D97706", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 py-2.5 rounded-lg border-none bg-[#D97706] text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     승인 요청
                   </button>
                 </div>
               </div>
             )}
             {as_.ownerApproval === "pending" && (
-              <div style={{ padding: "12px 14px", background: "#FFFBEB", borderRadius: 8, border: "1px solid #FDE68A", fontSize: 12, color: "#92400E" }}>
+              <div className="px-3.5 py-3 bg-[#FFFBEB] rounded-lg border border-[#FDE68A] text-xs text-[#92400E]">
                 건물주 승인 대기 중입니다{(as_.estimatedCost ?? 0) > 0 ? ` · 예상비용 ${fmt(as_.estimatedCost!)}원` : ""}
               </div>
             )}
             {as_.ownerApproval === "approved" && (
-              <div style={{ padding: "12px 14px", background: "#ECFDF5", borderRadius: 8, border: "1px solid #A7F3D0", fontSize: 12, color: "#065F46" }}>
+              <div className="px-3.5 py-3 bg-hm-success-bg rounded-lg border border-hm-success-border text-xs text-[#065F46]">
                 건물주가 승인했습니다. 진행해 주세요.
               </div>
             )}
             {as_.ownerApproval === "rejected" && (
-              <div style={{ padding: "12px 14px", background: "#FEF2F2", borderRadius: 8, border: "1px solid #FECACA", fontSize: 12, color: "#991B1B" }}>
+              <div className="px-3.5 py-3 bg-hm-danger-bg rounded-lg border border-hm-danger-border text-xs text-[#991B1B]">
                 건물주가 반려했습니다. 재검토가 필요합니다.
               </div>
             )}
@@ -495,29 +495,29 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         )}
 
         {/* Quick Action Buttons */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-          <button style={{ padding: "16px", borderRadius: 12, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <span style={{ fontSize: 24 }}>📞</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>세입자 연락</span>
+        <div className="grid grid-cols-2 gap-2.5 mb-4">
+          <button className="p-4 rounded-xl border border-hm-input-border bg-white cursor-pointer font-[inherit] flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow">
+            <span className="text-2xl">📞</span>
+            <span className="text-xs font-bold text-hm-text">세입자 연락</span>
           </button>
-          <button style={{ padding: "16px", borderRadius: 12, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <span style={{ fontSize: 24 }}>📸</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>사진 촬영</span>
+          <button className="p-4 rounded-xl border border-hm-input-border bg-white cursor-pointer font-[inherit] flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow">
+            <span className="text-2xl">📸</span>
+            <span className="text-xs font-bold text-hm-text">사진 촬영</span>
           </button>
-          <button style={{ padding: "16px", borderRadius: 12, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <span style={{ fontSize: 24 }}>💰</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>견적 입력</span>
+          <button className="p-4 rounded-xl border border-hm-input-border bg-white cursor-pointer font-[inherit] flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow">
+            <span className="text-2xl">💰</span>
+            <span className="text-xs font-bold text-hm-text">견적 입력</span>
           </button>
-          <button style={{ padding: "16px", borderRadius: 12, border: as_.status !== "완료" ? "2px solid #10B981" : "1px solid #E0E3E9", background: as_.status !== "완료" ? "#ECFDF5" : "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <span style={{ fontSize: 24 }}>✅</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: as_.status !== "완료" ? "#059669" : "#1A1D23" }}>처리 완료</span>
+          <button className={`p-4 rounded-xl cursor-pointer font-[inherit] flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow ${as_.status !== "완료" ? 'border-2 border-[#10B981] bg-hm-success-bg' : 'border border-hm-input-border bg-white'}`}>
+            <span className="text-2xl">✅</span>
+            <span className={`text-xs font-bold ${as_.status !== "완료" ? 'text-hm-success' : 'text-hm-text'}`}>처리 완료</span>
           </button>
         </div>
 
         {/* Summary Info */}
         <Card>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 10 }}>ℹ️ 요약 정보</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">ℹ️ 요약 정보</div>
+          <div className="grid grid-cols-2">
             {[
               { label: "접수일", value: as_.date },
               { label: "건물/호실", value: `${as_.building} ${as_.room}호` },
@@ -528,9 +528,9 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
               { label: "비용", value: as_.cost > 0 ? `${fmt(as_.cost)}원` : "—", highlight: as_.cost > 0 },
               { label: "처리업체", value: as_.vendor || "자체처리" },
             ].map((item, i) => (
-              <div key={i} style={{ padding: "10px 12px", borderBottom: "1px solid #F0F2F5", borderRight: i % 2 === 0 ? "1px solid #F0F2F5" : "none" }}>
-                <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>{item.label}</div>
-                <div style={{ fontSize: 13, fontWeight: item.highlight ? 700 : 600, color: item.highlight ? "#DC2626" : "#1A1D23" }}>{item.value}</div>
+              <div key={i} className={`px-3 py-2.5 border-b border-[#F0F2F5] ${i % 2 === 0 ? 'border-r border-r-[#F0F2F5]' : ''}`}>
+                <div className="text-[10px] text-hm-text-muted mb-0.5">{item.label}</div>
+                <div className={`text-[13px] ${item.highlight ? 'font-bold text-hm-danger' : 'font-semibold text-hm-text'}`}>{item.value}</div>
               </div>
             ))}
           </div>
@@ -543,51 +543,51 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
   if (showNewForm) {
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button onClick={() => setShowNewForm(false)} style={{ width: 40, height: 40, borderRadius: 10, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0 }}>‹</button>
-          <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>새 AS 접수</h1>
+        <div className="flex items-center gap-3 mb-5">
+          <button onClick={() => setShowNewForm(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <h1 className="text-lg font-extrabold text-hm-text">새 AS 접수</h1>
         </div>
 
-        <Card style={{ marginBottom: 16 }}>
+        <Card className="mb-4">
           {/* Building */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>건물 *</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">건물 *</div>
             <select value={newBuilding} onChange={e => setNewBuilding(e.target.value)}
-              style={{ ...inputStyle, width: "100%" }}>
+              className={inputClassName}>
               <option value="">선택하세요</option>
               {buildingNames.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
 
           {/* Room */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>호실</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">호실</div>
             <input value={newRoom} onChange={e => setNewRoom(e.target.value)} placeholder="예: 301"
-              style={{ ...inputStyle, width: "100%" }} />
+              className={inputClassName} />
           </div>
 
           {/* Description */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>설명 *</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">설명 *</div>
             <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="AS 내용을 입력하세요 (첫 줄이 제목으로 사용됩니다)" rows={4}
-              style={{ ...inputStyle, width: "100%", resize: "vertical", minHeight: 80 }} />
+              className={`${inputClassName} resize-y min-h-[80px]`} />
           </div>
 
           {/* Photos */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>사진</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">사진</div>
             <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="#3B82F6"
               onAdd={(dataUrls: string[]) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
               onRemove={(pi: number) => setNewPhotos(prev => prev.filter((_, i) => i !== pi))} />
           </div>
 
           {/* Priority */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>긴급도</div>
-            <div style={{ display: "flex", gap: 8 }}>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">긴급도</div>
+            <div className="flex gap-2">
               {["일반", "긴급"].map(p => (
                 <button key={p} onClick={() => setNewPriority(p)}
-                  style={{ flex: 1, padding: "10px", borderRadius: 8, border: newPriority === p ? `2px solid ${p === "긴급" ? "#DC2626" : "#3B82F6"}` : "1.5px solid #E0E3E9", background: newPriority === p ? (p === "긴급" ? "#FEF2F2" : "#EFF6FF") : "#fff", color: newPriority === p ? (p === "긴급" ? "#DC2626" : "#2563EB") : "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  className={`flex-1 py-2.5 rounded-lg font-bold text-[13px] cursor-pointer font-[inherit] transition-all ${newPriority === p ? (p === "긴급" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
                   {p === "긴급" ? "🚨 " : ""}{p}
                 </button>
               ))}
@@ -595,10 +595,10 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Source */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>접수 경로</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">접수 경로</div>
             <select value={newSource} onChange={e => setNewSource(e.target.value)}
-              style={{ ...inputStyle, width: "100%" }}>
+              className={inputClassName}>
               <option value="사무실접수">사무실접수</option>
               <option value="임차인접수">임차인접수</option>
               <option value="순회발견">순회발견</option>
@@ -606,23 +606,23 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Assignee */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>담당자</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1">담당자</div>
             <select value={newAssignee} onChange={e => setNewAssignee(e.target.value)}
-              style={{ ...inputStyle, width: "100%" }}>
+              className={inputClassName}>
               <option value="">선택하세요</option>
               {allStaff.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
 
           {/* Submit */}
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="flex gap-2">
             <button onClick={() => setShowNewForm(false)}
-              style={{ flex: 1, padding: "14px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              className="flex-1 py-3.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={handleSubmitAS} disabled={!newBuilding || !newDesc.trim()}
-              style={{ flex: 2, padding: "14px", borderRadius: 10, border: "none", background: newBuilding && newDesc.trim() ? "#3B82F6" : "#D1D5DB", color: "#fff", fontWeight: 700, fontSize: 13, cursor: newBuilding && newDesc.trim() ? "pointer" : "default", fontFamily: "inherit" }}>
+              className={`flex-[2] py-3.5 rounded-[10px] border-none text-white font-bold text-[13px] font-[inherit] transition-opacity ${newBuilding && newDesc.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
               접수하기
             </button>
           </div>
@@ -635,47 +635,47 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
   if (showVendorMgmt) {
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button onClick={() => setShowVendorMgmt(false)} style={{ width: 40, height: 40, borderRadius: 10, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0 }}>‹</button>
-          <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>🏪 협력업체 관리</h1>
+        <div className="flex items-center gap-3 mb-5">
+          <button onClick={() => setShowVendorMgmt(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <h1 className="text-lg font-extrabold text-hm-text">🏪 협력업체 관리</h1>
         </div>
 
         {/* Add/Edit Vendor Form */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 10 }}>
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">
             {editingVendorIdx !== null ? "✏️ 업체 수정" : "➕ 업체 추가"}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10, marginBottom: 12 }}>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5 mb-3`}>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>업체명 *</div>
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">업체명 *</div>
               <input value={vendorForm.name} onChange={e => setVendorForm(p => ({ ...p, name: e.target.value }))} placeholder="업체명"
-                style={{ ...inputStyle, width: "100%" }} />
+                className={inputClassName} />
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>연락처</div>
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">연락처</div>
               <input value={vendorForm.phone} onChange={e => setVendorForm(p => ({ ...p, phone: e.target.value }))} placeholder="010-0000-0000"
-                style={{ ...inputStyle, width: "100%" }} />
+                className={inputClassName} />
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>전문분야</div>
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">전문분야</div>
               <input value={vendorForm.specialty} onChange={e => setVendorForm(p => ({ ...p, specialty: e.target.value }))} placeholder="예: 보일러, 전기, 배관"
-                style={{ ...inputStyle, width: "100%" }} />
+                className={inputClassName} />
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>비고</div>
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">비고</div>
               <input value={vendorForm.note} onChange={e => setVendorForm(p => ({ ...p, note: e.target.value }))} placeholder="메모"
-                style={{ ...inputStyle, width: "100%" }} />
+                className={inputClassName} />
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="flex gap-2">
             {editingVendorIdx !== null && (
               <button onClick={() => { setEditingVendorIdx(null); setVendorForm({ name: "", phone: "", specialty: "", note: "" }); }}
-                style={{ padding: "10px 20px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className="px-5 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                 취소
               </button>
             )}
             <button onClick={handleSaveVendor} disabled={!vendorForm.name.trim()}
-              style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: vendorForm.name.trim() ? "#3B82F6" : "#D1D5DB", color: "#fff", fontWeight: 700, fontSize: 12, cursor: vendorForm.name.trim() ? "pointer" : "default", fontFamily: "inherit" }}>
+              className={`px-5 py-2.5 rounded-lg border-none text-white font-bold text-xs font-[inherit] transition-opacity ${vendorForm.name.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
               {editingVendorIdx !== null ? "수정" : "추가"}
             </button>
           </div>
@@ -683,30 +683,30 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Vendor List */}
         <Card>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", letterSpacing: "0.05em", marginBottom: 10 }}>📋 등록된 업체 ({vendors.length})</div>
+          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">📋 등록된 업체 ({vendors.length})</div>
           {vendors.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "30px 0", color: "#B0B5C1", fontSize: 13 }}>등록된 협력업체가 없습니다</div>
+            <div className="text-center py-[30px] text-[#B0B5C1] text-[13px]">등록된 협력업체가 없습니다</div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="flex flex-col gap-2">
               {vendors.map((v, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "#F9FAFB", borderRadius: 10, border: "1px solid #E8ECF0" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1A1D23" }}>{v.name}</span>
-                      {v.specialty && <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB" }}>{v.specialty}</span>}
+                <div key={i} className="flex items-center justify-between px-3.5 py-3 bg-hm-bg-hover rounded-[10px] border border-hm-border">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-bold text-hm-text">{v.name}</span>
+                      {v.specialty && <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-hm-blue-bg text-hm-blue-dark">{v.specialty}</span>}
                     </div>
-                    <div style={{ fontSize: 11, color: "#8F95A3" }}>
+                    <div className="text-[11px] text-hm-text-muted">
                       {v.phone && <span>📞 {v.phone}</span>}
-                      {v.note && <span style={{ marginLeft: 8 }}>· {v.note}</span>}
+                      {v.note && <span className="ml-2">· {v.note}</span>}
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 4 }}>
+                  <div className="flex gap-1">
                     <button onClick={() => { setEditingVendorIdx(i); setVendorForm({ ...v }); }}
-                      style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#3B82F6" }}>
+                      className="px-2.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-blue hover:bg-hm-bg-hover transition-colors">
                       수정
                     </button>
                     <button onClick={() => { if (confirm("삭제하시겠습니까?")) setVendors(prev => prev.filter((_, idx) => idx !== i)); }}
-                      style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#DC2626" }}>
+                      className="px-2.5 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-danger hover:opacity-80 transition-opacity">
                       삭제
                     </button>
                   </div>
@@ -725,77 +725,79 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       <SectionTitle sub="시설물 유지보수 관리">🔧 AS 관리</SectionTitle>
 
       {/* Top Action Bar */}
-      <div style={{ display: "flex", gap: 8, marginBottom: isMobile ? 10 : 16, flexWrap: "wrap" }}>
+      <div className={`flex gap-2 ${isMobile ? 'mb-2.5' : 'mb-4'} flex-wrap`}>
         <button onClick={() => setShowNewForm(true)}
-          style={{ padding: "10px 20px", borderRadius: 10, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, boxShadow: "0 2px 8px rgba(59,130,246,0.3)" }}>
+          className="px-5 py-2.5 rounded-[10px] border-none bg-hm-blue text-white font-bold text-[13px] cursor-pointer font-[inherit] flex items-center gap-1.5 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] transition-shadow">
           ➕ 새 AS 접수
         </button>
         <button onClick={() => setShowVendorMgmt(true)}
-          style={{ padding: "10px 20px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-hm-bg-hover transition-colors">
           🏪 협력업체 관리
-          {vendors.length > 0 && <span style={{ background: "#EFF6FF", color: "#3B82F6", padding: "1px 7px", borderRadius: 10, fontSize: 11, fontWeight: 800 }}>{vendors.length}</span>}
+          {vendors.length > 0 && <span className="bg-hm-blue-bg text-hm-blue px-[7px] py-[1px] rounded-[10px] text-[11px] font-extrabold">{vendors.length}</span>}
         </button>
       </div>
 
       {/* Status Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 6 : 12, marginBottom: isMobile ? 10 : 20 }}>
+      <div className={`grid ${isMobile ? 'grid-cols-2 gap-1.5' : 'grid-cols-4 gap-3'} ${isMobile ? 'mb-2.5' : 'mb-5'}`}>
         {[
           { label: "대기", count: allAsItems.filter(a => a.status === "대기").length, color: "#4F46E5", bg: "#F0F4FF" },
           { label: "진행중", count: allAsItems.filter(a => a.status === "진행중").length, color: "#EA580C", bg: "#FFF7ED" },
           { label: "완료", count: allAsItems.filter(a => a.status === "완료").length, color: "#059669", bg: "#ECFDF5" },
           { label: "유상", count: paidCount, sub: `${fmt(paidCost)}원`, color: "#DC2626", bg: "#FEF2F2" },
         ].map((s, i) => (
-          <Card key={i} onClick={() => setTab(s.label === "유상" ? "전체" : s.label)} style={{ background: tab === s.label ? s.bg : "#fff", border: tab === s.label ? `2px solid ${s.color}` : "1px solid #E8ECF0", padding: isMobile ? "8px 10px" : undefined, textAlign: "center", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ fontSize: isMobile ? 10 : 11, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
-            <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 800, color: s.color }}>{s.count}</div>
-            {s.sub && <div style={{ fontSize: isMobile ? 10 : 11, color: s.color, fontWeight: 600, marginTop: 2 }}>{s.sub}</div>}
+          <Card key={i} onClick={() => setTab(s.label === "유상" ? "전체" : s.label)}
+            className={`text-center flex flex-col justify-center items-center cursor-pointer transition-all hover:shadow-md ${isMobile ? 'px-2.5 py-2' : ''}`}
+            style={{ background: tab === s.label ? s.bg : "#fff", border: tab === s.label ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+            <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} text-hm-text-muted font-semibold mb-1`}>{s.label}</div>
+            <div className={`${isMobile ? 'text-[22px]' : 'text-[28px]'} font-extrabold`} style={{ color: s.color }}>{s.count}</div>
+            {s.sub && <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} font-semibold mt-0.5`} style={{ color: s.color }}>{s.sub}</div>}
           </Card>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 8, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 2 }}>
+      <div className="flex gap-1 mb-2 overflow-x-auto pb-0.5" style={{ WebkitOverflowScrolling: "touch" }}>
         {assigneesAS.map(a => (
           <button key={a} onClick={() => setFilterAssigneeAS(a)}
-            style={{ flexShrink: 0, padding: "6px 12px", borderRadius: 8, border: filterAssigneeAS === a ? "2px solid #10B981" : "1.5px solid #E0E3E9", background: filterAssigneeAS === a ? "#10B981" : "#fff", color: filterAssigneeAS === a ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
-            {a} {a !== "전체" && <span style={{ fontSize: 10, opacity: 0.7 }}>({myAS.filter(item => item.assignee === a).length})</span>}
+            className={`shrink-0 px-3 py-1.5 rounded-lg font-bold text-[11px] cursor-pointer font-[inherit] transition-all ${filterAssigneeAS === a ? 'border-2 border-[#10B981] bg-[#10B981] text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+            {a} {a !== "전체" && <span className="text-[10px] opacity-70">({myAS.filter(item => item.assignee === a).length})</span>}
           </button>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 4, marginBottom: isMobile ? 8 : 12, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 2 }}>
+      <div className={`flex gap-1 ${isMobile ? 'mb-2' : 'mb-3'} overflow-x-auto pb-0.5`} style={{ WebkitOverflowScrolling: "touch" }}>
         {statuses.map(s => (
           <button key={s} onClick={() => setTab(s)}
-            style={{ flexShrink: 0, padding: "6px 12px", borderRadius: 7, border: tab === s ? "2px solid #3B82F6" : "1px solid #E0E3E9", background: tab === s ? "#EFF6FF" : "#fff", color: tab === s ? "#2563EB" : "#5F6577", fontWeight: 600, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+            className={`shrink-0 px-3 py-1.5 rounded-[7px] font-semibold text-[11px] cursor-pointer font-[inherit] transition-all ${tab === s ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark' : 'border border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
             {s}
           </button>
         ))}
-        <span style={{ flexShrink: 0, fontSize: 11, color: "#8F95A3", padding: "6px 8px" }}>비용 {fmt(totalCost)}원</span>
+        <span className="shrink-0 text-[11px] text-hm-text-muted px-2 py-1.5">비용 {fmt(totalCost)}원</span>
       </div>
 
       {/* Mobile: Card List / Desktop: Table */}
       {isMobile ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {filtered.length === 0 && (
-            <div style={{ textAlign: "center", padding: "40px 0", color: "#B0B5C1", fontSize: 13 }}>해당 조건의 AS 내역이 없습니다</div>
+            <div className="text-center py-10 text-[#B0B5C1] text-[13px]">해당 조건의 AS 내역이 없습니다</div>
           )}
           {filtered.map((a, i) => (
-            <Card key={a.id || i} onClick={() => setSelectedAS(a)} style={{ cursor: "pointer", padding: "12px 14px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <Card key={a.id || i} onClick={() => setSelectedAS(a)} className="cursor-pointer px-3.5 py-3 hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-1.5">
+                <div className="flex items-center gap-1.5">
                   <StatusBadge status={a.status} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23" }}>{a.content || a.title}</span>
+                  <span className="text-[13px] font-bold text-hm-text">{a.content || a.title}</span>
                 </div>
-                <span style={{ fontSize: 11, color: "#B0B5C1", flexShrink: 0 }}>{a.date}</span>
+                <span className="text-[11px] text-[#B0B5C1] shrink-0">{a.date}</span>
               </div>
-              <div style={{ fontSize: 12, color: "#5F6577", marginBottom: 8 }}>
+              <div className="text-xs text-hm-text-sub mb-2">
                 {a.building} {a.room}호 · {a.category || "기타"}
               </div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: a.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: a.paid === "유상" ? "#DC2626" : "#059669" }}>{a.paid}</span>
-                {a.cost > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: "#DC2626" }}>{fmt(a.cost)}원</span>}
-                {(a.priority === "높음" || a.priority === "긴급") && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626", fontWeight: 600 }}>{a.priority}</span>}
+              <div className="flex gap-1.5 flex-wrap items-center">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{a.paid}</span>
+                {a.cost > 0 && <span className="text-[11px] font-bold text-hm-danger">{fmt(a.cost)}원</span>}
+                {(a.priority === "높음" || a.priority === "긴급") && <span className="text-[10px] px-2 py-0.5 rounded bg-hm-danger-bg text-hm-danger font-semibold">{a.priority}</span>}
                 {a.ownerApproval && <ApprovalBadge status={a.ownerApproval} />}
-                <span style={{ fontSize: 10, color: "#8F95A3", marginLeft: "auto" }}>{a.assignee} · {(a.steps || []).length}단계</span>
+                <span className="text-[10px] text-hm-text-muted ml-auto">{a.assignee} · {(a.steps || []).length}단계</span>
               </div>
             </Card>
           ))}
@@ -806,26 +808,26 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             columns={[
               { label: "접수일", key: "date" },
               { label: "건물", render: (r: ASItemRecord) => `${r.building} ${r.room}호` },
-              { label: "분류", render: (r: ASItemRecord) => <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "#F3F4F6", fontWeight: 600 }}>{r.category || "기타"}</span> },
+              { label: "분류", render: (r: ASItemRecord) => <span className="text-[11px] px-2 py-0.5 rounded bg-hm-bg font-semibold">{r.category || "기타"}</span> },
               { label: "내용", render: (r: ASItemRecord) => r.content || r.title },
-              { label: "유/무상", render: (r: ASItemRecord) => <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: r.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: r.paid === "유상" ? "#DC2626" : "#059669" }}>{r.paid}</span> },
-              { label: "비용", align: "right" as const, render: (r: ASItemRecord) => r.cost > 0 ? <span style={{ fontWeight: 700 }}>{fmt(r.cost)}원</span> : <span style={{ color: "#ccc" }}>—</span> },
+              { label: "유/무상", render: (r: ASItemRecord) => <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${r.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{r.paid}</span> },
+              { label: "비용", align: "right" as const, render: (r: ASItemRecord) => r.cost > 0 ? <span className="font-bold">{fmt(r.cost)}원</span> : <span className="text-gray-300">—</span> },
               { label: "긴급도", render: (r: ASItemRecord) => (r.priority === "높음" || r.priority === "긴급") ? <StatusBadge status={r.priority} /> : null },
               { label: "담당", key: "assignee" },
               { label: "승인", render: (r: ASItemRecord) => <ApprovalBadge status={r.ownerApproval} /> },
-              { label: "진행", render: (r: ASItemRecord) => <span style={{ fontSize: 11, color: "#8F95A3" }}>{(r.steps || []).length}단계</span> },
+              { label: "진행", render: (r: ASItemRecord) => <span className="text-[11px] text-hm-text-muted">{(r.steps || []).length}단계</span> },
               { label: "상태", render: (r: ASItemRecord) => <StatusBadge status={r.status} /> },
             ]}
             data={filtered}
             onRowClick={(row: ASItemRecord) => setSelectedAS(row)}
           />
-          <div style={{ marginTop: 10, fontSize: 11, color: "#B0B5C1", textAlign: "center" }}>행을 클릭하면 상세 화면으로 이동합니다</div>
+          <div className="mt-2.5 text-[11px] text-[#B0B5C1] text-center">행을 클릭하면 상세 화면으로 이동합니다</div>
         </Card>
       )}
 
       {/* Mobile FAB - New AS */}
       {isMobile && (
-        <button onClick={() => setShowNewForm(true)} style={{ position: "fixed", bottom: 24, right: 24, width: 56, height: 56, borderRadius: "50%", background: "#3B82F6", color: "#fff", border: "none", fontSize: 28, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 14px rgba(59,130,246,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>+</button>
+        <button onClick={() => setShowNewForm(true)} className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-hm-blue text-white border-none text-[28px] font-bold cursor-pointer shadow-[0_4px_14px_rgba(59,130,246,0.4)] flex items-center justify-center z-[100] hover:shadow-[0_6px_20px_rgba(59,130,246,0.5)] transition-shadow">+</button>
       )}
     </div>
   );

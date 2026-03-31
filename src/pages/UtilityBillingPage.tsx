@@ -306,7 +306,6 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
   // 호실 마스터(elecNo/gasNo) + 하드코딩 맵을 합쳐 동적 매핑 빌드
   const buildElecMap = (): Record<string, any[]> => {
     const map: Record<string, any[]> = { ...elecCustomerMap };
-    // buildingData + roomMasterData에서 호실별 전기고객번호 추출
     activeTenants.forEach((t: Tenant) => {
       const key = `${t.building}_${t.room}`;
       const rm: Record<string, any> = { ...(roomMasterData[key] || {}) };
@@ -347,7 +346,6 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
         const headers = rows[0] || [];
 
         if (type === "elec") {
-          // 헤더명 기반 자동 감지 (한전빌링사 엑셀 호환)
           const iCust = findCol(headers, ["고객번호"]);
           const iStart = findCol(headers, ["사용기간 시작"]);
           const iEnd = findCol(headers, ["사용기간 끝"]);
@@ -364,7 +362,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
           const dynElecMap = buildElecMap();
           const prevReadings = loadPrevReadings("elec");
-          const newReadings: Record<string, any> = {}; // 이번 달 검침값 저장용
+          const newReadings: Record<string, any> = {};
           let billingYM = "";
 
           rows.forEach((row, idx) => {
@@ -381,16 +379,14 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             const usage = parseInt(row[iUsage >= 0 ? iUsage : 76]) || 0;
             if (!billingYM && iMonth >= 0) billingYM = String(row[iMonth] || "");
 
-            // 이번달 당월지침 저장 (다음달 전월지침으로 사용)
             newReadings[custNo] = { reading: curReading, month: billingYM };
 
             targets.forEach((t: any) => {
               const key = `${t.b}_${t.r}`;
-              // 전월지침: ① 체인(퇴실검침/직전청구) → ② 엑셀값 → ③ 레거시 저장값
               const chainReading = getLastReading(key, "elec");
               let prevReading = parseInt(row[iPrev >= 0 ? iPrev : 74]) || 0;
               if (chainReading && chainReading.reading) {
-                prevReading = chainReading.reading; // 퇴실검침 or 직전 청구서 값 우선
+                prevReading = chainReading.reading;
               } else if (!prevReading && prevReadings[custNo]) {
                 prevReading = prevReadings[custNo].reading || 0;
               }
@@ -402,17 +398,14 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 ep: prevReading, ec: curReading, eu: shareUsage,
                 shared: !!t.share
               };
-              // 체인에 당월지침 저장
               chainUpdates[key] = { elec: { reading: curReading, date: periodEnd, source: "billing" } };
               matched++;
             });
           });
 
-          // 검침 체인 + 레거시 저장
           saveMeterChain(chainUpdates);
           saveCurReadings("elec", newReadings);
 
-          // editValues에 반영
           setEditValues((prev: Record<string, any>) => {
             const next = { ...prev };
             Object.entries(updates).forEach(([key, data]) => {
@@ -427,12 +420,10 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             rows: rows.length - 1 });
 
         } else {
-          // 가스: 헤더 = 호실고유값(0), 고객번호(1), 기간(2), 시작기간(3), 끝기간(4), 전월검침(5), 당월검침(6), 사용량(7), 금액(8), 금액절사(11)
           const prevReadings = loadPrevReadings("gas");
           const newReadings: Record<string, any> = {};
           const dynGasMap = buildGasMap();
 
-          // 고객번호 → 건물/호실 매핑 구축 (호실정보의 gasNo 기반)
           const gasNoToRoom: Record<string, any> = {};
           activeTenants.forEach((t: Tenant) => {
             const rKey = `${t.building}_${t.room}`;
@@ -442,15 +433,14 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             if (rm.gasNo) gasNoToRoom[String(rm.gasNo)] = { b: t.building, r: String(t.room) };
           });
 
-          const gasMatchDetails: any[] = []; // 매칭 결과 상세 (화면 표시용)
+          const gasMatchDetails: any[] = [];
 
           rows.forEach((row, idx) => {
             if (idx === 0) return;
-            const code = String(row[0] || "").trim(); // 호실고유값
-            const custNo = String(row[1] || "").trim(); // 가스고객번호
+            const code = String(row[0] || "").trim();
+            const custNo = String(row[1] || "").trim();
             if (!code || code === "합계") return;
 
-            // 매칭 우선순위: ① 고객번호 → ② 호실고유값(기존 gasCodeMap)
             let target = custNo ? gasNoToRoom[custNo] : null;
             if (!target) target = dynGasMap[code];
             if (!target) {
@@ -463,20 +453,18 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             const amount = truncate10(parseInt(row[11]) || parseInt(row[8]) || 0);
             const period = String(row[2] || "");
 
-            // 이전 청구 데이터 (editValues에서)
             const lastBilling = editValues[key] || {};
-            const lastCur = lastBilling.gcr || 0; // 이전 당월검침
-            const lastPeriod = lastBilling.gp || "-"; // 이전 기간
+            const lastCur = lastBilling.gcr || 0;
+            const lastPeriod = lastBilling.gp || "-";
             const lastAmount = lastBilling.gas || 0;
 
-            // 전월검침 = 이전 당월검침을 자동 대입 (체인 우선)
             const chainReading = getLastReading(key, "gas");
-            let prevReading = lastCur; // 기본: 이전 당월검침 → 이번 전월검침
+            let prevReading = lastCur;
             if (chainReading && chainReading.reading) {
-              prevReading = chainReading.reading; // 퇴실검침 등 체인값이 있으면 우선
+              prevReading = chainReading.reading;
             }
             if (!prevReading) {
-              prevReading = parseInt(row[5]) || 0; // 체인도 없으면 엑셀값
+              prevReading = parseInt(row[5]) || 0;
             }
             if (!prevReading && prevReadings[code]) {
               prevReading = prevReadings[code].reading || 0;
@@ -494,7 +482,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               code, custNo, building: target.b, room: target.r, matched: true,
               period, prev: prevReading, cur: curReading, usage: gasUsageVal, amount,
               lastCur, lastPeriod, lastAmount,
-              chainMatch: lastCur > 0 && prevReading === lastCur, // 이전→이번 연속성 일치 여부
+              chainMatch: lastCur > 0 && prevReading === lastCur,
             });
           });
 
@@ -532,7 +520,6 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
     const lateFee = calcLateFee(fixedTotal + utilTotal, t.dueDay);
     const asRepairCost = t.asRepairCost || 0;
     const grandTotal = fixedTotal + utilTotal + t.prevUnpaid + lateFee + asRepairCost;
-    // 수기 입력값 반영
     const msgElecStart = ev.es ?? t.elecStart ?? "";
     const msgElecEnd = ev.ee ?? t.elecEnd ?? "";
     const msgElecPrev = ev.ep ?? t.elecPrev;
@@ -543,22 +530,18 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
     const msgGasCur = ev.gcr ?? t.gasCur;
     const msgGasUsage = ev.gu ?? t.gasUsage;
 
-    // 청구 유형 A/B 판별
     const bType = (billingTypeMap as Record<string, string>)[t.building] || "A";
     const abbr = (buildingAbbr as Record<string, string>)[t.building] || t.building.slice(0, 2);
     const acctInfo = (buildingAccountMap as Record<string, any>)[t.building] || {};
     const hmAcct = (buildingAccountMap as Record<string, any>)._houseman;
 
-    // elec/gas period strings for display
     const elecPeriodStr = fmtPeriod(msgElecStart, msgElecEnd);
     const gasPeriodStr = msgGasPeriod;
 
-    // 유형별 메시지 템플릿
     const rentLabel = t.roomType === "관리사무소" ? "관리비" : t.roomType === "근생" ? "임대료" : "월세";
     let msg = "";
 
     if (bType === "B" && acctInfo.owner) {
-      // === 유형 B: 이중계좌 ===
       const rentTotal = t.rent + (t.prevUnpaid > 0 ? Math.round(t.prevUnpaid * 0.5) : 0);
       const utilGrandTotal = t.mgmt + e + g + t.water + t.cable + (t.prevUnpaid > 0 ? Math.round(t.prevUnpaid * 0.5) : 0) + lateFee;
       const lines = [
@@ -606,7 +589,6 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       lines.push("", `납부일은 ${billingMonth.slice(5)}/${t.dueDay}일 입니다.`);
       msg = lines.join("\n");
     } else {
-      // === 유형 A: 단일계좌 ===
       const lines = [
         `[${t.building} ${rentLabel}&공과금 청구서]`,
         `${t.room}호 ${t.name}님`,
@@ -648,44 +630,40 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       msg = lines.join("\n");
     }
 
-    const detailInputStyle = (isMissing: boolean): React.CSSProperties => ({
-      width: 110, padding: "6px 10px", borderRadius: 6,
-      border: isMissing ? "2px solid #EF4444" : "1.5px solid #E0E3E9",
-      background: isMissing ? "#FEF2F2" : "#fff",
-      fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 700
-    });
+    const detailInputCls = (isMissing: boolean) =>
+      `w-[110px] px-2.5 py-1.5 rounded-md text-[13px] text-right font-[inherit] font-bold ${isMissing ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white'}`;
 
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setSelectedItem(null)}>
-          <span style={{ fontSize: 20 }}>←</span><span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>목록으로</span>
+        <div className="flex items-center gap-2 mb-5 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setSelectedItem(null)}>
+          <span className="text-xl">←</span><span className="text-sm font-bold text-hm-blue">목록으로</span>
         </div>
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div className="flex justify-between items-start mb-4">
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="text-lg font-extrabold flex items-center gap-2">
                 ⚡ {t.building} {t.room}호
                 <RoomTypeBadge building={t.building} room={t.room} />
               </div>
-              <div style={{ fontSize: 13, color: "#8F95A3", marginTop: 4 }}>{t.name} · 납부일 매월 {t.dueDay}일</div>
+              <div className="text-[13px] text-hm-text-muted mt-1">{t.name} · 납부일 매월 {t.dueDay}일</div>
             </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              <span style={{ padding: "5px 10px", borderRadius: 6, background: bType === "B" ? "#FDF4FF" : "#F0F4FF", color: bType === "B" ? "#7C3AED" : "#2563EB", fontSize: 10, fontWeight: 700 }}>
+            <div className="flex gap-1.5">
+              <span className={`px-2.5 py-[5px] rounded-md text-[10px] font-bold ${bType === "B" ? 'bg-[#FDF4FF] text-[#7C3AED]' : 'bg-[#F0F4FF] text-hm-blue-dark'}`}>
                 {bType === "B" ? "이중계좌" : "단일계좌"}
               </span>
-              {lateFee > 0 && <span style={{ padding: "5px 10px", borderRadius: 6, background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700 }}>연체 +{lateFee.toLocaleString()}</span>}
-              {t.confirmed && <span style={{ padding: "5px 10px", borderRadius: 6, background: "#ECFDF5", color: "#059669", fontSize: 11, fontWeight: 700 }}>✓ 확인됨</span>}
-              {t.sent && <span style={{ padding: "5px 10px", borderRadius: 6, background: "#EFF6FF", color: "#2563EB", fontSize: 11, fontWeight: 700 }}>✓ 발송됨</span>}
+              {lateFee > 0 && <span className="px-2.5 py-[5px] rounded-md bg-hm-danger-bg text-hm-danger text-[10px] font-bold">연체 +{lateFee.toLocaleString()}</span>}
+              {t.confirmed && <span className="px-2.5 py-[5px] rounded-md bg-hm-success-bg text-hm-success text-[11px] font-bold">✓ 확인됨</span>}
+              {t.sent && <span className="px-2.5 py-[5px] rounded-md bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold">✓ 발송됨</span>}
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 3fr", gap: 16 }}>
+          <div className="grid gap-4 grid-cols-[2fr_3fr]">
             {/* 좌: 청구내역 */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 10, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>📋 청구 내역</div>
+              <div className="text-[11px] font-extrabold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📋 청구 내역</div>
               {t.prevUnpaid > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", borderRadius: 6, background: "#FEF2F2", border: "1px solid #FECACA", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: "#DC2626", fontWeight: 700 }}>🔴 미납금</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>{t.prevUnpaid.toLocaleString()}원</span>
+                <div className="flex justify-between px-3 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border mb-1">
+                  <span className="text-xs text-hm-danger font-bold">🔴 미납금</span>
+                  <span className="text-[13px] font-extrabold text-hm-danger">{t.prevUnpaid.toLocaleString()}원</span>
                 </div>
               )}
               {[
@@ -694,30 +672,30 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 t.roomType === "단기" && t.water > 0 && { label: "💧 수도 (고정)", value: t.water },
                 t.roomType === "단기" && t.cable > 0 && { label: "📺 인터넷/TV (고정)", value: t.cable },
               ].filter(Boolean).map((item: any, i: number) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", borderRadius: 6, background: "#F8FAFC", marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: "#5F6577" }}>{item.label}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>{item.value.toLocaleString()}원</span>
+                <div key={i} className="flex justify-between px-3 py-2 rounded-md bg-hm-bg-slate mb-1">
+                  <span className="text-xs text-hm-text-sub">{item.label}</span>
+                  <span className="text-[13px] font-bold">{item.value.toLocaleString()}원</span>
                 </div>
               ))}
 
               {/* 전기/가스 - 단기만 */}
               {t.roomType === "단기" && (
                 <>
-                  <div style={{ padding: "10px 12px", borderRadius: 8, background: t.noElec ? "#FEF2F2" : "#FFFBEB", border: t.noElec ? "1.5px solid #EF4444" : "1px solid #FDE68A", marginBottom: 4, marginTop: 8 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 12, color: "#92400E", fontWeight: 700 }}>⚡ 전기요금</span>
-                      <input value={getEditVal(t.key, "elec", e)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "elec", ev.target.value)} style={detailInputStyle(t.noElec)} />
+                  <div className={`px-3 py-2.5 rounded-lg mb-1 mt-2 ${t.noElec ? 'bg-hm-danger-bg border-[1.5px] border-red-500' : 'bg-[#FFFBEB] border border-[#FDE68A]'}`}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs text-[#92400E] font-bold">⚡ 전기요금</span>
+                      <input value={getEditVal(t.key, "elec", e)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "elec", ev.target.value)} className={detailInputCls(t.noElec)} />
                     </div>
-                    <div style={{ fontSize: 10, color: t.noElec ? "#DC2626" : "#92400E" }}>
+                    <div className={`text-[10px] ${t.noElec ? 'text-hm-danger' : 'text-[#92400E]'}`}>
                       {t.noElec ? (t.carryOverElec ? "📌 이어 청구 — 이전 검침값에서 이어서 청구됩니다" : "⚠ 한전 데이터 미매칭 — 엑셀 업로드 또는 수기 입력") : `기간: ${elecPeriodStr} · 검침: ${t.elecPrev}→${t.elecCur} · ${t.elecUsage}kWh`}
                     </div>
                   </div>
-                  <div style={{ padding: "10px 12px", borderRadius: 8, background: t.noGas ? "#FEF2F2" : "#FFF1F2", border: t.noGas ? "1.5px solid #EF4444" : "1px solid #FECACA", marginBottom: 4 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 12, color: "#991B1B", fontWeight: 700 }}>🔥 가스요금</span>
-                      <input value={getEditVal(t.key, "gas", g)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "gas", ev.target.value)} style={detailInputStyle(t.noGas)} />
+                  <div className={`px-3 py-2.5 rounded-lg mb-1 ${t.noGas ? 'bg-hm-danger-bg border-[1.5px] border-red-500' : 'bg-[#FFF1F2] border border-hm-danger-border'}`}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs text-[#991B1B] font-bold">🔥 가스요금</span>
+                      <input value={getEditVal(t.key, "gas", g)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "gas", ev.target.value)} className={detailInputCls(t.noGas)} />
                     </div>
-                    <div style={{ fontSize: 10, color: t.noGas ? "#DC2626" : "#991B1B" }}>
+                    <div className={`text-[10px] ${t.noGas ? 'text-hm-danger' : 'text-[#991B1B]'}`}>
                       {t.noGas ? (t.carryOverGas ? "📌 이어 청구 — 이전 검침값에서 이어서 청구됩니다" : "⚠ 가스 데이터 미매칭 — 파일 업로드 또는 수기 입력") : `기간: ${gasPeriodStr} · 검침: ${t.gasPrev}→${t.gasCur} (${t.gasUsage})`}
                     </div>
                   </div>
@@ -725,81 +703,79 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               )}
 
               {lateFee > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", borderRadius: 6, background: "#FEF2F2", border: "1px solid #FECACA", marginTop: 8 }}>
-                  <span style={{ fontSize: 12, color: "#DC2626", fontWeight: 700 }}>⚠ 연체수수료 (5%)</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>{lateFee.toLocaleString()}원</span>
+                <div className="flex justify-between px-3 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border mt-2">
+                  <span className="text-xs text-hm-danger font-bold">⚠ 연체수수료 (5%)</span>
+                  <span className="text-[13px] font-extrabold text-hm-danger">{lateFee.toLocaleString()}원</span>
                 </div>
               )}
 
               {/* AS 유상수리 비용 */}
               {asRepairCost > 0 && (
-                <div style={{ marginTop: 8 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", borderRadius: 6, background: "#FDF4FF", border: "1px solid #E9D5FF", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: "#7C3AED", fontWeight: 700 }}>🔧 AS 유상수리</span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: "#7C3AED" }}>{asRepairCost.toLocaleString()}원</span>
+                <div className="mt-2">
+                  <div className="flex justify-between px-3 py-2 rounded-md bg-[#FDF4FF] border border-[#E9D5FF] mb-1">
+                    <span className="text-xs text-[#7C3AED] font-bold">🔧 AS 유상수리</span>
+                    <span className="text-[13px] font-extrabold text-[#7C3AED]">{asRepairCost.toLocaleString()}원</span>
                   </div>
                   {(t.asRepairItems || []).map((a: any, ai: number) => (
-                    <div key={ai} style={{ display: "flex", justifyContent: "space-between", padding: "4px 12px 4px 24px", fontSize: 10, color: "#8F95A3" }}>
+                    <div key={ai} className="flex justify-between py-1 px-3 pl-6 text-[10px] text-hm-text-muted">
                       <span>{a.content || a.title} ({a.date})</span>
-                      <span style={{ fontWeight: 700 }}>{(a.cost || 0).toLocaleString()}원</span>
+                      <span className="font-bold">{(a.cost || 0).toLocaleString()}원</span>
                     </div>
                   ))}
                 </div>
               )}
 
               {bType === "B" && acctInfo.owner ? (
-                /* 이중계좌: 임대료 / 관리비&공과금 분리 표시 */
-                <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-                  <div style={{ padding: "12px", borderRadius: 8, background: "#FFF7ED", border: "1.5px solid #FDBA74" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: "#EA580C" }}>① {rentLabel}</span>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: "#EA580C" }}>{t.rent.toLocaleString()}원</span>
+                <div className="mt-2.5 flex flex-col gap-1.5">
+                  <div className="p-3 rounded-lg bg-hm-warning-bg border-[1.5px] border-[#FDBA74]">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[13px] font-extrabold text-hm-warning">① {rentLabel}</span>
+                      <span className="text-lg font-extrabold text-hm-warning">{t.rent.toLocaleString()}원</span>
                     </div>
-                    <div style={{ fontSize: 10, color: "#92400E" }}>{acctInfo.owner.bank} {acctInfo.owner.account} {acctInfo.owner.holder}</div>
+                    <div className="text-[10px] text-[#92400E]">{acctInfo.owner.bank} {acctInfo.owner.account} {acctInfo.owner.holder}</div>
                   </div>
-                  <div style={{ padding: "12px", borderRadius: 8, background: "#FEF3C7", border: "1.5px solid #F59E0B" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: "#92400E" }}>② 관리비&공과금</span>
-                      <span style={{ fontSize: 18, fontWeight: 800, color: "#92400E" }}>{(grandTotal - t.rent).toLocaleString()}원</span>
+                  <div className="p-3 rounded-lg bg-[#FEF3C7] border-[1.5px] border-[#F59E0B]">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[13px] font-extrabold text-[#92400E]">② 관리비&공과금</span>
+                      <span className="text-lg font-extrabold text-[#92400E]">{(grandTotal - t.rent).toLocaleString()}원</span>
                     </div>
-                    <div style={{ fontSize: 10, color: "#92400E" }}>{(acctInfo.manager || hmAcct).bank} {(acctInfo.manager || hmAcct).account} {(acctInfo.manager || hmAcct).holder}</div>
+                    <div className="text-[10px] text-[#92400E]">{(acctInfo.manager || hmAcct).bank} {(acctInfo.manager || hmAcct).account} {(acctInfo.manager || hmAcct).holder}</div>
                   </div>
-                  <div style={{ padding: "8px 12px", borderRadius: 6, background: "#F3F4F6", textAlign: "center" }}>
-                    <span style={{ fontSize: 11, color: "#5F6577" }}>합계 </span>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23" }}>{grandTotal.toLocaleString()}원</span>
+                  <div className="px-3 py-2 rounded-md bg-gray-100 text-center">
+                    <span className="text-[11px] text-hm-text-sub">합계 </span>
+                    <span className="text-base font-extrabold text-hm-text">{grandTotal.toLocaleString()}원</span>
                   </div>
                 </div>
               ) : (
-                /* 단일계좌: 하나로 표시 */
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "12px", borderRadius: 8, background: "#FEF3C7", border: "1.5px solid #F59E0B", marginTop: 10 }}>
+                <div className="flex justify-between p-3 rounded-lg bg-[#FEF3C7] border-[1.5px] border-[#F59E0B] mt-2.5">
                   <div>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#92400E" }}>총 청구액</span>
-                    <div style={{ fontSize: 10, color: "#92400E", marginTop: 2 }}>{hmAcct.bank} {hmAcct.account} {hmAcct.holder}</div>
+                    <span className="text-sm font-extrabold text-[#92400E]">총 청구액</span>
+                    <div className="text-[10px] text-[#92400E] mt-0.5">{hmAcct.bank} {hmAcct.account} {hmAcct.holder}</div>
                   </div>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: "#92400E" }}>{grandTotal.toLocaleString()}원</span>
+                  <span className="text-xl font-extrabold text-[#92400E]">{grandTotal.toLocaleString()}원</span>
                 </div>
               )}
             </div>
 
             {/* 우: 메시지 & 버튼 */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 10, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>📱 발송 메시지 미리보기</div>
-              <div style={{ background: "#F8FAFC", borderRadius: 10, padding: 16, border: "1px solid #E8ECF0", whiteSpace: "pre-line", fontSize: 11.5, color: "#374151", lineHeight: 1.8, marginBottom: 16, maxHeight: 360, overflow: "auto" }}>{msg}</div>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className="text-[11px] font-extrabold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📱 발송 메시지 미리보기</div>
+              <div className="bg-hm-bg-slate rounded-[10px] p-4 border border-hm-border whitespace-pre-line text-[11.5px] text-gray-700 leading-[1.8] mb-4 max-h-[360px] overflow-auto">{msg}</div>
+              <div className="flex gap-2">
                 {!t.confirmed ? (
                   <button onClick={() => { confirmItem(t); setSelectedItem({ ...t, confirmed: true }); }}
-                    style={{ flex: 1, padding: 12, borderRadius: 10, border: "none", background: "#059669", color: "#fff", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-success text-white text-sm font-extrabold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     ✅ 금액 확인
                   </button>
                 ) : !t.sent ? (
                   <button onClick={() => { sendItem(t); setSelectedItem({ ...t, sent: true }); }}
-                    style={{ flex: 1, padding: 12, borderRadius: 10, border: "none", background: "#3B82F6", color: "#fff", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-blue text-white text-sm font-extrabold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     📱 문자 발송
                   </button>
                 ) : (
-                  <button style={{ flex: 1, padding: 12, borderRadius: 10, border: "none", background: "#D1D5DB", color: "#fff", fontSize: 14, fontWeight: 800, fontFamily: "inherit" }}>✓ 발송 완료</button>
+                  <button className="flex-1 p-3 rounded-[10px] border-none bg-gray-300 text-white text-sm font-extrabold font-[inherit]">✓ 발송 완료</button>
                 )}
-                <button onClick={() => navigator.clipboard?.writeText(msg)} style={{ padding: "12px 20px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📋 복사</button>
+                <button onClick={() => navigator.clipboard?.writeText(msg)} className="px-5 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-[13px] font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">📋 복사</button>
               </div>
             </div>
           </div>
@@ -818,40 +794,40 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       <SectionTitle sub={`${billingMonth.slice(5)}월 · ${typeTab} ${myTenants.length}건`}>{billingMode === "unified" ? "⚡ 청구 관리" : billingMode === "variable" ? "📊 청구(변동관리비)" : "⚡ 청구(단기/고정관리비)"}</SectionTitle>
 
       {/* 도구 버튼 행 */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+      <div className="flex gap-1.5 mb-2 flex-wrap">
         <button onClick={() => setShowSetupWizard(true)}
-          style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #C4B5FD", background: "#F5F3FF", fontSize: 11, fontWeight: 700, color: "#7C3AED", cursor: "pointer", fontFamily: "inherit" }}>
+          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#C4B5FD] bg-[#F5F3FF] text-[11px] font-bold text-[#7C3AED] cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
           ⚙️ 청구 설정
         </button>
         <button onClick={() => setShowMeterUpload("elec")}
-          style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #BFDBFE", background: "#EFF6FF", fontSize: 11, fontWeight: 700, color: "#2563EB", cursor: "pointer", fontFamily: "inherit" }}>
+          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BFDBFE] bg-hm-blue-bg text-[11px] font-bold text-hm-blue-dark cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
           📊 검침 업로드
         </button>
         {typeTab === "변동관리비" && filterBuilding !== "전체" && (
           <button onClick={() => setShowVariableView(filterBuilding)}
-            style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #BBF7D0", background: "#F0FDF4", fontSize: 11, fontWeight: 700, color: "#059669", cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BBF7D0] bg-[#F0FDF4] text-[11px] font-bold text-hm-success cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
             📈 변동비 안분
           </button>
         )}
       </div>
 
       {/* 유형 탭 */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+      <div className="flex gap-1 mb-2">
         {availableTypes.map(t => {
           const cfg = typeTabCfg[t];
           const active = typeTab === t;
           return (
             <button key={t} onClick={() => { setTypeTab(t); setFilterTab("전체"); setFilterBuilding("전체"); }}
-              style={{ flex: 1, padding: "6px 4px", borderRadius: 8, border: active ? `2px solid ${cfg.c}` : "1.5px solid #E0E3E9",
-                background: active ? cfg.bg : "#fff", cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s" }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color: active ? cfg.c : "#5F6577" }}>{cfg.icon} {t} <span style={{ fontSize: 16, fontWeight: 900 }}>{typeCounts[t]}</span></div>
-              <div style={{ fontSize: 8, color: "#8F95A3", marginTop: 1 }}>{cfg.desc}</div>
+              className="flex-1 px-1 py-1.5 rounded-lg cursor-pointer font-[inherit] transition-all"
+              style={{ border: active ? `2px solid ${cfg.c}` : "1.5px solid #E0E3E9", background: active ? cfg.bg : "#fff" }}>
+              <div className="text-xs font-extrabold" style={{ color: active ? cfg.c : "#5F6577" }}>{cfg.icon} {t} <span className="text-base font-black">{typeCounts[t]}</span></div>
+              <div className="text-[8px] text-hm-text-muted mt-[1px]">{cfg.desc}</div>
             </button>
           );
         })}
       </div>
 
-      {/* 단기: 청구 기간 설정 + 업로드 — abbreviated for brevity, same as JSX */}
+      {/* 단기: 청구 기간 설정 + 업로드 */}
       {(typeTab === "단기" || typeTab === "고정관리비") && (
         <>
           {(() => {
@@ -859,16 +835,16 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             const lastEnd = hist.length > 0 ? hist[hist.length - 1].endDay : 0;
             const autoStart = lastEnd > 0 ? (lastEnd % 31) + 1 : billingPeriod.startDay;
             return (
-              <Card style={{ marginBottom: 8, padding: "10px 14px", border: billingPeriod.confirmed ? "2px solid #059669" : "2px solid #F59E0B", background: billingPeriod.confirmed ? "#F0FDF4" : "#FFFBEB" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: billingPeriod.confirmed ? 0 : 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 14 }}>📆</span>
+              <Card className={`mb-2 !px-3.5 !py-2.5 ${billingPeriod.confirmed ? 'border-2 border-hm-success bg-[#F0FDF4]' : 'border-2 border-[#F59E0B] bg-[#FFFBEB]'}`}>
+                <div className={`flex items-center justify-between ${billingPeriod.confirmed ? '' : 'mb-2'}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">📆</span>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: billingPeriod.confirmed ? "#059669" : "#92400E" }}>
+                      <div className={`text-[11px] font-extrabold ${billingPeriod.confirmed ? 'text-hm-success' : 'text-[#92400E]'}`}>
                         {billingPeriod.confirmed ? "청구 기간 확정" : "청구 기간 설정 (월세일 범위)"}
                       </div>
                       {billingPeriod.confirmed && (
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23", marginTop: 2 }}>
+                        <div className="text-xs font-bold text-hm-text mt-0.5">
                           매월 {billingPeriod.startDay}일 ~ {billingPeriod.endDay}일 납부 호실
                         </div>
                       )}
@@ -876,7 +852,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                   </div>
                   {billingPeriod.confirmed && (
                     <button onClick={() => setBillingPeriod({ ...billingPeriod, confirmed: false })}
-                      style={{ padding: "4px 12px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#fff", fontSize: 10, fontWeight: 700, color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
+                      className="px-3 py-1 rounded-md border border-gray-300 bg-white text-[10px] font-bold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                       변경
                     </button>
                   )}
@@ -884,27 +860,27 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 {!billingPeriod.confirmed && (
                   <>
                     {hist.length > 0 && (
-                      <div style={{ fontSize: 10, color: "#059669", fontWeight: 600, marginBottom: 6, padding: "4px 8px", background: "#ECFDF5", borderRadius: 6 }}>
+                      <div className="text-[10px] text-hm-success font-semibold mb-1.5 px-2 py-1 bg-hm-success-bg rounded-md">
                         이전 청구: {hist.map((h: any) => `${h.startDay}~${h.endDay}일`).join(" → ")}
                       </div>
                     )}
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 4, flex: 1 }}>
-                        <span style={{ fontSize: 11, color: "#5F6577", fontWeight: 600 }}>매월</span>
-                        <span style={{ padding: "6px 10px", borderRadius: 6, background: "#F3F4F6", border: "1.5px solid #E0E3E9", fontSize: 13, fontWeight: 700, color: "#1A1D23", minWidth: 36, textAlign: "center" }}>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 flex-1">
+                        <span className="text-[11px] text-hm-text-sub font-semibold">매월</span>
+                        <span className="px-2.5 py-1.5 rounded-md bg-gray-100 border-[1.5px] border-hm-input-border text-[13px] font-bold text-hm-text min-w-[36px] text-center">
                           {autoStart}
                         </span>
-                        <span style={{ fontSize: 11, color: "#5F6577", fontWeight: 600 }}>일 ~</span>
+                        <span className="text-[11px] text-hm-text-sub font-semibold">일 ~</span>
                         <input type="number" min="1" max="31" value={billingPeriod.endDay}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBillingPeriod({ ...billingPeriod, startDay: autoStart, endDay: Math.max(1, Math.min(31, parseInt(e.target.value) || 1)) })}
-                          style={{ width: 52, padding: "6px 8px", borderRadius: 6, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", textAlign: "center", fontWeight: 700 }} />
-                        <span style={{ fontSize: 11, color: "#5F6577", fontWeight: 600 }}>일</span>
+                          className="w-[52px] px-2 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-[13px] font-[inherit] text-center font-bold focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+                        <span className="text-[11px] text-hm-text-sub font-semibold">일</span>
                       </div>
                       <button onClick={() => {
                         const newHistory = [...hist, { startDay: autoStart, endDay: billingPeriod.endDay, confirmedAt: new Date().toISOString() }];
                         setBillingPeriod({ startDay: autoStart, endDay: billingPeriod.endDay, confirmed: true, history: newHistory });
                       }}
-                        style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#059669", color: "#fff", fontSize: 11, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                        className="px-4 py-1.5 rounded-md border-none bg-hm-success text-white text-[11px] font-extrabold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 transition-opacity">
                         확정
                       </button>
                     </div>
@@ -915,15 +891,13 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           })()}
 
           {/* 업로드 버튼 (기간 확정 후만 활성화) */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 6, opacity: billingPeriod.confirmed ? 1 : 0.4, pointerEvents: billingPeriod.confirmed ? "auto" : "none" }}>
+          <div className={`flex gap-1 mb-1.5 ${billingPeriod.confirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
             <button onClick={() => setShowUpload(showUpload === "elec" ? null : "elec")}
-              style={{ flex: 1, padding: "5px 10px", borderRadius: 6, border: showUpload === "elec" ? "2px solid #F59E0B" : "1.5px solid #E0E3E9",
-                background: showUpload === "elec" ? "#FFFBEB" : "#fff", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 700, color: "#92400E" }}>
+              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-[11px] font-bold text-[#92400E] transition-all ${showUpload === "elec" ? 'border-2 border-[#F59E0B] bg-[#FFFBEB]' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
               ⚡ 전기 엑셀 업로드
             </button>
             <button onClick={() => setShowUpload(showUpload === "gas" ? null : "gas")}
-              style={{ flex: 1, padding: "5px 10px", borderRadius: 6, border: showUpload === "gas" ? "2px solid #EF4444" : "1.5px solid #E0E3E9",
-                background: showUpload === "gas" ? "#FEF2F2" : "#fff", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 700, color: "#991B1B" }}>
+              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-[11px] font-bold text-[#991B1B] transition-all ${showUpload === "gas" ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
               🔥 가스 업로드
             </button>
             <button onClick={() => {
@@ -974,8 +948,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               const now = new Date();
               XLSX.writeFile(wb, `가스양식_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}.xlsx`);
             }}
-              style={{ flex: "0 0 15%", padding: "5px 10px", borderRadius: 6, border: "1.5px solid #6366F1",
-                background: "#EEF2FF", cursor: "pointer", fontFamily: "inherit", fontSize: 11, fontWeight: 700, color: "#4338CA" }}>
+              className="flex-[0_0_15%] px-2.5 py-[5px] rounded-md border-[1.5px] border-[#6366F1] bg-[#EEF2FF] cursor-pointer font-[inherit] text-[11px] font-bold text-[#4338CA] hover:shadow-sm transition-shadow">
               📥 가스양식
             </button>
           </div>
@@ -984,59 +957,59 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* 업로드 패널 */}
       {showUpload && (
-        <Card style={{ marginBottom: 12, border: showUpload === "elec" ? "2px solid #F59E0B" : "2px solid #EF4444" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: showUpload === "elec" ? "#92400E" : "#991B1B" }}>
+        <Card className={`mb-3 ${showUpload === "elec" ? 'border-2 border-[#F59E0B]' : 'border-2 border-red-500'}`}>
+          <div className="flex justify-between items-center mb-3">
+            <div className={`text-sm font-extrabold ${showUpload === "elec" ? 'text-[#92400E]' : 'text-[#991B1B]'}`}>
               {showUpload === "elec" ? "⚡ 전기 빌링사 엑셀 업로드" : "🔥 가스 데이터 업로드"}
             </div>
-            <button onClick={() => { setShowUpload(null); setUploadResult(null); }} style={{ width: 24, height: 24, borderRadius: 4, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 12, fontFamily: "inherit" }}>✕</button>
+            <button onClick={() => { setShowUpload(null); setUploadResult(null); }} className="w-6 h-6 rounded border border-hm-input-border bg-white cursor-pointer text-xs font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
           </div>
-          <div style={{ padding: "16px", borderRadius: 10, border: "2px dashed #D1D5DB", background: "#F9FAFB", textAlign: "center", marginBottom: 12 }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>{showUpload === "elec" ? "📊" : "📄"}</div>
-            <div style={{ fontSize: 12, color: "#5F6577", marginBottom: 8 }}>
+          <div className="p-4 rounded-[10px] border-2 border-dashed border-gray-300 bg-hm-bg-hover text-center mb-3">
+            <div className="text-[28px] mb-2">{showUpload === "elec" ? "📊" : "📄"}</div>
+            <div className="text-xs text-hm-text-sub mb-2">
               {showUpload === "elec" ? "한전 빌링사에서 다운받은 엑셀(.xlsx)을 업로드하세요" : "가스 양식 엑셀(.xlsx)을 업로드하세요"}
             </div>
-            <label style={{ display: "inline-block", padding: "10px 24px", borderRadius: 8, background: showUpload === "elec" ? "#F59E0B" : "#EF4444", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            <label className={`inline-block px-6 py-2.5 rounded-lg text-white text-[13px] font-bold cursor-pointer hover:opacity-90 transition-opacity ${showUpload === "elec" ? 'bg-[#F59E0B]' : 'bg-red-500'}`}>
               📤 파일 업로드
-              <input type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }}
+              <input type="file" accept=".xlsx,.xls,.csv" className="hidden"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files?.[0]) handleFileUpload(showUpload, e.target.files[0]); }} />
             </label>
           </div>
           {uploadResult && (
-            <div style={{ padding: "10px 14px", borderRadius: 8, background: uploadResult.success ? "#ECFDF5" : "#FEF2F2", border: `1px solid ${uploadResult.success ? "#BBF7D0" : "#FECACA"}` }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: uploadResult.success ? "#059669" : "#DC2626", marginBottom: uploadResult.details ? 10 : 0 }}>
+            <div className={`px-3.5 py-2.5 rounded-lg border ${uploadResult.success ? 'bg-hm-success-bg border-[#BBF7D0]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+              <div className={`text-xs font-bold ${uploadResult.success ? 'text-hm-success' : 'text-hm-danger'} ${uploadResult.details ? 'mb-2.5' : ''}`}>
                 {uploadResult.success ? "✅ " : "❌ "}{uploadResult.msg}
               </div>
               {uploadResult.details && uploadResult.details.length > 0 && (
-                <div style={{ maxHeight: 360, overflowY: "auto", marginTop: 8 }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
+                <div className="max-h-[360px] overflow-y-auto mt-2">
+                  <table className="w-full border-collapse text-[10px]">
                     <thead>
-                      <tr style={{ background: "#F8FAFC", borderBottom: "2px solid #E8ECF0" }}>
+                      <tr className="bg-hm-bg-slate border-b-2 border-hm-border">
                         {["건물/호실","고객번호","이전 기간","이전 당월","→","이번 전월","이번 기간","당월","사용량","금액"].map((h, hi) => (
-                          <th key={hi} style={{ padding: "6px 4px", textAlign: hi >= 2 ? "right" : "left", fontWeight: 700, color: "#5F6577" }}>{h}</th>
+                          <th key={hi} className={`px-1 py-1.5 font-bold text-hm-text-sub ${hi >= 2 ? 'text-right' : 'text-left'}`}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {uploadResult.details.map((d: any, i: number) => (
-                        <tr key={i} style={{ borderBottom: "1px solid #F0F2F5", background: !d.matched ? "#FEF2F2" : d.chainMatch ? "#fff" : (d.lastCur > 0 ? "#FFFBEB" : "#fff") }}>
-                          <td style={{ padding: "5px 4px", fontWeight: 700 }}>{d.matched ? `${d.building} ${d.room}` : d.code}</td>
-                          <td style={{ padding: "5px 4px", color: "#5F6577", fontSize: 9 }}>{d.custNo || "-"}</td>
+                        <tr key={i} className="border-b border-[#F0F2F5]" style={{ background: !d.matched ? "#FEF2F2" : d.chainMatch ? "#fff" : (d.lastCur > 0 ? "#FFFBEB" : "#fff") }}>
+                          <td className="px-1 py-[5px] font-bold">{d.matched ? `${d.building} ${d.room}` : d.code}</td>
+                          <td className="px-1 py-[5px] text-hm-text-sub text-[9px]">{d.custNo || "-"}</td>
                           {d.matched ? (<>
-                            <td style={{ padding: "5px 4px", textAlign: "right", color: "#8B5CF6", fontSize: 9 }}>{d.lastPeriod}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "center", color: "#8B5CF6", fontWeight: 700 }}>{d.lastCur || "-"}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "center", fontSize: 12 }}>
-                              {d.chainMatch ? <span style={{ color: "#059669" }}>→</span>
-                                : d.lastCur > 0 ? <span style={{ color: "#F59E0B" }}>⚠</span>
-                                : <span style={{ color: "#D1D5DB" }}>→</span>}
+                            <td className="px-1 py-[5px] text-right text-[#8B5CF6] text-[9px]">{d.lastPeriod}</td>
+                            <td className="px-1 py-[5px] text-center text-[#8B5CF6] font-bold">{d.lastCur || "-"}</td>
+                            <td className="px-1 py-[5px] text-center text-xs">
+                              {d.chainMatch ? <span className="text-hm-success">→</span>
+                                : d.lastCur > 0 ? <span className="text-[#F59E0B]">⚠</span>
+                                : <span className="text-gray-300">→</span>}
                             </td>
-                            <td style={{ padding: "5px 4px", textAlign: "center", fontWeight: 700, color: d.chainMatch ? "#059669" : d.lastCur > 0 && d.prev !== d.lastCur ? "#DC2626" : "#059669" }}>{d.prev}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "right", color: "#059669", fontSize: 9 }}>{d.period}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "right", color: "#059669", fontWeight: 600 }}>{d.cur}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "right", color: "#059669" }}>{d.usage}</td>
-                            <td style={{ padding: "5px 4px", textAlign: "right", color: "#1A1D23", fontWeight: 700 }}>{fmt(d.amount)}</td>
+                            <td className={`px-1 py-[5px] text-center font-bold ${d.chainMatch ? 'text-hm-success' : d.lastCur > 0 && d.prev !== d.lastCur ? 'text-hm-danger' : 'text-hm-success'}`}>{d.prev}</td>
+                            <td className="px-1 py-[5px] text-right text-hm-success text-[9px]">{d.period}</td>
+                            <td className="px-1 py-[5px] text-right text-hm-success font-semibold">{d.cur}</td>
+                            <td className="px-1 py-[5px] text-right text-hm-success">{d.usage}</td>
+                            <td className="px-1 py-[5px] text-right text-hm-text font-bold">{fmt(d.amount)}</td>
                           </>) : (
-                            <td colSpan={8} style={{ padding: "5px 4px", color: "#DC2626", fontSize: 9 }}>미매칭 — 호실정보에 가스고객번호를 등록하세요</td>
+                            <td colSpan={8} className="px-1 py-[5px] text-hm-danger text-[9px]">미매칭 — 호실정보에 가스고객번호를 등록하세요</td>
                           )}
                         </tr>
                       ))}
@@ -1049,16 +1022,16 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
         </Card>
       )}
 
-      {/* Status cards + Filters + List — same structure as JSX */}
-      <div style={{ padding: "4px 10px", borderRadius: 6, background: typeTabCfg[typeTab].bg, border: `1px solid ${typeTabCfg[typeTab].c}30`, marginBottom: 8, fontSize: 10, color: typeTabCfg[typeTab].c }}>
-        {typeTab === "단기" && <>💡 임대료+관리비+공과금 통합청구 · 월세일 기준 청구 · <strong style={{ color: "#DC2626" }}>적색=미매칭</strong></>}
+      {/* Status info bar */}
+      <div className="px-2.5 py-1 rounded-md mb-2 text-[10px]" style={{ background: typeTabCfg[typeTab].bg, border: `1px solid ${typeTabCfg[typeTab].c}30`, color: typeTabCfg[typeTab].c }}>
+        {typeTab === "단기" && <>💡 임대료+관리비+공과금 통합청구 · 월세일 기준 청구 · <strong className="text-hm-danger">적색=미매칭</strong></>}
         {typeTab === "고정관리비" && <>💡 일반임대/근생 · 고정관리비 건물 · 임대료+고정관리비 청구 · 담당자 확인 후 발송</>}
         {typeTab === "변동관리비" && <>💡 일반임대/근생 · 변동관리비 건물 · 공과금 기반 변동 청구 · 검침 후 발송</>}
       </div>
 
       {/* Status cards */}
       {typeTab === "단기" ? (
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(6, 1fr)", gap: 4, marginBottom: 8 }}>
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-6'} gap-1 mb-2`}>
           {[
             { label: "자동매칭", sub: "업로드완료", count: autoCount, color: "#059669", bg: "#ECFDF5", tab: "자동매칭" },
             { label: "수동매칭", sub: "수기입력", count: manualCount, color: "#2563EB", bg: "#EFF6FF", tab: "수동매칭" },
@@ -1067,35 +1040,35 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             { label: "발송완료", sub: "이번달", count: sentCount, color: "#3B82F6", bg: "#EFF6FF", tab: "발송완료" },
             { label: "전체", sub: "단기", count: billingItems.length, color: "#5F6577", bg: "#F8FAFC", tab: "전체" },
           ].map((s, i) => (
-            <Card key={i} onClick={() => setFilterTab(s.tab)} style={{ cursor: "pointer", padding: "6px 8px", background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
-              <div style={{ fontSize: 8, color: "#8F95A3", fontWeight: 600 }}>{s.label}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: s.color }}>{s.count}</div>
+            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+              <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
+              <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
             </Card>
           ))}
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 4, marginBottom: 8 }}>
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-1 mb-2`}>
           {[
             { label: "확인완료", count: confirmedCount, color: "#059669", bg: "#ECFDF5", tab: "확인완료" },
             { label: "발송완료", count: sentCount, color: "#3B82F6", bg: "#EFF6FF", tab: "발송완료" },
             { label: "전체", count: billingItems.length, color: "#5F6577", bg: "#F8FAFC", tab: "전체" },
           ].map((s, i) => (
-            <Card key={i} onClick={() => setFilterTab(s.tab)} style={{ cursor: "pointer", padding: "6px 8px", background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
-              <div style={{ fontSize: 8, color: "#8F95A3", fontWeight: 600 }}>{s.label}</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: s.color }}>{s.count}</div>
+            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+              <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
+              <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
             </Card>
           ))}
         </div>
       )}
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 6, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="flex gap-1 mb-1.5 items-center flex-wrap">
         <select value={filterBuilding} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterBuilding(e.target.value)}
-          style={{ padding: "6px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 11, fontWeight: 600, fontFamily: "inherit" }}>
+          className="px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-[11px] font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
           {buildingNames.map(b => <option key={b}>{b}</option>)}
         </select>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>담당:</span>
+        <div className="flex items-center gap-1">
+          <span className="text-[10px] text-hm-text-muted font-semibold">담당:</span>
           <select
             value={filterBuilding !== "전체" ? getBillingAssignee(filterBuilding) : ""}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1104,7 +1077,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               }
             }}
             disabled={filterBuilding === "전체"}
-            style={{ padding: "6px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 11, fontWeight: 600, fontFamily: "inherit", background: filterBuilding === "전체" ? "#F3F4F6" : "#fff" }}>
+            className={`px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-[11px] font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors ${filterBuilding === "전체" ? 'bg-hm-bg' : 'bg-white'}`}>
             {filterBuilding === "전체"
               ? <option>건물 선택 후 지정</option>
               : internalStaff.map((s: Staff) => <option key={s.id} value={s.name}>{s.name}</option>)
@@ -1123,9 +1096,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 sendItem({ ...i, confirmed: true });
               });
             }}
-              style={{ marginLeft: "auto", padding: "7px 16px", borderRadius: 8, border: "none",
-                background: cnt > 0 ? "#059669" : "#D1D5DB", color: "#fff", fontSize: 11, fontWeight: 700,
-                cursor: cnt > 0 ? "pointer" : "default", fontFamily: "inherit", opacity: cnt > 0 ? 1 : 0.6 }}>
+              className={`ml-auto px-4 py-[7px] rounded-lg border-none text-white text-[11px] font-bold font-[inherit] transition-opacity ${cnt > 0 ? 'bg-hm-success cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default opacity-60'}`}>
               📱 매칭 일괄발송 ({cnt}건)
             </button>
           );
@@ -1133,95 +1104,90 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       </div>
 
       {/* 청구 리스트 */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {filtered.length === 0 && <div style={{ textAlign: "center", padding: "40px 0", color: "#B0B5C1", fontSize: 13 }}>해당 조건 없음</div>}
+      <div className="flex flex-col gap-1.5">
+        {filtered.length === 0 && <div className="text-center py-10 text-[#B0B5C1] text-[13px]">해당 조건 없음</div>}
         {filtered.map((r: any, i: number) => {
           const noData = r.noElec || r.noGas;
           const urgent = r.roomType === "단기" && !r.sent && r.daysUntilDue >= 0 && r.daysUntilDue <= 7;
           const ev = editValues[r.key] || {};
           const elecVal = ev.elec ?? r.elec;
           const gasVal = ev.gas ?? r.gas;
-          const inpStyle: React.CSSProperties = { padding: "7px 10px", borderRadius: 6, border: "1.5px solid #D1D5DB", fontSize: 14, fontFamily: "inherit", textAlign: "right", fontWeight: 700, background: "#FAFBFC", outline: "none" };
-          const lblStyle: React.CSSProperties = { fontSize: 11, color: "#6B7280", fontWeight: 700, whiteSpace: "nowrap" };
+          const inpCls = "px-2.5 py-[7px] rounded-md border-[1.5px] border-gray-300 text-sm font-[inherit] text-right font-bold bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors";
           return (
             <div key={i}
-              style={{ padding: "10px 14px", borderRadius: 10, cursor: "pointer",
-                background: urgent ? "#FEF2F2" : noData ? "#FEF2F2" : r.confirmed ? "#F0FDF4" : "#fff",
-                border: `1.5px solid ${urgent ? "#FECACA" : noData ? "#FECACA" : r.confirmed ? "#BBF7D0" : "#E8ECF0"}` }}
-              onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.boxShadow = "none"; }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}
+              className={`px-3.5 py-2.5 rounded-[10px] cursor-pointer transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${urgent ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : noData ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : r.confirmed ? 'bg-[#F0FDF4] border-[1.5px] border-[#BBF7D0]' : 'bg-white border-[1.5px] border-hm-border'}`}>
+              <div className="flex items-center justify-between mb-1.5"
                 onClick={() => setSelectedItem(r)}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", whiteSpace: "nowrap" }}>{r.building}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", whiteSpace: "nowrap" }}>{r.room}호</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#5F6577", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#92400E", padding: "2px 6px", borderRadius: 4, background: "#FFFBEB", whiteSpace: "nowrap" }}>{r.dueDay}일</span>
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="text-xs font-extrabold text-hm-text whitespace-nowrap">{r.building}</span>
+                  <span className="text-xs font-bold text-hm-blue whitespace-nowrap">{r.room}호</span>
+                  <span className="text-[11px] font-semibold text-hm-text-sub whitespace-nowrap overflow-hidden text-ellipsis">{r.name}</span>
+                  <span className="text-[10px] font-bold text-[#92400E] px-1.5 py-0.5 rounded bg-[#FFFBEB] whitespace-nowrap">{r.dueDay}일</span>
                   {r.daysUntilDue >= 0 ? (
-                    <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 8px", borderRadius: 5, whiteSpace: "nowrap",
-                      background: r.daysUntilDue <= 3 ? "#DC2626" : r.daysUntilDue <= 7 ? "#F59E0B" : "#E5E7EB",
-                      color: r.daysUntilDue <= 7 ? "#fff" : "#5F6577" }}>D-{r.daysUntilDue}</span>
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-[5px] whitespace-nowrap text-white"
+                      style={{ background: r.daysUntilDue <= 3 ? "#DC2626" : r.daysUntilDue <= 7 ? "#F59E0B" : "#E5E7EB", color: r.daysUntilDue <= 7 ? "#fff" : "#5F6577" }}>D-{r.daysUntilDue}</span>
                   ) : (
-                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "#F3F4F6", color: "#8F95A3", whiteSpace: "nowrap" }}>D+{Math.abs(r.daysUntilDue)}</span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-[5px] bg-hm-bg text-hm-text-muted whitespace-nowrap">D+{Math.abs(r.daysUntilDue)}</span>
                   )}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: "3px 8px", borderRadius: 5, whiteSpace: "nowrap",
-                    background: r.confirmed ? "#ECFDF5" : r.matchStatus === "none" ? "#FEF2F2" : r.matchStatus === "manual" ? "#EFF6FF" : "#ECFDF5",
-                    color: r.confirmed ? "#059669" : r.matchStatus === "none" ? "#DC2626" : r.matchStatus === "manual" ? "#2563EB" : "#059669",
-                  }}>{r.confirmed ? "확인완료" : r.matchStatus === "none" ? "미매칭" : r.matchStatus === "manual" ? "수동매칭" : "자동매칭"}</span>
-                  <div style={{ display: "flex", gap: 3 }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[9px] font-bold px-2 py-[3px] rounded-[5px] whitespace-nowrap"
+                    style={{
+                      background: r.confirmed ? "#ECFDF5" : r.matchStatus === "none" ? "#FEF2F2" : r.matchStatus === "manual" ? "#EFF6FF" : "#ECFDF5",
+                      color: r.confirmed ? "#059669" : r.matchStatus === "none" ? "#DC2626" : r.matchStatus === "manual" ? "#2563EB" : "#059669",
+                    }}>{r.confirmed ? "확인완료" : r.matchStatus === "none" ? "미매칭" : r.matchStatus === "manual" ? "수동매칭" : "자동매칭"}</span>
+                  <div className="flex gap-[3px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     {!r.confirmed ? (
-                      <button onClick={() => confirmItem(r)} style={{ padding: "4px 10px", borderRadius: 5, border: "1px solid #BBF7D0", background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>✅확인</button>
+                      <button onClick={() => confirmItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BBF7D0] bg-hm-success-bg text-hm-success text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">✅확인</button>
                     ) : !r.sent ? (
-                      <button onClick={() => sendItem(r)} style={{ padding: "4px 10px", borderRadius: 5, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>📱발송</button>
+                      <button onClick={() => sendItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BFDBFE] bg-hm-blue-bg text-hm-blue-dark text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">📱발송</button>
                     ) : null}
                     <button onClick={() => setShowRoomSettings({ roomId: r.roomId, buildingId: r.buildingId, tenantName: r.name, roomNumber: r.room, buildingName: r.building })}
-                      style={{ padding: "4px 8px", borderRadius: 5, border: "1px solid #C4B5FD", background: "#F5F3FF", color: "#7C3AED", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }} title="호실 청구 설정">⚙️</button>
+                      className="px-2 py-1 rounded-[5px] border border-[#C4B5FD] bg-[#F5F3FF] text-[#7C3AED] text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="호실 청구 설정">⚙️</button>
                     {r.confirmed && (
                       <button onClick={() => setShowInvoice({ ...r, tenantName: r.name, buildingName: r.building, roomNumber: r.room })}
-                        style={{ padding: "4px 8px", borderRadius: 5, border: "1px solid #FDE68A", background: "#FFFBEB", color: "#92400E", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }} title="청구서 보기">🧾</button>
+                        className="px-2 py-1 rounded-[5px] border border-[#FDE68A] bg-[#FFFBEB] text-[#92400E] text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="청구서 보기">🧾</button>
                     )}
                   </div>
                 </div>
               </div>
               {/* 2줄: 전기/가스 검침 인라인 수정 */}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 flex-wrap" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                 {r.roomType === "단기" && <>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, width: "100%", padding: r.noElec && !elecVal ? "8px 12px" : "4px 8px", background: r.noElec && !elecVal ? "#FEF2F2" : "#FFFBEB", borderRadius: 8, border: r.noElec && !elecVal ? "2.5px solid #EF4444" : `1px solid #FDE68A`, position: "relative" }}>
-                    {r.noElec && !elecVal && <div style={{ position: "absolute", top: -1, right: 8, background: "#DC2626", color: "#fff", fontSize: 9, fontWeight: 800, padding: "1px 8px", borderRadius: "0 0 6px 6px", letterSpacing: "0.5px" }}>미매칭</div>}
-                    <span style={{ fontSize: 13, fontWeight: 800, color: r.noElec && !elecVal ? "#DC2626" : "#D97706", whiteSpace: "nowrap", minWidth: 44 }}>⚡전기</span>
+                  <div className={`flex items-center gap-1.5 w-full rounded-lg relative ${r.noElec && !elecVal ? 'py-2 px-3 bg-hm-danger-bg border-[2.5px] border-red-500' : 'py-1 px-2 bg-[#FFFBEB] border border-[#FDE68A]'}`}>
+                    {r.noElec && !elecVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-[9px] font-extrabold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
+                    <span className={`text-[13px] font-extrabold whitespace-nowrap min-w-[44px] ${r.noElec && !elecVal ? 'text-hm-danger' : 'text-[#D97706]'}`}>⚡전기</span>
                     {r.noElec && !r.carryOverElec && !elecVal ? (
-                      <span style={{ fontSize: 11, color: "#DC2626", fontWeight: 800, background: "#fff", padding: "3px 10px", borderRadius: 6, border: "1.5px solid #FECACA" }}>데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
+                      <span className="text-[11px] text-hm-danger font-extrabold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
                     ) : null}
-                    <span style={lblStyle}>기간</span>
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">기간</span>
                     <input type="text" value={((ev.es ?? r.elecStart) || "").replace(/^\d{4}\//, "")} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], es: e.target.value } }))}
-                      style={{ ...inpStyle, width: 66, textAlign: "center" }} placeholder="M/D" />
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#9CA3AF" }}>~</span>
+                      className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
+                    <span className="text-sm font-extrabold text-gray-400">~</span>
                     <input type="text" value={((ev.ee ?? r.elecEnd) || "").replace(/^\d{4}\//, "")} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ee: e.target.value } }))}
-                      style={{ ...inpStyle, width: 66, textAlign: "center" }} placeholder="M/D" />
-                    <div style={{ width: 1, height: 20, background: "#E5E7EB", margin: "0 2px" }} />
-                    <span style={lblStyle}>검침</span>
+                      className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
+                    <div className="w-px h-5 bg-gray-200 mx-0.5" />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">검침</span>
                     <input type="number" value={ev.ep ?? r.elecPrev} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ep: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 80 }} placeholder="시작" />
-                    <span style={{ fontSize: 16, fontWeight: 800, color: "#9CA3AF" }}>-</span>
+                      className={`${inpCls} w-20`} placeholder="시작" />
+                    <span className="text-base font-extrabold text-gray-400">-</span>
                     <input type="number" value={ev.ec ?? r.elecCur} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ec: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 80 }} placeholder="끝" />
-                    <div style={{ width: 1, height: 20, background: "#E5E7EB", margin: "0 2px" }} />
-                    <span style={lblStyle}>사용</span>
+                      className={`${inpCls} w-20`} placeholder="끝" />
+                    <div className="w-px h-5 bg-gray-200 mx-0.5" />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">사용</span>
                     <input type="number" value={ev.eu ?? r.elecUsage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], eu: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 66 }} />
-                    <span style={lblStyle}>금액</span>
+                      className={`${inpCls} w-[66px]`} />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={elecVal ? fmt(elecVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], elec: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      style={{ ...inpStyle, width: 96, background: elecVal ? "#FFF7ED" : "#FEF2F2", borderColor: elecVal ? "#FDBA74" : "#FECACA", fontWeight: 800 }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: elecVal ? "#FFF7ED" : "#FEF2F2", borderColor: elecVal ? "#FDBA74" : "#FECACA" }} placeholder="0" />
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, width: "100%", padding: r.noGas && !gasVal ? "8px 12px" : "4px 8px", background: r.noGas && !gasVal ? "#FEF2F2" : "#FFF1F2", borderRadius: 8, border: r.noGas && !gasVal ? "2.5px solid #EF4444" : `1px solid #FECDD3`, position: "relative" }}>
-                    {r.noGas && !gasVal && <div style={{ position: "absolute", top: -1, right: 8, background: "#DC2626", color: "#fff", fontSize: 9, fontWeight: 800, padding: "1px 8px", borderRadius: "0 0 6px 6px", letterSpacing: "0.5px" }}>미매칭</div>}
-                    <span style={{ fontSize: 13, fontWeight: 800, color: r.noGas && !gasVal ? "#DC2626" : "#DC2626", whiteSpace: "nowrap", minWidth: 44 }}>🔥가스</span>
+                  <div className={`flex items-center gap-1.5 w-full rounded-lg relative ${r.noGas && !gasVal ? 'py-2 px-3 bg-hm-danger-bg border-[2.5px] border-red-500' : 'py-1 px-2 bg-[#FFF1F2] border border-[#FECDD3]'}`}>
+                    {r.noGas && !gasVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-[9px] font-extrabold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
+                    <span className={`text-[13px] font-extrabold whitespace-nowrap min-w-[44px] ${r.noGas && !gasVal ? 'text-hm-danger' : 'text-hm-danger'}`}>🔥가스</span>
                     {r.noGas && !r.carryOverGas && !gasVal ? (
-                      <span style={{ fontSize: 11, color: "#DC2626", fontWeight: 800, background: "#fff", padding: "3px 10px", borderRadius: 6, border: "1.5px solid #FECACA" }}>데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
+                      <span className="text-[11px] text-hm-danger font-extrabold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
                     ) : null}
-                    <span style={lblStyle}>기간</span>
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">기간</span>
                     {(() => {
                       const gp = ev.gp ?? r.gasPeriod ?? "";
                       const parts = gp.split("~");
@@ -1231,31 +1197,31 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                         <input type="text" value={gs} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newGp = `${e.target.value.replace(/\//g, ".")}~${ge.replace(/\//g, ".")}`;
                           setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gp: newGp } }));
-                        }} style={{ ...inpStyle, width: 66, textAlign: "center" }} placeholder="M/D" />
-                        <span style={{ fontSize: 14, fontWeight: 800, color: "#9CA3AF" }}>~</span>
+                        }} className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
+                        <span className="text-sm font-extrabold text-gray-400">~</span>
                         <input type="text" value={ge} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newGp = `${gs.replace(/\//g, ".")}~${e.target.value.replace(/\//g, ".")}`;
                           setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gp: newGp } }));
-                        }} style={{ ...inpStyle, width: 66, textAlign: "center" }} placeholder="M/D" />
+                        }} className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
                       </>;
                     })()}
-                    <div style={{ width: 1, height: 20, background: "#E5E7EB", margin: "0 2px" }} />
-                    <span style={lblStyle}>검침</span>
+                    <div className="w-px h-5 bg-gray-200 mx-0.5" />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">검침</span>
                     <input type="number" value={ev.gpr ?? r.gasPrev} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gpr: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 80 }} placeholder="시작" />
-                    <span style={{ fontSize: 16, fontWeight: 800, color: "#9CA3AF" }}>-</span>
+                      className={`${inpCls} w-20`} placeholder="시작" />
+                    <span className="text-base font-extrabold text-gray-400">-</span>
                     <input type="number" value={ev.gcr ?? r.gasCur} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gcr: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 80 }} placeholder="끝" />
-                    <div style={{ width: 1, height: 20, background: "#E5E7EB", margin: "0 2px" }} />
-                    <span style={lblStyle}>사용</span>
+                      className={`${inpCls} w-20`} placeholder="끝" />
+                    <div className="w-px h-5 bg-gray-200 mx-0.5" />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">사용</span>
                     <input type="number" value={ev.gu ?? r.gasUsage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gu: parseInt(e.target.value) || 0 } }))}
-                      style={{ ...inpStyle, width: 66 }} />
-                    <span style={lblStyle}>금액</span>
+                      className={`${inpCls} w-[66px]`} />
+                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={gasVal ? fmt(gasVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gas: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      style={{ ...inpStyle, width: 96, background: gasVal ? "#FFF1F2" : "#FEF2F2", borderColor: gasVal ? "#FDA4AF" : "#FECACA", fontWeight: 800 }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: gasVal ? "#FFF1F2" : "#FEF2F2", borderColor: gasVal ? "#FDA4AF" : "#FECACA" }} placeholder="0" />
                   </div>
                 </>}
-                <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: 800, color: "#1A1D23", whiteSpace: "nowrap" }}>
+                <div className="ml-auto text-xs font-extrabold text-hm-text whitespace-nowrap">
                   {fmt((ev.rent ?? r.rent) + (ev.mgmt ?? r.mgmt) + (r.roomType === "단기" ? elecVal + gasVal + (ev.water ?? r.water) + (ev.cable ?? r.cable) : 0))}원
                 </div>
               </div>
@@ -1263,15 +1229,15 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           );
         })}
       </div>
-      <div style={{ marginTop: 4, fontSize: 9, color: "#B0B5C1", textAlign: "center" }}>
+      <div className="mt-1 text-[9px] text-[#B0B5C1] text-center">
         ※ {typeTab === "단기" ? "임대료+관리비+공과금 통합 · 전기=엑셀 · 가스=파일 · 수도/인터넷=고정 · 월세일 기준 청구" : typeTab === "고정관리비" ? "고정관리비 건물 · 임대료+고정관리비 · 담당자 확인 후 발송" : "변동관리비 건물 · 공과금 기반 변동 청구 · 검침 후 발송"}
       </div>
 
       {/* ── 청구 설정 마법사 모달 ── */}
       {showSetupWizard && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9000] bg-black/45 flex items-center justify-center"
           onClick={() => setShowSetupWizard(false)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 600, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+          <div className="bg-white rounded-2xl p-6 max-w-[600px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <BillingSetupWizard
               buildingId={null}
@@ -1286,13 +1252,13 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* ── 검침 업로드 모달 ── */}
       {showMeterUpload && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9000] bg-black/45 flex items-center justify-center"
           onClick={() => setShowMeterUpload(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 600, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+          <div className="bg-white rounded-2xl p-6 max-w-[600px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ fontSize: 16, fontWeight: 800 }}>📊 검침 엑셀 업로드</span>
-              <button onClick={() => setShowMeterUpload(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: "#94A3B8" }}>✕</button>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-base font-extrabold">📊 검침 엑셀 업로드</span>
+              <button onClick={() => setShowMeterUpload(null)} className="border-none bg-transparent text-xl cursor-pointer text-[#94A3B8] hover:text-hm-text transition-colors">✕</button>
             </div>
             <MeterUpload
               billingMonth={billingMonth}
@@ -1304,9 +1270,9 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* ── 변동관리비 뷰 모달 ── */}
       {showVariableView && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9000] bg-black/45 flex items-center justify-center"
           onClick={() => setShowVariableView(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 900, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+          <div className="bg-white rounded-2xl p-6 max-w-[900px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <VariableBillingView
               buildingName={showVariableView}
@@ -1320,9 +1286,9 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* ── 호실별 청구 설정 패널 ── */}
       {showRoomSettings && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9000] bg-black/45 flex items-center justify-center"
           onClick={() => setShowRoomSettings(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 500, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+          <div className="bg-white rounded-2xl p-6 max-w-[500px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <RoomBillingSettingsPanel
               roomId={showRoomSettings?.roomId}
@@ -1339,13 +1305,13 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* ── 청구서 미리보기 모달 ── */}
       {showInvoice && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9000] bg-black/45 flex items-center justify-center"
           onClick={() => setShowInvoice(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 500, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+          <div className="bg-white rounded-2xl p-6 max-w-[500px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ fontSize: 16, fontWeight: 800 }}>🧾 청구서 미리보기</span>
-              <button onClick={() => setShowInvoice(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: "#94A3B8" }}>✕</button>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-base font-extrabold">🧾 청구서 미리보기</span>
+              <button onClick={() => setShowInvoice(null)} className="border-none bg-transparent text-xl cursor-pointer text-[#94A3B8] hover:text-hm-text transition-colors">✕</button>
             </div>
             <BillingInvoiceTemplate
               record={showInvoice}

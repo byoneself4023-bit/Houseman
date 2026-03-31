@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, SectionTitle, Table, StatusBadge } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { rtCfg } from '@/components/RoomTypeBadge';
 import { getRoomType } from '@/config';
 import {
@@ -69,22 +69,22 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
         const previewAcctTypes = detailBuildingTypes.map(t => t === "기업시설관리" ? "관리사무소" : t);
         const previewAccts = buildingAccounts[buildingName] || { mode1: "", housemanAccount1: defaultHousemanAccount, ownerAccounts1: {}, mode2: "", housemanAccount2: defaultHousemanAccount, ownerAccounts2: {}, mode3: "", housemanAccount3: defaultHousemanAccount, ownerAccounts3: {} };
         return (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-start", justifyContent: "center", zIndex: 9999, overflowY: "auto", padding: "40px 20px" }}>
-            <div style={{ background: "#fff", borderRadius: 16, padding: "0", maxWidth: 800, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+          <div className="fixed inset-0 bg-black/60 flex items-start justify-center z-[9999] overflow-y-auto px-5 py-10">
+            <div className="bg-white rounded-2xl max-w-[800px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
               {/* Preview Header */}
-              <div style={{ padding: "20px 28px", background: "linear-gradient(135deg, #1A1D23 0%, #2D3748 100%)", borderRadius: "16px 16px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="px-7 py-5 rounded-t-2xl flex justify-between items-center" style={{ background: "linear-gradient(135deg, #1A1D23 0%, #2D3748 100%)" }}>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>📋 {buildingName} 미리보기</div>
-                  <div style={{ fontSize: 11, color: "#A0AEC0", marginTop: 2 }}>{detailBuildingTypes.join(" + ")} · {bldg.rooms}실 · {detail.owner && `건물주: ${detail.owner}`}</div>
+                  <div className="text-lg font-black text-white">📋 {buildingName} 미리보기</div>
+                  <div className="text-[11px] text-[#A0AEC0] mt-0.5">{detailBuildingTypes.join(" + ")} · {bldg.rooms}실 · {detail.owner && `건물주: ${detail.owner}`}</div>
                 </div>
-                <button onClick={() => setShowDetailPreview(false)} style={{ padding: "8px 20px", borderRadius: 8, border: "1.5px solid #A0AEC0", background: "transparent", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>✕ 닫기</button>
+                <button onClick={() => setShowDetailPreview(false)} className="px-5 py-2 rounded-lg border-[1.5px] border-[#A0AEC0] bg-transparent text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-white/10 transition-colors">✕ 닫기</button>
               </div>
 
-              <div style={{ padding: "20px 28px" }}>
+              <div className="px-7 py-5">
                 {/* Preview: Basic Info */}
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📋 기본 정보</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <div className="mb-4">
+                  <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📋 기본 정보</div>
+                  <div className="grid grid-cols-2 gap-2">
                     {[
                       { l: "건물명", v: buildingName },
                       { l: "건물 유형", v: detailBuildingTypes.join(" + ") },
@@ -95,28 +95,28 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                       { l: "공실", v: `${bldgVacancies.length}실` },
                       { l: "연체", v: overdueCount > 0 ? `${overdueCount}건` : "" },
                     ].filter(x => x.v).map((x, i) => (
-                      <div key={i} style={{ display: "flex", gap: 8, padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
-                        <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600, minWidth: 80 }}>{x.l}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{x.v}</span>
+                      <div key={i} className="flex gap-2 py-[5px] border-b border-gray-50">
+                        <span className="text-[11px] text-hm-text-muted font-semibold min-w-[80px]">{x.l}</span>
+                        <span className="text-xs font-bold text-hm-text">{x.v}</span>
                       </div>
                     ))}
                   </div>
-                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                  <div className="flex gap-1.5 mt-2">
                     {Object.entries(typeCounts).filter(([,v]) => v > 0).map(([t, v]) => (
-                      <span key={t} style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 4, background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
+                      <span key={t} className="text-[11px] font-bold px-2.5 py-[3px] rounded" style={{ background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
                     ))}
                   </div>
                 </div>
 
                 {/* Preview: Owner Info */}
                 {detail.owner && (
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>👤 건물주 정보</div>
-                    <div style={{ padding: "8px 12px", background: "#F0F4FF", borderRadius: 8, marginBottom: 8 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#2563EB", marginBottom: 6 }}>건물주 1 (주)</div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                        <div><span style={{ fontSize: 9, color: "#8F95A3" }}>이름</span><div style={{ fontSize: 12, fontWeight: 700 }}>{detail.owner}</div></div>
-                        {detail.ownerPhone && <div><span style={{ fontSize: 9, color: "#8F95A3" }}>전화번호</span><div style={{ fontSize: 12, fontWeight: 700 }}>{detail.ownerPhone}</div></div>}
+                  <div className="mb-4">
+                    <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">👤 건물주 정보</div>
+                    <div className="px-3 py-2 bg-[#F0F4FF] rounded-lg mb-2">
+                      <div className="text-[10px] font-bold text-hm-blue-dark mb-1.5">건물주 1 (주)</div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <div><span className="text-[9px] text-hm-text-muted">이름</span><div className="text-xs font-bold">{detail.owner}</div></div>
+                        {detail.ownerPhone && <div><span className="text-[9px] text-hm-text-muted">전화번호</span><div className="text-xs font-bold">{detail.ownerPhone}</div></div>}
                       </div>
                     </div>
                   </div>
@@ -124,9 +124,9 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
 
                 {/* Preview: Account Info */}
                 {(previewAccts.mode1 || previewAccts.mode2) && (
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏦 건물 계좌 정보</div>
-                    <div style={{ display: "grid", gridTemplateColumns: previewAcctTypes.length === 3 ? "1fr 1fr 1fr" : previewAcctTypes.length === 2 ? "1fr 1fr" : "1fr", gap: 10 }}>
+                  <div className="mb-4">
+                    <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏦 건물 계좌 정보</div>
+                    <div className={`grid gap-2.5 ${previewAcctTypes.length === 3 ? 'grid-cols-3' : previewAcctTypes.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                       {previewAcctTypes.map((aType, ai) => {
                         const suffix = String(ai + 1);
                         const curMode = previewAccts[`mode${suffix}`];
@@ -136,13 +136,13 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                         const curOwnerFields = ownerFieldCfg[curMode] || [];
                         const hmUsage = housemanUsageMap[curMode];
                         return (
-                          <div key={aType} style={{ padding: "10px 12px", background: acctTypeBg[aType], borderRadius: 8, border: `1.5px solid ${acctTypeColor[aType]}40` }}>
-                            <div style={{ fontSize: 12, fontWeight: 800, color: acctTypeColor[aType], marginBottom: 6 }}>{aType} · {modeLabel}</div>
-                            <div style={{ fontSize: 10, color: "#5F6577", marginBottom: 4 }}>💡 {flowMap[curMode]}</div>
+                          <div key={aType} className="px-3 py-2.5 rounded-lg" style={{ background: acctTypeBg[aType], border: `1.5px solid ${acctTypeColor[aType]}40` }}>
+                            <div className="text-xs font-extrabold mb-1.5" style={{ color: acctTypeColor[aType] }}>{aType} · {modeLabel}</div>
+                            <div className="text-[10px] text-hm-text-sub mb-1">💡 {flowMap[curMode]}</div>
                             {hmUsage && (
-                              <div style={{ fontSize: 10, marginBottom: 4 }}>
-                                <span style={{ color: "#2563EB", fontWeight: 600 }}>하우스맨 계좌 ({hmUsage}):</span>
-                                <span style={{ fontFamily: "monospace", marginLeft: 4 }}>{previewAccts[`housemanAccount${suffix}`]}</span>
+                              <div className="text-[10px] mb-1">
+                                <span className="text-hm-blue-dark font-semibold">하우스맨 계좌 ({hmUsage}):</span>
+                                <span className="font-mono ml-1">{previewAccts[`housemanAccount${suffix}`]}</span>
                               </div>
                             )}
                             {curOwnerFields.map((f: any) => {
@@ -152,9 +152,9 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                               const holder = accts[f.key + "_holder"] || "";
                               if (!bank && !num && !holder) return null;
                               return (
-                                <div key={f.key} style={{ fontSize: 10, marginBottom: 2 }}>
-                                  <span style={{ color: "#EA580C", fontWeight: 600 }}>{f.label}:</span>
-                                  <span style={{ fontFamily: "monospace", marginLeft: 4 }}>{[bank, num, holder].filter(Boolean).join(" ")}</span>
+                                <div key={f.key} className="text-[10px] mb-0.5">
+                                  <span className="text-hm-warning font-semibold">{f.label}:</span>
+                                  <span className="font-mono ml-1">{[bank, num, holder].filter(Boolean).join(" ")}</span>
                                 </div>
                               );
                             })}
@@ -166,18 +166,18 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                 )}
 
                 {/* Preview: Staff & Contract */}
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏢 담당자 & 계약 조건</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
+                <div className="mb-4">
+                  <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏢 담당자 & 계약 조건</div>
+                  <div className="grid grid-cols-3 gap-1.5">
                     {[
                       { l: "수수료", v: bldg.feeType === "pct" ? `${(bldg.fee * 100)}%` : (bldg.fixedFee ? `${bldg.fixedFee.toLocaleString()}원` : "") },
                       { l: "수수료 유형", v: bldg.feeType === "pct" ? "수수료율" : "정액제" },
                       { l: "관리비 유형", v: bdMgmtType || "변동관리비" },
                       { l: "관리시작일", v: detail.start },
                     ].filter(x => x.v).map((x, i) => (
-                      <div key={i} style={{ padding: "4px 0", borderBottom: "1px solid #F3F4F6" }}>
-                        <span style={{ fontSize: 10, color: "#8F95A3" }}>{x.l}</span>
-                        <div style={{ fontSize: 12, fontWeight: 700 }}>{x.v}</div>
+                      <div key={i} className="py-1 border-b border-gray-50">
+                        <span className="text-[10px] text-hm-text-muted">{x.l}</span>
+                        <div className="text-xs font-bold">{x.v}</div>
                       </div>
                     ))}
                   </div>
@@ -185,9 +185,9 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
 
                 {/* Preview: Vendors */}
                 {Object.values(vendorEnabled).some(v => v) && (
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🔧 협력업체</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  <div className="mb-4">
+                    <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🔧 협력업체</div>
+                    <div className="flex flex-wrap gap-1.5">
                       {[
                         { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
                         { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
@@ -197,7 +197,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                         { key: "custom1", label: "기타1", icon: "📋", color: "#64748B" },
                         { key: "custom2", label: "기타2", icon: "📋", color: "#64748B" },
                       ].filter(v => vendorEnabled[v.key]).map(v => (
-                        <span key={v.key} style={{ padding: "4px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: v.color + "15", color: v.color, border: `1px solid ${v.color}40` }}>
+                        <span key={v.key} className="px-3 py-1 rounded-md text-[11px] font-bold" style={{ background: v.color + "15", color: v.color, border: `1px solid ${v.color}40` }}>
                           {v.icon} {v.label}
                         </span>
                       ))}
@@ -206,20 +206,20 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                 )}
 
                 {/* Preview: Floor/Room Status */}
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🏗️ 층별 호실 현황</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div className="mb-4">
+                  <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏗️ 층별 호실 현황</div>
+                  <div className="flex flex-col gap-1">
                     {floorKeys.map(floor => {
                       const rooms = detail.floors[floor];
                       return (
-                        <div key={floor} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", background: "#1B1F2E", padding: "4px 10px", borderRadius: 6, minWidth: 36, textAlign: "center" }}>{floor}</span>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        <div key={floor} className="flex items-center gap-2">
+                          <span className="text-xs font-extrabold text-white bg-[#1B1F2E] px-2.5 py-1 rounded-md min-w-[36px] text-center">{floor}</span>
+                          <div className="flex flex-wrap gap-1">
                             {rooms.map((room: string) => {
                               const info = getRoomStatus(room);
                               const st = statusStyle(info.status === "정상" ? "입주" : info.status === "연체" ? "연체" : info.status);
                               return (
-                                <span key={room} style={{ padding: "3px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700, background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
+                                <span key={room} className="px-2 py-[3px] rounded text-[10px] font-bold" style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
                                   {room}{info.name ? ` ${info.name}` : ""}
                                 </span>
                               );
@@ -236,9 +236,9 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   const pastKeys = Object.keys(pastTenantsData).filter(k => k.startsWith(buildingName + "_"));
                   if (pastKeys.length === 0) return null;
                   return (
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>📷 퇴실자 사진 ({pastKeys.length}건)</div>
-                      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 6 }}>
+                    <div className="mb-4">
+                      <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📷 퇴실자 사진 ({pastKeys.length}건)</div>
+                      <div className={`grid gap-1.5 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                         {pastKeys.slice(0, 6).map(k => {
                           const rawRec = pastTenantsData[k];
                           const records = Array.isArray(rawRec) ? rawRec : [rawRec].filter(Boolean);
@@ -246,13 +246,13 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                           const last = records[records.length - 1];
                           const room = k.split("_")[1];
                           return (
-                            <div key={k} style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", cursor: "pointer" }}
+                            <div key={k} className="px-3 py-2 rounded-lg border-[1.5px] border-hm-danger-border bg-hm-danger-bg cursor-pointer hover:opacity-80 transition-opacity"
                               onClick={() => setPhotoViewTarget({ key: k, room, records })}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: 13, fontWeight: 800 }}>{room}호 {last?.name}</span>
-                                <span style={{ fontSize: 9, color: "#8F95A3" }}>{last?.moveOut || ""}</span>
+                              <div className="flex justify-between items-center">
+                                <span className="text-[13px] font-extrabold">{room}호 {last?.name}</span>
+                                <span className="text-[9px] text-hm-text-muted">{last?.moveOut || ""}</span>
                               </div>
-                              <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>
+                              <div className="text-[10px] text-hm-text-muted mt-0.5">
                                 입주 {(last?.moveInPhotos||[]).length}장 · 퇴실 {(last?.moveOutPhotos||[]).length}장
                               </div>
                             </div>
@@ -265,14 +265,14 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
 
                 {/* Preview: AS Status */}
                 {bldgAS.length > 0 && (
-                  <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 10, borderBottom: "2px solid #E5E7EB", paddingBottom: 8 }}>🔧 AS 현황 ({bldgAS.length}건)</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div className="mb-2">
+                    <div className="text-sm font-extrabold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🔧 AS 현황 ({bldgAS.length}건)</div>
+                    <div className="flex flex-col gap-1">
                       {bldgAS.map((a: any, i: number) => (
-                        <div key={i} style={{ display: "flex", gap: 8, padding: "6px 10px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 6, border: "1px solid #E8ECF0", alignItems: "center" }}>
-                          <span style={{ fontSize: 10, color: "#8F95A3", minWidth: 70 }}>{a.date}</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, minWidth: 40 }}>{a.room}</span>
-                          <span style={{ fontSize: 11, flex: 1 }}>{a.content}</span>
+                        <div key={i} className={`flex gap-2 px-2.5 py-1.5 rounded-md border border-hm-border items-center ${i % 2 === 0 ? 'bg-hm-bg-hover' : 'bg-white'}`}>
+                          <span className="text-[10px] text-hm-text-muted min-w-[70px]">{a.date}</span>
+                          <span className="text-[11px] font-bold min-w-[40px]">{a.room}</span>
+                          <span className="text-[11px] flex-1">{a.content}</span>
                           <StatusBadge status={a.priority} />
                           <StatusBadge status={a.status} />
                         </div>
@@ -283,9 +283,9 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
               </div>
 
               {/* Footer close button */}
-              <div style={{ padding: "16px 28px", borderTop: "1px solid #E5E7EB", textAlign: "center" }}>
+              <div className="px-7 py-4 border-t border-gray-200 text-center">
                 <button onClick={() => setShowDetailPreview(false)}
-                  style={{ padding: "10px 40px", borderRadius: 10, border: "none", background: "#1A1D23", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+                  className="px-10 py-2.5 rounded-[10px] border-none bg-hm-text text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                   닫기
                 </button>
               </div>
@@ -296,52 +296,52 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
 
       {/* Delete Confirmation Modal */}
       {deleteStep > 0 && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "32px 36px", maxWidth: 420, width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-2xl px-9 py-8 max-w-[420px] w-[90%] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
             {deleteStep === 1 && (
               <>
-                <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>⚠️</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23", textAlign: "center", marginBottom: 8 }}>건물을 삭제하시겠습니까?</div>
-                <div style={{ fontSize: 13, color: "#5F6577", textAlign: "center", marginBottom: 24, lineHeight: 1.6 }}>
-                  <strong style={{ color: "#DC2626" }}>{buildingName}</strong>의 모든 정보와<br />
-                  <strong style={{ color: "#DC2626" }}>{Object.values(detail.floors).flat().length}개 호실</strong>이 영구적으로 삭제됩니다.
+                <div className="text-4xl text-center mb-4">⚠️</div>
+                <div className="text-lg font-extrabold text-hm-text text-center mb-2">건물을 삭제하시겠습니까?</div>
+                <div className="text-[13px] text-hm-text-sub text-center mb-6 leading-relaxed">
+                  <strong className="text-hm-danger">{buildingName}</strong>의 모든 정보와<br />
+                  <strong className="text-hm-danger">{Object.values(detail.floors).flat().length}개 호실</strong>이 영구적으로 삭제됩니다.
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setDeleteStep(0)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                  <button onClick={() => setDeleteStep(2)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "#DC2626", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>삭제 진행</button>
+                <div className="flex gap-2.5">
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                  <button onClick={() => setDeleteStep(2)} className="flex-1 py-3 rounded-[10px] border-none bg-hm-danger text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">삭제 진행</button>
                 </div>
               </>
             )}
             {deleteStep === 2 && (
               <>
-                <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>🚨</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#DC2626", textAlign: "center", marginBottom: 8 }}>정말요? 되돌릴 수 없습니다!</div>
-                <div style={{ fontSize: 13, color: "#5F6577", textAlign: "center", marginBottom: 16, lineHeight: 1.6 }}>
+                <div className="text-4xl text-center mb-4">🚨</div>
+                <div className="text-lg font-extrabold text-hm-danger text-center mb-2">정말요? 되돌릴 수 없습니다!</div>
+                <div className="text-[13px] text-hm-text-sub text-center mb-4 leading-relaxed">
                   삭제 시 복구가 불가능합니다.<br />
                   입주자 정보, 수금 내역, AS 이력, 순회 기록까지<br />
                   모두 함께 삭제됩니다.
                 </div>
-                <div style={{ padding: "12px 16px", background: "#FEF2F2", borderRadius: 10, border: "1px solid #FECACA", marginBottom: 20 }}>
-                  <div style={{ fontSize: 12, color: "#991B1B", fontWeight: 600, textAlign: "center" }}>
+                <div className="px-4 py-3 bg-hm-danger-bg rounded-[10px] border border-hm-danger-border mb-5">
+                  <div className="text-xs text-[#991B1B] font-semibold text-center">
                     ⚡ {buildingName} · {Object.values(detail.floors).flat().length}개 호실 · {bldgTenants.length}명 입주자 · AS {bldgAS.length}건
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setDeleteStep(0)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>아니요, 취소</button>
-                  <button onClick={() => setDeleteStep(3)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "#991B1B", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>그래도 삭제</button>
+                <div className="flex gap-2.5">
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">아니요, 취소</button>
+                  <button onClick={() => setDeleteStep(3)} className="flex-1 py-3 rounded-[10px] border-none bg-[#991B1B] text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">그래도 삭제</button>
                 </div>
               </>
             )}
             {deleteStep === 3 && (
               <>
-                <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>💀</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23", textAlign: "center", marginBottom: 8 }}>마지막 확인입니다</div>
-                <div style={{ fontSize: 14, color: "#DC2626", textAlign: "center", marginBottom: 16, fontWeight: 700 }}>
+                <div className="text-4xl text-center mb-4">💀</div>
+                <div className="text-lg font-extrabold text-hm-text text-center mb-2">마지막 확인입니다</div>
+                <div className="text-sm text-hm-danger text-center mb-4 font-bold">
                   "{buildingName}" 를 입력하고 삭제 버튼을 누르세요.
                 </div>
-                <input id="deleteConfirmInput" placeholder={`"${buildingName}" 입력`} style={{ ...inputStyle, padding: "12px 16px", fontSize: 14, textAlign: "center", marginBottom: 16, border: "2px solid #FECACA" }} />
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={() => setDeleteStep(0)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
+                <input id="deleteConfirmInput" placeholder={`"${buildingName}" 입력`} className={`${inputClassName} !px-4 !py-3 !text-sm text-center mb-4 !border-2 !border-hm-danger-border`} />
+                <div className="flex gap-2.5">
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
                   <button onClick={() => {
                     const input = document.getElementById("deleteConfirmInput") as HTMLInputElement | null;
                     if (input && input.value === buildingName) {
@@ -356,7 +356,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                       setDeleteStep(0); onBack();
                     }
                     else if (input) { input.style.borderColor = "#DC2626"; input.style.background = "#FEF2F2"; input.placeholder = "건물명이 일치하지 않습니다"; }
-                  }} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "#7F1D1D", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>🗑 영구 삭제</button>
+                  }} className="flex-1 py-3 rounded-[10px] border-none bg-[#7F1D1D] text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🗑 영구 삭제</button>
                 </div>
               </>
             )}
@@ -369,13 +369,13 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
         const pastKeys = Object.keys(pastTenantsData).filter(k => k.startsWith(buildingName + "_"));
         if (pastKeys.length === 0) return null;
         return (
-          <Card style={{ marginBottom: 20 }}>
+          <Card className="mb-5">
             <SectionTitle sub={`${pastKeys.length}건 퇴실 기록`}>📷 퇴실자 사진</SectionTitle>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+            <table className="w-full border-collapse text-xs">
               <thead>
-                <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+                <tr className="border-b-2 border-hm-border">
                   {["호실","퇴실자","퇴실일","입주사진","입주체크사진","퇴실사진",""].map((h, i) => (
-                    <th key={i} style={{ padding: "8px 10px", textAlign: i >= 3 ? "center" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3" }}>{h}</th>
+                    <th key={i} className={`px-2.5 py-2 text-[11px] font-bold text-hm-text-muted ${i >= 3 ? 'text-center' : 'text-left'}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -390,37 +390,35 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   const mcCount = (last?.moveInCheckPhotos || []).length;
                   const moCount = (last?.moveOutPhotos || []).length;
                   return (
-                    <tr key={k} style={{ borderBottom: "1px solid #F0F2F5" }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "#F9FAFB"}
-                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
-                      <td style={{ padding: "8px 10px", fontWeight: 700 }}>{room}호</td>
-                      <td style={{ padding: "8px 10px" }}>{last?.name}</td>
-                      <td style={{ padding: "8px 10px", fontSize: 11, color: "#DC2626" }}>{last?.moveOut || "\u2014"}</td>
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
+                    <tr key={k} className="border-b border-[#F0F2F5] hover:bg-hm-bg-hover transition-colors">
+                      <td className="px-2.5 py-2 font-bold">{room}호</td>
+                      <td className="px-2.5 py-2">{last?.name}</td>
+                      <td className="px-2.5 py-2 text-[11px] text-hm-danger">{last?.moveOut || "\u2014"}</td>
+                      <td className="px-2.5 py-2 text-center">
                         {miCount > 0 ? (
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#059669", padding: "2px 8px", borderRadius: 4, background: "#D1FAE5" }}>🏠 {miCount}장</span>
+                          <span className="text-[11px] font-bold text-hm-success px-2 py-0.5 rounded bg-[#D1FAE5]">🏠 {miCount}장</span>
                         ) : (
-                          <span style={{ fontSize: 11, color: "#9CA3AF" }}>{"\u2014"}</span>
+                          <span className="text-[11px] text-gray-400">{"\u2014"}</span>
                         )}
                       </td>
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
+                      <td className="px-2.5 py-2 text-center">
                         {mcCount > 0 ? (
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#EA580C", padding: "2px 8px", borderRadius: 4, background: "#FFF7ED" }}>📋 {mcCount}장</span>
+                          <span className="text-[11px] font-bold text-hm-warning px-2 py-0.5 rounded bg-hm-warning-bg">📋 {mcCount}장</span>
                         ) : (
-                          <span style={{ fontSize: 11, color: "#9CA3AF" }}>{"\u2014"}</span>
+                          <span className="text-[11px] text-gray-400">{"\u2014"}</span>
                         )}
                       </td>
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
+                      <td className="px-2.5 py-2 text-center">
                         {moCount > 0 ? (
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", padding: "2px 8px", borderRadius: 4, background: "#FEE2E2" }}>🚪 {moCount}장</span>
+                          <span className="text-[11px] font-bold text-hm-danger px-2 py-0.5 rounded bg-[#FEE2E2]">🚪 {moCount}장</span>
                         ) : (
-                          <span style={{ fontSize: 11, color: "#9CA3AF" }}>{"\u2014"}</span>
+                          <span className="text-[11px] text-gray-400">{"\u2014"}</span>
                         )}
                       </td>
-                      <td style={{ padding: "8px 10px", textAlign: "center" }}>
+                      <td className="px-2.5 py-2 text-center">
                         {(miCount + mcCount + moCount) > 0 && (
                           <button onClick={() => setPhotoViewTarget({ key: k, room, records })}
-                            style={{ padding: "4px 12px", borderRadius: 6, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                            className="px-3 py-1 rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[10px] font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
                             👁️ 보기
                           </button>
                         )}
@@ -461,63 +459,63 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
         const mcPhotos = last?.moveInCheckPhotos || [];
         const moPhotos = last?.moveOutPhotos || [];
         const renderPhoto = (src: string, idx: number, icon: string) => (
-          <div key={idx} style={{ aspectRatio: "1", borderRadius: 8, border: "1.5px solid #E0E3E9", overflow: "hidden", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div key={idx} className="aspect-square rounded-lg border-[1.5px] border-hm-input-border overflow-hidden bg-hm-bg-slate flex items-center justify-center">
             {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
-              <img src={src} alt={`사진 ${idx+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={src} alt={`사진 ${idx+1}`} className="w-full h-full object-cover" />
             ) : (
-              <span style={{ fontSize: 20 }}>{icon}</span>
+              <span className="text-xl">{icon}</span>
             )}
           </div>
         );
         return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
             onClick={() => setPhotoViewTarget(null)}>
             <div onClick={e => e.stopPropagation()}
-              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "95%" : 700, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              className={`bg-white rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${isMobile ? 'w-[95%]' : 'w-[700px]'}`}>
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>{buildingName} {room}호 — {last.name}</div>
-                  <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>입주: {last.moveIn || "\u2014"} → 퇴실: {last.moveOut || "\u2014"}</div>
+                  <div className="text-lg font-extrabold text-hm-text">{buildingName} {room}호 — {last.name}</div>
+                  <div className="text-[11px] text-hm-text-muted mt-0.5">입주: {last.moveIn || "\u2014"} → 퇴실: {last.moveOut || "\u2014"}</div>
                 </div>
                 <button onClick={() => setPhotoViewTarget(null)}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, fontFamily: "inherit" }}>✕</button>
+                  className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
               </div>
 
               {miPhotos.length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#059669", marginBottom: 8, paddingBottom: 6, borderBottom: "2px solid #D1FAE5" }}>
-                    🏠 입주사진 ({miPhotos.length}장) <span style={{ fontSize: 10, fontWeight: 600, color: "#8F95A3" }}>{last.moveIn || ""}</span>
+                <div className="mb-5">
+                  <div className="text-[13px] font-extrabold text-hm-success mb-2 pb-1.5 border-b-2 border-[#D1FAE5]">
+                    🏠 입주사진 ({miPhotos.length}장) <span className="text-[10px] font-semibold text-hm-text-muted">{last.moveIn || ""}</span>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
+                  <div className="grid grid-cols-6 gap-1.5">
                     {miPhotos.map((src: string, i: number) => renderPhoto(src, i, "🏠"))}
                   </div>
                 </div>
               )}
 
               {(mcPhotos.length > 0 || moPhotos.length > 0) && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23", marginBottom: 10, paddingBottom: 6, borderBottom: "2px solid #E8ECF0" }}>
+                <div className="mb-5">
+                  <div className="text-[13px] font-extrabold text-hm-text mb-2.5 pb-1.5 border-b-2 border-hm-border">
                     📸 호실 상태 비교 (시작 → 끝)
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    <div style={{ border: "2px solid #FED7AA", borderRadius: 12, padding: 12, background: "#FFF7ED" }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8 }}>📋 입주체크사진 (시작) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{mcPhotos.length}장</span></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="border-2 border-hm-warning-border rounded-xl p-3 bg-hm-warning-bg">
+                      <div className="text-[11px] font-extrabold text-hm-warning mb-2">📋 입주체크사진 (시작) <span className="text-[9px] text-hm-text-muted font-semibold">{mcPhotos.length}장</span></div>
                       {mcPhotos.length > 0 ? (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+                        <div className="grid grid-cols-3 gap-1">
                           {mcPhotos.map((src: string, i: number) => renderPhoto(src, i, "📋"))}
                         </div>
                       ) : (
-                        <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 11 }}>사진 없음</div>
+                        <div className="py-4 text-center text-[#B0B5C1] text-[11px]">사진 없음</div>
                       )}
                     </div>
-                    <div style={{ border: "2px solid #FECACA", borderRadius: 12, padding: 12, background: "#FEF2F2" }}>
-                      <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", marginBottom: 8 }}>🚪 퇴실사진 (끝) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{moPhotos.length}장</span></div>
+                    <div className="border-2 border-hm-danger-border rounded-xl p-3 bg-hm-danger-bg">
+                      <div className="text-[11px] font-extrabold text-hm-danger mb-2">🚪 퇴실사진 (끝) <span className="text-[9px] text-hm-text-muted font-semibold">{moPhotos.length}장</span></div>
                       {moPhotos.length > 0 ? (
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+                        <div className="grid grid-cols-3 gap-1">
                           {moPhotos.map((src: string, i: number) => renderPhoto(src, i, "🚪"))}
                         </div>
                       ) : (
-                        <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 11 }}>사진 없음</div>
+                        <div className="py-4 text-center text-[#B0B5C1] text-[11px]">사진 없음</div>
                       )}
                     </div>
                   </div>
@@ -525,7 +523,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
               )}
 
               {miPhotos.length === 0 && mcPhotos.length === 0 && moPhotos.length === 0 && (
-                <div style={{ textAlign: "center", padding: 40, color: "#8F95A3", fontSize: 13 }}>등록된 사진이 없습니다</div>
+                <div className="text-center py-10 text-hm-text-muted text-[13px]">등록된 사진이 없습니다</div>
               )}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Card } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { staffRoles } from '@/config';
 import { persistFetchStaff, persistUpsertStaff } from '../buildingDetailApi';
 
@@ -102,38 +102,38 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
   return (
     <>
       {/* Section 3: Staff & Contract Conditions */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec3Open ? 12 : 0 }}>
-          <div onClick={() => setSec3Open(!sec3Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🏢 담당자 & 계약 조건</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>역할별 담당자 · 수수료 · 정산계좌 · 이메일</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec3Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec3Open(!sec3Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">🏢 담당자 & 계약 조건</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">역할별 담당자 · 수수료 · 정산계좌 · 이메일</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {sec3Open && (sec3Edit ? (
               <>
-                <button onClick={() => setSec3Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                <button onClick={() => setSec3Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
+                <button onClick={() => setSec3Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec3Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec3Edit(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✏️ 수정</button>
+              <button onClick={() => setSec3Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
-            <span onClick={() => setSec3Open(!sec3Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec3Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+            <span onClick={() => setSec3Open(!sec3Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec3Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
-        {sec3Open && <div style={{ pointerEvents: sec3Edit ? "auto" : "none", opacity: sec3Edit ? 1 : 0.7, transition: "opacity 0.2s" }}>
+        {sec3Open && <div className={`transition-opacity duration-200 ${sec3Edit ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-70'}`}>
           {/* Staff assignment */}
-          <div style={{ padding: "8px 12px", background: "#F0F4FF", borderRadius: 8, marginBottom: 12, border: "1px solid #BFDBFE" }}>
-            <div style={{ fontSize: 10, fontWeight: 800, color: "#2563EB", marginBottom: 6 }}>👤 담당자 배정</div>
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(5, 1fr)", gap: 6 }}>
+          <div className="px-3 py-2 bg-[#F0F4FF] rounded-lg mb-3 border border-[#BFDBFE]">
+            <div className="text-[10px] font-extrabold text-hm-blue-dark mb-1.5">👤 담당자 배정</div>
+            <div className={`grid gap-1.5 ${isMobile ? 'grid-cols-2' : 'grid-cols-5'}`}>
               {staffRoles.map((d: any, i: number) => (
                 <div key={i}>
-                  <div style={{ fontSize: 9, color: d.color, fontWeight: 700, marginBottom: 2 }}>{d.icon} {d.label}</div>
+                  <div className="text-[9px] font-bold mb-0.5" style={{ color: d.color }}>{d.icon} {d.label}</div>
                   <select value={buildingMgrs[d.id] || ""} onChange={e => {
                     const name = e.target.value;
                     setBldgMgr(d.id, name);
                     const staff = staffList.find((s: any) => s.name === name);
                     persistUpsertStaff(supabaseId, d.id, name, staff?.phone || '');
-                  }} style={{ ...inputStyle, padding: "5px 8px", fontSize: 10, cursor: "pointer" }}>
+                  }} className={`${inputClassName} !px-2 !py-[5px] !text-[10px] cursor-pointer`}>
                     <option value="">선택</option>
                     {staffList.filter((s: any) => s.roles.includes(d.id)).map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
@@ -142,64 +142,64 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
             </div>
           </div>
           {/* Fee & contract conditions */}
-          <div style={{ display: "grid", gridTemplateColumns: detailBuildingTypes.includes("단기") ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div className={`grid gap-2 mb-2.5 ${detailBuildingTypes.includes("단기") ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수수료 유형</div>
-              <select value={detailFeeType} onChange={e => setDetailFeeType(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">수수료 유형</div>
+              <select value={detailFeeType} onChange={e => setDetailFeeType(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                 <option value="pct">수수료율 (%)</option>
                 <option value="fixed">정액제 (원)</option>
               </select>
             </div>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{detailFeeType === "pct" ? "수수료율" : "정액 금액"}</div>
-              <input value={bdFeeValue} onChange={e => setBdFeeValue(e.target.value)} placeholder={detailFeeType === "pct" ? "5%" : "1,500,000"} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, textAlign: "right" }} />
+              <div className="text-[9px] text-hm-text-muted mb-0.5">{detailFeeType === "pct" ? "수수료율" : "정액 금액"}</div>
+              <input value={bdFeeValue} onChange={e => setBdFeeValue(e.target.value)} placeholder={detailFeeType === "pct" ? "5%" : "1,500,000"} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] text-right`} />
             </div>
             {detailBuildingTypes.includes("단기") && <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>7일패널티 소유</div>
-              <select value={bdPenaltyOwner} onChange={e => setBdPenaltyOwner(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">7일패널티 소유</div>
+              <select value={bdPenaltyOwner} onChange={e => setBdPenaltyOwner(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                 {["건물주", "하우스맨", "해당없음"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>}
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부가가치세</div>
-              <select value={bdVatType} onChange={e => setBdVatType(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">부가가치세</div>
+              <select value={bdVatType} onChange={e => setBdVatType(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                 {["포함", "별도", "없음"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
           </div>
           {/* Settlement dates */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ fontSize: 9, color: "#8F95A3" }}>정산일 ({bdSettlementDates.length}회/월)</span>
+          <div className="mb-2.5">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[9px] text-hm-text-muted">정산일 ({bdSettlementDates.length}회/월)</span>
               {bdSettlementDates.length < 3 && (
-                <button onClick={addSettlementDate} style={{ fontSize: 9, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>+ 추가</button>
+                <button onClick={addSettlementDate} className="text-[9px] text-hm-blue bg-transparent border-none cursor-pointer font-[inherit] font-bold hover:underline">+ 추가</button>
               )}
             </div>
             {detailBuildingTypes.includes("근생") && !detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") ? (
               <div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-                  <div style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, background: "#F3F4F6", color: "#6B7280", flex: 1 }}>정산기간: 1일 ~ 말일 (고정)</div>
+                <div className="flex gap-1.5 items-center mb-1">
+                  <div className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !bg-gray-100 !text-gray-500 flex-1`}>정산기간: 1일 ~ 말일 (고정)</div>
                 </div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ fontSize: 10, color: "#8F95A3", minWidth: 50 }}>정산일</span>
-                  <select value={bdSettlementDates[0] === "5" || bdSettlementDates[0] === (5 as any) ? "5" : "1"} onChange={e => setBdSettlementDates([e.target.value])} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer", flex: 1 }}>
+                <div className="flex gap-1.5 items-center">
+                  <span className="text-[10px] text-hm-text-muted min-w-[50px]">정산일</span>
+                  <select value={bdSettlementDates[0] === "5" || bdSettlementDates[0] === (5 as any) ? "5" : "1"} onChange={e => setBdSettlementDates([e.target.value])} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer flex-1`}>
                     <option value="1">매월 1일</option>
                     <option value="5">매월 5일</option>
                   </select>
-                  <span style={{ fontSize: 9, color: "#F59E0B", fontWeight: 600, whiteSpace: "nowrap" }}>* 토/일/공휴일 → 다음 영업일</span>
+                  <span className="text-[9px] text-amber-500 font-semibold whitespace-nowrap">* 토/일/공휴일 → 다음 영업일</span>
                 </div>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div className="flex flex-col gap-1">
                 {bdSettlementDates.map((d, i) => (
-                  <div key={i} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <span style={{ fontSize: 10, color: "#8F95A3", minWidth: 30, fontWeight: 600 }}>{i + 1}차</span>
-                    <select value={d} onChange={e => updateSettlementDate(i, e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer", flex: 1 }}>
+                  <div key={i} className="flex gap-1.5 items-center">
+                    <span className="text-[10px] text-hm-text-muted min-w-[30px] font-semibold">{i + 1}차</span>
+                    <select value={d} onChange={e => updateSettlementDate(i, e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer flex-1`}>
                       {[...Array(28).keys()].map(n => <option key={n + 1} value={String(n + 1)}>{n + 1}일</option>)}
                       <option value="말일">말일</option>
                     </select>
                     {bdSettlementDates.length > 1 && (
-                      <button onClick={() => removeSettlementDate(i)} style={{ padding: "2px 8px", background: "none", border: "1px solid #FECACA", borderRadius: 4, color: "#DC2626", cursor: "pointer", fontSize: 11, fontFamily: "inherit" }}>✕</button>
+                      <button onClick={() => removeSettlementDate(i)} className="px-2 py-0.5 bg-transparent border border-hm-danger-border rounded text-hm-danger cursor-pointer text-[11px] font-[inherit] hover:bg-hm-danger-bg transition-colors">✕</button>
                     )}
                   </div>
                 ))}
@@ -207,46 +207,46 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
             )}
           </div>
           {/* Management fee type */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div className="grid grid-cols-2 gap-2 mb-2.5">
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비 유형</div>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">관리비 유형</div>
               {detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생") ? (
-                <div style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, background: "#F3F4F6", color: "#6B7280" }}>변동관리비 (단기 고정)</div>
+                <div className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !bg-gray-100 !text-gray-500`}>변동관리비 (단기 고정)</div>
               ) : (
-                <select value={bdMgmtType} onChange={e => setBdMgmtType(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+                <select value={bdMgmtType} onChange={e => setBdMgmtType(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                   <option value="고정관리비">고정관리비</option>
                   <option value="변동관리비">변동관리비</option>
                 </select>
               )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", paddingTop: 14 }}>
-              <span style={{ fontSize: 10, color: bdMgmtType === "고정관리비" || (detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생")) ? "#6B7280" : "#2563EB", fontWeight: 600 }}>
+            <div className="flex items-center pt-3.5">
+              <span className={`text-[10px] font-semibold ${(detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생")) ? 'text-gray-500' : bdMgmtType === "고정관리비" ? 'text-gray-500' : 'text-hm-blue-dark'}`}>
                 {(detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생")) ? "💡 단기는 변동관리비 고정" : bdMgmtType === "고정관리비" ? "💡 매월 동일한 관리비 청구" : "💡 공과금 기반 변동 청구"}
               </span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div className="grid grid-cols-3 gap-2 mb-2.5">
             {(detailBuildingTypes.includes("단기") || detailBuildingTypes.includes("일반임대")) && <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>표준임대차</div>
-              <select value={bdStandardLease} onChange={e => setBdStandardLease(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">표준임대차</div>
+              <select value={bdStandardLease} onChange={e => setBdStandardLease(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                 {["사용", "미사용"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>}
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>순회주기</div>
-              <select value={bdVisitCycle} onChange={e => setBdVisitCycle(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, cursor: "pointer" }}>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">순회주기</div>
+              <select value={bdVisitCycle} onChange={e => setBdVisitCycle(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] cursor-pointer`}>
                 {["월4회", "월3회", "월2회", "월1회"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                <span style={{ fontSize: 9, color: "#8F95A3" }}>E-MAIL</span>
-                <button onClick={() => setEmails([...emails, ""])} style={{ fontSize: 9, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>+ 추가</button>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[9px] text-hm-text-muted">E-MAIL</span>
+                <button onClick={() => setEmails([...emails, ""])} className="text-[9px] text-hm-blue bg-transparent border-none cursor-pointer font-[inherit] font-bold hover:underline">+ 추가</button>
               </div>
               {emails.map((e, i) => (
-                <div key={i} style={{ display: "flex", gap: 4, marginBottom: i < emails.length - 1 ? 3 : 0 }}>
-                  <input value={e} onChange={ev => { const u = [...emails]; u[i] = ev.target.value; setEmails(u); }} placeholder="example@email.com" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, flex: 1 }} />
-                  {emails.length > 1 && <button onClick={() => setEmails(emails.filter((_, j) => j !== i))} style={{ padding: "0 6px", background: "none", border: "none", color: "#DC2626", cursor: "pointer", fontSize: 13 }}>✕</button>}
+                <div key={i} className={`flex gap-1 ${i < emails.length - 1 ? 'mb-[3px]' : ''}`}>
+                  <input value={e} onChange={ev => { const u = [...emails]; u[i] = ev.target.value; setEmails(u); }} placeholder="example@email.com" className={`${inputClassName} !px-2 !py-[5px] !text-[11px] flex-1`} />
+                  {emails.length > 1 && <button onClick={() => setEmails(emails.filter((_, j) => j !== i))} className="px-1.5 bg-transparent border-none text-hm-danger cursor-pointer text-[13px] hover:opacity-70 transition-opacity">✕</button>}
                 </div>
               ))}
             </div>
@@ -255,27 +255,27 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
       </Card>
 
       {/* Section 4: Vendors */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec4Open ? 12 : 0 }}>
-          <div onClick={() => setSec4Open(!sec4Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🔧 협력업체</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>소방 · 승강기 · 청소 · 소독 등 외주업체</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec4Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec4Open(!sec4Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">🔧 협력업체</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">소방 · 승강기 · 청소 · 소독 등 외주업체</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {sec4Open && (sec4Edit ? (
               <>
-                <button onClick={() => setSec4Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                <button onClick={() => setSec4Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
+                <button onClick={() => setSec4Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec4Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec4Edit(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✏️ 수정</button>
+              <button onClick={() => setSec4Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
-            <span onClick={() => setSec4Open(!sec4Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec4Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+            <span onClick={() => setSec4Open(!sec4Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec4Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
-        {sec4Open && <div style={{ pointerEvents: sec4Edit ? "auto" : "none", opacity: sec4Edit ? 1 : 0.7, transition: "opacity 0.2s" }}>
+        {sec4Open && <div className={`transition-opacity duration-200 ${sec4Edit ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-70'}`}>
         {/* Checkbox selection */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12, padding: "10px 14px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
+        <div className="flex flex-wrap gap-1.5 mb-3 px-3.5 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
           {[
             { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
             { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
@@ -286,20 +286,22 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
             { key: "custom2", label: "기타2", icon: "📋", color: "#64748B" },
           ].map(v => (
             <label key={v.key} onClick={() => sec4Edit && toggleDetailVendor(v.key)}
-              style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 6, cursor: sec4Edit ? "pointer" : "default", fontSize: 12, fontWeight: 700, transition: "all 0.15s",
+              className={`flex items-center gap-[5px] px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-150 ${sec4Edit ? 'cursor-pointer' : 'cursor-default'} ${!sec4Edit ? 'opacity-70' : ''}`}
+              style={{
                 background: vendorEnabled[v.key] ? (v.color + "15") : "#fff",
                 border: `1.5px solid ${vendorEnabled[v.key] ? v.color : "#E0E3E9"}`,
                 color: vendorEnabled[v.key] ? v.color : "#8F95A3",
-                opacity: sec4Edit ? 1 : 0.7 }}>
+              }}>
               <input type="checkbox" checked={vendorEnabled[v.key]} readOnly
-                style={{ accentColor: v.color, cursor: sec4Edit ? "pointer" : "default" }} />
+                className={`${sec4Edit ? 'cursor-pointer' : 'cursor-default'}`}
+                style={{ accentColor: v.color }} />
               <span>{v.icon}</span> {v.label}
             </label>
           ))}
         </div>
 
         {/* Vendor input forms */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div className="flex flex-col gap-1.5">
           {[
             { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981", type: "simple" },
             { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6", person: "승강기안전관리자", type: "withManager" },
@@ -309,79 +311,79 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
             { key: "custom1", label: "custom1", icon: "📋", color: "#64748B", type: "simple" },
             { key: "custom2", label: "custom2", icon: "📋", color: "#64748B", type: "simple" },
           ].filter(v => vendorEnabled[v.key]).map((v, i) => v.key === "fire" ? (
-            <div key={v.key} style={{ padding: "10px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6 }}>
+            <div key={v.key} className={`px-3 py-2.5 rounded-lg border border-hm-border ${i % 2 === 0 ? 'bg-hm-bg-hover' : 'bg-white'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs font-bold flex items-center gap-1.5" style={{ color: v.color }}>
                   <span>{v.icon}</span> {v.label}
                 </div>
-                <div style={{ display: "flex", gap: 4 }}>
+                <div className="flex gap-1">
                   {[{ id: "direct", label: "직접관리" }, { id: "vendor", label: "협력업체관리" }].map(m => (
                     <button key={m.id} onClick={() => setFireMode(m.id)}
-                      style={{ padding: "4px 12px", borderRadius: 6, border: fireMode === m.id ? "1.5px solid #DC2626" : "1px solid #E0E3E9", background: fireMode === m.id ? "#FEF2F2" : "#fff", color: fireMode === m.id ? "#DC2626" : "#8F95A3", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                      className={`px-3 py-1 rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${fireMode === m.id ? 'border-[1.5px] border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border border-hm-input-border bg-white text-hm-text-muted'}`}>
                       {m.label}
                     </button>
                   ))}
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                <span style={{ fontSize: 10, color: "#DC2626", fontWeight: 600 }}>사용승인일</span>
-                <div><input type="date" value={bdApprovalDate} onChange={e => setBdApprovalDate(e.target.value)} style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, maxWidth: 180 }} /></div>
+              <div className="grid grid-cols-[80px_1fr] gap-2 items-center mb-1.5">
+                <span className="text-[10px] text-hm-danger font-semibold">사용승인일</span>
+                <div><input type="date" value={bdApprovalDate} onChange={e => setBdApprovalDate(e.target.value)} className={`${inputClassName} !px-2 !py-[5px] !text-[11px] max-w-[180px]`} /></div>
               </div>
               {fireMode === "vendor" && (
-                <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 1fr auto", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                  <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>협력업체</span>
-                  <div><input value={bdVendors.fire.company} onChange={e => setBdVendor("fire", "company", e.target.value)} placeholder="업체명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                  <div><input value={bdVendors.fire.phone} onChange={e => setBdVendor("fire", "phone", e.target.value)} placeholder="업체 연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                  <div><input value={bdVendors.fire.contact} onChange={e => setBdVendor("fire", "contact", e.target.value)} placeholder="업체 담당자" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                  <div><input value={bdVendors.fire.contactPhone} onChange={e => setBdVendor("fire", "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                  <button style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, cursor: "pointer", fontFamily: "inherit", color: "#3B82F6", fontWeight: 700, whiteSpace: "nowrap" }}>📎 계약서</button>
+                <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_auto] gap-2 items-center mb-1.5">
+                  <span className="text-[10px] text-hm-text-muted font-semibold">협력업체</span>
+                  <div><input value={bdVendors.fire.company} onChange={e => setBdVendor("fire", "company", e.target.value)} placeholder="업체명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                  <div><input value={bdVendors.fire.phone} onChange={e => setBdVendor("fire", "phone", e.target.value)} placeholder="업체 연락처" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                  <div><input value={bdVendors.fire.contact} onChange={e => setBdVendor("fire", "contact", e.target.value)} placeholder="업체 담당자" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                  <div><input value={bdVendors.fire.contactPhone} onChange={e => setBdVendor("fire", "contactPhone", e.target.value)} placeholder="담당자 휴대폰" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                  <button className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-[10px] cursor-pointer font-[inherit] text-hm-blue font-bold whitespace-nowrap hover:bg-hm-blue-bg transition-colors">📎 계약서</button>
                 </div>
               )}
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr", gap: 8, alignItems: "center", padding: "6px 0 0 0", borderTop: `1px dashed ${v.color}40` }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: v.color }}>👤 소방안전관리자</span>
-                <div><input value={bdVendors.fire.manager} onChange={e => setBdVendor("fire", "manager", e.target.value)} placeholder="성명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors.fire.managerPhone} onChange={e => setBdVendor("fire", "managerPhone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors.fire.managerNote} onChange={e => setBdVendor("fire", "managerNote", e.target.value)} placeholder="자격/비고" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
+              <div className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 items-center pt-1.5" style={{ borderTop: `1px dashed ${v.color}40` }}>
+                <span className="text-[10px] font-bold" style={{ color: v.color }}>👤 소방안전관리자</span>
+                <div><input value={bdVendors.fire.manager} onChange={e => setBdVendor("fire", "manager", e.target.value)} placeholder="성명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors.fire.managerPhone} onChange={e => setBdVendor("fire", "managerPhone", e.target.value)} placeholder="연락처" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors.fire.managerNote} onChange={e => setBdVendor("fire", "managerNote", e.target.value)} placeholder="자격/비고" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
               </div>
             </div>
           ) : v.type === "withManager" ? (
-            <div key={v.key} style={{ padding: "10px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+            <div key={v.key} className={`px-3 py-2.5 rounded-lg border border-hm-border ${i % 2 === 0 ? 'bg-hm-bg-hover' : 'bg-white'}`}>
+              <div className="text-xs font-bold flex items-center gap-1.5 mb-2" style={{ color: v.color }}>
                 <span>{v.icon}</span> {v.label}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 1fr auto", gap: 8, alignItems: "center", marginBottom: 6 }}>
-                <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>협력업체</span>
-                <div><input value={bdVendors[v.key]?.company || ""} onChange={e => setBdVendor(v.key, "company", e.target.value)} placeholder="업체명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.phone || ""} onChange={e => setBdVendor(v.key, "phone", e.target.value)} placeholder="업체 연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.contact || ""} onChange={e => setBdVendor(v.key, "contact", e.target.value)} placeholder="업체 담당자" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.contactPhone || ""} onChange={e => setBdVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <button style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, cursor: "pointer", fontFamily: "inherit", color: "#3B82F6", fontWeight: 700, whiteSpace: "nowrap" }}>📎 계약서</button>
+              <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_auto] gap-2 items-center mb-1.5">
+                <span className="text-[10px] text-hm-text-muted font-semibold">협력업체</span>
+                <div><input value={bdVendors[v.key]?.company || ""} onChange={e => setBdVendor(v.key, "company", e.target.value)} placeholder="업체명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.phone || ""} onChange={e => setBdVendor(v.key, "phone", e.target.value)} placeholder="업체 연락처" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.contact || ""} onChange={e => setBdVendor(v.key, "contact", e.target.value)} placeholder="업체 담당자" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.contactPhone || ""} onChange={e => setBdVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <button className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-[10px] cursor-pointer font-[inherit] text-hm-blue font-bold whitespace-nowrap hover:bg-hm-blue-bg transition-colors">📎 계약서</button>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr", gap: 8, alignItems: "center", padding: "6px 0 0 0", borderTop: `1px dashed ${v.color}40` }}>
-                <span style={{ fontSize: 10, fontWeight: 700, color: v.color }}>👤 {v.person}</span>
-                <div><input value={bdVendors[v.key]?.manager || ""} onChange={e => setBdVendor(v.key, "manager", e.target.value)} placeholder="성명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.managerPhone || ""} onChange={e => setBdVendor(v.key, "managerPhone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.managerNote || ""} onChange={e => setBdVendor(v.key, "managerNote", e.target.value)} placeholder="자격/비고" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
+              <div className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 items-center pt-1.5" style={{ borderTop: `1px dashed ${v.color}40` }}>
+                <span className="text-[10px] font-bold" style={{ color: v.color }}>👤 {v.person}</span>
+                <div><input value={bdVendors[v.key]?.manager || ""} onChange={e => setBdVendor(v.key, "manager", e.target.value)} placeholder="성명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.managerPhone || ""} onChange={e => setBdVendor(v.key, "managerPhone", e.target.value)} placeholder="연락처" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.managerNote || ""} onChange={e => setBdVendor(v.key, "managerNote", e.target.value)} placeholder="자격/비고" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
               </div>
             </div>
           ) : (
-            <div key={v.key} style={{ padding: "8px 12px", background: i % 2 === 0 ? "#FAFBFC" : "#fff", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "160px 1fr 1fr 1fr 1fr auto", gap: 8, alignItems: "center" }}>
+            <div key={v.key} className={`px-3 py-2 rounded-lg border border-hm-border ${i % 2 === 0 ? 'bg-hm-bg-hover' : 'bg-white'}`}>
+              <div className="grid grid-cols-[160px_1fr_1fr_1fr_1fr_auto] gap-2 items-center">
                 {v.label.startsWith("custom") ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div className="flex items-center gap-1.5">
                     <span>{v.icon}</span>
-                    <input value={bdVendors[v.key]?.label || ""} onChange={e => setBdVendor(v.key, "label", e.target.value)} placeholder={`기타${v.label.slice(-1)} (입력)`} style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontWeight: 700 }} />
+                    <input value={bdVendors[v.key]?.label || ""} onChange={e => setBdVendor(v.key, "label", e.target.value)} placeholder={`기타${v.label.slice(-1)} (입력)`} className={`${inputClassName} !px-2 !py-[5px] !text-[11px] !font-bold`} />
                   </div>
                 ) : (
-                  <div style={{ fontSize: 12, fontWeight: 700, color: v.color, display: "flex", alignItems: "center", gap: 6 }}>
+                  <div className="text-xs font-bold flex items-center gap-1.5" style={{ color: v.color }}>
                     <span>{v.icon}</span> {v.label}
                   </div>
                 )}
-                <div><input value={bdVendors[v.key]?.company || ""} onChange={e => setBdVendor(v.key, "company", e.target.value)} placeholder="회사명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.phone || ""} onChange={e => setBdVendor(v.key, "phone", e.target.value)} placeholder="연락처" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.contact || ""} onChange={e => setBdVendor(v.key, "contact", e.target.value)} placeholder="담당자명" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <div><input value={bdVendors[v.key]?.contactPhone || ""} onChange={e => setBdVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                <button style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 10, cursor: "pointer", fontFamily: "inherit", color: "#3B82F6", fontWeight: 700, whiteSpace: "nowrap" }}>📎 계약서</button>
+                <div><input value={bdVendors[v.key]?.company || ""} onChange={e => setBdVendor(v.key, "company", e.target.value)} placeholder="회사명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.phone || ""} onChange={e => setBdVendor(v.key, "phone", e.target.value)} placeholder="연락처" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.contact || ""} onChange={e => setBdVendor(v.key, "contact", e.target.value)} placeholder="담당자명" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <div><input value={bdVendors[v.key]?.contactPhone || ""} onChange={e => setBdVendor(v.key, "contactPhone", e.target.value)} placeholder="담당자 휴대폰" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                <button className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-[10px] cursor-pointer font-[inherit] text-hm-blue font-bold whitespace-nowrap hover:bg-hm-blue-bg transition-colors">📎 계약서</button>
               </div>
             </div>
           ))}
@@ -389,7 +391,7 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
 
         {/* Empty state */}
         {!Object.values(vendorEnabled).some(v => v) && (
-          <div style={{ padding: "20px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>
+          <div className="py-5 text-center text-[#B0B5C1] text-xs">
             위 체크박스를 선택하면 해당 협력업체 입력란이 표시됩니다
           </div>
         )}
@@ -397,63 +399,63 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
       </Card>
 
       {/* Section 5: Building Notes */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec5Open ? 12 : 0 }}>
-          <div onClick={() => setSec5Open(!sec5Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📝 건물 특이사항</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>관리 참고사항 · 이력 기록</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec5Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec5Open(!sec5Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">📝 건물 특이사항</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">관리 참고사항 · 이력 기록</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {sec5Open && (notesEdit ? (
               <>
-                <button onClick={() => setNotesEdit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                <button onClick={() => setNotesEdit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
+                <button onClick={() => setNotesEdit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setNotesEdit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setNotesEdit(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✏️ 수정</button>
+              <button onClick={() => setNotesEdit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
-            <span onClick={() => setSec5Open(!sec5Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec5Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+            <span onClick={() => setSec5Open(!sec5Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec5Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
         {sec5Open &&
         <textarea value={bdNotes} onChange={e => setBdNotes(e.target.value)} readOnly={!notesEdit} placeholder={"건물 특이사항을 순차적으로 기록하세요.\n\n예시:\n- 2024.03 관리 시작. 1층 상가 분리 계량기 없어 공용전기에서 차감\n- 2024.05 옥상 방수공사 완료 (건물주 부담)\n- 2024.08 3층 배관 노후로 전체 교체\n- 세무사: 홍길동 세무사 (010-1234-5678)\n- 2025.01 소방점검 지적사항: 2층 비상구 표지등 불량\n..."} rows={12}
-          style={{ ...inputStyle, resize: "vertical", lineHeight: 1.8, fontSize: 12, padding: "12px 14px", minHeight: 200, background: notesEdit ? "#fff" : "#F8FAFC", opacity: notesEdit ? 1 : 0.75 }} />
+          className={`${inputClassName} resize-y leading-[1.8] !text-xs !px-3.5 !py-3 min-h-[200px] ${notesEdit ? 'bg-white opacity-100' : 'bg-hm-bg-slate opacity-75'}`} />
         }
       </Card>
 
       {/* Section 6: Facility Checklist */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec6Open ? 12 : 0 }}>
-          <div onClick={() => setSec6Open(!sec6Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>✅ 시설 체크리스트</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>순회 시 점검할 시설 항목 관리 · {bdFacilityChecklist.length}개 항목</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec6Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec6Open(!sec6Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">✅ 시설 체크리스트</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">순회 시 점검할 시설 항목 관리 · {bdFacilityChecklist.length}개 항목</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span onClick={() => setSec6Open(!sec6Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec6Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+          <div className="flex items-center gap-2">
+            <span onClick={() => setSec6Open(!sec6Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec6Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
         {sec6Open && <div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+          <div className="flex flex-col gap-1.5 mb-3">
             {bdFacilityChecklist.map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#3B82F6", minWidth: 20 }}>{i + 1}</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#1A1D23" }}>{item}</span>
+              <div key={i} className="flex items-center justify-between px-3 py-2 bg-hm-bg-slate rounded-lg border border-hm-border">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-hm-blue min-w-[20px]">{i + 1}</span>
+                  <span className="text-[13px] font-semibold text-hm-text">{item}</span>
                 </div>
                 <button onClick={() => setBdFacilityChecklist(bdFacilityChecklist.filter((_, idx) => idx !== i))}
-                  style={{ width: 24, height: 24, borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, fontFamily: "inherit" }}>✕</button>
+                  className="w-6 h-6 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger cursor-pointer text-xs flex items-center justify-center p-0 font-[inherit] hover:bg-red-100 transition-colors">✕</button>
               </div>
             ))}
             {bdFacilityChecklist.length === 0 && (
-              <div style={{ padding: "16px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>체크리스트 항목이 없습니다</div>
+              <div className="py-4 text-center text-[#B0B5C1] text-xs">체크리스트 항목이 없습니다</div>
             )}
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="flex gap-2">
             <input value={newChecklistItem} onChange={e => setNewChecklistItem(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && newChecklistItem.trim()) { setBdFacilityChecklist([...bdFacilityChecklist, newChecklistItem.trim()]); setNewChecklistItem(""); } }}
-              placeholder="새 점검 항목 입력..." style={{ ...inputStyle, flex: 1, padding: "8px 12px", fontSize: 12 }} />
+              placeholder="새 점검 항목 입력..." className={`${inputClassName} flex-1 !px-3 !py-2 !text-xs`} />
             <button onClick={() => { if (newChecklistItem.trim()) { setBdFacilityChecklist([...bdFacilityChecklist, newChecklistItem.trim()]); setNewChecklistItem(""); } }}
-              style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+ 추가</button>
+              className="px-4 py-2 rounded-lg border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 transition-opacity">+ 추가</button>
           </div>
         </div>}
       </Card>

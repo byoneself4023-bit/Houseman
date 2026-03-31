@@ -3,7 +3,7 @@ import { buildings } from '@/data';
 import { useIsMobile } from '@/utils';
 import { matchKorean, getChosung, CHOSUNG } from '@/utils/koreanSearch';
 import { Card, SectionTitle, Table } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 
 interface ParkingPageProps {
   myBuildings?: string[];
@@ -125,33 +125,33 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         <SectionTitle sub={`등록 차량 ${tenantsWithCars.length}대`}>🅿️ 주차 관리</SectionTitle>
 
         {/* Search */}
-        <div style={{ marginBottom: 12 }}>
+        <div className="mb-3">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-            style={{ ...inputStyle, width: "100%", padding: "10px 14px", fontSize: 13, background: "#F9FAFB" }} />
+            className={`${inputClassName} w-full px-3.5 py-2.5 text-[13px] bg-hm-bg-hover`} />
         </div>
 
         {/* Stats — search matched buildings */}
         {searchMatchedBuildings.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+          <div className="flex flex-col gap-2 mb-3">
             {searchMatchedBuildings.map(bName => {
               const used = buildingCarCounts[bName] || 0;
               const total = getBuildingParkingTotal(bName);
               const remain = total - used;
               return (
-                <Card key={bName} style={{ padding: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", marginBottom: 6 }}>{bName}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <Card key={bName} className="p-3.5">
+                  <div className="text-xs font-extrabold text-hm-text mb-1.5">{bName}</div>
+                  <div className="flex justify-between items-end">
                     <div>
-                      <div style={{ fontSize: 9, color: "#8F95A3" }}>등록 / 총 주차대수</div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: "#3B82F6" }}>
-                        {used}<span style={{ fontSize: 11, color: "#8F95A3", margin: "0 2px" }}>/</span>{total}<span style={{ fontSize: 10, color: "#8F95A3", marginLeft: 2 }}>대</span>
+                      <div className="text-[9px] text-hm-text-muted">등록 / 총 주차대수</div>
+                      <div className="text-lg font-black text-hm-blue">
+                        {used}<span className="text-[11px] text-hm-text-muted mx-0.5">/</span>{total}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                       </div>
                     </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 9, color: "#8F95A3" }}>잔여</div>
-                      <div style={{ fontSize: 16, fontWeight: 900, color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
-                        {remain}<span style={{ fontSize: 10, color: "#8F95A3", marginLeft: 2 }}>대</span>
+                    <div className="text-right">
+                      <div className="text-[9px] text-hm-text-muted">잔여</div>
+                      <div className="text-base font-black" style={{ color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
+                        {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                       </div>
                     </div>
                   </div>
@@ -163,56 +163,56 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
 
         {/* Car list */}
         {displayList.length === 0 ? (
-          <Card style={{ textAlign: "center", padding: 40, color: "#8F95A3" }}>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>🅿️</div>
-            <div style={{ fontSize: 13 }}>{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
+          <Card className="text-center py-10 text-hm-text-muted">
+            <div className="text-[32px] mb-2">🅿️</div>
+            <div className="text-[13px]">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
           </Card>
         ) : (
           displayList.map(t => {
             const car = getCar(t);
             const isEditing = editingId === t.id;
             return (
-              <Card key={t.id} style={{ marginBottom: 8, padding: 14 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, color: "#8F95A3", marginBottom: 4 }}>
+              <Card key={t.id} className="mb-2 p-3.5">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="text-[11px] text-hm-text-muted mb-1">
                       {t.building} · {t.room}호 · {t.name} · {t.phone || "-"}
                     </div>
                     {isEditing ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+                      <div className="flex flex-col gap-1.5 mt-1.5">
                         <div>
-                          <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차번호</div>
+                          <div className="text-[9px] text-hm-text-muted mb-0.5">차번호</div>
                           <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
-                            placeholder="123가 4567" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} />
+                            placeholder="123가 4567" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
                         <div>
-                          <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차종</div>
+                          <div className="text-[9px] text-hm-text-muted mb-0.5">차종</div>
                           <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
-                            placeholder="현대 아반떼" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} />
+                            placeholder="현대 아반떼" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
-                        <div style={{ display: "flex", gap: 6 }}>
+                        <div className="flex gap-1.5">
                           <button onClick={() => saveEdit(t.id)}
-                            style={{ flex: 1, padding: "8px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                            className="flex-1 py-2 rounded-lg border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
                             저장
                           </button>
                           <button onClick={cancelEdit}
-                            style={{ flex: 1, padding: "8px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                            className="flex-1 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub text-xs font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                             취소
                           </button>
                         </div>
                       </div>
                     ) : (
                       <>
-                        <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", letterSpacing: "0.5px" }}>
-                          {car.carNumber || <span style={{ color: "#D1D5DB" }}>미등록</span>}
+                        <div className="text-[15px] font-extrabold text-hm-text tracking-wide">
+                          {car.carNumber || <span className="text-gray-300">미등록</span>}
                         </div>
-                        <div style={{ fontSize: 12, color: "#5F6577", marginTop: 2 }}>{car.carType}</div>
+                        <div className="text-xs text-hm-text-sub mt-0.5">{car.carType}</div>
                       </>
                     )}
                   </div>
                   {editingId !== t.id && (
                     <button onClick={() => startEdit(t)}
-                      style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #E0E3E9", background: (car.carNumber || car.carType) ? "#F9FAFB" : "#EFF6FF", fontSize: 11, fontWeight: 700, color: "#3B82F6", cursor: "pointer", fontFamily: "inherit" }}>
+                      className={`px-3 py-1.5 rounded-lg border border-hm-input-border text-[11px] font-bold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${(car.carNumber || car.carType) ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
                       {(car.carNumber || car.carType) ? "수정" : "등록"}
                     </button>
                   )}
@@ -230,35 +230,35 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     { label: "건물", key: "building", width: "5%" },
     { label: "호실", key: "room", width: "3%" },
     { label: "입주자", key: "name", width: "3%" },
-    { label: "연락처", key: "phone", width: "5%", render: (row: Record<string, any>) => <span style={{ fontSize: 12, color: "#5F6577" }}>{row.phone || "-"}</span> },
+    { label: "연락처", key: "phone", width: "5%", render: (row: Record<string, any>) => <span className="text-xs text-hm-text-sub">{row.phone || "-"}</span> },
     { label: "차번호", key: "carNumber", width: "5%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
           placeholder="123가 4567" autoFocus
-          style={{ ...inputStyle, padding: "5px 8px", fontSize: 12, width: "100%" }} />;
+          className={`${inputClassName} px-2 py-[5px] text-xs w-full`} />;
       }
       const car = getCar(row);
-      return <span style={{ fontWeight: 700, letterSpacing: "0.5px" }}>{car.carNumber || <span style={{ color: "#D1D5DB" }}>-</span>}</span>;
+      return <span className="font-bold tracking-wide">{car.carNumber || <span className="text-gray-300">-</span>}</span>;
     }},
     { label: "차종", key: "carType", width: "5%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
           placeholder="현대 아반떼"
-          style={{ ...inputStyle, padding: "5px 8px", fontSize: 12, width: "100%" }} />;
+          className={`${inputClassName} px-2 py-[5px] text-xs w-full`} />;
       }
       const car = getCar(row);
-      return car.carType || <span style={{ color: "#D1D5DB" }}>-</span>;
+      return car.carType || <span className="text-gray-300">-</span>;
     }},
     { label: "", key: "action", width: "3%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return (
-          <div style={{ display: "flex", gap: 4 }}>
+          <div className="flex gap-1">
             <button onClick={(e) => { e.stopPropagation(); saveEdit(row.id); }}
-              style={{ padding: "4px 10px", borderRadius: 6, border: "none", background: "#3B82F6", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-2.5 py-1 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
               저장
             </button>
             <button onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-              style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-hm-text-sub text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
           </div>
@@ -268,7 +268,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const hasCar = car.carNumber || car.carType;
       return (
         <button onClick={(e) => { e.stopPropagation(); startEdit(row); }}
-          style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: hasCar ? "#F9FAFB" : "#EFF6FF", fontSize: 11, fontWeight: 600, color: "#3B82F6", cursor: "pointer", fontFamily: "inherit" }}>
+          className={`px-2.5 py-1 rounded-md border border-hm-input-border text-[11px] font-semibold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${hasCar ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
           {hasCar ? "수정" : "등록"}
         </button>
       );
@@ -280,33 +280,33 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       <SectionTitle sub={`등록 차량 ${tenantsWithCars.length}대`}>🅿️ 주차 관리</SectionTitle>
 
       {/* Search */}
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4">
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-          style={{ width: 300, padding: "10px 16px", borderRadius: 10, border: "1px solid #E0E3E9", fontSize: 13, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
+          className="w-[300px] px-4 py-2.5 rounded-[10px] border border-hm-input-border text-[13px] outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
       </div>
 
       {/* Stats — search matched buildings */}
       {searchMatchedBuildings.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10, marginBottom: 16 }}>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5 mb-4">
           {searchMatchedBuildings.map(bName => {
             const used = buildingCarCounts[bName] || 0;
             const total = getBuildingParkingTotal(bName);
             const remain = total - used;
             return (
-              <Card key={bName} style={{ padding: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", marginBottom: 8 }}>{bName}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              <Card key={bName} className="p-4">
+                <div className="text-xs font-extrabold text-hm-text mb-2">{bName}</div>
+                <div className="flex justify-between items-end">
                   <div>
-                    <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>등록 / 총 주차대수</div>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: "#3B82F6" }}>
-                      {used}<span style={{ fontSize: 12, color: "#8F95A3", margin: "0 3px" }}>/</span><span style={{ fontSize: 16, color: "#1A1D23" }}>{total}</span><span style={{ fontSize: 10, color: "#8F95A3", marginLeft: 2 }}>대</span>
+                    <div className="text-[9px] text-hm-text-muted mb-0.5">등록 / 총 주차대수</div>
+                    <div className="text-xl font-black text-hm-blue">
+                      {used}<span className="text-xs text-hm-text-muted mx-[3px]">/</span><span className="text-base text-hm-text">{total}</span><span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>잔여</div>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
-                      {remain}<span style={{ fontSize: 10, color: "#8F95A3", marginLeft: 2 }}>대</span>
+                  <div className="text-right">
+                    <div className="text-[9px] text-hm-text-muted mb-0.5">잔여</div>
+                    <div className="text-lg font-black" style={{ color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
+                      {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>
                 </div>
@@ -318,12 +318,12 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
 
       {/* Table */}
       {displayList.length === 0 ? (
-        <Card style={{ textAlign: "center", padding: 48, color: "#8F95A3" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🅿️</div>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
+        <Card className="text-center py-12 text-hm-text-muted">
+          <div className="text-[40px] mb-3">🅿️</div>
+          <div className="text-sm font-semibold">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
         </Card>
       ) : (
-        <div style={{ maxWidth: 800 }}>
+        <div className="max-w-[800px]">
           <Table columns={columns} data={displayList} />
         </div>
       )}

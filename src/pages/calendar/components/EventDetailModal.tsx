@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { persistUpdate, persistDelete } from '../calendarApi';
 
 interface EventDetailModalProps {
@@ -20,83 +20,83 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
   const edt = (k: string, v: any) => setEditEvent((prev: any) => ({ ...prev, edits: { ...prev.edits, [k]: v } }));
   const fld = (label: string, key: string, type = "text") => (
     <div>
-      <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>{label}</div>
+      <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">{label}</div>
       <input value={edits[key] || ""} onChange={e => edt(key, type === "number" ? Number(e.target.value) || 0 : e.target.value)}
-        type={type} style={{ ...inputStyle, padding: "8px 10px", fontSize: 12 }} />
+        type={type} className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
     </div>
   );
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
       onClick={() => setEditEvent(null)}>
-      <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 420, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+      <div className="bg-white rounded-2xl p-6 w-[420px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23" }}>✏️ {edits.type} 수정</div>
-          <button onClick={() => setEditEvent(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-base font-extrabold text-hm-text">✏️ {edits.type} 수정</div>
+          <button onClick={() => setEditEvent(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="flex flex-col gap-2.5">
           {/* 공통: 날짜 */}
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>날짜</div>
+            <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">날짜</div>
             <input type="date" value={edits.date || ""} onChange={e => {
               edt("date", e.target.value);
               if (edits.type === "계약" && edits.moveIn === editEvent.evt.date) edt("moveIn", e.target.value);
-            }} style={{ ...inputStyle, padding: "8px 10px", fontSize: 12 }} />
+            }} className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
           </div>
 
           {/* 계약 */}
           {edits.type === "계약" && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {fld("건물명", "building")}
                 {fld("호실", "room")}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {fld("보증금 (만원)", "deposit", "number")}
                 {fld("월세 (만원)", "rent", "number")}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {fld("NEGO (만원)", "nego", "number")}
                 {fld("관리비 (만원)", "mgmt", "number")}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>입주일</div>
+                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">입주일</div>
                   <input type="date" value={edits.moveIn || ""} onChange={e => edt("moveIn", e.target.value)}
-                    style={{ ...inputStyle, padding: "8px 10px", fontSize: 12 }} />
+                    className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>만기일</div>
+                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">만기일</div>
                   <input type="date" value={edits.expiry || ""} onChange={e => edt("expiry", e.target.value)}
-                    style={{ ...inputStyle, padding: "8px 10px", fontSize: 12 }} />
+                    className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>계약일</div>
+                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">계약일</div>
                   <input type="date" value={edits.contractDate || ""} onChange={e => edt("contractDate", e.target.value)}
-                    style={{ ...inputStyle, padding: "8px 10px", fontSize: 12 }} />
+                    className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>등록자</div>
+                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">등록자</div>
                   <input value={edits.registeredBy || ""} readOnly
-                    style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, background: "#F3F4F6", color: "#8F95A3" }} />
+                    className={`${inputClassName} !px-2.5 !py-2 !text-xs !bg-gray-100 !text-hm-text-muted`} />
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {fld("부동산", "broker")}
                 {fld("부동산 연락처", "brokerPhone")}
               </div>
               {(edits.waterFee != null || edits.cable != null || edits.exitFee != null || edits.commBroker != null) && (
                 <>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginTop: 4 }}>단기 전용</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <div className="text-[10px] font-bold text-hm-blue mt-1">단기 전용</div>
+                  <div className="grid grid-cols-2 gap-2">
                     {fld("수도", "waterFee")}
                     {fld("인터넷/케이블", "cable")}
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  <div className="grid grid-cols-2 gap-2">
                     {fld("퇴실청소비 (만원)", "exitFee", "number")}
                     {fld("중개수수료 (%)", "commBroker", "number")}
                   </div>
@@ -108,7 +108,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
           {/* 퇴실 */}
           {edits.type === "퇴실" && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {fld("건물명", "building")}
                 {fld("호실", "room")}
               </div>
@@ -123,7 +123,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
           )}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+        <div className="flex justify-between items-center mt-5">
           <button onClick={() => {
             const { idx, evt } = editEvent;
             if (evt.type === "퇴실" && (evt.externalCheckDone || evt.moveOutLinkCompleted || evt.moveOutLinkSent || evt.settled || evt.cleaningDone)) { toast.error("퇴실 워크플로우가 진행된 일정은 삭제할 수 없습니다."); return; }
@@ -134,16 +134,16 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
             setEditEvent(null);
             setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx));
           }}
-            style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-5 py-2 rounded-lg border border-red-200 bg-hm-danger-bg text-hm-danger font-bold text-xs cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">
             일정삭제
           </button>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="flex gap-2">
             <button onClick={() => setEditEvent(null)}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={() => { persistUpdate(editEvent.evt.supabaseId, editEvent.edits); saveEditEvent(); }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
               저장
             </button>
           </div>

@@ -112,91 +112,92 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
 
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 800, color: "#DC2626", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #FECACA" }}>🚨 청구/미납현황</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+      <div className="text-[11px] font-extrabold text-hm-danger mb-2 pb-1.5" style={{ borderBottom: "1.5px solid #FECACA" }}>🚨 청구/미납현황</div>
+      <div className="flex flex-col gap-1.5 mb-3">
         {/* 흐름 안내 */}
-        {flow && <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2, padding: "4px 8px", background: "#F8FAFC", borderRadius: 6 }}>💰 {flow}</div>}
+        {flow && <div className="text-[9px] text-hm-text-muted mb-0.5 px-2 py-1 bg-[#F8FAFC] rounded-md">💰 {flow}</div>}
         {/* 청구①②③ 슬롯 (수금관리와 동일) */}
         {slots.map((slot, si) => {
           const c = slotColors[si % slotColors.length];
           const info = acctInfo[si] || {} as any;
           return (
-            <div key={si} style={{ padding: "10px 12px", borderRadius: 8, background: c.bg, border: `1.5px solid ${c.border}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                <span style={{ fontSize: 10, fontWeight: 800, color: c.text }}>{slot.label}</span>
-                <span style={{ fontSize: 15, fontWeight: 800, color: c.text }}>
+            <div key={si} className="px-3 py-2.5 rounded-lg" style={{ background: c.bg, border: `1.5px solid ${c.border}` }}>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] font-extrabold" style={{ color: c.text }}>{slot.label}</span>
+                <span className="text-[15px] font-extrabold" style={{ color: c.text }}>
                   {slot.amount.toLocaleString()}원{info.hasUtility ? "+" : ""}
                 </span>
               </div>
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: info.acct ? 4 : 0 }}>
+              <div className={`flex gap-1 flex-wrap${info.acct ? " mb-1" : ""}`}>
                 {(info.tags || []).map((tag: string) => (
-                  <span key={tag} style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#fff", color: "#5F6577" }}>{tag}</span>
+                  <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded bg-white text-hm-text-sub">{tag}</span>
                 ))}
               </div>
-              {info.acct && <div style={{ fontSize: 9, color: c.light }}>{info.acct}</div>}
+              {info.acct && <div className="text-[9px]" style={{ color: c.light }}>{info.acct}</div>}
             </div>
           );
         })}
         {/* 미납 잔액 (roomBalances 기반) */}
         {bal > 0 && (
-          <div style={{ padding: "8px 10px", borderRadius: 8, background: "#FEF2F2", border: "1px solid #FECACA" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: "#DC2626" }}>미납 잔액</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>{bal.toLocaleString()}원</span>
+          <div className="px-2.5 py-2 rounded-lg bg-hm-danger-bg border border-[#FECACA]">
+            <div className="flex justify-between">
+              <span className="text-[10px] font-bold text-hm-danger">미납 잔액</span>
+              <span className="text-[13px] font-extrabold text-hm-danger">{bal.toLocaleString()}원</span>
             </div>
-            {lf > 0 && <div style={{ fontSize: 9, color: "#DC2626", marginTop: 2 }}>연체수수료 {fmt(lf)}원 (5%)</div>}
-            {override?.type === "exclude" && <div style={{ fontSize: 9, color: "#059669", marginTop: 2 }}>연체수수료 제외 (수금관리)</div>}
-            {override?.type === "discount" && <div style={{ fontSize: 9, color: "#2563EB", marginTop: 2 }}>연체수수료 {fmt(override.amount)}원 할인 (수금관리)</div>}
+            {lf > 0 && <div className="text-[9px] text-hm-danger mt-0.5">연체수수료 {fmt(lf)}원 (5%)</div>}
+            {override?.type === "exclude" && <div className="text-[9px] text-hm-success mt-0.5">연체수수료 제외 (수금관리)</div>}
+            {override?.type === "discount" && <div className="text-[9px] text-hm-blue-dark mt-0.5">연체수수료 {fmt(override.amount)}원 할인 (수금관리)</div>}
           </div>
         )}
       </div>
 
       {/* 가상퇴실계산 + 청구 이력 누적 */}
-      <div style={{ marginBottom: 12 }}>
+      <div className="mb-3">
         <button onClick={() => setBillOpen(!billOpen)}
-          style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: billOpen ? "2px solid #F59E0B" : "1.5px solid #E8ECF0", background: billOpen ? "#FFFBEB" : "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 13 }}>🧾</span>
-            <span style={{ fontSize: 12, fontWeight: 800, color: "#92400E" }}>가상퇴실계산</span>
-            <span style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600 }}>청구 {myBills.length}건</span>
+          className={`w-full px-3.5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
+          style={{ border: billOpen ? "2px solid #F59E0B" : "1.5px solid #E8ECF0" }}>
+          <div className="flex items-center gap-2">
+            <span className="text-[13px]">🧾</span>
+            <span className="text-xs font-extrabold text-[#92400E]">가상퇴실계산</span>
+            <span className="text-[10px] text-hm-text-muted font-semibold">청구 {myBills.length}건</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 800, color: balance > 0 ? "#DC2626" : "#059669" }}>
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-extrabold ${balance > 0 ? "text-hm-danger" : "text-hm-success"}`}>
               {balance > 0 ? `미납 ${fmt(balance)}원` : `완납`}
             </span>
-            <span style={{ fontSize: 11, color: "#8F95A3" }}>{billOpen ? "▲" : "▼"}</span>
+            <span className="text-[11px] text-hm-text-muted">{billOpen ? "▲" : "▼"}</span>
           </div>
         </button>
         {billOpen && (
-          <div style={{ marginTop: 8, padding: "12px 14px", borderRadius: 10, background: "#FFFBEB", border: "1.5px solid #FDE68A" }}>
+          <div className="mt-2 px-3.5 py-3 rounded-[10px] bg-[#FFFBEB]" style={{ border: "1.5px solid #FDE68A" }}>
             {/* 누적 요약 */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid #FDE68A" }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: "#92400E" }}>누적 청구: {fmt(cumulative.total)}원</span>
-              <span style={{ fontSize: 10, fontWeight: 700, color: "#059669" }}>납부: {fmt(paid)}원</span>
-              {balance > 0 && <span style={{ fontSize: 10, fontWeight: 700, color: "#DC2626" }}>미납: {fmt(balance)}원</span>}
+            <div className="flex flex-wrap gap-1.5 mb-2.5 pb-2 border-b border-[#FDE68A]">
+              <span className="text-[10px] font-bold text-[#92400E]">누적 청구: {fmt(cumulative.total)}원</span>
+              <span className="text-[10px] font-bold text-hm-success">납부: {fmt(paid)}원</span>
+              {balance > 0 && <span className="text-[10px] font-bold text-hm-danger">미납: {fmt(balance)}원</span>}
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
-              {cumulative.rent > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#fff", color: "#5F6577" }}>월세 {fmt(cumulative.rent)}</span>}
-              {cumulative.mgmt > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#fff", color: "#5F6577" }}>관리비 {fmt(cumulative.mgmt)}</span>}
-              {cumulative.elec > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#FEF3C7", color: "#92400E" }}>전기 {fmt(cumulative.elec)}</span>}
-              {cumulative.gas > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#FEE2E2", color: "#991B1B" }}>가스 {fmt(cumulative.gas)}</span>}
-              {cumulative.water > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB" }}>수도 {fmt(cumulative.water)}</span>}
-              {cumulative.cable > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#F3F4F6", color: "#5F6577" }}>인터넷 {fmt(cumulative.cable)}</span>}
-              {cumulative.lateFee > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>연체료 {fmt(cumulative.lateFee)}</span>}
-              {cumulative.asRepair > 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#F5F3FF", color: "#7C3AED" }}>수리비 {fmt(cumulative.asRepair)}</span>}
+            <div className="flex flex-wrap gap-1 mb-2.5">
+              {cumulative.rent > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-white text-hm-text-sub">월세 {fmt(cumulative.rent)}</span>}
+              {cumulative.mgmt > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-white text-hm-text-sub">관리비 {fmt(cumulative.mgmt)}</span>}
+              {cumulative.elec > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#92400E]">전기 {fmt(cumulative.elec)}</span>}
+              {cumulative.gas > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FEE2E2] text-[#991B1B]">가스 {fmt(cumulative.gas)}</span>}
+              {cumulative.water > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-hm-blue-bg text-hm-blue-dark">수도 {fmt(cumulative.water)}</span>}
+              {cumulative.cable > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#F3F4F6] text-hm-text-sub">인터넷 {fmt(cumulative.cable)}</span>}
+              {cumulative.lateFee > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-hm-danger-bg text-hm-danger">연체료 {fmt(cumulative.lateFee)}</span>}
+              {cumulative.asRepair > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#F5F3FF] text-[#7C3AED]">수리비 {fmt(cumulative.asRepair)}</span>}
             </div>
             {/* 개별 청구 내역 */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div className="flex flex-col gap-1">
               {[...myBills].reverse().map((b, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 10px", borderRadius: 6, background: "#fff", border: "1px solid #FDE68A" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 9, fontWeight: 800, color: "#D97706", background: "#FEF3C7", padding: "1px 5px", borderRadius: 4 }}>{i + 1}</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#5F6577" }}>{b.date}</span>
+                <div key={i} className="flex justify-between items-center px-2.5 py-1.5 rounded-md bg-white border border-[#FDE68A]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] font-extrabold text-[#D97706] bg-[#FEF3C7] px-[5px] py-px rounded">{ i + 1}</span>
+                    <span className="text-[10px] font-semibold text-hm-text-sub">{b.date}</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    {b.items?.elec > 0 && <span style={{ fontSize: 8, color: "#92400E" }}>⚡{fmt(b.items.elec)}</span>}
-                    {b.items?.gas > 0 && <span style={{ fontSize: 8, color: "#991B1B" }}>🔥{fmt(b.items.gas)}</span>}
-                    <span style={{ fontSize: 11, fontWeight: 800, color: "#92400E" }}>{fmt(b.total)}원</span>
+                  <div className="flex items-center gap-1.5">
+                    {b.items?.elec > 0 && <span className="text-[8px] text-[#92400E]">⚡{fmt(b.items.elec)}</span>}
+                    {b.items?.gas > 0 && <span className="text-[8px] text-[#991B1B]">🔥{fmt(b.items.gas)}</span>}
+                    <span className="text-[11px] font-extrabold text-[#92400E]">{fmt(b.total)}원</span>
                   </div>
                 </div>
               ))}

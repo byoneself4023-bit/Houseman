@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { matchKorean } from '@/utils/koreanSearch';
 import { TYPE_COLORS } from '../constants';
 import { persistInsert } from '../calendarApi';
@@ -45,23 +45,23 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
   if (!showForm || formType !== "퇴실") return null;
 
   return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 bg-black/40 z-[1000] flex items-center justify-center"
       onClick={closeForm}>
-      <div style={{ background: "#FFFBFB", borderRadius: 16, padding: 24, width: 480, maxWidth: "95vw", boxShadow: "0 8px 32px rgba(0,0,0,0.2)", border: "2px solid #EF4444" }}
+      <div className="bg-[#FFFBFB] rounded-2xl p-6 w-[480px] max-w-[95vw] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-[#EF4444]"
         onClick={e => e.stopPropagation()}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🚪 퇴실 등록</div>
+      <div className="flex justify-between items-center mb-3.5">
+        <div className="text-[15px] font-extrabold text-hm-text">🚪 퇴실 등록</div>
         <button onClick={closeForm}
-          style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
       </div>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "end" }}>
-        <div style={{ minWidth: 160 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>퇴실일</div>
+      <div className="flex gap-2.5 flex-wrap items-end">
+        <div className="min-w-[160px]">
+          <div className="text-[10px] font-bold text-hm-text-sub mb-1">퇴실일</div>
           <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
-            style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
+            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>
-        <div style={{ minWidth: 160, position: "relative" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>건물</div>
+        <div className="min-w-[160px] relative">
+          <div className="text-[10px] font-bold text-hm-text-sub mb-1">건물</div>
           <input value={formBuildingSearch} onChange={e => {
               const v = e.target.value;
               setFormBuildingSearch(v);
@@ -71,31 +71,30 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
             onFocus={() => setShowBuildingSuggestions(true)}
             onBlur={() => setTimeout(() => setShowBuildingSuggestions(false), 150)}
             placeholder="건물명 검색 (초성 가능)"
-            style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: formBuilding ? "#EFF6FF" : "#fff" }} />
+            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs`}
+            style={{ background: formBuilding ? "#EFF6FF" : "#fff" }} />
           {showBuildingSuggestions && !formBuilding && (() => {
             const suggestions = BUILDING_NAMES.filter(b => !formBuildingSearch || matchKorean(b, formBuildingSearch));
             return suggestions.length > 0 ? (
-              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1px solid #E0E3E9", borderRadius: 8, boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 100, maxHeight: 180, overflowY: "auto", marginTop: 2 }}>
+              <div className="absolute top-full left-0 right-0 bg-white border border-hm-input-border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.1)] z-[100] max-h-[180px] overflow-y-auto mt-0.5">
                 {suggestions.map(b => (
                   <div key={b} onMouseDown={e => { e.preventDefault(); setFormBuilding(b); setFormBuildingSearch(b); setShowBuildingSuggestions(false); }}
-                    style={{ padding: "8px 12px", fontSize: 12, cursor: "pointer", borderBottom: "1px solid #F3F4F6" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#EFF6FF"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                    className="py-2 px-3 text-xs cursor-pointer border-b border-[#F3F4F6] hover:bg-hm-blue-bg transition-colors">
                     {b}
                   </div>
                 ))}
               </div>
             ) : formBuildingSearch ? (
-              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1px solid #E0E3E9", borderRadius: 8, boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 100, marginTop: 2 }}>
-                <div style={{ padding: "10px 12px", fontSize: 11, color: "#8F95A3", textAlign: "center" }}>일치하는 건물이 없습니다</div>
+              <div className="absolute top-full left-0 right-0 bg-white border border-hm-input-border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.1)] z-[100] mt-0.5">
+                <div className="py-2.5 px-3 text-[11px] text-hm-text-muted text-center">일치하는 건물이 없습니다</div>
               </div>
             ) : null;
           })()}
         </div>
-        <div style={{ minWidth: 100 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>호실</div>
+        <div className="min-w-[100px]">
+          <div className="text-[10px] font-bold text-hm-text-sub mb-1">호실</div>
           <input value={formRoom} onChange={e => setFormRoom(e.target.value)} placeholder="301"
-            style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
+            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>
         <button onClick={() => {
           if (!formDate) { toast.error("퇴실일을 선택하세요"); return; }
@@ -115,11 +114,11 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
           setEvents((prev: any[]) => [...prev, newEvt]);
           closeForm();
         }}
-          style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: "#EF4444", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+          className="py-[9px] px-5 rounded-lg border-none bg-[#EF4444] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#DC2626] transition-colors">
           퇴실 등록
         </button>
         <button onClick={closeForm}
-          style={{ padding: "9px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+          className="py-[9px] px-5 rounded-lg border border-hm-input-border bg-white text-hm-text-sub text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover transition-colors">
           취소
         </button>
       </div>

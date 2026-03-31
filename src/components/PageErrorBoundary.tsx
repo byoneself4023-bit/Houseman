@@ -3,29 +3,19 @@ import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
-    <div style={{ padding: 40, textAlign: "center", fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-      <div
-        style={{
-          width: 56, height: 56, borderRadius: 14, background: "#FEF2F2",
-          display: "inline-flex", alignItems: "center", justifyContent: "center",
-          fontSize: 26, marginBottom: 16,
-        }}
-      >
+    <div className="p-10 text-center font-['Pretendard',-apple-system,BlinkMacSystemFont,sans-serif]">
+      <div className="w-14 h-14 rounded-[14px] bg-red-50 inline-flex items-center justify-center text-[26px] mb-4">
         {"\u26A0\uFE0F"}
       </div>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1A1D23", marginBottom: 8 }}>
+      <h2 className="text-lg font-bold text-hm-text mb-2">
         페이지 오류가 발생했습니다
       </h2>
-      <p style={{ fontSize: 13, color: "#8F95A3", marginBottom: 20, maxWidth: 400, margin: "0 auto 20px" }}>
+      <p className="text-[13px] text-hm-text-muted max-w-[400px] mx-auto mb-5">
         {error instanceof Error ? error.message : String(error)}
       </p>
       <button
         onClick={resetErrorBoundary}
-        style={{
-          padding: "10px 24px", borderRadius: 8, border: "none",
-          background: "#3B82F6", color: "#fff", fontSize: 14, fontWeight: 700,
-          cursor: "pointer", fontFamily: "inherit",
-        }}
+        className="px-6 py-2.5 rounded-lg border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-inherit hover:opacity-90 transition-opacity"
       >
         다시 시도
       </button>

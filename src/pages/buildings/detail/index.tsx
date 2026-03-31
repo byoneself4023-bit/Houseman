@@ -15,47 +15,17 @@ class BuildingDetailErrorBoundary extends React.Component<
   render() {
     if (this.state.error)
       return (
-        <div style={{ padding: 24 }}>
-          <div
-            style={{
-              padding: 20,
-              background: '#FEF2F2',
-              border: '2px solid #FECACA',
-              borderRadius: 12,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 16,
-                fontWeight: 800,
-                color: '#DC2626',
-                marginBottom: 8,
-              }}
-            >
+        <div className="p-6">
+          <div className="p-5 bg-hm-danger-bg border-2 border-red-300 rounded-xl">
+            <div className="text-base font-extrabold text-hm-danger mb-2">
               페이지 렌더링 오류
             </div>
-            <pre
-              style={{
-                fontSize: 12,
-                color: '#991B1B',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-all',
-              }}
-            >
+            <pre className="text-xs text-red-800 whitespace-pre-wrap break-all">
               {this.state.error.message}
             </pre>
             <button
               onClick={() => this.setState({ error: null })}
-              style={{
-                marginTop: 12,
-                padding: '8px 16px',
-                borderRadius: 8,
-                border: 'none',
-                background: '#DC2626',
-                color: '#fff',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              className="mt-3 px-4 py-2 rounded-lg border-none bg-hm-danger text-white font-bold cursor-pointer hover:brightness-90 transition-all"
             >
               다시 시도
             </button>

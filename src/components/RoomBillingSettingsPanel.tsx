@@ -15,6 +15,8 @@ interface RoomBillingSettingsPanelProps {
   onSaved?: (result: any) => void;
 }
 
+const inputCls = 'flex-1 px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';
+
 /**
  * RoomBillingSettingsPanel -- 호실별 청구 설정 패널
  * 수수료 변경/면제, 전기가스 납부방식, 연체수수료 오버라이드
@@ -71,70 +73,63 @@ export default function RoomBillingSettingsPanel({
   if (loading) return null;
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, bottom: 0, width: 360,
-      background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
-      zIndex: 9998, display: 'flex', flexDirection: 'column',
-      borderLeft: '1px solid #E5E5E5',
-    }}>
+    <div className="fixed top-0 right-0 bottom-0 w-[360px] bg-white shadow-[-4px_0_20px_rgba(0,0,0,0.1)] z-[9998] flex flex-col border-l border-[#E5E5E5]">
       {/* 헤더 */}
-      <div style={{ padding: '20px 24px', borderBottom: '1px solid #E5E5E5' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="px-6 py-5 border-b border-[#E5E5E5]">
+        <div className="flex items-center justify-between">
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#111' }}>청구 설정</div>
-            <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
+            <div className="text-[15px] font-extrabold text-hm-text">청구 설정</div>
+            <div className="text-xs text-hm-text-muted mt-0.5">
               {buildingName} {roomNumber}호 {tenantName && `· ${tenantName}`}
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 18, color: '#888', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} className="bg-transparent border-none text-lg text-hm-text-muted cursor-pointer hover:text-hm-text transition-colors">✕</button>
         </div>
       </div>
 
       {/* 본문 */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+      <div className="flex-1 overflow-y-auto p-6">
 
         {/* 전기/가스 청구수수료 (단기만) */}
         {isShortTerm && (
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>청구수수료</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={labelStyle}>전기 수수료 (원)</span>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div className="mb-6">
+            <div className="text-[13px] font-extrabold text-hm-text mb-3">청구수수료</div>
+            <div className="flex flex-col gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">전기 수수료 (원)</span>
+                <div className="flex gap-2 items-center">
                   <input
                     type="number" value={settings.elec_billing_fee}
                     onChange={e => update('elec_billing_fee', Number(e.target.value) || 0)}
-                    style={inputStyle}
+                    className={inputCls}
                   />
                   <button
                     onClick={() => update('elec_billing_fee', settings.elec_billing_fee > 0 ? 0 : 2500)}
-                    style={{
-                      padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                      border: '1px solid #E5E5E5',
-                      background: settings.elec_billing_fee === 0 ? '#FEF2F2' : '#fff',
-                      color: settings.elec_billing_fee === 0 ? '#E52528' : '#666',
-                    }}
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-bold cursor-pointer border transition-colors ${
+                      settings.elec_billing_fee === 0
+                        ? 'border-[#E5E5E5] bg-hm-danger-bg text-hm-danger'
+                        : 'border-[#E5E5E5] bg-white text-[#666] hover:bg-hm-bg-hover'
+                    }`}
                   >
                     {settings.elec_billing_fee === 0 ? '면제중' : '면제'}
                   </button>
                 </div>
               </label>
-              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={labelStyle}>가스 수수료 (원)</span>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">가스 수수료 (원)</span>
+                <div className="flex gap-2 items-center">
                   <input
                     type="number" value={settings.gas_billing_fee}
                     onChange={e => update('gas_billing_fee', Number(e.target.value) || 0)}
-                    style={inputStyle}
+                    className={inputCls}
                   />
                   <button
                     onClick={() => update('gas_billing_fee', settings.gas_billing_fee > 0 ? 0 : 1370)}
-                    style={{
-                      padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                      border: '1px solid #E5E5E5',
-                      background: settings.gas_billing_fee === 0 ? '#FEF2F2' : '#fff',
-                      color: settings.gas_billing_fee === 0 ? '#E52528' : '#666',
-                    }}
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-bold cursor-pointer border transition-colors ${
+                      settings.gas_billing_fee === 0
+                        ? 'border-[#E5E5E5] bg-hm-danger-bg text-hm-danger'
+                        : 'border-[#E5E5E5] bg-white text-[#666] hover:bg-hm-bg-hover'
+                    }`}
                   >
                     {settings.gas_billing_fee === 0 ? '면제중' : '면제'}
                   </button>
@@ -146,25 +141,24 @@ export default function RoomBillingSettingsPanel({
 
         {/* 전기/가스 납부방식 (단기만) */}
         {isShortTerm && (
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>납부방식</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="mb-6">
+            <div className="text-[13px] font-extrabold text-hm-text mb-3">납부방식</div>
+            <div className="flex flex-col gap-2.5">
               {[
                 { field: 'elec_payment_method', label: '전기' },
                 { field: 'gas_payment_method', label: '가스' },
               ].map(({ field, label }) => (
-                <div key={field} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#333', width: 40 }}>{label}</span>
+                <div key={field} className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-[#333] w-10">{label}</span>
                   {(['proxy', 'direct'] as const).map(val => (
                     <button
                       key={val}
                       onClick={() => update(field, val)}
-                      style={{
-                        padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                        border: settings[field] === val ? '1.5px solid #346aff' : '1px solid #E5E5E5',
-                        background: settings[field] === val ? '#EBF0FF' : '#fff',
-                        color: settings[field] === val ? '#346aff' : '#666',
-                      }}
+                      className={`px-3.5 py-1.5 rounded-md text-[11px] font-bold cursor-pointer transition-all duration-150 ${
+                        settings[field] === val
+                          ? 'border-[1.5px] border-[#346aff] bg-[#EBF0FF] text-[#346aff]'
+                          : 'border border-[#E5E5E5] bg-white text-[#666] hover:border-[#346aff]/40'
+                      }`}
                     >
                       {val === 'proxy' ? '대납 후 청구' : '직접 납부'}
                     </button>
@@ -176,30 +170,30 @@ export default function RoomBillingSettingsPanel({
         )}
 
         {/* 연체수수료 오버라이드 */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>
+        <div className="mb-6">
+          <div className="text-[13px] font-extrabold text-hm-text mb-3">
             연체수수료 (임차인 개별)
           </div>
-          <div style={{ fontSize: 11, color: '#888', marginBottom: 10 }}>
+          <div className="text-[11px] text-hm-text-muted mb-2.5">
             비워두면 건물 기본 설정을 따릅니다. 0으로 설정하면 면제.
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={labelStyle}>수수료율 (%)</span>
+          <div className="grid grid-cols-2 gap-2.5">
+            <label className="flex flex-col gap-1">
+              <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">수수료율 (%)</span>
               <input
                 type="number" value={settings.late_fee_rate ?? ''}
                 onChange={e => update('late_fee_rate', e.target.value === '' ? null : Number(e.target.value))}
                 placeholder="건물 기본"
-                style={inputStyle}
+                className={inputCls}
               />
             </label>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={labelStyle}>적용 시점</span>
+            <label className="flex flex-col gap-1">
+              <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">적용 시점</span>
               <input
                 type="number" value={settings.late_fee_apply_value ?? ''}
                 onChange={e => update('late_fee_apply_value', e.target.value === '' ? null : Number(e.target.value))}
                 placeholder="건물 기본"
-                style={inputStyle}
+                className={inputCls}
               />
             </label>
           </div>
@@ -207,7 +201,7 @@ export default function RoomBillingSettingsPanel({
       </div>
 
       {/* 하단 버튼 */}
-      <div style={{ padding: '16px 24px', borderTop: '1px solid #E5E5E5', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+      <div className="px-6 py-4 border-t border-[#E5E5E5] flex gap-2.5 justify-end">
         <button className="billing-btn ghost" onClick={onClose}>취소</button>
         <button className="billing-btn primary" onClick={handleSave} disabled={saving}>
           {saving ? '저장 중...' : '저장'}
@@ -216,10 +210,3 @@ export default function RoomBillingSettingsPanel({
     </div>
   );
 }
-
-const labelStyle: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: '#888', letterSpacing: '0.02em' };
-const inputStyle: React.CSSProperties = {
-  flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC',
-  fontSize: 13, fontFamily: 'inherit', outline: 'none',
-  fontVariantNumeric: 'tabular-nums',
-};

@@ -209,52 +209,52 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
   if (serviceDetail) {
     const s = serviceDetail;
     return (
-      <div className="hm-page" style={{ background: "var(--clr-white)", minHeight: "100vh" }}>
+      <div className="hm-page min-h-screen" style={{ background: "var(--clr-white)" }}>
         {/* 히어로 이미지 */}
-        <div style={{ position: "relative", height: isMobile ? "50vh" : "60vh", overflow: "hidden" }}>
-          <img src={s.heroImg} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)" }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: isMobile ? "32px 24px" : "60px 80px" }}>
-            <div onClick={() => setServiceDetail(null)} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16, cursor: "pointer", fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.8)" }}>← 돌아가기</div>
-            <p style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.6)", marginBottom: 8, letterSpacing: "0.04em" }}>서비스안내</p>
-            <h1 style={{ fontSize: isMobile ? 32 : 52, fontWeight: 700, color: "#fff", letterSpacing: "-0.04em", margin: 0, lineHeight: 1.1 }}>{s.title}</h1>
+        <div className={`relative ${isMobile ? 'h-[50vh]' : 'h-[60vh]'} overflow-hidden`}>
+          <img src={s.heroImg} alt={s.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)" }} />
+          <div className={`absolute bottom-0 left-0 right-0 ${isMobile ? 'px-6 py-8' : 'px-20 py-[60px]'}`}>
+            <div onClick={() => setServiceDetail(null)} className="inline-flex items-center gap-1.5 mb-4 cursor-pointer text-sm font-medium text-white/80 hover:text-white transition-colors">← 돌아가기</div>
+            <p className="text-sm font-medium text-white/60 mb-2 tracking-[0.04em]">서비스안내</p>
+            <h1 className={`${isMobile ? 'text-[32px]' : 'text-[52px]'} font-bold text-white tracking-tight m-0 leading-[1.1]`}>{s.title}</h1>
           </div>
         </div>
         {/* 본문 */}
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "48px 24px" : "80px 24px" }}>
+        <div className={`max-w-[800px] mx-auto ${isMobile ? 'px-6 py-12' : 'px-6 py-20'}`}>
           <Reveal>
-            <p className="hm-body" style={{ fontSize: isMobile ? 16 : 19, lineHeight: 1.8, marginBottom: 56 }}>{s.detail}</p>
+            <p className={`hm-body ${isMobile ? 'text-base' : 'text-[19px]'} leading-[1.8] mb-14`}>{s.detail}</p>
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="hm-headline" style={{ fontSize: isMobile ? 24 : 32, margin: "0 0 32px" }}>HOUSEMAN이 제공하는 관리</h2>
+            <h2 className={`hm-headline ${isMobile ? 'text-2xl' : 'text-[32px]'} mb-8`} style={{ margin: "0 0 32px" }}>HOUSEMAN이 제공하는 관리</h2>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginBottom: 56 }}>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-5 mb-14`}>
             {s.features.map((f: any, i: number) => (
               <Reveal key={i} className="hm-reveal-scale" delay={i * 0.08}>
-                <div className="hm-svc-card" style={{ padding: isMobile ? 24 : 32 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--clr-black)", marginBottom: 8, letterSpacing: "-0.01em" }}>{f.t}</div>
-                  <div className="hm-body" style={{ fontSize: 14 }}>{f.d}</div>
+                <div className={`hm-svc-card ${isMobile ? 'p-6' : 'p-8'}`}>
+                  <div className="text-sm font-bold mb-2 tracking-tight" style={{ color: "var(--clr-black)" }}>{f.t}</div>
+                  <div className="hm-body text-sm">{f.d}</div>
                 </div>
               </Reveal>
             ))}
           </div>
           {/* CTA */}
           <Reveal>
-            <div style={{ background: "var(--clr-bg)", borderRadius: 24, padding: isMobile ? "32px 24px" : "48px 40px", textAlign: "center" }}>
-              <h3 className="hm-headline" style={{ fontSize: isMobile ? 22 : 28, margin: "0 0 12px" }}>당신의 건물, 하우스맨이 책임집니다.</h3>
-              <p className="hm-body" style={{ fontSize: 15, marginBottom: 28 }}>표준화된 매뉴얼과 AI 기반 시스템으로 공실 없는 건물, 수익 중심의 운영을 실현합니다.</p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <div className={`rounded-3xl text-center ${isMobile ? 'px-6 py-8' : 'px-10 py-12'}`} style={{ background: "var(--clr-bg)" }}>
+              <h3 className={`hm-headline ${isMobile ? 'text-[22px]' : 'text-[28px]'} mb-3`} style={{ margin: "0 0 12px" }}>당신의 건물, 하우스맨이 책임집니다.</h3>
+              <p className="hm-body text-[15px] mb-7">표준화된 매뉴얼과 AI 기반 시스템으로 공실 없는 건물, 수익 중심의 운영을 실현합니다.</p>
+              <div className="flex gap-3 justify-center flex-wrap">
                 <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-filled">📞 {SITE.phone}</a>
-                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn" style={{ padding: "14px 32px", borderRadius: 980, background: "#fee500", color: "#1d1d1f", textDecoration: "none", fontWeight: 500, fontSize: 17 }}>💬 카카오톡 문의</a>
+                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn px-8 py-3.5 rounded-full bg-[#fee500] text-[#1d1d1f] no-underline font-medium text-[17px]">💬 카카오톡 문의</a>
               </div>
             </div>
           </Reveal>
         </div>
         {/* 하단 고정 바 (모바일) */}
         {isMobile && (
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, display: "flex", gap: 0, background: "#fff", borderTop: "1px solid var(--clr-border)", padding: "10px 16px", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
-            <a href={`tel:${SITE.phone}`} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 14, borderRadius: 12, background: "var(--clr-black)", color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 15 }}>📞 전화</a>
-            <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 14, borderRadius: 12, background: "#fee500", color: "#1d1d1f", textDecoration: "none", fontWeight: 600, fontSize: 15, marginLeft: 8 }}>💬 카카오톡</a>
+          <div className="fixed bottom-0 left-0 right-0 z-[100] flex gap-0 bg-white border-t px-4 py-2.5" style={{ borderColor: "var(--clr-border)", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
+            <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-[15px] text-white" style={{ background: "var(--clr-black)" }}>📞 전화</a>
+            <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-[15px] ml-2">💬 카카오톡</a>
           </div>
         )}
       </div>
@@ -311,93 +311,92 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       }
     };
     return (
-      <div className="hm-page" style={{ background: "var(--clr-white)", minHeight: "100vh" }}>
+      <div className="hm-page min-h-screen" style={{ background: "var(--clr-white)" }}>
         {/* 독립 헤더 */}
-        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", borderBottom: "1px solid #f0f0f0", padding: isMobile ? "12px 20px" : "14px 48px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img src="/logo-c.svg" alt="HOUSEMAN" style={{ height: 36, width: "auto" }} />
-            <span style={{ fontSize: 16, fontWeight: 800, color: "var(--clr-black)", letterSpacing: "-0.02em" }}>HOUSEMAN</span>
+        <div className={`sticky top-0 z-10 backdrop-blur-[20px] border-b border-[#f0f0f0] ${isMobile ? 'px-5 py-3' : 'px-12 py-3.5'} flex items-center justify-between`} style={{ background: "rgba(255,255,255,0.95)" }}>
+          <div className="flex items-center gap-2.5">
+            <img src="/logo-c.svg" alt="HOUSEMAN" className="h-9 w-auto" />
+            <span className="text-base font-extrabold tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <a href={`tel:${SITE.phone}`} style={{ fontSize: 13, fontWeight: 600, color: "var(--clr-red)", textDecoration: "none" }}>{SITE.phone}</a>
-            <div onClick={goBack} style={{ padding: "8px 16px", borderRadius: 980, background: "var(--clr-bg)", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "var(--clr-muted)" }}>
+          <div className="flex items-center gap-3">
+            <a href={`tel:${SITE.phone}`} className="text-[13px] font-semibold no-underline" style={{ color: "var(--clr-red)" }}>{SITE.phone}</a>
+            <div onClick={goBack} className="px-4 py-2 rounded-full cursor-pointer text-[13px] font-semibold" style={{ background: "var(--clr-bg)", color: "var(--clr-muted)" }}>
               {urlVacancy ? "전체 매물 보기" : "← 목록"}
             </div>
           </div>
         </div>
 
-        <div style={{ maxWidth: 800, margin: "0 auto", padding: isMobile ? "24px 20px 60px" : "48px 20px 80px" }}>
+        <div className={`max-w-[800px] mx-auto ${isMobile ? 'px-5 pt-6 pb-[60px]' : 'px-5 pt-12 pb-20'}`}>
           {/* 사진 갤러리 */}
-          <div style={{ aspectRatio: isMobile ? "4/3" : "16/9", overflow: "hidden", position: "relative", background: "#f5f5f7", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-            {photos.length ? <img src={photos[idx]} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} /> :
-              <div style={{ textAlign: "center", color: "var(--clr-light)" }}><div style={{ fontSize: 64 }}>🏢</div><div style={{ fontSize: 16, marginTop: 12 }}>사진 준비중</div></div>}
+          <div className={`${isMobile ? 'aspect-[4/3]' : 'aspect-video'} overflow-hidden relative bg-[#f5f5f7] flex items-center justify-center mb-3`}>
+            {photos.length ? <img src={photos[idx]} alt="" className="w-full h-full object-contain" /> :
+              <div className="text-center" style={{ color: "var(--clr-light)" }}><div className="text-[64px]">🏢</div><div className="text-base mt-3">사진 준비중</div></div>}
             {photos.length > 1 && <>
-              <div onClick={() => setPhotoIdx(idx > 0 ? idx - 1 : photos.length - 1)} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, background: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f" }}>‹</div>
-              <div onClick={() => setPhotoIdx(idx < photos.length - 1 ? idx + 1 : 0)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, background: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "#1d1d1f" }}>›</div>
+              <div onClick={() => setPhotoIdx(idx > 0 ? idx - 1 : photos.length - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/85 flex items-center justify-center cursor-pointer text-lg text-[#1d1d1f] hover:bg-white transition-colors">‹</div>
+              <div onClick={() => setPhotoIdx(idx < photos.length - 1 ? idx + 1 : 0)} className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/85 flex items-center justify-center cursor-pointer text-lg text-[#1d1d1f] hover:bg-white transition-colors">›</div>
             </>}
-            {photos.length > 1 && <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 12, fontWeight: 600, padding: "4px 12px", background: "rgba(0,0,0,0.6)", color: "#fff" }}>{idx + 1} / {photos.length}</div>}
+            {photos.length > 1 && <div className="absolute bottom-3 right-3 text-xs font-semibold px-3 py-1 bg-black/60 text-white">{idx + 1} / {photos.length}</div>}
           </div>
 
           {/* 썸네일 */}
           {photos.length > 1 && (
-            <div style={{ display: "flex", gap: 4, marginBottom: 28, overflowX: "auto", paddingBottom: 4 }}>
+            <div className="flex gap-1 mb-7 overflow-x-auto pb-1">
               {photos.map((p: any, pi: number) => (
-                <div key={pi} onClick={() => setPhotoIdx(pi)} style={{
-                  width: 64, height: 48, overflow: "hidden", cursor: "pointer", flexShrink: 0,
+                <div key={pi} onClick={() => setPhotoIdx(pi)} className="w-16 h-12 overflow-hidden cursor-pointer shrink-0 transition-all duration-200" style={{
                   border: pi === idx ? "2px solid #c41230" : "2px solid transparent",
-                  opacity: pi === idx ? 1 : 0.5, transition: "all 0.2s",
+                  opacity: pi === idx ? 1 : 0.5,
                 }}>
-                  <img src={p} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={p} alt="" className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>
           )}
 
           {/* 제목 + 배지 */}
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
-              <h2 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, margin: 0, color: "#111", letterSpacing: "-0.03em" }}>{v.building} {v.room}호</h2>
-              <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: badgeColor(v.type), color: "#fff" }}>{v.type}</span>
-              {isContract && <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: "#DC2626", color: "#fff" }}>계약중</span>}
+          <div className="mb-6">
+            <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-[32px]'} font-extrabold m-0 text-[#111] tracking-tight`}>{v.building} {v.room}호</h2>
+              <span className="text-xs font-bold px-3 py-1 text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
+              {isContract && <span className="text-xs font-bold px-3 py-1 bg-[#DC2626] text-white">계약중</span>}
             </div>
             {(roomInfo.roomType || roomInfo.area) && (
-              <div style={{ fontSize: 14, color: "#6B7280" }}>
+              <div className="text-sm text-gray-500">
                 {roomInfo.roomType}{roomInfo.area ? ` · ${roomInfo.area}㎡` : ""}
               </div>
             )}
           </div>
 
           {/* 금액 테이블 */}
-          <div style={{ marginBottom: 28, border: "1px solid #E5E7EB" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <div className="mb-7 border border-gray-200">
+            <table className="w-full border-collapse text-sm">
               <tbody>
-                <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280", width: "30%" }}>{depositLabel}</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 700, fontSize: 16 }}>{fmt(vDeposit)}만원</td>
+                <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500 w-[30%]">{depositLabel}</td>
+                  <td className="px-4 py-3 font-bold text-base">{fmt(vDeposit)}만원</td>
                 </tr>
-                <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>월세</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 700, fontSize: 16, color: "#c41230" }}>{fmt(vRent)}만원</td>
+                <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">월세</td>
+                  <td className="px-4 py-3 font-bold text-base text-[#c41230]">{fmt(vRent)}만원</td>
                 </tr>
-                {vMgmt > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>관리비</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vMgmt}만원</td>
+                {vMgmt > 0 && <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">관리비</td>
+                  <td className="px-4 py-3 font-semibold">{vMgmt}만원</td>
                 </tr>}
-                {vWater > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>수도</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vWater.toLocaleString()}원</td>
+                {vWater > 0 && <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">수도</td>
+                  <td className="px-4 py-3 font-semibold">{vWater.toLocaleString()}원</td>
                 </tr>}
-                {vInternet > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>인터넷</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vInternet.toLocaleString()}원</td>
+                {vInternet > 0 && <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">인터넷</td>
+                  <td className="px-4 py-3 font-semibold">{vInternet.toLocaleString()}원</td>
                 </tr>}
-                {vCleanFee > 0 && <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>퇴실청소비</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{vCleanFee.toLocaleString()}원</td>
+                {vCleanFee > 0 && <tr className="border-b border-gray-200">
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">퇴실청소비</td>
+                  <td className="px-4 py-3 font-semibold">{vCleanFee.toLocaleString()}원</td>
                 </tr>}
                 {roomInfo.commFee && <tr>
-                  <td style={{ padding: "12px 16px", background: "#F9FAFB", fontWeight: 600, color: "#6B7280" }}>중개수수료</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600 }}>{roomInfo.commFee}원</td>
+                  <td className="px-4 py-3 bg-gray-50 font-semibold text-gray-500">중개수수료</td>
+                  <td className="px-4 py-3 font-semibold">{roomInfo.commFee}원</td>
                 </tr>}
               </tbody>
             </table>
@@ -405,17 +404,17 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* 매물 상세 정보 */}
           {(roomInfo.roomType || roomInfo.area) && (
-            <div style={{ marginBottom: 28 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>매물 정보</h3>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+            <div className="mb-7">
+              <h3 className="text-base font-bold text-[#111] mb-3 pb-2 border-b-2 border-[#111]">매물 정보</h3>
+              <table className="w-full border-collapse text-sm">
                 <tbody>
-                  {roomInfo.roomType && <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
-                    <td style={{ padding: "10px 0", color: "#6B7280", width: "30%" }}>방 형태</td>
-                    <td style={{ padding: "10px 0", fontWeight: 600 }}>{roomInfo.roomType}</td>
+                  {roomInfo.roomType && <tr className="border-b border-gray-100">
+                    <td className="py-2.5 text-gray-500 w-[30%]">방 형태</td>
+                    <td className="py-2.5 font-semibold">{roomInfo.roomType}</td>
                   </tr>}
-                  {roomInfo.area && <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
-                    <td style={{ padding: "10px 0", color: "#6B7280" }}>전용면적</td>
-                    <td style={{ padding: "10px 0", fontWeight: 600 }}>{roomInfo.area}㎡</td>
+                  {roomInfo.area && <tr className="border-b border-gray-100">
+                    <td className="py-2.5 text-gray-500">전용면적</td>
+                    <td className="py-2.5 font-semibold">{roomInfo.area}㎡</td>
                   </tr>}
                 </tbody>
               </table>
@@ -424,9 +423,9 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* 특약사항 상단 */}
           {roomInfo.specialTerms && (
-            <div style={{ marginBottom: 28 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>계약 안내사항</h3>
-              <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>
+            <div className="mb-7">
+              <h3 className="text-base font-bold text-[#111] mb-3 pb-2 border-b-2 border-[#111]">계약 안내사항</h3>
+              <div className="text-sm text-gray-700 leading-[1.9] whitespace-pre-wrap">
                 {roomInfo.specialTerms}
               </div>
             </div>
@@ -434,38 +433,38 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* 특약사항 하단 */}
           {roomInfo.specialTermsBottom && (
-            <div style={{ marginBottom: 28 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #111" }}>추가 안내</h3>
-              <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>
+            <div className="mb-7">
+              <h3 className="text-base font-bold text-[#111] mb-3 pb-2 border-b-2 border-[#111]">추가 안내</h3>
+              <div className="text-sm text-gray-700 leading-[1.9] whitespace-pre-wrap">
                 {roomInfo.specialTermsBottom}
               </div>
             </div>
           )}
 
           {/* 문의 버튼 */}
-          <div style={{ display: "flex", gap: 12, marginBottom: 40 }}>
-            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark" style={{ flex: 1, justifyContent: "center", padding: "16px 32px", fontSize: 17 }}>📞 전화 문의</a>
+          <div className="flex gap-3 mb-10">
+            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark flex-1 justify-center px-8 py-4 text-[17px]">📞 전화 문의</a>
             {isContract
-              ? <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 32px", fontSize: 17, fontWeight: 700, background: "#E5E7EB", color: "#9CA3AF" }}>계약 진행중</div>
+              ? <div className="flex-1 flex items-center justify-center px-8 py-4 text-[17px] font-bold bg-gray-200 text-gray-400">계약 진행중</div>
               : <button onClick={() => { setContractStep("verify"); setContractPhone(""); setContractError(""); setContractBroker(null); }}
-                style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 32px", fontSize: 17, fontWeight: 700, fontFamily: "inherit", background: "#c41230", color: "#fff", border: "none", cursor: "pointer" }}>계약하기</button>
+                className="flex-1 flex items-center justify-center px-8 py-4 text-[17px] font-bold font-[inherit] bg-[#c41230] text-white border-none cursor-pointer hover:bg-[#a80f28] transition-colors">계약하기</button>
             }
 
           {/* ── 부동산 인증 팝업 ── */}
           {contractStep === "verify" && (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center"
               onClick={() => setContractStep(null)}>
-              <div onClick={e => e.stopPropagation()} style={{ background: "#fff", padding: 32, width: isMobile ? "90%" : 400, maxWidth: "95%" }}>
-                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 8 }}>등록부동산 확인</div>
-                <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>등록된 부동산만 계약을 진행할 수 있습니다.</div>
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 4 }}>부동산 연락처</div>
+              <div onClick={e => e.stopPropagation()} className={`bg-white p-8 ${isMobile ? 'w-[90%]' : 'w-[400px]'} max-w-[95%]`}>
+                <div className="text-lg font-extrabold mb-2">등록부동산 확인</div>
+                <div className="text-[13px] text-gray-500 mb-5">등록된 부동산만 계약을 진행할 수 있습니다.</div>
+                <div className="mb-4">
+                  <div className="text-xs font-semibold text-gray-700 mb-1">부동산 연락처</div>
                   <input value={contractPhone} onChange={e => { setContractPhone(e.target.value); setContractError(""); }}
                     placeholder="02-0000-0000 또는 010-0000-0000"
-                    style={{ width: "100%", padding: "12px 16px", border: contractError ? "2px solid #DC2626" : "1px solid #D1D5DB", fontSize: 15, fontFamily: "inherit", boxSizing: "border-box" }} />
-                  {contractError && <div style={{ fontSize: 12, color: "#DC2626", marginTop: 6 }}>{contractError}</div>}
+                    className={`w-full px-4 py-3 text-[15px] font-[inherit] box-border ${contractError ? 'border-2 border-[#DC2626]' : 'border border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`} />
+                  {contractError && <div className="text-xs text-[#DC2626] mt-1.5">{contractError}</div>}
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="flex gap-2">
                   <button onClick={() => {
                     const phone = contractPhone.trim();
                     if (!phone) { setContractError("연락처를 입력하세요"); return; }
@@ -495,8 +494,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       contractDeposit: calcContractDeposit, depositor: "",
                     });
                     setContractStep("form");
-                  }} style={{ flex: 1, padding: "12px", background: "#111", color: "#fff", border: "none", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>확인</button>
-                  <button onClick={() => setContractStep(null)} style={{ padding: "12px 24px", background: "#F3F4F6", border: "none", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#6B7280" }}>취소</button>
+                  }} className="flex-1 p-3 bg-[#111] text-white border-none text-[15px] font-bold cursor-pointer font-[inherit] hover:bg-[#333] transition-colors">확인</button>
+                  <button onClick={() => setContractStep(null)} className="px-6 py-3 bg-gray-100 border-none text-[15px] font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
                 </div>
               </div>
             </div>
@@ -504,58 +503,58 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* ── 계약 등록 폼 ── */}
           {contractStep === "form" && (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", overflowY: "auto" }}
+            <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center overflow-y-auto"
               onClick={() => setContractStep(null)}>
-              <div onClick={e => e.stopPropagation()} style={{ background: "#fff", padding: isMobile ? 24 : 32, width: isMobile ? "95%" : 520, maxWidth: "95%", maxHeight: "90vh", overflowY: "auto", margin: "20px 0" }}>
-                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>계약 등록</div>
-                <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 20 }}>{v.building} {v.room}호 · {v.type}</div>
+              <div onClick={e => e.stopPropagation()} className={`bg-white ${isMobile ? 'p-6 w-[95%]' : 'p-8 w-[520px]'} max-w-[95%] max-h-[90vh] overflow-y-auto my-5`}>
+                <div className="text-lg font-extrabold mb-1">계약 등록</div>
+                <div className="text-[13px] text-gray-500 mb-5">{v.building} {v.room}호 · {v.type}</div>
 
                 {/* 부동산 정보 (수정 가능) */}
-                <div style={{ padding: 14, background: "#F0F9FF", border: "1px solid #BAE6FD", marginBottom: 16 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#0369A1", marginBottom: 4 }}>부동산 정보</div>
-                  <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 8 }}>부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div className="p-3.5 bg-sky-50 border border-sky-200 mb-4">
+                  <div className="text-xs font-bold text-sky-700 mb-1">부동산 정보</div>
+                  <div className="text-[11px] text-gray-500 mb-2">부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
+                  <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <div style={{ fontSize: 10, color: "#0369A1", marginBottom: 2 }}>부동산명</div>
+                      <div className="text-[10px] text-sky-700 mb-0.5">부동산명</div>
                       <input value={contractForm.broker || ""} onChange={e => setContractForm(p => ({ ...p, broker: e.target.value }))}
-                        style={{ width: "100%", padding: "7px 10px", border: "1px solid #BAE6FD", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box", background: "#fff" }} />
+                        className="w-full px-2.5 py-[7px] border border-sky-200 text-[13px] font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, color: "#0369A1", marginBottom: 2 }}>연락처</div>
+                      <div className="text-[10px] text-sky-700 mb-0.5">연락처</div>
                       <input value={contractForm.brokerPhone || ""} onChange={e => setContractForm(p => ({ ...p, brokerPhone: e.target.value }))}
-                        style={{ width: "100%", padding: "7px 10px", border: "1px solid #BAE6FD", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box", background: "#fff" }} />
+                        className="w-full px-2.5 py-[7px] border border-sky-200 text-[13px] font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
                   </div>
                 </div>
 
                 {/* 금액 */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                <div className="grid grid-cols-3 gap-2.5 mb-3">
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>{depositLabel} (만원)</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">{depositLabel} (만원)</div>
                     <input type="number" value={contractForm.deposit ?? ""} onChange={e => setContractForm(p => ({ ...p, deposit: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>월세 (만원)</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">월세 (만원)</div>
                     <input type="number" value={contractForm.rent ?? ""} onChange={e => setContractForm(p => ({ ...p, rent: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>관리비 (만원)</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">관리비 (만원)</div>
                     <input type="number" value={contractForm.mgmt ?? ""} onChange={e => setContractForm(p => ({ ...p, mgmt: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
 
                 {/* 입주일/만기일 */}
-                <div style={{ display: "grid", gridTemplateColumns: v.type === "단기" ? "1fr auto 1fr" : "1fr 1fr", gap: 10, marginBottom: 4, alignItems: "start" }}>
+                <div className={`grid ${v.type === "단기" ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-2'} gap-2.5 mb-1 items-start`}>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>입주일 *</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">입주일 *</div>
                     <input type="date" value={contractForm.moveIn || ""}
                       max={v.type === "단기" ? (() => { const d = new Date(); d.setDate(d.getDate() + 5); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })() : undefined}
                       min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })()}
                       onChange={e => setContractForm(p => ({ ...p, moveIn: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   {v.type === "단기" && (
                     <button onClick={() => {
@@ -565,49 +564,49 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       d.setDate(d.getDate() - 1);
                       const exp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
                       setContractForm(p => ({ ...p, expiry: exp }));
-                    }} style={{ padding: "8px 14px", border: "1px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", marginTop: 18 }}>3개월</button>
+                    }} className="px-3.5 py-2 border border-blue-500 bg-[#EFF6FF] text-[#2563EB] text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
                   )}
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>만기일</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">만기일</div>
                     <input type="date" value={contractForm.expiry || ""} onChange={e => setContractForm(p => ({ ...p, expiry: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
-                {v.type === "단기" && <div style={{ fontSize: 10, color: "#F59E0B", marginBottom: 12 }}>단기: 오늘로부터 5일 이내 입주</div>}
+                {v.type === "단기" && <div className="text-[10px] text-amber-500 mb-3">단기: 오늘로부터 5일 이내 입주</div>}
 
                 {/* 단기 전용 */}
                 {v.type === "단기" && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                  <div className="grid grid-cols-3 gap-2.5 mb-3">
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>수도</div>
+                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">수도</div>
                       <input value={contractForm.water ?? ""} onChange={e => setContractForm(p => ({ ...p, water: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>인터넷</div>
+                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">인터넷</div>
                       <input value={contractForm.cable ?? ""} onChange={e => setContractForm(p => ({ ...p, cable: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>퇴실청소비</div>
+                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">퇴실청소비</div>
                       <input value={contractForm.exitFee ?? ""} onChange={e => setContractForm(p => ({ ...p, exitFee: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                   </div>
                 )}
 
                 {/* 계약금 + 입금자명 */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+                <div className="grid grid-cols-2 gap-2.5 mb-3">
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>계약금 (만원)</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">계약금 (만원)</div>
                     <input type="number" value={contractForm.contractDeposit ?? ""} onChange={e => setContractForm(p => ({ ...p, contractDeposit: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 3 }}>입금자명</div>
+                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">입금자명</div>
                     <input value={contractForm.depositor || ""} onChange={e => setContractForm(p => ({ ...p, depositor: e.target.value }))}
                       placeholder="입금자명"
-                      style={{ width: "100%", padding: "8px 10px", border: "1px solid #D1D5DB", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
 
@@ -640,9 +639,9 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   if (!isDangi) {
                     // 근생/일반임대: 계좌만 표시
                     return (
-                      <div style={{ padding: 14, background: "#FFFBEB", border: "1px solid #FDE68A", marginBottom: 16 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E", marginBottom: 4 }}>입금 계좌</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "#111", fontFamily: "monospace" }}>{ownerAcct || hmAcct}</div>
+                      <div className="p-3.5 bg-amber-50 border border-amber-200 mb-4">
+                        <div className="text-xs font-bold text-amber-800 mb-1">입금 계좌</div>
+                        <div className="text-sm font-bold text-[#111] font-mono">{ownerAcct || hmAcct}</div>
                       </div>
                     );
                   }
@@ -686,50 +685,49 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   const payTotal = acctMode === "owner3" ? ownerTotal : total;
 
                   const acctColor: Record<string, string> = { owner: "#EA580C", hm: "#2563EB", deferred: "#92400E" };
-                  const acctDot = (type: string) => ({ width: 6, height: 6, borderRadius: "50%", background: acctColor[type], flexShrink: 0 });
 
                   return (
-                    <div style={{ marginBottom: 16, border: "1px solid #D1D5DB", overflow: "hidden" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <div className="mb-4 border border-gray-300 overflow-hidden">
+                      <table className="w-full border-collapse text-xs">
                         <thead>
-                          <tr style={{ background: "#111" }}>
-                            <th colSpan={3} style={{ padding: "8px 12px", color: "#fff", fontSize: 12, fontWeight: 700, textAlign: "left" }}>입주금 안내 <span style={{ fontWeight: 400, fontSize: 10, color: "#9CA3AF", marginLeft: 8 }}>{desc}</span></th>
+                          <tr className="bg-[#111]">
+                            <th colSpan={3} className="px-3 py-2 text-white text-xs font-bold text-left">입주금 안내 <span className="font-normal text-[10px] text-gray-400 ml-2">{desc}</span></th>
                           </tr>
                         </thead>
                         <tbody>
                           {rows.map((r, i) => (
-                            <tr key={i} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                              <td style={{ padding: "6px 12px", width: 8 }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: acctColor[r.acct] }} /></td>
-                              <td style={{ padding: "6px 4px", color: "#374151" }}>{r.l}</td>
-                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, fontFamily: "monospace" }}>{fmtA(r.v)}</td>
+                            <tr key={i} className="border-b border-gray-200">
+                              <td className="px-3 py-1.5 w-2"><div className="w-2 h-2 rounded-full" style={{ background: acctColor[r.acct] }} /></td>
+                              <td className="px-1 py-1.5 text-gray-700">{r.l}</td>
+                              <td className="px-3 py-1.5 text-right font-bold font-mono">{fmtA(r.v)}</td>
                             </tr>
                           ))}
                           {/* 계좌별 소계 */}
                           {ownerRows.length > 0 && (
-                            <tr style={{ background: "#FFF7ED", borderBottom: "1px solid #E5E7EB" }}>
-                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#EA580C" }} /></td>
-                              <td style={{ padding: "6px 4px", fontSize: 11 }}><span style={{ fontWeight: 700, color: "#EA580C" }}>건물주</span> <span style={{ color: "#9CA3AF", fontSize: 10 }}>{ownerAcct || "미설정"}</span></td>
-                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, color: "#EA580C", fontFamily: "monospace" }}>{fmtA(ownerTotal)}</td>
+                            <tr className="bg-orange-50 border-b border-gray-200">
+                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#EA580C]" /></td>
+                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-[#EA580C]">건물주</span> <span className="text-gray-400 text-[10px]">{ownerAcct || "미설정"}</span></td>
+                              <td className="px-3 py-1.5 text-right font-bold text-[#EA580C] font-mono">{fmtA(ownerTotal)}</td>
                             </tr>
                           )}
                           {hmRows.length > 0 && (
-                            <tr style={{ background: "#EFF6FF", borderBottom: "1px solid #E5E7EB" }}>
-                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2563EB" }} /></td>
-                              <td style={{ padding: "6px 4px", fontSize: 11 }}><span style={{ fontWeight: 700, color: "#2563EB" }}>하우스맨</span> <span style={{ color: "#9CA3AF", fontSize: 10 }}>{hmAcct}</span></td>
-                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 700, color: "#2563EB", fontFamily: "monospace" }}>{fmtA(hmTotal)}</td>
+                            <tr className="bg-blue-50 border-b border-gray-200">
+                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#2563EB]" /></td>
+                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-[#2563EB]">하우스맨</span> <span className="text-gray-400 text-[10px]">{hmAcct}</span></td>
+                              <td className="px-3 py-1.5 text-right font-bold text-[#2563EB] font-mono">{fmtA(hmTotal)}</td>
                             </tr>
                           )}
                           {defRows.length > 0 && (
-                            <tr style={{ background: "#FFFBEB", borderBottom: "1px solid #E5E7EB" }}>
-                              <td style={{ padding: "6px 12px" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#92400E" }} /></td>
-                              <td style={{ padding: "6px 4px", fontSize: 11, color: "#92400E", fontWeight: 600 }}>후불 (퇴실정산)</td>
-                              <td style={{ padding: "6px 12px", textAlign: "right", fontWeight: 600, color: "#92400E", fontFamily: "monospace" }}>{fmtA(defRows.reduce((a, x) => a + x.v, 0))}</td>
+                            <tr className="bg-amber-50 border-b border-gray-200">
+                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#92400E]" /></td>
+                              <td className="px-1 py-1.5 text-[11px] text-[#92400E] font-semibold">후불 (퇴실정산)</td>
+                              <td className="px-3 py-1.5 text-right font-semibold text-[#92400E] font-mono">{fmtA(defRows.reduce((a, x) => a + x.v, 0))}</td>
                             </tr>
                           )}
                           {/* 합계 */}
-                          <tr style={{ background: "#F3F4F6" }}>
-                            <td colSpan={2} style={{ padding: "8px 12px", fontWeight: 800, fontSize: 13, color: "#111" }}>입주금 합계</td>
-                            <td style={{ padding: "8px 12px", textAlign: "right", fontWeight: 800, fontSize: 14, color: "#111", fontFamily: "monospace" }}>{fmtA(payTotal)}</td>
+                          <tr className="bg-gray-100">
+                            <td colSpan={2} className="px-3 py-2 font-extrabold text-[13px] text-[#111]">입주금 합계</td>
+                            <td className="px-3 py-2 text-right font-extrabold text-sm text-[#111] font-mono">{fmtA(payTotal)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -738,7 +736,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 })()}
 
                 {/* 등록 버튼 */}
-                <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
+                <div className="flex gap-2 mt-5">
                   <button onClick={() => {
                     if (!contractForm.moveIn) { alert("입주일을 선택하세요"); return; }
                     // 중복 계약 방지
@@ -783,8 +781,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     }
                     setContractStep(null);
                     alert("계약이 등록되었습니다. HOUSEMAN에서 확인 후 연락드리겠습니다.");
-                  }} style={{ flex: 1, padding: "14px", background: "#c41230", color: "#fff", border: "none", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>계약 등록</button>
-                  <button onClick={() => setContractStep(null)} style={{ padding: "14px 24px", background: "#F3F4F6", border: "none", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#6B7280" }}>취소</button>
+                  }} className="flex-1 p-3.5 bg-[#c41230] text-white border-none text-base font-extrabold cursor-pointer font-[inherit] hover:bg-[#a80f28] transition-colors">계약 등록</button>
+                  <button onClick={() => setContractStep(null)} className="px-6 py-3.5 bg-gray-100 border-none text-[15px] font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
                 </div>
               </div>
             </div>
@@ -792,8 +790,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           </div>
 
           {/* 회사 정보 */}
-          <div style={{ padding: "20px 24px", background: "#F9FAFB", border: "1px solid #E5E7EB", fontSize: 13, color: "#6B7280", lineHeight: 1.8 }}>
-            <div style={{ fontWeight: 700, color: "#111", marginBottom: 4, fontSize: 14 }}>HOUSEMAN 하우스맨</div>
+          <div className="px-6 py-5 bg-gray-50 border border-gray-200 text-[13px] text-gray-500 leading-[1.8]">
+            <div className="font-bold text-[#111] mb-1 text-sm">HOUSEMAN 하우스맨</div>
             <div>{SITE.phone} | {SITE.address}</div>
             <div>사업자등록번호: {SITE.bizNo}</div>
           </div>
@@ -804,37 +802,37 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
   // ─── MAIN PAGE ───
   return (
-    <div className="hm-page" style={{ background: "var(--clr-white)", overflowX: "hidden" }}>
+    <div className="hm-page overflow-x-hidden" style={{ background: "var(--clr-white)" }}>
 
       {/* ═══ NAV ═══ */}
-      <nav className={`hm-nav${scrolled ? " scrolled" : ""}`} style={{ padding: isMobile ? "14px 20px" : "14px 48px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <img src="/logo-c.svg" alt="HOUSEMAN" style={{ height: isMobile ? 44 : 54, width: "auto", transition: "filter 0.4s", filter: scrolled ? "none" : "brightness(0) invert(1)" }} />
+      <nav className={`hm-nav${scrolled ? " scrolled" : ""} ${isMobile ? 'px-5 py-3.5' : 'px-12 py-3.5'} flex items-center justify-between`}>
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          <img src="/logo-c.svg" alt="HOUSEMAN" className={`${isMobile ? 'h-11' : 'h-[54px]'} w-auto transition-[filter] duration-[0.4s]`} style={{ filter: scrolled ? "none" : "brightness(0) invert(1)" }} />
           {isMobile && (
-            <div style={{ transition: "color 0.4s" }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: scrolled ? "var(--clr-black)" : "#fff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>HOUSEMAN</div>
-              <div style={{ fontSize: 9, color: scrolled ? "var(--clr-muted)" : "rgba(255,255,255,0.7)", lineHeight: 1.3 }}>중소형 빌딩 관리<br/>임대 주택 관리</div>
+            <div className="transition-colors duration-[0.4s]">
+              <div className="text-[13px] font-extrabold tracking-tight leading-tight" style={{ color: scrolled ? "var(--clr-black)" : "#fff" }}>HOUSEMAN</div>
+              <div className="text-[9px] leading-[1.3]" style={{ color: scrolled ? "var(--clr-muted)" : "rgba(255,255,255,0.7)" }}>중소형 빌딩 관리<br/>임대 주택 관리</div>
             </div>
           )}
         </div>
         {isMobile ? (
-          <div onClick={() => setMenuOpen(!menuOpen)} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 24, color: scrolled ? "var(--clr-black)" : "#fff", transition: "color 0.4s" }}>{menuOpen ? "✕" : "☰"}</div>
+          <div onClick={() => setMenuOpen(!menuOpen)} className="w-9 h-9 flex items-center justify-center cursor-pointer text-2xl transition-colors duration-[0.4s]" style={{ color: scrolled ? "var(--clr-black)" : "#fff" }}>{menuOpen ? "✕" : "☰"}</div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          <div className="flex items-center gap-8">
             {navItems.map(n => <span key={n.id} className="hm-nav-link" onClick={() => scrollTo(n.id)} style={{ color: scrolled ? "var(--clr-muted)" : "rgba(255,255,255,0.8)" }}>{n.l}</span>)}
-            <a href={`tel:${SITE.phone}`} className="hm-btn" style={{ padding: "10px 24px", fontSize: 14, borderRadius: 980, fontWeight: 600, textDecoration: "none", background: scrolled ? "var(--clr-red)" : "#fff", color: scrolled ? "#fff" : "var(--clr-black)" }}>{SITE.phone}</a>
+            <a href={`tel:${SITE.phone}`} className="hm-btn px-6 py-2.5 text-sm rounded-full font-semibold no-underline" style={{ background: scrolled ? "var(--clr-red)" : "#fff", color: scrolled ? "#fff" : "var(--clr-black)" }}>{SITE.phone}</a>
           </div>
         )}
       </nav>
       {menuOpen && isMobile && (
-        <div style={{ position: "fixed", inset: 0, top: 48, background: "rgba(250,250,250,0.97)", backdropFilter: "blur(40px)", zIndex: 99, padding: "60px 32px", display: "flex", flexDirection: "column", gap: 32 }}>
-          {navItems.map(n => <span key={n.id} onClick={() => scrollTo(n.id)} style={{ fontSize: 32, fontWeight: 700, color: "var(--clr-black)", cursor: "pointer", letterSpacing: "-0.03em" }}>{n.l}</span>)}
-          <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-filled" style={{ marginTop: 16, justifyContent: "center", fontSize: 20, padding: "18px" }}>{SITE.phone}</a>
+        <div className="fixed inset-0 top-12 bg-[rgba(250,250,250,0.97)] backdrop-blur-[40px] z-[99] px-8 pt-[60px] flex flex-col gap-8">
+          {navItems.map(n => <span key={n.id} onClick={() => scrollTo(n.id)} className="text-[32px] font-bold cursor-pointer tracking-tight" style={{ color: "var(--clr-black)" }}>{n.l}</span>)}
+          <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-filled mt-4 justify-center text-xl p-[18px]">{SITE.phone}</a>
         </div>
       )}
 
       {/* ═══ HERO ═══ */}
-      <section style={{ position: "relative", height: isMobile ? "60vh" : "100vh", overflow: "hidden" }}>
+      <section className={`relative ${isMobile ? 'h-[60vh]' : 'h-screen'} overflow-hidden`}>
         {/* 배경 이미지 — 크로스페이드 + 줌 */}
         {["/hero1.jpg", "/hero2.jpg"].map((img, i) => (
           <div key={i} className={`hm-hero-slide ${heroIdx === i ? "active" : "inactive"}`}
@@ -844,32 +842,32 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
         <div className="hm-hero-overlay" />
 
         {/* 콘텐츠 */}
-        <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: isMobile ? "flex-end" : "center", padding: isMobile ? "0 24px 100px" : "0 80px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ maxWidth: 600 }}>
+        <div className={`relative z-[1] h-full flex ${isMobile ? 'items-end px-6 pb-[100px]' : 'items-center px-20'} max-w-[1200px] mx-auto`}>
+          <div className="max-w-[600px]">
             <Reveal delay={0.2}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: "rgba(255,255,255,0.7)", marginBottom: 16, letterSpacing: "0.04em" }}>15년 경험 · 서울 100여 건물 관리</p>
+              <p className="text-sm font-medium text-white/70 mb-4 tracking-[0.04em]">15년 경험 · 서울 100여 건물 관리</p>
             </Reveal>
             <Reveal delay={0.35}>
-              <h1 style={{ fontSize: isMobile ? 36 : 60, fontWeight: 700, color: "#fff", lineHeight: 1.1, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
+              <h1 className={`${isMobile ? 'text-4xl' : 'text-[60px]'} font-bold text-white leading-[1.1] tracking-tight mb-5`} style={{ margin: "0 0 20px" }}>
                 건물 운영의 격을<br/>다르게 합니다
               </h1>
             </Reveal>
             <Reveal delay={0.5}>
-              <p style={{ fontSize: isMobile ? 15 : 18, color: "rgba(255,255,255,0.75)", lineHeight: 1.6, marginBottom: isMobile ? 48 : 32, maxWidth: 460, letterSpacing: "-0.01em" }}>
+              <p className={`${isMobile ? 'text-[15px] mb-12' : 'text-lg mb-8'} text-white/75 leading-relaxed max-w-[460px] tracking-tight`}>
                 현실을 아는 운영, 숫자로 증명되는 결과.
               </p>
             </Reveal>
             <Reveal delay={0.6}>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-filled" style={{ fontSize: isMobile ? 15 : 17 }}>관리 문의</a>
-                <span onClick={() => scrollTo("vacancy")} className="hm-btn hm-btn-outline" style={{ fontSize: isMobile ? 15 : 17, cursor: "pointer", color: "#fff", borderColor: "rgba(255,255,255,0.4)" }}>공실 확인하기</span>
+              <div className="flex gap-3 flex-wrap">
+                <a href={`tel:${SITE.phone}`} className={`hm-btn hm-btn-filled ${isMobile ? 'text-[15px]' : 'text-[17px]'}`}>관리 문의</a>
+                <span onClick={() => scrollTo("vacancy")} className={`hm-btn hm-btn-outline ${isMobile ? 'text-[15px]' : 'text-[17px]'} cursor-pointer text-white`} style={{ borderColor: "rgba(255,255,255,0.4)" }}>공실 확인하기</span>
               </div>
             </Reveal>
           </div>
         </div>
 
         {/* 히어로 인디케이터 */}
-        <div style={{ position: "absolute", bottom: isMobile ? 32 : 48, right: isMobile ? 24 : 80, zIndex: 2, display: "flex", gap: 8 }}>
+        <div className={`absolute ${isMobile ? 'bottom-8 right-6' : 'bottom-12 right-20'} z-[2] flex gap-2`}>
           {[0, 1].map(i => (
             <div key={i} onClick={() => setHeroIdx(i)}
               className={`hm-hero-indicator${heroIdx === i ? " active" : ""}`} />
@@ -878,11 +876,11 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ STATS STRIP ═══ */}
-      <section style={{ padding: isMobile ? "48px 24px" : "72px 48px", borderBottom: "1px solid var(--clr-border)" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 32 : 48, textAlign: "center" }}>
+      <section className={`${isMobile ? 'px-6 py-12' : 'px-12 py-[72px]'} border-b`} style={{ borderColor: "var(--clr-border)" }}>
+        <div className={`max-w-[1000px] mx-auto grid ${isMobile ? 'grid-cols-2 gap-8' : 'grid-cols-4 gap-12'} text-center`}>
           {[{ n: 15, s: "년+", l: "운영 경험" }, { n: 100, s: "+", l: "관리 건물" }, { n: 800, s: "+", l: "중개 네트워크" }, { n: 98, s: "%", l: "입주율" }].map((s, i) => (
             <Reveal key={i} delay={i * 0.08}>
-              <div className="hm-stat-num" style={{ fontSize: isMobile ? 36 : 52 }}><CountUp end={s.n} suffix={s.s} /></div>
+              <div className={`hm-stat-num ${isMobile ? 'text-4xl' : 'text-[52px]'}`}><CountUp end={s.n} suffix={s.s} /></div>
               <div className="hm-stat-label">{s.l}</div>
             </Reveal>
           ))}
@@ -890,13 +888,13 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ ABOUT — 분할 레이아웃 ═══ */}
-      <section id="about" style={{ position: "relative", overflow: "hidden" }}>
-        <div style={{ display: isMobile ? "block" : "grid", gridTemplateColumns: "1fr 1fr", minHeight: isMobile ? "auto" : "80vh" }}>
+      <section id="about" className="relative overflow-hidden">
+        <div className={`${isMobile ? 'block' : 'grid grid-cols-2'} ${isMobile ? 'min-h-0' : 'min-h-[80vh]'}`}>
           {/* 좌측: 흰색 텍스트 영역 */}
-          <div style={{ padding: isMobile ? "64px 24px" : "80px 60px", display: "flex", flexDirection: "column", justifyContent: "center", background: "#fff" }}>
+          <div className={`${isMobile ? 'px-6 py-16' : 'px-[60px] py-20'} flex flex-col justify-center bg-white`}>
             <Reveal>
-              <p className="hm-eyebrow" style={{ marginBottom: 20 }}>About Houseman</p>
-              <div style={{ position: "relative", display: "inline-block", margin: "0 0 28px" }}>
+              <p className="hm-eyebrow mb-5">About Houseman</p>
+              <div className="relative inline-block mb-7">
                 <EditableText field="aboutTitle" defaultVal="실전에서 증명된 운영 전문 기업, HOUSEMAN" tag="h2" style={{ fontSize: isMobile ? 26 : 34, fontWeight: 700, lineHeight: 1.25, margin: 0, letterSpacing: "-0.03em", color: "var(--clr-black)", paddingLeft: isMobile ? 16 : 20, borderLeft: "3px solid var(--clr-red)" }} />
                 <div className="hm-title-line" />
               </div>
@@ -907,10 +905,10 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             </Reveal>
           </div>
           {/* 우측: 빨간 배경 + 사진 겹침 */}
-          <div style={{ position: "relative", background: "#c41230", minHeight: isMobile ? 300 : "auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className={`relative bg-[#c41230] ${isMobile ? 'min-h-[300px]' : 'min-h-0'} flex items-center justify-center`}>
             <Reveal className="hm-reveal-scale" delay={0.2}>
-              <div style={{ position: "relative", margin: isMobile ? "40px 24px" : "40px", marginLeft: isMobile ? 24 : -40, borderRadius: 0, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.2)", aspectRatio: isMobile ? "4/3" : "3/4", maxHeight: isMobile ? 300 : 500 }}>
-                <img src="/about-img.jpg" alt="하우스맨" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <div className={`relative ${isMobile ? 'm-10 mx-6' : 'm-10'} overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.2)]`} style={{ marginLeft: isMobile ? 24 : -40, aspectRatio: isMobile ? "4/3" : "3/4", maxHeight: isMobile ? 300 : 500 }}>
+                <img src="/about-img.jpg" alt="하우스맨" className="w-full h-full object-cover block" />
               </div>
             </Reveal>
           </div>
@@ -918,8 +916,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ FEATURES ═══ */}
-      <section className="hm-section-gray" style={{ padding: isMobile ? "80px 24px" : "120px 48px" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 20 }}>
+      <section className={`hm-section-gray ${isMobile ? 'px-6 py-20' : 'px-12 py-[120px]'}`}>
+        <div className={`max-w-[1000px] mx-auto grid ${isMobile ? 'grid-cols-1' : 'grid-cols-4'} gap-5`}>
           {[
             { icon: "📊", t: "투명한 정산", d: "실시간 보고 체계와 월간 리포트" },
             { icon: "🔧", t: "원스톱 관리", d: "민원·시설·행정 모든 것을 일괄 처리" },
@@ -927,10 +925,10 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             { icon: "⚡", t: "15년 현장 경험", d: "실전에서 검증된 운영 노하우" },
           ].map((item, i) => (
             <Reveal key={i} className="hm-reveal-scale" delay={i * 0.08}>
-              <div className="hm-svc-card" style={{ padding: isMobile ? 24 : 32 }}>
-                <div className="hm-svc-icon" style={{ marginBottom: 16 }}>{item.icon}</div>
-                <div style={{ fontSize: 17, fontWeight: 700, color: "var(--clr-black)", marginBottom: 6, letterSpacing: "-0.02em" }}>{item.t}</div>
-                <div className="hm-body" style={{ fontSize: 14 }}>{item.d}</div>
+              <div className={`hm-svc-card ${isMobile ? 'p-6' : 'p-8'}`}>
+                <div className="hm-svc-icon mb-4">{item.icon}</div>
+                <div className="text-[17px] font-bold mb-1.5 tracking-tight" style={{ color: "var(--clr-black)" }}>{item.t}</div>
+                <div className="hm-body text-sm">{item.d}</div>
               </div>
             </Reveal>
           ))}
@@ -938,45 +936,42 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ HIGHLIGHT BANNER ═══ */}
-      <section style={{ position: "relative", padding: isMobile ? "80px 24px" : "120px 48px", overflow: "hidden" }}>
+      <section className={`relative ${isMobile ? 'px-6 py-20' : 'px-12 py-[120px]'} overflow-hidden`}>
         <div className="hm-hero-bg" /><div className="hm-hero-grid" />
-        <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
+        <div className="max-w-[700px] mx-auto text-center relative z-[1]">
           <Reveal>
-            <h2 className="hm-headline" style={{ fontSize: isMobile ? 26 : 40, margin: "0 0 16px" }}>하우스맨은 중개보수를<br/>쉐어하지 않습니다.</h2>
-            <p className="hm-body" style={{ fontSize: isMobile ? 16 : 20 }}>그래서 더 많은 중개사가 움직이고,<br/>공실은 더 빨리 사라집니다.</p>
+            <h2 className={`hm-headline ${isMobile ? 'text-[26px]' : 'text-[40px]'} mb-4`} style={{ margin: "0 0 16px" }}>하우스맨은 중개보수를<br/>쉐어하지 않습니다.</h2>
+            <p className={`hm-body ${isMobile ? 'text-base' : 'text-xl'}`}>그래서 더 많은 중개사가 움직이고,<br/>공실은 더 빨리 사라집니다.</p>
           </Reveal>
         </div>
       </section>
 
       {/* ═══ SERVICES ═══ */}
-      <section id="services" style={{ padding: isMobile ? "80px 24px" : "140px 48px" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+      <section id="services" className={`${isMobile ? 'px-6 py-20' : 'px-12 py-[140px]'}`}>
+        <div className="max-w-[1000px] mx-auto">
           <Reveal>
-            <p className="hm-eyebrow" style={{ marginBottom: 16 }}>Services</p>
-            <h2 className="hm-headline" style={{ fontSize: isMobile ? 30 : 44, margin: "0 0 56px" }}>맞춤형 관리 서비스</h2>
+            <p className="hm-eyebrow mb-4">Services</p>
+            <h2 className={`hm-headline ${isMobile ? 'text-[30px]' : 'text-[44px]'} mb-14`} style={{ margin: "0 0 56px" }}>맞춤형 관리 서비스</h2>
           </Reveal>
-          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 24 : 40 }}>
+          <div className={`flex flex-col ${isMobile ? 'gap-6' : 'gap-10'}`}>
             {SERVICES.map((s, i) => (
               <Reveal key={i} delay={i * 0.08}>
-                <div onClick={() => setServiceDetail(s)} style={{
-                  display: isMobile ? "block" : "grid",
-                  gridTemplateColumns: i % 2 === 0 ? "1fr 1fr" : "1fr 1fr",
-                  gap: isMobile ? 20 : 48, alignItems: "center",
-                  background: "var(--clr-bg)", borderRadius: 28, overflow: "hidden",
-                  transition: "all 0.5s cubic-bezier(0.4,0,0.2,1)", cursor: "pointer",
+                <div onClick={() => setServiceDetail(s)} className={`${isMobile ? 'block' : 'grid grid-cols-2'} items-center rounded-[28px] overflow-hidden cursor-pointer transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]`} style={{
+                  gap: isMobile ? 20 : 48,
+                  background: "var(--clr-bg)",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.06)"; }}
                   onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}>
-                  <div style={{ order: isMobile ? 0 : (i % 2 === 0 ? 0 : 1), aspectRatio: isMobile ? "16/9" : "4/3", overflow: "hidden" }}>
-                    <img src={s.img} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.7s cubic-bezier(0.4,0,0.2,1)" }}
+                  <div className="overflow-hidden" style={{ order: isMobile ? 0 : (i % 2 === 0 ? 0 : 1), aspectRatio: isMobile ? "16/9" : "4/3" }}>
+                    <img src={s.img} alt={s.title} className="w-full h-full object-cover block transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
                       onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
                       onMouseLeave={e => e.currentTarget.style.transform = "none"} />
                   </div>
-                  <div style={{ padding: isMobile ? "28px 24px" : "48px 40px", order: isMobile ? 1 : (i % 2 === 0 ? 1 : 0) }}>
-                    <div style={{ fontSize: 32, marginBottom: 16 }}>{s.icon}</div>
-                    <h3 className="hm-headline" style={{ fontSize: isMobile ? 22 : 28, margin: "0 0 12px" }}>{s.title}</h3>
-                    <p className="hm-body" style={{ fontSize: isMobile ? 14 : 16 }}>{s.desc}</p>
-                    <span style={{ display: "inline-block", marginTop: 16, fontSize: 14, fontWeight: 500, color: "var(--clr-red)" }}>자세히 보기 →</span>
+                  <div className={`${isMobile ? 'px-6 py-7' : 'px-10 py-12'}`} style={{ order: isMobile ? 1 : (i % 2 === 0 ? 1 : 0) }}>
+                    <div className="text-[32px] mb-4">{s.icon}</div>
+                    <h3 className={`hm-headline ${isMobile ? 'text-[22px]' : 'text-[28px]'} mb-3`} style={{ margin: "0 0 12px" }}>{s.title}</h3>
+                    <p className={`hm-body ${isMobile ? 'text-sm' : 'text-base'}`}>{s.desc}</p>
+                    <span className="inline-block mt-4 text-sm font-medium" style={{ color: "var(--clr-red)" }}>자세히 보기 →</span>
                   </div>
                 </div>
               </Reveal>
@@ -986,30 +981,29 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ VACANCY ═══ */}
-      <section id="vacancy" className="hm-section-gray" style={{ padding: isMobile ? "80px 24px" : "140px 48px" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+      <section id="vacancy" className={`hm-section-gray ${isMobile ? 'px-6 py-20' : 'px-12 py-[140px]'}`}>
+        <div className="max-w-[1000px] mx-auto">
           <Reveal>
-            <p className="hm-eyebrow" style={{ marginBottom: 16 }}>Vacancy</p>
-            <h2 className="hm-headline" style={{ fontSize: isMobile ? 30 : 44, margin: "0 0 8px" }}>공실 현황</h2>
-            <p className="hm-body" style={{ fontSize: 17, marginBottom: 36 }}>현재 입주 가능한 <span style={{ color: "var(--clr-red)", fontWeight: 600 }}>{pub.length}개</span> 매물</p>
+            <p className="hm-eyebrow mb-4">Vacancy</p>
+            <h2 className={`hm-headline ${isMobile ? 'text-[30px]' : 'text-[44px]'} mb-2`} style={{ margin: "0 0 8px" }}>공실 현황</h2>
+            <p className="hm-body text-[17px] mb-9">현재 입주 가능한 <span className="font-semibold" style={{ color: "var(--clr-red)" }}>{pub.length}개</span> 매물</p>
           </Reveal>
-          <div style={{ display: "flex", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
+          <div className="flex gap-2 mb-8 flex-wrap">
             {["전체", "단기", "일반임대", "근생", "계약중"].map(t => {
               const cnt = t === "전체" ? pub.length
                 : t === "계약중" ? pub.filter(v => contractSet.has(`${v.building}_${v.room}`)).length
                 : pub.filter(v => v.type === t).length;
               if (t !== "전체" && cnt === 0) return null;
               const isContract = t === "계약중";
-              return <button key={t} onClick={() => { setVacancyFilter(t); setVacancyPage(0); }} style={{
-                padding: "10px 24px", borderRadius: 980, border: "none", cursor: "pointer", fontFamily: "inherit",
-                fontWeight: 500, fontSize: 14, letterSpacing: "-0.01em",
+              return <button key={t} onClick={() => { setVacancyFilter(t); setVacancyPage(0); }} className="rounded-full border-none cursor-pointer font-[inherit] font-medium text-sm tracking-tight transition-all duration-300" style={{
+                padding: "10px 24px",
                 background: vacancyFilter === t ? (isContract ? "#DC2626" : "var(--clr-black)") : "#fff",
                 color: vacancyFilter === t ? "#fff" : isContract ? "#DC2626" : "var(--clr-muted)",
-                transition: "all 0.3s", boxShadow: vacancyFilter !== t ? "0 1px 4px rgba(0,0,0,0.04)" : "none",
+                boxShadow: vacancyFilter !== t ? "0 1px 4px rgba(0,0,0,0.04)" : "none",
               }}>{t} ({cnt})</button>;
             })}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16 }}>
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {pagedVacancies.map((v, i) => {
               const photos = getPhotos(v.building, v.room);
               const globalIdx = pub.findIndex(p => p.building === v.building && p.room === v.room);
@@ -1025,39 +1019,32 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
               const isContracted = contractSet.has(`${v.building}_${v.room}`);
               return (
                 <Reveal key={`${v.building}_${v.room}`} className="hm-reveal-scale" delay={i * 0.04}>
-                  <div onClick={() => openVacancyDetail(v)} style={{
-                    position: "relative", cursor: "pointer", overflow: "hidden",
-                    background: "#fff", border: "1px solid #E5E7EB",
-                    transition: "box-shadow 0.2s, transform 0.2s",
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
-                  >
-                    <div style={{ aspectRatio: "4/3", background: "#f5f5f7", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                      {photos.length > 0 ? <img src={photos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> :
-                        <span style={{ fontSize: 40, opacity: 0.25 }}>🏢</span>}
+                  <div onClick={() => openVacancyDetail(v)} className="relative cursor-pointer overflow-hidden bg-white border border-gray-200 transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5">
+                    <div className="aspect-[4/3] bg-[#f5f5f7] flex items-center justify-center relative overflow-hidden">
+                      {photos.length > 0 ? <img src={photos[0]} alt="" className="w-full h-full object-cover" /> :
+                        <span className="text-[40px] opacity-25">🏢</span>}
                       {/* 상단 배지 */}
-                      <div style={{ position: "absolute", top: 0, left: 0, right: 0, padding: "10px 12px", display: "flex", gap: 6, background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)" }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", background: badgeColor(v.type), color: "#fff" }}>{v.type}</span>
-                        {isContracted && <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", background: "#DC2626", color: "#fff" }}>계약중</span>}
+                      <div className="absolute top-0 left-0 right-0 px-3 py-2.5 flex gap-1.5" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)" }}>
+                        <span className="text-[11px] font-bold px-2.5 py-[3px] text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
+                        {isContracted && <span className="text-[11px] font-bold px-2.5 py-[3px] bg-[#DC2626] text-white">계약중</span>}
                       </div>
-                      {photos.length > 1 && <span style={{ position: "absolute", bottom: 8, right: 8, fontSize: 10, fontWeight: 600, padding: "3px 8px", background: "rgba(0,0,0,0.6)", color: "#fff" }}>{photos.length}</span>}
+                      {photos.length > 1 && <span className="absolute bottom-2 right-2 text-[10px] font-semibold px-2 py-[3px] bg-black/60 text-white">{photos.length}</span>}
                     </div>
-                    <div style={{ padding: "14px 16px" }}>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "#111", letterSpacing: "-0.02em", marginBottom: 6 }}>
+                    <div className="px-4 py-3.5">
+                      <div className="text-[15px] font-bold text-[#111] tracking-tight mb-1.5">
                         {v.building} {v.room}호
-                        {_roomInfo.roomType && <span style={{ fontSize: 11, fontWeight: 500, color: "#9CA3AF", marginLeft: 6 }}>{_roomInfo.roomType}{_roomInfo.area ? ` ${_roomInfo.area}㎡` : ""}</span>}
+                        {_roomInfo.roomType && <span className="text-[11px] font-medium text-gray-400 ml-1.5">{_roomInfo.roomType}{_roomInfo.area ? ` ${_roomInfo.area}㎡` : ""}</span>}
                       </div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
-                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>{v.type === "단기" ? "예치금" : "보증금"}</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: "#111" }}>{fmt(_dep)}</span>
-                        <span style={{ fontSize: 11, color: "#9CA3AF", margin: "0 2px" }}>/</span>
-                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>월세</span>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: "#c41230" }}>{fmt(_rent)}</span>
-                        <span style={{ fontSize: 11, color: "#9CA3AF" }}>만</span>
+                      <div className="flex items-baseline gap-1 mb-1">
+                        <span className="text-[11px] text-gray-400">{v.type === "단기" ? "예치금" : "보증금"}</span>
+                        <span className="text-[15px] font-extrabold text-[#111]">{fmt(_dep)}</span>
+                        <span className="text-[11px] text-gray-400 mx-0.5">/</span>
+                        <span className="text-[11px] text-gray-400">월세</span>
+                        <span className="text-[15px] font-extrabold text-[#c41230]">{fmt(_rent)}</span>
+                        <span className="text-[11px] text-gray-400">만</span>
                       </div>
                       {(_mgmt > 0 || _water > 0 || _internet > 0) && (
-                        <div style={{ fontSize: 11, color: "#9CA3AF", display: "flex", gap: 8 }}>
+                        <div className="text-[11px] text-gray-400 flex gap-2">
                           {_mgmt > 0 && <span>관리비 {_mgmt}만</span>}
                           {_water > 0 && <span>수도 {_water > 1 ? _water + "만" : (_water * 10000).toLocaleString() + "원"}</span>}
                           {_internet > 0 && <span>인터넷 {_internet > 1 ? _internet + "만" : (_internet * 10000).toLocaleString() + "원"}</span>}
@@ -1065,10 +1052,10 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       )}
                     </div>
                     {editMode && (
-                      <div style={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 4, zIndex: 5 }} onClick={e => e.stopPropagation()}>
-                        <span style={{ fontSize: 11, fontWeight: 800, padding: "2px 8px", background: "rgba(0,0,0,0.7)", color: "#fff" }}>{globalIdx + 1}</span>
-                        <button onClick={() => moveVacancy(globalIdx, -1)} style={{ width: 26, height: 26, border: "none", background: "rgba(0,0,0,0.7)", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800 }}>↑</button>
-                        <button onClick={() => moveVacancy(globalIdx, 1)} style={{ width: 26, height: 26, border: "none", background: "rgba(0,0,0,0.7)", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 800 }}>↓</button>
+                      <div className="absolute top-2 right-2 flex gap-1 z-[5]" onClick={e => e.stopPropagation()}>
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 bg-black/70 text-white">{globalIdx + 1}</span>
+                        <button onClick={() => moveVacancy(globalIdx, -1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-[13px] font-extrabold hover:bg-black/90 transition-colors">↑</button>
+                        <button onClick={() => moveVacancy(globalIdx, 1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-[13px] font-extrabold hover:bg-black/90 transition-colors">↓</button>
                       </div>
                     )}
                   </div>
@@ -1078,19 +1065,19 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           </div>
           {/* 페이지네이션 */}
           {totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 40 }}>
+            <div className="flex justify-center items-center gap-2 mt-10">
               <button onClick={() => setVacancyPage(p => Math.max(0, p - 1))} disabled={vacancyPage === 0}
-                style={{ padding: "10px 20px", borderRadius: 980, border: "none", background: vacancyPage === 0 ? "#E5E7EB" : "var(--clr-black)", color: vacancyPage === 0 ? "#9CA3AF" : "#fff", cursor: vacancyPage === 0 ? "default" : "pointer", fontSize: 14, fontWeight: 600 }}>이전</button>
+                className={`px-5 py-2.5 rounded-full border-none text-sm font-semibold ${vacancyPage === 0 ? 'bg-gray-200 text-gray-400 cursor-default' : 'cursor-pointer text-white'}`} style={{ background: vacancyPage === 0 ? undefined : "var(--clr-black)" }}>이전</button>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button key={i} onClick={() => setVacancyPage(i)}
-                  style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: vacancyPage === i ? "var(--clr-red)" : "transparent", color: vacancyPage === i ? "#fff" : "var(--clr-muted)", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>{i + 1}</button>
+                  className={`w-9 h-9 rounded-full border-none cursor-pointer text-sm font-bold ${vacancyPage === i ? 'text-white' : ''}`} style={{ background: vacancyPage === i ? "var(--clr-red)" : "transparent", color: vacancyPage === i ? "#fff" : "var(--clr-muted)" }}>{i + 1}</button>
               ))}
               <button onClick={() => setVacancyPage(p => Math.min(totalPages - 1, p + 1))} disabled={vacancyPage === totalPages - 1}
-                style={{ padding: "10px 20px", borderRadius: 980, border: "none", background: vacancyPage === totalPages - 1 ? "#E5E7EB" : "var(--clr-black)", color: vacancyPage === totalPages - 1 ? "#9CA3AF" : "#fff", cursor: vacancyPage === totalPages - 1 ? "default" : "pointer", fontSize: 14, fontWeight: 600 }}>다음</button>
+                className={`px-5 py-2.5 rounded-full border-none text-sm font-semibold ${vacancyPage === totalPages - 1 ? 'bg-gray-200 text-gray-400 cursor-default' : 'cursor-pointer text-white'}`} style={{ background: vacancyPage === totalPages - 1 ? undefined : "var(--clr-black)" }}>다음</button>
             </div>
           )}
           {filtered.length > 0 && (
-            <div style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "var(--clr-light)" }}>
+            <div className="text-center mt-4 text-[13px]" style={{ color: "var(--clr-light)" }}>
               {vacancyPage * VACANCY_PER_PAGE + 1}~{Math.min((vacancyPage + 1) * VACANCY_PER_PAGE, filtered.length)} / 총 {filtered.length}개
             </div>
           )}
@@ -1098,13 +1085,13 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ CASES ═══ */}
-      <section id="cases" style={{ padding: isMobile ? "80px 24px" : "140px 48px" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+      <section id="cases" className={`${isMobile ? 'px-6 py-20' : 'px-12 py-[140px]'}`}>
+        <div className="max-w-[1000px] mx-auto">
           <Reveal>
-            <p className="hm-eyebrow" style={{ marginBottom: 16 }}>Case Studies</p>
-            <h2 className="hm-headline" style={{ fontSize: isMobile ? 30 : 44, margin: "0 0 48px" }}>관리 사례</h2>
+            <p className="hm-eyebrow mb-4">Case Studies</p>
+            <h2 className={`hm-headline ${isMobile ? 'text-[30px]' : 'text-[44px]'} mb-12`} style={{ margin: "0 0 48px" }}>관리 사례</h2>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-5`}>
             {[
               { title: "신축 원룸 공실률 0% 달성", excerpt: "관악구 12세대 건물을 3개월 만에 만실로 전환한 운영 전략", date: "2026.03", tag: "공실 관리", img: "/sub-vs-0.jpg" },
               { title: "상가 임대료 15% 인상 성공", excerpt: "을지로 상가 건물의 체계적 관리로 임차인 만족과 임대료 인상 동시 달성", date: "2026.02", tag: "빌딩 관리", img: "/sub-vs-1.jpg" },
@@ -1112,49 +1099,49 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             ].map((post, i) => (
               <Reveal key={i} className="hm-reveal-scale" delay={i * 0.1}>
                 <div className="hm-blog-card">
-                  <div className="hm-blog-thumb" style={{ aspectRatio: "16/10" }}>
-                    <img src={post.img} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <div className="hm-blog-thumb aspect-[16/10]">
+                    <img src={post.img} alt={post.title} className="w-full h-full object-cover block" />
                   </div>
-                  <div style={{ padding: "22px 24px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 980, background: "rgba(0,113,227,0.08)", color: "var(--clr-red)" }}>{post.tag}</span>
-                      <span style={{ fontSize: 12, color: "var(--clr-light)" }}>{post.date}</span>
+                  <div className="px-6 py-[22px]">
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[rgba(0,113,227,0.08)]" style={{ color: "var(--clr-red)" }}>{post.tag}</span>
+                      <span className="text-xs" style={{ color: "var(--clr-light)" }}>{post.date}</span>
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.35, marginBottom: 10, color: "var(--clr-black)", letterSpacing: "-0.02em" }}>{post.title}</div>
-                    <div className="hm-body" style={{ fontSize: 14 }}>{post.excerpt}</div>
+                    <div className="text-lg font-bold leading-[1.35] mb-2.5 tracking-tight" style={{ color: "var(--clr-black)" }}>{post.title}</div>
+                    <div className="hm-body text-sm">{post.excerpt}</div>
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal delay={0.3}>
-            <div style={{ textAlign: "center", marginTop: 48 }}>
-              <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-btn hm-btn-outline" style={{ fontSize: 15 }}>더 많은 사례 보기</a>
+            <div className="text-center mt-12">
+              <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-btn hm-btn-outline text-[15px]">더 많은 사례 보기</a>
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* ═══ CTA ═══ */}
-      <section id="contact" style={{ position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0 }}>
-          <img src="/contact-bg.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)" }} />
+      <section id="contact" className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/contact-bg.jpg" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
-        <div style={{ position: "relative", zIndex: 1, padding: isMobile ? "80px 24px" : "120px 48px", textAlign: "center" }}>
-          <div style={{ maxWidth: 650, margin: "0 auto" }}>
+        <div className={`relative z-[1] ${isMobile ? 'px-6 py-20' : 'px-12 py-[120px]'} text-center`}>
+          <div className="max-w-[650px] mx-auto">
             <Reveal>
-              <h2 style={{ fontSize: isMobile ? 28 : 48, fontWeight: 700, color: "#fff", lineHeight: 1.15, margin: "0 0 20px", letterSpacing: "-0.04em" }}>당신의 건물,<br/>하우스맨이 책임집니다.</h2>
+              <h2 className={`${isMobile ? 'text-[28px]' : 'text-5xl'} font-bold text-white leading-[1.15] mb-5 tracking-tight`} style={{ margin: "0 0 20px" }}>당신의 건물,<br/>하우스맨이 책임집니다.</h2>
             </Reveal>
             <Reveal delay={0.15}>
-              <p style={{ fontSize: isMobile ? 15 : 18, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 40, letterSpacing: "-0.01em" }}>
+              <p className={`${isMobile ? 'text-[15px]' : 'text-lg'} text-white/70 leading-relaxed mb-10 tracking-tight`}>
                 표준화된 매뉴얼과 AI 기반 시스템으로<br/>공실 없는 건물, 수익 중심의 운영을 실현합니다.
               </p>
             </Reveal>
             <Reveal delay={0.3}>
-              <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-                <a href={`tel:${SITE.phone}`} className="hm-btn" style={{ padding: "14px 32px", borderRadius: 980, background: "#fff", color: "var(--clr-black)", textDecoration: "none", fontWeight: 600, fontSize: 18 }}>📞 {SITE.phone}</a>
-                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn" style={{ padding: "14px 32px", borderRadius: 980, background: "#fee500", color: "#1d1d1f", textDecoration: "none", fontWeight: 600, fontSize: 18 }}>💬 카카오톡</a>
+              <div className="flex gap-3.5 justify-center flex-wrap">
+                <a href={`tel:${SITE.phone}`} className="hm-btn px-8 py-3.5 rounded-full bg-white no-underline font-semibold text-lg" style={{ color: "var(--clr-black)" }}>📞 {SITE.phone}</a>
+                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn px-8 py-3.5 rounded-full bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-lg">💬 카카오톡</a>
               </div>
             </Reveal>
           </div>
@@ -1162,26 +1149,26 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       </section>
 
       {/* ═══ FOOTER ═══ */}
-      <footer style={{ padding: isMobile ? "48px 24px" : "64px 48px", background: "var(--clr-bg)", borderTop: "1px solid var(--clr-border)" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-          <div style={{ display: isMobile ? "block" : "flex", justifyContent: "space-between", marginBottom: 32, gap: 40 }}>
-            <div style={{ marginBottom: isMobile ? 24 : 0 }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "var(--clr-black)", marginBottom: 12, letterSpacing: "-0.03em" }}>HOUSEMAN</div>
-              <div style={{ fontSize: 13, color: "var(--clr-light)", lineHeight: 2 }}>
+      <footer className={`${isMobile ? 'px-6 py-12' : 'px-12 py-16'} border-t`} style={{ background: "var(--clr-bg)", borderColor: "var(--clr-border)" }}>
+        <div className="max-w-[1000px] mx-auto">
+          <div className={`${isMobile ? 'block' : 'flex justify-between'} mb-8 gap-10`}>
+            <div className={`${isMobile ? 'mb-6' : 'mb-0'}`}>
+              <div className="text-lg font-bold mb-3 tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</div>
+              <div className="text-[13px] leading-[2]" style={{ color: "var(--clr-light)" }}>
                 대표: {SITE.ceo} · 사업자번호: {SITE.bizNo}<br/>{SITE.address}<br/>Email: {SITE.email}
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div className="flex gap-2.5">
               <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-sns-btn"><img src="/sns-kakao.svg" alt="카카오톡" /></a>
               <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-sns-btn"><img src="/sns-blog.svg" alt="블로그" /></a>
             </div>
           </div>
-          <hr className="hm-divider" style={{ marginBottom: 20 }} />
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-            <div style={{ fontSize: 12, color: "var(--clr-light)" }}>© HOUSEMAN. All rights reserved.</div>
-            <div style={{ display: "flex", gap: 20, fontSize: 12, color: "var(--clr-light)" }}>
-              <span style={{ cursor: "pointer" }}>개인정보처리방침</span>
-              <span style={{ cursor: "pointer" }}>이용약관</span>
+          <hr className="hm-divider mb-5" />
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <div className="text-xs" style={{ color: "var(--clr-light)" }}>© HOUSEMAN. All rights reserved.</div>
+            <div className="flex gap-5 text-xs" style={{ color: "var(--clr-light)" }}>
+              <span className="cursor-pointer hover:underline">개인정보처리방침</span>
+              <span className="cursor-pointer hover:underline">이용약관</span>
             </div>
           </div>
         </div>
@@ -1189,35 +1176,33 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
       {/* ═══ 모바일 하단 고정 바 ═══ */}
       {isMobile && (
-        <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, display: "flex", gap: 8, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", borderTop: "1px solid var(--clr-border)", padding: "10px 16px", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
-          <a href={`tel:${SITE.phone}`} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 14, borderRadius: 12, background: "var(--clr-black)", color: "#fff", textDecoration: "none", fontWeight: 600, fontSize: 15 }}>📞 전화하기</a>
-          <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: 14, borderRadius: 12, background: "#fee500", color: "#1d1d1f", textDecoration: "none", fontWeight: 600, fontSize: 15 }}>💬 카카오톡</a>
+        <div className="fixed bottom-0 left-0 right-0 z-[100] flex gap-2 bg-white/95 backdrop-blur-[20px] border-t px-4 py-2.5" style={{ borderColor: "var(--clr-border)", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
+          <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-[15px] text-white" style={{ background: "var(--clr-black)" }}>📞 전화하기</a>
+          <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-[15px]">💬 카카오톡</a>
         </div>
       )}
 
       {/* ═══ 플로팅 버튼 (카카오/전화/스크롤탑) ═══ */}
       <div className={`hm-float-wrap ${scrolled ? "visible" : "hidden"}`} style={{ bottom: isMobile ? 80 : 28 }}>
-        <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-float-btn" style={{ background: "#3C3C3C", color: "#fff" }}>
-          <img src="/kakao-side.svg" alt="카카오톡" style={{ width: 26, height: 26, filter: "brightness(0) invert(1)" }} />
+        <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-float-btn bg-[#3C3C3C] text-white">
+          <img src="/kakao-side.svg" alt="카카오톡" className="w-[26px] h-[26px] brightness-0 invert" />
         </a>
-        <a href={`tel:${SITE.phone}`} className="hm-float-btn" style={{ background: "#fff", border: "1px solid var(--clr-border)" }}>
-          <span style={{ fontSize: 24, lineHeight: 1 }}>📞</span>
+        <a href={`tel:${SITE.phone}`} className="hm-float-btn bg-white border" style={{ borderColor: "var(--clr-border)" }}>
+          <span className="text-2xl leading-none">📞</span>
         </a>
-        <div onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hm-float-btn" style={{ background: "var(--clr-red)", cursor: "pointer" }}>
-          <span style={{ fontSize: 20, lineHeight: 1, color: "#fff" }}>▲</span>
+        <div onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hm-float-btn cursor-pointer" style={{ background: "var(--clr-red)" }}>
+          <span className="text-xl leading-none text-white">▲</span>
         </div>
       </div>
 
       {/* ═══ 홈페이지 관리 버튼 ═══ */}
       {isAdmin && (
-        <div onClick={() => setEditMode(!editMode)} style={{
-          position: "fixed", bottom: isMobile ? 70 : 24, right: 24, zIndex: 101,
-          display: "flex", alignItems: "center", gap: 8,
-          padding: editMode ? "12px 20px" : "0", width: editMode ? "auto" : 52, height: 52, borderRadius: 16,
+        <div onClick={() => setEditMode(!editMode)} className="fixed z-[101] flex items-center justify-center rounded-2xl text-white cursor-pointer font-bold shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all duration-300" style={{
+          bottom: isMobile ? 70 : 24, right: 24,
+          gap: 8,
+          padding: editMode ? "12px 20px" : "0", width: editMode ? "auto" : 52, height: 52,
           background: editMode ? "var(--clr-red)" : "var(--clr-black)",
-          color: "#fff", justifyContent: "center",
-          cursor: "pointer", fontSize: editMode ? 14 : 20, fontWeight: 700,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)", transition: "all 0.3s",
+          fontSize: editMode ? 14 : 20,
         }}>{editMode ? "관리 완료 ✓" : "✏️"}</div>
       )}
     </div>

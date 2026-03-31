@@ -29,7 +29,7 @@ export const Table = <T extends Record<string, any>>({
   groupBy,
 }: TableProps<T>): React.ReactElement => (
   <div className="overflow-x-auto rounded-[10px] border border-[#E8ECF0]">
-    <table className="w-full border-collapse text-xs" style={{ tableLayout: 'fixed' }}>
+    <table className="w-full border-collapse text-xs table-fixed">
       <thead>
         <tr className="bg-[#F7F8FA]">
           {columns.map((col, i) => (

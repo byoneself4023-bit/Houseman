@@ -64,7 +64,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
         type="file"
         accept={ACCEPT}
         multiple
-        style={{ display: 'none' }}
+        className="hidden"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (e.target.files && e.target.files.length > 0) handleFiles(e.target.files);
           e.target.value = '';
@@ -84,51 +84,34 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         onClick={() => fileRef.current?.click()}
-        style={{
-          padding: files.length > 0 ? '10px 12px' : '18px 12px',
-          borderRadius: 10,
-          border: `2px dashed ${dragging ? '#3B82F6' : '#D1D5DB'}`,
-          background: dragging ? '#EFF6FF' : '#FAFBFC',
-          cursor: 'pointer',
-          transition: 'all 0.15s',
-        }}
+        className={`rounded-[10px] border-2 border-dashed cursor-pointer transition-all duration-150 ${
+          dragging ? 'border-hm-blue bg-hm-blue-bg' : 'border-gray-300 bg-[#FAFBFC] hover:border-hm-blue/40'
+        } ${files.length > 0 ? 'px-3 py-2.5' : 'px-3 py-[18px]'}`}
       >
         {files.length > 0 ? (
           <div>
             {/* File list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
+            <div className="flex flex-col gap-1 mb-2">
               {files.map((f, i) => (
                 <div
                   key={i}
                   onClick={(e: React.MouseEvent<HTMLDivElement>) => handleFileClick(f, e)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '5px 8px',
-                    background: '#fff',
-                    borderRadius: 6,
-                    border: '1px solid #E8ECF0',
-                    cursor: hasData(f) ? 'pointer' : 'default',
-                  }}
+                  className={`flex items-center gap-1.5 px-2 py-[5px] bg-white rounded-md border border-hm-border ${
+                    hasData(f) ? 'cursor-pointer hover:bg-hm-bg-hover' : 'cursor-default'
+                  } transition-colors`}
                 >
-                  <span style={{ fontSize: 13 }}>{isImage(getName(f)) ? '🖼️' : '📄'}</span>
+                  <span className="text-[13px]">{isImage(getName(f)) ? '🖼️' : '📄'}</span>
                   <span
-                    style={{
-                      fontSize: 11,
-                      color: hasData(f) ? '#3B82F6' : '#1A1D23',
-                      flex: 1,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      fontWeight: hasData(f) ? 600 : 400,
-                      textDecoration: hasData(f) ? 'underline' : 'none',
-                    }}
+                    className={`text-[11px] flex-1 overflow-hidden text-ellipsis whitespace-nowrap ${
+                      hasData(f)
+                        ? 'text-hm-blue font-semibold underline'
+                        : 'text-hm-text font-normal no-underline'
+                    }`}
                   >
                     {getName(f)}
                   </span>
                   {hasData(f) && (
-                    <span style={{ fontSize: 9, color: '#8F95A3', flexShrink: 0 }}>
+                    <span className="text-[9px] text-hm-text-muted shrink-0">
                       클릭하여 보기
                     </span>
                   )}
@@ -138,19 +121,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                         e.stopPropagation();
                         onRemove(i);
                       }}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 4,
-                        border: 'none',
-                        background: '#FEE2E2',
-                        color: '#DC2626',
-                        fontSize: 11,
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        lineHeight: 1,
-                        flexShrink: 0,
-                      }}
+                      className="w-5 h-5 rounded border-none bg-red-100 text-hm-danger text-[11px] cursor-pointer font-[inherit] leading-none shrink-0 hover:bg-red-200 transition-colors"
                     >
                       ✕
                     </button>
@@ -159,19 +130,19 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
               ))}
             </div>
             {/* Add more hint */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ fontSize: 10, color: '#3B82F6', fontWeight: 600 }}>
+            <div className="text-center">
+              <span className="text-[10px] text-hm-blue font-semibold">
                 + 클릭 또는 드래그하여 추가
               </span>
             </div>
           </div>
         ) : (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 28, marginBottom: 4 }}>📎</div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#3B82F6', marginBottom: 2 }}>
+          <div className="text-center">
+            <div className="text-[28px] mb-1">📎</div>
+            <div className="text-[11px] font-bold text-hm-blue mb-0.5">
               계약서를 드래그하거나 클릭하여 업로드
             </div>
-            <div style={{ fontSize: 9, color: '#8F95A3' }}>여러장 가능 · PDF, JPG, PNG 등</div>
+            <div className="text-[9px] text-hm-text-muted">여러장 가능 · PDF, JPG, PNG 등</div>
           </div>
         )}
       </div>
@@ -180,53 +151,15 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
       {previewFile && (
         <div
           onClick={() => setPreviewFile(null)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            zIndex: 10000,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
+          className="fixed inset-0 bg-black/70 z-[10000] flex flex-col items-center justify-center cursor-pointer"
         >
           <div
             onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
-            style={{
-              position: 'relative',
-              maxWidth: '90vw',
-              maxHeight: '90vh',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
+            className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center"
           >
             {/* 상단 바: 파일명 + 다운로드 + 닫기 */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                marginBottom: 12,
-                padding: '8px 16px',
-                background: 'rgba(255,255,255,0.95)',
-                borderRadius: 10,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#1A1D23',
-                  maxWidth: 300,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+            <div className="flex items-center gap-2.5 mb-3 px-4 py-2 bg-white/95 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
+              <span className="text-xs font-bold text-hm-text max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
                 {previewFile.name}
               </span>
               <button
@@ -236,34 +169,13 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                   a.download = previewFile.name;
                   a.click();
                 }}
-                style={{
-                  padding: '5px 14px',
-                  borderRadius: 6,
-                  border: '1.5px solid #3B82F6',
-                  background: '#EFF6FF',
-                  color: '#2563EB',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  whiteSpace: 'nowrap',
-                }}
+                className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors"
               >
                 ⬇️ 다운로드
               </button>
               <button
                 onClick={() => setPreviewFile(null)}
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '50%',
-                  border: 'none',
-                  background: '#FEE2E2',
-                  color: '#DC2626',
-                  fontSize: 14,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                }}
+                className="w-7 h-7 rounded-full border-none bg-red-100 text-hm-danger text-sm font-extrabold cursor-pointer hover:bg-red-200 transition-colors"
               >
                 ✕
               </button>
@@ -273,25 +185,13 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
               <img
                 src={previewFile.dataUrl}
                 alt="미리보기"
-                style={{
-                  maxWidth: '90vw',
-                  maxHeight: '80vh',
-                  borderRadius: 12,
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-                }}
+                className="max-w-[90vw] max-h-[80vh] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
               />
             ) : (
               <iframe
                 src={previewFile.dataUrl}
                 title="미리보기"
-                style={{
-                  width: '80vw',
-                  height: '80vh',
-                  borderRadius: 12,
-                  border: 'none',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-                  background: '#fff',
-                }}
+                className="w-[80vw] h-[80vh] rounded-xl border-none shadow-[0_20px_60px_rgba(0,0,0,0.5)] bg-white"
               />
             )}
           </div>

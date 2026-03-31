@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { buildingFloors } from '@/data';
 import { getRoomType } from '@/config';
 import { Card } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { persistUpdate } from '../calendarApi';
 import { resetBillingSettingsOnMoveOut } from '@/lib/billingEngine';
 
@@ -76,12 +76,12 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
   return (
     <>
-    <Card style={{ marginBottom: 16, border: "2px solid #DC2626", background: "#FEF2F2" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-        <span style={{ fontSize: 16 }}>{"\uD83D\uDEAA"}</span>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626" }}>퇴실현황 <span style={{ fontWeight: 600, fontSize: 11, color: "#8F95A3" }}>({activeMoveOutEvts.length}건)</span></div>
+    <Card className="mb-4 border-2 border-hm-danger bg-hm-danger-bg">
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="text-base">{"\uD83D\uDEAA"}</span>
+        <div className="text-[13px] font-[800] text-hm-danger">퇴실현황 <span className="font-semibold text-[11px] text-hm-text-muted">({activeMoveOutEvts.length}건)</span></div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {activeMoveOutEvts.map((ev, i) => {
           const t = ev.tenant;
           const tm = ev.tenantForModal;
@@ -164,46 +164,52 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
           const currentStep = mSteps.findIndex((s: any) => !s.done);
 
           return (
-            <div key={i} style={{ background: allDone ? "#F9FAFB" : "#fff", border: allDone ? "1px solid #D1D5DB" : "1px solid #FECACA", borderRadius: 10, overflow: "hidden", filter: allDone ? "grayscale(1)" : "none", opacity: allDone ? 0.7 : 1, transition: "all 0.3s" }}
+            <div key={i} className={`rounded-[10px] overflow-hidden transition-all duration-300 ${allDone ? 'bg-hm-bg-hover border border-gray-300 grayscale opacity-70' : 'bg-white border border-red-200'}`}
               onDoubleClick={() => { if (setEvents) openEditEvent(ev); }}>
               {/* 스텝 인디케이터 */}
-              <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #FEF2F2, #FFF8F8)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #FECACA", display: "flex", alignItems: "center", gap: 0 }}>
-                <div style={{ display: "flex", flexDirection: "column", marginRight: 12, whiteSpace: "nowrap" }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#DC2626" }}>{ev.building} {ev.room}호
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 4, marginLeft: 4, verticalAlign: "middle",
-                      background: evRoomType === "단기" ? "#FEF3C7" : evRoomType === "근생" ? "#D1FAE5" : "#DBEAFE",
-                      color: evRoomType === "단기" ? "#92400E" : evRoomType === "근생" ? "#065F46" : "#1E40AF",
-                    }}>{evRoomType}</span>
+              <div className={`px-4 py-2.5 flex items-center gap-0 ${allDone ? 'bg-gray-100 border-b border-gray-300' : 'border-b border-red-200'}`}
+                style={!allDone ? { background: "linear-gradient(90deg, #FEF2F2, #FFF8F8)" } : undefined}>
+                <div className="flex flex-col mr-3 whitespace-nowrap">
+                  <span className={`text-[11px] font-bold ${allDone ? 'text-gray-400' : 'text-hm-danger'}`}>{ev.building} {ev.room}호
+                    <span className="text-[9px] font-bold px-1.5 py-px rounded ml-1 align-middle"
+                      style={{
+                        background: evRoomType === "단기" ? "#FEF3C7" : evRoomType === "근생" ? "#D1FAE5" : "#DBEAFE",
+                        color: evRoomType === "단기" ? "#92400E" : evRoomType === "근생" ? "#065F46" : "#1E40AF",
+                      }}>{evRoomType}</span>
                   </span>
-                  <span style={{ fontSize: 9, color: allDone ? "#B0B5C1" : "#8F95A3" }}>{ev.date} · {ev.name || (t ? t.name : ev.pastInfo?.name || "\u2014")}</span>
+                  <span className={`text-[9px] ${allDone ? 'text-[#B0B5C1]' : 'text-hm-text-muted'}`}>{ev.date} · {ev.name || (t ? t.name : ev.pastInfo?.name || "\u2014")}</span>
                 </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                <div className="flex-1 flex items-center">
                   {mSteps.map((step: any, si: number) => {
                     const isActive = si === currentStep;
                     const stepDone = step.done;
                     return (
-                      <div key={si} style={{ display: "flex", alignItems: "center", flex: 1 }}
+                      <div key={si} className="flex items-center flex-1"
                         onClick={() => { if (step.onClick) step.onClick(); }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 52, cursor: step.onClick ? "pointer" : "default", position: "relative" }}>
-                          <div style={{
-                            width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 11, fontWeight: 800,
-                            background: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#fff" : "#E5E7EB",
-                            color: stepDone ? "#fff" : isActive ? "#DC2626" : "#9CA3AF",
-                            border: isActive && !stepDone ? "2px solid #DC2626" : "2px solid transparent",
-                            boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(220,38,38,0.2)" : "none",
-                            animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
-                            transition: "all 0.3s"
-                          }}>
+                        <div className={`flex flex-col items-center gap-0.5 min-w-[52px] relative ${step.onClick ? 'cursor-pointer' : 'cursor-default'}`}>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-[800] transition-all duration-300"
+                            style={{
+                              background: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#fff" : "#E5E7EB",
+                              color: stepDone ? "#fff" : isActive ? "#DC2626" : "#9CA3AF",
+                              border: isActive && !stepDone ? "2px solid #DC2626" : "2px solid transparent",
+                              boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(220,38,38,0.2)" : "none",
+                              animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                            }}>
                             {stepDone ? "\u2713" : (step.icon || String(si + 1))}
                           </div>
-                          <span style={{ fontSize: 9, fontWeight: stepDone || isActive ? 700 : 500, color: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#B91C1C" : "#9CA3AF", whiteSpace: "nowrap", animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none" }}>{step.label}</span>
+                          <span className="text-[9px] whitespace-nowrap"
+                            style={{
+                              fontWeight: stepDone || isActive ? 700 : 500,
+                              color: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#B91C1C" : "#9CA3AF",
+                              animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                            }}>{step.label}</span>
                           {step.sentStatus && (
-                            <span style={{ fontSize: 7, fontWeight: 700, color: "#F59E0B", whiteSpace: "nowrap" }}>📩 {step.sentStatus}</span>
+                            <span className="text-[7px] font-bold text-amber-500 whitespace-nowrap">📩 {step.sentStatus}</span>
                           )}
                           {/* 단기 퇴실링크: 액션 드롭다운 아이콘 */}
                           {step.actions && (
-                            <span style={{ position: "absolute", top: -4, right: 1, fontSize: 16, cursor: "pointer", animation: "hm-wobble 1s ease-in-out infinite", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))", lineHeight: 1 }}
+                            <span className="absolute -top-1 right-px text-base cursor-pointer leading-none"
+                              style={{ animation: "hm-wobble 1s ease-in-out infinite", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
                               onClick={(e) => { e.stopPropagation(); step.actions[2]?.onClick(); }}>
                               {"\u270F\uFE0F"}
                             </span>
@@ -211,13 +217,14 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                           {/* extraIcon (사진비교 등) */}
                           {step.extraIcon && (
                             <span onClick={(e) => { e.stopPropagation(); step.extraIcon.onClick(); }}
-                              style={{ position: "absolute", top: -4, left: 1, fontSize: 12, cursor: "pointer" }}>
+                              className="absolute -top-1 left-px text-xs cursor-pointer">
                               {step.extraIcon.icon}
                             </span>
                           )}
                         </div>
                         {si < mSteps.length - 1 && (
-                          <div style={{ flex: 1, height: 2, background: stepDone ? (allDone ? "#D1D5DB" : "#DC2626") : "#E5E7EB", margin: "0 2px", marginBottom: 16, borderRadius: 1, transition: "background 0.3s" }} />
+                          <div className="flex-1 h-0.5 mx-0.5 mb-4 rounded-sm transition-colors duration-300"
+                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "#DC2626") : "#E5E7EB" }} />
                         )}
                       </div>
                     );
@@ -227,39 +234,39 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
               {/* 액션 버튼 행 — 일반/근생만 (단기는 원형 스텝에서 처리) */}
               {!isShortTerm && (
-                <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <div className="px-4 py-2 flex items-center gap-2 flex-wrap">
                   {/* 입주사진 보기 */}
                   {(tm.moveInCheckPhotos && tm.moveInCheckPhotos.length > 0) ? (
                     <span onClick={() => setCheckPhotoModalTenant({ ...tm, _viewModeOnly: "moveIn" })}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#059669", padding: "4px 10px", borderRadius: 6, border: "1px solid #A7F3D0", background: "#ECFDF5", cursor: "pointer" }}>
+                      className="text-[10px] font-bold text-hm-success px-2.5 py-1 rounded-md border border-emerald-200 bg-hm-success-bg cursor-pointer hover:opacity-80 transition-opacity">
                       {"\uD83C\uDFE0"} 입주사진 ({tm.moveInCheckPhotos.length})
                     </span>
                   ) : (
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#C4C7CF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>{"\uD83C\uDFE0"} 입주사진 없음</span>
+                    <span className="text-[10px] font-semibold text-[#C4C7CF] px-2.5 py-1 rounded-md border border-gray-200 bg-hm-bg-hover">{"\uD83C\uDFE0"} 입주사진 없음</span>
                   )}
                   {/* 퇴실문자 */}
                   {ev.moveOutMsg ? (
                     <span onClick={(e) => { e.stopPropagation(); setMoveOutMsgModal({ ev, text: ev.moveOutMsg }); }}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>{"\u2714"} 퇴실문자</span>
+                      className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 cursor-pointer line-through hover:opacity-80 transition-opacity">{"\u2714"} 퇴실문자</span>
                   ) : (
                     <span onClick={(e) => { e.stopPropagation(); setMoveOutMsgModal({ ev, text: "" }); }}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#F59E0B", cursor: "pointer", whiteSpace: "nowrap" }}>
+                      className="text-[10px] font-bold text-white px-2.5 py-1 rounded-md bg-amber-500 cursor-pointer whitespace-nowrap hover:bg-amber-600 transition-colors">
                       {"\uD83D\uDCE9"} 퇴실문자
                     </span>
                   )}
                   {/* 비밀번호 */}
                   {ev.doorPassword ? (
-                    <span style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", textDecoration: "line-through" }}>{"\u2714"} 비번 {ev.doorPassword}</span>
+                    <span className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 line-through">{"\u2714"} 비번 {ev.doorPassword}</span>
                   ) : (
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#C4C7CF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>비밀번호 {"\u2014"}</span>
+                    <span className="text-[10px] font-semibold text-[#C4C7CF] px-2.5 py-1 rounded-md border border-gray-200 bg-hm-bg-hover">비밀번호 {"\u2014"}</span>
                   )}
                   {/* 퇴실사진 */}
                   {ev.hasPhotos ? (
                     <span onClick={() => setPhotoModalTenant(tm)}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>{"\u2714"} 퇴실사진</span>
+                      className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 cursor-pointer line-through hover:opacity-80 transition-opacity">{"\u2714"} 퇴실사진</span>
                   ) : (
                     <span onClick={() => setPhotoModalTenant(tm)}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#DC2626", cursor: "pointer" }}>
+                      className="text-[10px] font-bold text-white px-2.5 py-1 rounded-md bg-hm-danger cursor-pointer hover:bg-red-700 transition-colors">
                       {"\uD83D\uDCF7"} 퇴실사진
                     </span>
                   )}
@@ -272,7 +279,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                         const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name ? bd.owners : [{ name: bf.owner || "", phone: bf.phone || "" }];
                         setMoveOutOwnerReport({ ev, owners, msgText: ev.ownerReportMsg || "" });
                       }}
-                        style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>{"\u2714"} 건물주연락</span>
+                        className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 cursor-pointer line-through hover:opacity-80 transition-opacity">{"\u2714"} 건물주연락</span>
                     ) : (
                       <span onClick={() => {
                         if (!ev.settled) { toast.error("정산서가 완료되어야 건물주연락이 가능합니다."); return; }
@@ -303,7 +310,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                         ].filter(Boolean);
                         setMoveOutOwnerReport({ ev, owners, msgText: msgLines.join("\n") });
                       }}
-                        style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#7C3AED", cursor: "pointer", whiteSpace: "nowrap" }}>
+                        className="text-[10px] font-bold text-white px-2.5 py-1 rounded-md bg-violet-600 cursor-pointer whitespace-nowrap hover:bg-violet-700 transition-colors">
                         {"\uD83D\uDCDE"} 건물주연락
                       </span>
                     )
@@ -311,38 +318,38 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                   {/* 입주체크사진 */}
                   {ev.hasCheckPhotos ? (
                     <span onClick={() => setCheckPhotoModalTenant(tm)}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>{"\u2714"} 입주체크사진</span>
+                      className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 cursor-pointer line-through hover:opacity-80 transition-opacity">{"\u2714"} 입주체크사진</span>
                   ) : (
                     <span onClick={() => setCheckPhotoModalTenant(tm)}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#F59E0B", cursor: "pointer" }}>
+                      className="text-[10px] font-bold text-white px-2.5 py-1 rounded-md bg-amber-500 cursor-pointer hover:bg-amber-600 transition-colors">
                       {"\uD83D\uDCF7"} 입주체크사진
                     </span>
                   )}
                   {/* 사진비교 */}
                   {ev.hasPhotos && (
                     <span onClick={() => setCompareData({ building: ev.building, room: ev.room, moveInCheckPhotos: tm.moveInCheckPhotos || [], moveOutPhotos: tm.moveOutPhotos || [] })}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", padding: "4px 10px", borderRadius: 6, border: "1px solid #C7D2FE", background: "#EEF2FF", cursor: "pointer" }}>
+                      className="text-[10px] font-bold text-indigo-500 px-2.5 py-1 rounded-md border border-indigo-200 bg-indigo-50 cursor-pointer hover:bg-indigo-100 transition-colors">
                       {"\uD83D\uDD0D"} 비교
                     </span>
                   )}
-                  <div style={{ marginLeft: "auto" }} />
+                  <div className="ml-auto" />
                   {/* 퇴실정산서 (맨 오른쪽) */}
                   {ev.settled ? (
-                    <span style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", textDecoration: "line-through" }}>{"\u2714"} 정산완료</span>
+                    <span className="text-[10px] font-bold text-gray-400 px-2.5 py-1 rounded-md border border-gray-300 bg-gray-100 line-through">{"\u2714"} 정산완료</span>
                   ) : t && setPage && ev.hasPhotos ? (
                     <span onClick={() => { setPendingMoveout?.({ building: ev.building, room: ev.room }); setPage("tenants"); }}
-                      style={{ fontSize: 10, fontWeight: 700, color: "#fff", padding: "4px 10px", borderRadius: 6, background: "#DC2626", cursor: "pointer", whiteSpace: "nowrap" }}>
+                      className="text-[10px] font-bold text-white px-2.5 py-1 rounded-md bg-hm-danger cursor-pointer whitespace-nowrap hover:bg-red-700 transition-colors">
                       정산서 {"\u2192"}
                     </span>
                   ) : (
-                    <span style={{ fontSize: 10, fontWeight: 600, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "#F9FAFB" }}>정산 대기</span>
+                    <span className="text-[10px] font-semibold text-gray-400 px-2.5 py-1 rounded-md border border-gray-200 bg-hm-bg-hover">정산 대기</span>
                   )}
                 </div>
               )}
 
               {/* 단기 퇴실: 예금주 불일치 경고 */}
               {isShortTerm && ev._holderMismatch && (
-                <div style={{ padding: "6px 16px", fontSize: 10, color: "#B45309", background: "#FFFBEB", borderTop: "1px solid #FDE68A" }}>
+                <div className="px-4 py-1.5 text-[10px] text-amber-700 bg-amber-50 border-t border-amber-200">
                   {"\u26A0\uFE0F"} 예금주 불일치: 임차인 [{t?.name || ev.name}] vs 예금주 [{ev.refundHolder}]
                 </div>
               )}
@@ -354,27 +361,27 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
     {/* 청소 완료 모달 */}
     {cleaningModal && (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
         onMouseDown={() => setCleaningModal(null)}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+        <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🧹 청소 완료</div>
-            <button onClick={() => setCleaningModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[15px] font-[800] text-hm-text">🧹 청소 완료</div>
+            <button onClick={() => setCleaningModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex flex-col gap-3">
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>청소비 가중치</div>
-              <input id="cl-fee" placeholder="없으면 빈칸" style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%" }} />
+              <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">청소비 가중치</div>
+              <input id="cl-fee" placeholder="없으면 빈칸" className={`${inputClassName} !py-2 !px-2.5 !text-xs`} />
             </div>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>청소 코멘트</div>
-              <input id="cl-comment" placeholder="없으면 빈칸" style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%" }} />
+              <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">청소 코멘트</div>
+              <input id="cl-comment" placeholder="없으면 빈칸" className={`${inputClassName} !py-2 !px-2.5 !text-xs`} />
             </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <div className="flex justify-end gap-2 mt-4">
             <button onClick={() => setCleaningModal(null)}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={() => {
@@ -385,7 +392,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               setEvents?.((prev: any[]) => prev.map((e: any) => e === cleaningModal.origEvent ? { ...e, ...cleaningPatch } : e));
               setCleaningModal(null);
             }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
               완료
             </button>
           </div>
@@ -395,21 +402,21 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
     {/* 공실전환 확인 모달 */}
     {vacantModal && (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
         onMouseDown={() => setVacantModal(null)}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+        <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🏠 공실 전환</div>
-            <button onClick={() => setVacantModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[15px] font-[800] text-hm-text">🏠 공실 전환</div>
+            <button onClick={() => setVacantModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
           </div>
-          <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+          <div className="text-[13px] text-gray-700 leading-relaxed">
             공실로 전환하시겠습니까?<br />
             금액체크 상태로 공실에 등록됩니다.
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+          <div className="flex justify-end gap-2 mt-5">
             <button onClick={() => setVacantModal(null)}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={() => {
@@ -430,7 +437,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               toast.success(`${ev.building} ${ev.room}호 공실 전환 완료`);
               setVacantModal(null);
             }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
               확인
             </button>
           </div>
@@ -440,28 +447,28 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
     {/* 청소팀 퇴실체크 확인 모달 */}
     {cleaningCheckModal && (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
         onMouseDown={() => setCleaningCheckModal(null)}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+        <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🔍 퇴실체크</div>
-            <button onClick={() => setCleaningCheckModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-[15px] font-[800] text-hm-text">🔍 퇴실체크</div>
+            <button onClick={() => setCleaningCheckModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
           </div>
-          <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+          <div className="text-[13px] text-gray-700 leading-relaxed">
             퇴실체크가 완료되지 않았습니다.<br />
             청소팀이 퇴실체크를 대신 진행하시겠습니까?
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+          <div className="flex justify-end gap-2 mt-5">
             <button onClick={() => setCleaningCheckModal(null)}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={() => {
               setExternalCheckModal?.({ ev: cleaningCheckModal.origEvent, tm: cleaningCheckModal.tm });
               setCleaningCheckModal(null);
             }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
               확인
             </button>
           </div>

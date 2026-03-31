@@ -29,18 +29,18 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   return (
     <>
       {/* Day Headers */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
+      <div className={`grid grid-cols-7 mb-1 ${isMobile ? 'gap-px' : 'gap-0.5'}`}>
         {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
-          <div key={i} style={{ textAlign: "center", fontSize: 11.5, fontWeight: 700, color: i === 0 ? "#EF4444" : i === 6 ? "#3B82F6" : "#8F95A3", padding: "8px 0" }}>
+          <div key={i} className={`text-center font-bold ${isMobile ? 'text-[10px] py-1' : 'text-[11.5px] py-2'} ${i === 0 ? 'text-red-500' : i === 6 ? 'text-hm-blue' : 'text-hm-text-muted'}`}>
             {d}
           </div>
         ))}
       </div>
 
       {/* Day Cells */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(7, 1fr)", gap: 2 }}>
+      <div className={`grid grid-cols-7 ${isMobile ? 'gap-px' : 'gap-0.5'}`}>
         {days.map((day, i) => {
-          if (!day) return <div key={i} style={{ minHeight: 120 }} />;
+          if (!day) return <div key={i} className={isMobile ? 'min-h-[72px]' : 'min-h-[120px]'} />;
           const evts = getEvents(day);
           const dayOfWeek = (firstDay + day - 1) % 7;
           const selected = selectedDay === day;
@@ -76,18 +76,19 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 setDragEventIndex(null);
                 setSelectedDay(day);
               }}
-              style={{
-                minHeight: 120, padding: "4px 6px", borderRadius: 8, cursor: "pointer", transition: "all 0.15s",
-                background: isDrop ? "#DBEAFE" : selected ? "#EFF6FF" : isToday(day) ? "#FFFBEB" : "transparent",
-                border: isDrop ? "2px dashed #3B82F6" : selected ? "2px solid #3B82F6" : isToday(day) ? "1px solid #FDE68A" : "1px solid #F0F2F5",
-              }}
-              onMouseEnter={e => !selected && !isDrop && (e.currentTarget.style.background = "#F9FAFB")}
-              onMouseLeave={e => !selected && !isDrop && (e.currentTarget.style.background = isToday(day) ? "#FFFBEB" : "transparent")}>
-              <div style={{ fontSize: 12, fontWeight: isToday(day) ? 800 : 600, color: dayOfWeek === 0 ? "#EF4444" : dayOfWeek === 6 ? "#3B82F6" : "#1A1D23", marginBottom: 3 }}>
+              className={`cursor-pointer transition-all ${isMobile ? 'min-h-[72px] px-[3px] py-[2px] rounded' : 'min-h-[120px] px-1.5 py-1 rounded-lg'} ${
+                isDrop ? 'bg-blue-100 border-2 border-dashed border-hm-blue' :
+                selected ? 'bg-hm-blue-bg border-2 border-solid border-hm-blue' :
+                isToday(day) ? 'bg-amber-50 border border-solid border-amber-200' :
+                'border border-solid border-[#F0F2F5] hover:bg-hm-bg-hover'
+              }`}
+              onMouseEnter={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.add('bg-hm-bg-hover')}
+              onMouseLeave={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.remove('bg-hm-bg-hover')}>
+              <div className={`text-xs mb-[3px] ${isToday(day) ? 'font-[800]' : 'font-semibold'} ${dayOfWeek === 0 ? 'text-red-500' : dayOfWeek === 6 ? 'text-hm-blue' : 'text-hm-text'}`}>
                 {day}
-                {isToday(day) && <span style={{ fontSize: 8, background: "#F59E0B", color: "#fff", padding: "1px 4px", borderRadius: 3, marginLeft: 3, fontWeight: 700 }}>오늘</span>}
+                {isToday(day) && <span className="text-[8px] bg-amber-500 text-white px-1 py-px rounded-[3px] ml-[3px] font-bold">오늘</span>}
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <div className="flex flex-col gap-0.5">
                 {evts.slice(0, 3).map((evt, ei) => (
                   <div key={ei}
                     draggable={!!setEvents}
@@ -100,11 +101,12 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                       e.currentTarget.style.opacity = "0.4";
                     }}
                     onDragEnd={e => { e.currentTarget.style.opacity = "1"; setDragEventIndex(null); setDropTargetDay(null); }}
-                    style={{ fontSize: 9.5, fontWeight: 600, padding: "2px 4px", borderRadius: 4, background: TYPE_BG[evt.type], color: TYPE_COLORS[evt.type], whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: setEvents ? "grab" : "default" }}>
+                    className={`font-semibold rounded whitespace-nowrap overflow-hidden text-ellipsis ${isMobile ? 'text-[8px] px-[2px] py-px' : 'text-[9.5px] px-1 py-0.5'}`}
+                    style={{ background: TYPE_BG[evt.type], color: TYPE_COLORS[evt.type], cursor: setEvents ? "grab" : "default" }}>
                     {TYPE_ICON[evt.type]} {evt.type === "휴무" ? evt.name : `${evt.building} ${evt.room}`}
                   </div>
                 ))}
-                {evts.length > 3 && <div style={{ fontSize: 9, color: "#8F95A3", textAlign: "center" }}>+{evts.length - 3}건</div>}
+                {evts.length > 3 && <div className="text-[9px] text-hm-text-muted text-center">+{evts.length - 3}건</div>}
               </div>
             </div>
           );

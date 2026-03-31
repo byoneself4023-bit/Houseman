@@ -18,29 +18,30 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
   const ownerPhone = owners[0]?.phone || "";
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
       onClick={() => setContractReport(null)}>
       <div onClick={e => e.stopPropagation()}
-        style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        style={{ width: isMobile ? "92%" : 480 }}>
+        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
           <span>📩 건물주 보고 — {ev.building} {ev.room}호</span>
-          <button onClick={() => setContractReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+          <button onClick={() => setContractReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+        <div className="mb-3">
+          <div className="text-[11px] font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
           {owners.map((o: any, oi: number) => (
-            <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
-              <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
-              <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+            <div key={oi} className="flex gap-2 mb-1 text-xs">
+              <span className="font-bold">{o.name || `건물주${oi + 1}`}</span>
+              <span className="text-hm-blue">{o.phone || "연락처 미등록"}</span>
             </div>
           ))}
         </div>
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", marginBottom: 6 }}>💬 전송 내용</div>
+        <div className="mb-4">
+          <div className="text-[11px] font-bold text-hm-success mb-1.5">💬 전송 내용</div>
           <textarea id="contract-report-msg" defaultValue={msgText} rows={14}
-            style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+            className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button onClick={() => {
             const msg = (document.getElementById("contract-report-msg") as HTMLTextAreaElement)?.value || msgText;
             if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
@@ -48,7 +49,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -58,7 +59,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -67,7 +68,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -92,29 +93,30 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
   const ownerPhone = owners[0]?.phone || "";
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
       onClick={() => setMoveOutOwnerReport(null)}>
       <div onClick={e => e.stopPropagation()}
-        style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        style={{ width: isMobile ? "92%" : 480 }}>
+        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
           <span>📞 퇴실 건물주연락 — {ev.building} {ev.room}호</span>
-          <button onClick={() => setMoveOutOwnerReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+          <button onClick={() => setMoveOutOwnerReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+        <div className="mb-3">
+          <div className="text-[11px] font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
           {owners.map((o: any, oi: number) => (
-            <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
-              <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
-              <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+            <div key={oi} className="flex gap-2 mb-1 text-xs">
+              <span className="font-bold">{o.name || `건물주${oi + 1}`}</span>
+              <span className="text-hm-blue">{o.phone || "연락처 미등록"}</span>
             </div>
           ))}
         </div>
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💬 퇴실정산 내용</div>
+        <div className="mb-4">
+          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💬 퇴실정산 내용</div>
           <textarea id="moveout-owner-msg" defaultValue={msgText} rows={14}
-            style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+            className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button onClick={() => {
             const msg = (document.getElementById("moveout-owner-msg") as HTMLTextAreaElement)?.value || msgText;
             if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
@@ -122,7 +124,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-purple-600 text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-purple-700 transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -132,7 +134,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -141,7 +143,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -165,25 +167,26 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
   const ownerPhone = owners[0]?.phone || "";
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
       onClick={() => setBreakReport(null)}>
       <div onClick={e => e.stopPropagation()}
-        style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        style={{ width: isMobile ? "92%" : 480 }}>
+        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
           <span>📩 계약파기 {breakReport.targetBroker ? "부동산 안내" : "건물주 보고"} — {ev.building} {ev.room}호</span>
-          <button onClick={() => setBreakReport(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+          <button onClick={() => setBreakReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>{breakReport.targetBroker ? "🏠 부동산 정보" : "👤 건물주 정보"}</div>
+        <div className="mb-3">
+          <div className="text-[11px] font-bold text-purple-600 mb-1.5">{breakReport.targetBroker ? "🏠 부동산 정보" : "👤 건물주 정보"}</div>
           {owners.map((o: any, oi: number) => (
-            <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
-              <span style={{ fontWeight: 700 }}>{o.name || (breakReport.targetBroker ? "부동산" : `건물주${oi + 1}`)}</span>
-              <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+            <div key={oi} className="flex gap-2 mb-1 text-xs">
+              <span className="font-bold">{o.name || (breakReport.targetBroker ? "부동산" : `건물주${oi + 1}`)}</span>
+              <span className="text-hm-blue">{o.phone || "연락처 미등록"}</span>
             </div>
           ))}
         </div>
-        {!breakReport.targetBroker && <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💰 계약금 (만원)</div>
+        {!breakReport.targetBroker && <div className="mb-3">
+          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💰 계약금 (만원)</div>
           <input id="break-deposit-amt" type="number" placeholder="계약금 입력"
             onChange={e => {
               const amt = e.target.value;
@@ -192,21 +195,21 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
                 ta.value = ta.value.replace(/※ 계약금.*입금 후 파기 건입니다\./, `※ 계약금 ${amt ? amt + "만원 " : ""}입금 후 파기 건입니다.`);
               }
             }}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #FECACA", fontSize: 12, fontFamily: "inherit", background: "#FEF2F2", boxSizing: "border-box" }} />
+            className="w-full px-3 py-2 rounded-lg border-[1.5px] border-red-200 text-xs font-[inherit] bg-hm-danger-bg box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>💬 전송 내용</div>
+        <div className="mb-4">
+          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💬 전송 내용</div>
           <textarea id="break-report-msg" defaultValue={msgText} rows={14}
-            style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} />
+            className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button onClick={() => {
             const msg = (document.getElementById("break-report-msg") as HTMLTextAreaElement)?.value || msgText;
             if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -215,7 +218,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
-            style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -223,7 +226,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             navigator.clipboard.writeText(msg);
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -245,20 +248,20 @@ export const MoveOutMsgModal: React.FC<MoveOutMsgModalProps> = ({
   if (!moveOutMsgModal) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center"
       onClick={() => setMoveOutMsgModal(null)}>
-      <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, width: 480, maxWidth: "90vw", maxHeight: "80vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📩 퇴실문자 — {moveOutMsgModal.ev.building} {moveOutMsgModal.ev.room}호</div>
-          <button onClick={() => setMoveOutMsgModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+      <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl p-6 w-[480px] max-w-[90vw] max-h-[80vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]">
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-[15px] font-extrabold text-hm-text">📩 퇴실문자 — {moveOutMsgModal.ev.building} {moveOutMsgModal.ev.room}호</div>
+          <button onClick={() => setMoveOutMsgModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <textarea
           value={moveOutMsgModal.text}
           onChange={e => setMoveOutMsgModal((prev: any) => ({ ...prev, text: e.target.value }))}
           placeholder="수령한 퇴실문자 내용을 입력하세요..."
-          style={{ width: "100%", minHeight: 180, padding: "12px 14px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, lineHeight: 1.7, resize: "vertical", fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+          className="w-full min-h-[180px] px-3.5 py-3 rounded-lg border-[1.5px] border-hm-input-border text-xs leading-[1.7] resize-y font-[inherit] outline-none box-border focus:ring-2 focus:ring-ring transition-colors"
         />
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+        <div className="flex justify-end gap-2 mt-3">
           {moveOutMsgModal.ev.moveOutMsg && (
             <button onClick={() => {
               const orig = moveOutMsgModal.ev._origEvent;
@@ -266,12 +269,12 @@ export const MoveOutMsgModal: React.FC<MoveOutMsgModalProps> = ({
               if (idx > -1 && setEvents) setEvents((prev: any[]) => prev.map((evt: any, j: number) => j === idx ? { ...evt, moveOutMsg: "" } : evt));
               setMoveOutMsgModal(null);
             }}
-              style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-[18px] py-2 rounded-lg border-[1.5px] border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">
               삭제
             </button>
           )}
           <button onClick={() => setMoveOutMsgModal(null)}
-            style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-[18px] py-2 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-xs font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             취소
           </button>
           <button onClick={() => {
@@ -284,7 +287,7 @@ export const MoveOutMsgModal: React.FC<MoveOutMsgModalProps> = ({
             if (idx > -1 && setEvents) setEvents((prev: any[]) => prev.map((evt: any, j: number) => j === idx ? { ...evt, moveOutMsg: txt, ...(pw ? { doorPassword: pw } : {}) } : evt));
             setMoveOutMsgModal(null);
           }}
-            style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #3B82F6", background: "#3B82F6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-[18px] py-2 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             저장
           </button>
         </div>

@@ -500,80 +500,45 @@ export function TaskDriverPage({
     visibleTasks.filter(t => completedTasks[t.id]).length,
     [visibleTasks, completedTasks]);
 
-  // Styles
-  const s = {
-    page: {
-      padding: '24px',
-      background: '#F8FAFC',
-      minHeight: '100vh',
-      fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
-    } as React.CSSProperties,
-    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' as const, gap: '12px', marginBottom: '20px' } as React.CSSProperties,
-    headerLeft: { display: 'flex', flexDirection: 'column' as const, gap: '4px' } as React.CSSProperties,
-    title: { fontSize: '24px', fontWeight: '700', color: '#1E293B', margin: 0 } as React.CSSProperties,
-    dateLabel: { fontSize: '14px', color: '#64748B', margin: 0 } as React.CSSProperties,
-    staffTabRow: { display: 'flex', gap: '6px', flexWrap: 'wrap' as const, alignItems: 'center', marginBottom: '16px', padding: '12px 16px', background: '#fff', borderRadius: '12px', border: '1px solid #E8ECF0' } as React.CSSProperties,
-    staffTab: (active: boolean): React.CSSProperties => ({ padding: '6px 14px', borderRadius: '20px', border: active ? '2px solid #3B82F6' : '1px solid #CBD5E1', background: active ? '#EFF6FF' : '#fff', color: active ? '#3B82F6' : '#475569', fontWeight: active ? '700' : '400', fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: '6px' }),
-    staffTabCount: (active: boolean): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '18px', height: '18px', borderRadius: '9px', background: active ? '#3B82F6' : '#E2E8F0', color: active ? '#fff' : '#64748B', fontSize: '11px', fontWeight: '700', padding: '0 4px' }),
-    sortRow: { display: 'flex', gap: '6px', alignItems: 'center', fontSize: '13px', color: '#64748B' } as React.CSSProperties,
-    sortBtn: (active: boolean): React.CSSProperties => ({ padding: '4px 10px', borderRadius: '6px', border: 'none', background: active ? '#3B82F6' : '#E2E8F0', color: active ? '#fff' : '#475569', fontWeight: active ? '600' : '400', fontSize: '12px', cursor: 'pointer' }),
-    summaryRow: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' } as React.CSSProperties,
-    summaryCard: (color: string): React.CSSProperties => ({ background: '#fff', border: '1px solid #E8ECF0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', borderBottom: `3px solid ${color}` }),
-    summaryNum: (color: string): React.CSSProperties => ({ fontSize: '28px', fontWeight: '700', color, margin: 0 }),
-    summaryLabel: { fontSize: '13px', color: '#64748B', margin: 0 } as React.CSSProperties,
-    section: { marginBottom: '24px' } as React.CSSProperties,
-    sectionHeader: (bgColor: string): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '10px 10px 0 0', background: bgColor, borderBottom: '1px solid #E8ECF0' }),
-    sectionTitle: { fontSize: '15px', fontWeight: '600', color: '#1E293B', margin: 0 } as React.CSSProperties,
-    sectionBadge: (bg: string, color: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', borderRadius: '11px', background: bg, color, fontSize: '12px', fontWeight: '700', padding: '0 6px' }),
-    sectionBody: { background: '#fff', border: '1px solid #E8ECF0', borderTop: 'none', borderRadius: '0 0 10px 10px' } as React.CSSProperties,
-    taskItem: (isCompleted: boolean): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid #F1F5F9', opacity: isCompleted ? 0.5 : 1, textDecoration: isCompleted ? 'line-through' : 'none', transition: 'all 0.15s' }),
-    checkbox: (isCompleted: boolean): React.CSSProperties => ({ width: '20px', height: '20px', borderRadius: '4px', border: isCompleted ? '2px solid #10B981' : '2px solid #CBD5E1', background: isCompleted ? '#10B981' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: '12px', fontWeight: '700' }),
-    taskContent: { flex: 1, display: 'flex', flexDirection: 'column' as const, gap: '2px', minWidth: 0 } as React.CSSProperties,
-    taskTopRow: { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' as const } as React.CSSProperties,
-    typeBadge: (type: string): React.CSSProperties => ({ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', background: (TYPE_COLORS[type] || { bg: '#F1F5F9' }).bg, color: (TYPE_COLORS[type] || { color: '#475569' }).color, whiteSpace: 'nowrap' }),
-    taskTitle: { fontSize: '14px', fontWeight: '500', color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis' } as React.CSSProperties,
-    taskBottomRow: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#94A3B8' } as React.CSSProperties,
-    taskRight: { display: 'flex', flexDirection: 'column' as const, alignItems: 'flex-end', gap: '4px', flexShrink: 0 } as React.CSSProperties,
-    buildingLabel: { fontSize: '12px', fontWeight: '500', color: '#64748B', whiteSpace: 'nowrap' } as React.CSSProperties,
-    dDayBadge: (overdueDays: number): React.CSSProperties => {
-      let bg = '#EFF6FF';
-      let color = '#3B82F6';
-      if (overdueDays > 0) { bg = '#FEE2E2'; color = '#EF4444'; }
-      else if (overdueDays === 0) { bg = '#FEF3C7'; color = '#D97706'; }
-      return { display: 'inline-block', padding: '2px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', background: bg, color, whiteSpace: 'nowrap' };
-    },
-    completedTime: { fontSize: '11px', color: '#10B981', whiteSpace: 'nowrap' } as React.CSSProperties,
-    emptySection: { padding: '24px', textAlign: 'center' as const, color: '#94A3B8', fontSize: '14px' } as React.CSSProperties,
-  };
-
   const renderTaskItem = (task: Task) => {
     const isCompleted = !!completedTasks[task.id];
     const completedAt = completedTasks[task.id];
+    const typeColor = TYPE_COLORS[task.type] || { bg: '#F1F5F9', color: '#475569' };
     return (
-      <div key={task.id} style={s.taskItem(isCompleted)}>
+      <div key={task.id} className={`flex items-center gap-3 px-4 py-3 border-b border-[#F1F5F9] transition-all duration-150 ${isCompleted ? 'opacity-50 line-through' : ''}`}>
         <div
-          style={s.checkbox(isCompleted)}
+          className={`w-5 h-5 rounded flex items-center justify-center shrink-0 cursor-pointer text-xs font-bold transition-colors duration-150 ${
+            isCompleted
+              ? 'border-2 border-emerald-500 bg-emerald-500 text-white'
+              : 'border-2 border-slate-300 bg-white hover:border-slate-400'
+          }`}
           onClick={() => toggleTask(task.id)}
           title={isCompleted ? '완료 취소' : '완료 처리'}
         >
           {isCompleted && '\u2713'}
         </div>
-        <div style={s.taskContent}>
-          <div style={s.taskTopRow}>
-            <span style={s.typeBadge(task.type)}>{TYPE_LABELS[task.type] || task.type}</span>
-            <span style={s.taskTitle}>{task.title}</span>
+        <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap" style={{ background: typeColor.bg, color: typeColor.color }}>{TYPE_LABELS[task.type] || task.type}</span>
+            <span className="text-sm font-medium text-slate-800 overflow-hidden text-ellipsis">{task.title}</span>
           </div>
-          <div style={s.taskBottomRow}>
+          <div className="flex items-center gap-3 text-xs text-slate-400">
             {task.priority === 'high' && (
-              <span style={{ color: PRIORITY_COLORS.high, fontWeight: '600' }}>긴급</span>
+              <span className="font-semibold" style={{ color: PRIORITY_COLORS.high }}>긴급</span>
             )}
           </div>
         </div>
-        <div style={s.taskRight}>
-          <span style={s.buildingLabel}>{task.building}</span>
-          <span style={s.dDayBadge(task.overdueDays)}>{dDayLabel(task.overdueDays)}</span>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <span className="text-xs font-medium text-slate-500 whitespace-nowrap">{task.building}</span>
+          <span className={`inline-block px-2 py-0.5 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${
+            task.overdueDays > 0
+              ? 'bg-red-100 text-red-500'
+              : task.overdueDays === 0
+                ? 'bg-amber-100 text-amber-600'
+                : 'bg-hm-blue-bg text-hm-blue'
+          }`}>{dDayLabel(task.overdueDays)}</span>
           {isCompleted && completedAt && (
-            <span style={s.completedTime}>
+            <span className="text-[11px] text-emerald-500 whitespace-nowrap">
               {new Date(completedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 완료
             </span>
           )}
@@ -590,34 +555,25 @@ export function TaskDriverPage({
     const highCount = pending.filter(t => t.priority === 'high').length;
 
     return (
-      <div key={staffName} style={s.section}>
-        <div style={{
-          ...s.sectionHeader(colors.bg),
-          borderLeft: `4px solid ${colors.border}`,
-        }}>
-          <span style={{ fontSize: '16px' }}>👤</span>
-          <p style={{ ...s.sectionTitle, flex: 1 }}>{staffName}</p>
+      <div key={staffName} className="mb-6">
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] border-b border-hm-border" style={{ background: colors.bg, borderLeft: `4px solid ${colors.border}` }}>
+          <span className="text-base">👤</span>
+          <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">{staffName}</p>
           {overdueCount > 0 && (
-            <span style={s.sectionBadge('#EF4444', '#fff')}>{overdueCount} 지연</span>
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-red-500 text-white text-xs font-bold px-1.5">{overdueCount} 지연</span>
           )}
           {highCount > 0 && (
-            <span style={s.sectionBadge('#F59E0B', '#fff')}>{highCount} 긴급</span>
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-amber-500 text-white text-xs font-bold px-1.5">{highCount} 긴급</span>
           )}
-          <span style={s.sectionBadge(colors.badge, '#fff')}>{pending.length}건</span>
+          <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full text-white text-xs font-bold px-1.5" style={{ background: colors.badge }}>{pending.length}건</span>
         </div>
-        <div style={s.sectionBody}>
+        <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">
           {pending.length > 0 ? pending.map(renderTaskItem) : (
-            <div style={s.emptySection}>할 일 없음</div>
+            <div className="p-6 text-center text-slate-400 text-sm">할 일 없음</div>
           )}
           {done.length > 0 && (
-            <details style={{ borderTop: '1px solid #E8ECF0' }}>
-              <summary style={{
-                padding: '8px 16px',
-                fontSize: '13px',
-                color: '#94A3B8',
-                cursor: 'pointer',
-                background: '#FAFBFC',
-              }}>
+            <details className="border-t border-hm-border">
+              <summary className="px-4 py-2 text-[13px] text-slate-400 cursor-pointer bg-[#FAFBFC] hover:bg-slate-100 transition-colors duration-150">
                 완료 {done.length}건
               </summary>
               {done.map(renderTaskItem)}
@@ -647,47 +603,44 @@ export function TaskDriverPage({
     return (
       <>
         {overdue.length > 0 && (
-          <div style={s.section}>
-            <div style={{ ...s.sectionHeader('#FEF2F2'), borderLeft: '4px solid #EF4444' }}>
-              <span style={{ fontSize: '16px' }}>🔴</span>
-              <p style={{ ...s.sectionTitle, flex: 1 }}>미완료 (지연)</p>
-              <span style={s.sectionBadge('#EF4444', '#fff')}>{overdue.length}</span>
+          <div className="mb-6">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-hm-danger-bg border-b border-hm-border border-l-4 border-l-red-500">
+              <span className="text-base">🔴</span>
+              <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">미완료 (지연)</p>
+              <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-red-500 text-white text-xs font-bold px-1.5">{overdue.length}</span>
             </div>
-            <div style={s.sectionBody}>{overdue.map(renderTaskItem)}</div>
+            <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">{overdue.map(renderTaskItem)}</div>
           </div>
         )}
-        <div style={s.section}>
-          <div style={{ ...s.sectionHeader('#FFFBEB'), borderLeft: '4px solid #F59E0B' }}>
-            <span style={{ fontSize: '16px' }}>⚡</span>
-            <p style={{ ...s.sectionTitle, flex: 1 }}>오늘 할 일</p>
-            <span style={s.sectionBadge('#F59E0B', '#fff')}>{todayList.length}</span>
+        <div className="mb-6">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#FFFBEB] border-b border-hm-border border-l-4 border-l-amber-500">
+            <span className="text-base">⚡</span>
+            <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">오늘 할 일</p>
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-amber-500 text-white text-xs font-bold px-1.5">{todayList.length}</span>
           </div>
-          <div style={s.sectionBody}>
+          <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">
             {todayList.length > 0 ? todayList.map(renderTaskItem) : (
-              <div style={s.emptySection}>오늘 할 일 없음</div>
+              <div className="p-6 text-center text-slate-400 text-sm">오늘 할 일 없음</div>
             )}
           </div>
         </div>
         {upcoming.length > 0 && (
-          <div style={s.section}>
-            <div style={{ ...s.sectionHeader('#F0F9FF'), borderLeft: '4px solid #3B82F6' }}>
-              <span style={{ fontSize: '16px' }}>📋</span>
-              <p style={{ ...s.sectionTitle, flex: 1 }}>이번 주 예정</p>
-              <span style={s.sectionBadge('#3B82F6', '#fff')}>{upcoming.length}</span>
+          <div className="mb-6">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#F0F9FF] border-b border-hm-border border-l-4 border-l-hm-blue">
+              <span className="text-base">📋</span>
+              <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">이번 주 예정</p>
+              <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-hm-blue text-white text-xs font-bold px-1.5">{upcoming.length}</span>
             </div>
-            <div style={s.sectionBody}>{upcoming.map(renderTaskItem)}</div>
+            <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">{upcoming.map(renderTaskItem)}</div>
           </div>
         )}
         {done.length > 0 && (
-          <div style={s.section}>
+          <div className="mb-6">
             <details>
-              <summary style={{
-                padding: '10px 16px', fontSize: '14px', fontWeight: '600', color: '#10B981',
-                cursor: 'pointer', background: '#F0FDF4', borderRadius: '10px', border: '1px solid #D1FAE5',
-              }}>
+              <summary className="px-4 py-2.5 text-sm font-semibold text-emerald-500 cursor-pointer bg-[#F0FDF4] rounded-[10px] border border-[#D1FAE5] hover:bg-emerald-100 transition-colors duration-150">
                 완료 {done.length}건
               </summary>
-              <div style={{ ...s.sectionBody, borderRadius: '0 0 10px 10px', marginTop: '-1px' }}>
+              <div className="bg-white border border-hm-border rounded-b-[10px] -mt-px">
                 {done.map(renderTaskItem)}
               </div>
             </details>
@@ -701,22 +654,26 @@ export function TaskDriverPage({
   const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')} (${dayName})`;
 
   return (
-    <div style={s.page}>
+    <div className="p-6 bg-[#F8FAFC] min-h-screen font-[Pretendard,-apple-system,BlinkMacSystemFont,sans-serif]">
       {/* Header */}
-      <div style={s.header}>
-        <div style={s.headerLeft}>
-          <h1 style={s.title}>
+      <div className="flex justify-between items-start flex-wrap gap-3 mb-5">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold text-slate-800 m-0">
             {isGeneral ? '오늘 할 일' : `${myName}님의 할 일`}
           </h1>
-          <p style={s.dateLabel}>{dateStr}</p>
+          <p className="text-sm text-slate-500 m-0">{dateStr}</p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-          <div style={s.sortRow}>
+        <div className="flex flex-col gap-2 items-end">
+          <div className="flex gap-1.5 items-center text-[13px] text-slate-500">
             <span>정렬:</span>
             {SORT_OPTIONS.map(opt => (
               <button
                 key={opt.key}
-                style={s.sortBtn(sortBy === opt.key)}
+                className={`px-2.5 py-1 rounded-md border-none text-xs cursor-pointer transition-colors duration-150 ${
+                  sortBy === opt.key
+                    ? 'bg-hm-blue text-white font-semibold'
+                    : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                }`}
                 onClick={() => setSortBy(opt.key)}
               >
                 {opt.label}
@@ -728,25 +685,37 @@ export function TaskDriverPage({
 
       {/* 대표용: 직원 선택 탭 */}
       {isGeneral && (
-        <div style={s.staffTabRow}>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: '#374151', marginRight: '4px' }}>직원:</span>
+        <div className="flex gap-1.5 flex-wrap items-center mb-4 px-4 py-3 bg-white rounded-xl border border-hm-border">
+          <span className="text-[13px] font-semibold text-gray-700 mr-1">직원:</span>
           <button
-            style={s.staffTab(viewStaff === 'all')}
+            className={`px-3.5 py-1.5 rounded-full text-[13px] cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+              viewStaff === 'all'
+                ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
+                : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'
+            }`}
             onClick={() => setViewStaff('all')}
           >
             전체
-            <span style={s.staffTabCount(viewStaff === 'all')}>{allTasks.length}</span>
+            <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-[11px] font-bold px-1 ${
+              viewStaff === 'all' ? 'bg-hm-blue text-white' : 'bg-slate-200 text-slate-500'
+            }`}>{allTasks.length}</span>
           </button>
           {initialStaffMembers.map((staff: Staff) => {
             const count = staffTaskCounts[staff.name] || 0;
             return (
               <button
                 key={staff.id}
-                style={s.staffTab(viewStaff === staff.name)}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+                  viewStaff === staff.name
+                    ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
+                    : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'
+                }`}
                 onClick={() => setViewStaff(staff.name)}
               >
                 {staff.name}
-                {count > 0 && <span style={s.staffTabCount(viewStaff === staff.name)}>{count}</span>}
+                {count > 0 && <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-[11px] font-bold px-1 ${
+                  viewStaff === staff.name ? 'bg-hm-blue text-white' : 'bg-slate-200 text-slate-500'
+                }`}>{count}</span>}
               </button>
             );
           })}
@@ -754,9 +723,9 @@ export function TaskDriverPage({
       )}
 
       {/* 커스텀 태스크 추가 */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px' }}>
+      <div className="flex gap-2 items-center mb-4">
         {showAddTask ? (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, padding: '10px 16px', background: '#fff', borderRadius: '12px', border: '2px solid #3B82F6' }}>
+          <div className="flex gap-2 items-center flex-1 px-4 py-2.5 bg-white rounded-xl border-2 border-hm-blue">
             <input
               type="text"
               value={newTaskTitle}
@@ -764,54 +733,58 @@ export function TaskDriverPage({
               onKeyDown={(e) => { if (e.key === 'Enter') addCustomTask(); if (e.key === 'Escape') { setShowAddTask(false); setNewTaskTitle(''); } }}
               placeholder="할 일을 입력하세요..."
               autoFocus
-              style={{ flex: 1, border: 'none', outline: 'none', fontSize: '14px', fontFamily: 'inherit', background: 'transparent' }}
+              className="flex-1 border-none outline-none text-sm font-inherit bg-transparent"
             />
             <button onClick={addCustomTask}
-              style={{ padding: '6px 16px', borderRadius: '8px', border: 'none', background: '#3B82F6', color: '#fff', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              className="px-4 py-1.5 rounded-lg border-none bg-hm-blue text-white text-[13px] font-bold cursor-pointer font-inherit whitespace-nowrap hover:bg-blue-600 transition-colors duration-150">
               추가
             </button>
             <button onClick={() => { setShowAddTask(false); setNewTaskTitle(''); }}
-              style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#fff', color: '#64748B', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' }}>
+              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 text-[13px] font-semibold cursor-pointer font-inherit hover:bg-slate-50 transition-colors duration-150">
               취소
             </button>
           </div>
         ) : (
           <button onClick={() => setShowAddTask(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '10px', border: '1.5px dashed #CBD5E1', background: '#fff', color: '#3B82F6', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>
-            <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> 직접 할 일 추가
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] border-[1.5px] border-dashed border-slate-300 bg-white text-hm-blue text-[13px] font-bold cursor-pointer font-inherit transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg">
+            <span className="text-lg leading-none">+</span> 직접 할 일 추가
           </button>
         )}
       </div>
 
       {/* 커스텀 태스크 목록 (직접등록) */}
       {customTasks.length > 0 && (
-        <div style={{ ...s.section, marginBottom: '16px' }}>
-          <div style={{ ...s.sectionHeader('#F0F9FF'), borderLeft: '4px solid #8B5CF6' }}>
-            <span style={{ fontSize: '16px' }}>📌</span>
-            <p style={{ ...s.sectionTitle, flex: 1 }}>직접 등록한 할 일</p>
-            <span style={s.sectionBadge('#8B5CF6', '#fff')}>{customTasks.length}</span>
+        <div className="mb-4">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#F0F9FF] border-b border-hm-border border-l-4 border-l-violet-500">
+            <span className="text-base">📌</span>
+            <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">직접 등록한 할 일</p>
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-violet-500 text-white text-xs font-bold px-1.5">{customTasks.length}</span>
           </div>
-          <div style={s.sectionBody}>
+          <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">
             {customTasks.map(ct => {
               const isCompleted = !!completedTasks[ct.id];
               return (
-                <div key={ct.id} style={{ ...s.taskItem(isCompleted), justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    <div style={s.checkbox(isCompleted)} onClick={() => toggleTask(ct.id)}>
+                <div key={ct.id} className={`flex items-center gap-3 px-4 py-3 border-b border-[#F1F5F9] justify-between transition-all duration-150 ${isCompleted ? 'opacity-50 line-through' : ''}`}>
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 cursor-pointer text-xs font-bold transition-colors duration-150 ${
+                      isCompleted
+                        ? 'border-2 border-emerald-500 bg-emerald-500 text-white'
+                        : 'border-2 border-slate-300 bg-white hover:border-slate-400'
+                    }`} onClick={() => toggleTask(ct.id)}>
                       {isCompleted && '\u2713'}
                     </div>
-                    <div style={s.taskContent}>
-                      <div style={s.taskTopRow}>
-                        <span style={s.typeBadge('custom')}>직접등록</span>
-                        <span style={s.taskTitle}>{ct.title}</span>
+                    <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap" style={{ background: TYPE_COLORS.custom.bg, color: TYPE_COLORS.custom.color }}>직접등록</span>
+                        <span className="text-sm font-medium text-slate-800 overflow-hidden text-ellipsis">{ct.title}</span>
                       </div>
-                      <div style={s.taskBottomRow}>
+                      <div className="flex items-center gap-3 text-xs text-slate-400">
                         <span>{new Date(ct.createdAt).toLocaleDateString('ko-KR')} 등록</span>
                       </div>
                     </div>
                   </div>
                   <button onClick={() => removeCustomTask(ct.id)}
-                    style={{ border: 'none', background: 'none', fontSize: '16px', cursor: 'pointer', color: '#94A3B8', padding: '4px 8px' }}
+                    className="border-none bg-none text-base cursor-pointer text-slate-400 px-2 py-1 hover:text-slate-600 transition-colors duration-150"
                     title="삭제">✕</button>
                 </div>
               );
@@ -821,23 +794,18 @@ export function TaskDriverPage({
       )}
 
       {/* Summary cards */}
-      <div style={s.summaryRow}>
-        <div style={s.summaryCard('#EF4444')}>
-          <p style={s.summaryNum('#EF4444')}>{overdueTasks.length}</p>
-          <p style={s.summaryLabel}>미완료 (지연)</p>
-        </div>
-        <div style={s.summaryCard('#F59E0B')}>
-          <p style={s.summaryNum('#F59E0B')}>{todayTasks.length}</p>
-          <p style={s.summaryLabel}>오늘 할 일</p>
-        </div>
-        <div style={s.summaryCard('#3B82F6')}>
-          <p style={s.summaryNum('#3B82F6')}>{weekTasks.length}</p>
-          <p style={s.summaryLabel}>이번 주 예정</p>
-        </div>
-        <div style={s.summaryCard('#10B981')}>
-          <p style={s.summaryNum('#10B981')}>{completedCount}</p>
-          <p style={s.summaryLabel}>완료</p>
-        </div>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3 mb-6">
+        {[
+          { count: overdueTasks.length, label: '미완료 (지연)', color: '#EF4444' },
+          { count: todayTasks.length, label: '오늘 할 일', color: '#F59E0B' },
+          { count: weekTasks.length, label: '이번 주 예정', color: '#3B82F6' },
+          { count: completedCount, label: '완료', color: '#10B981' },
+        ].map(card => (
+          <div key={card.label} className="bg-white border border-hm-border rounded-xl p-4 flex flex-col items-center gap-1" style={{ borderBottom: `3px solid ${card.color}` }}>
+            <p className="text-[28px] font-bold m-0" style={{ color: card.color }}>{card.count}</p>
+            <p className="text-[13px] text-slate-500 m-0">{card.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* 태스크 목록 */}

@@ -553,16 +553,16 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         const pm = photoModalTenant;
         const photos = pm.moveOutPhotos || [];
         return (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-5"
             onClick={(e) => { if (e.target === e.currentTarget) setPhotoModalTenant(null); }}>
-            <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 600, maxHeight: "90vh", overflow: "auto", padding: 24, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div className="bg-white rounded-2xl w-full max-w-[600px] max-h-[90vh] overflow-auto p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>📷 퇴실사진 등록</div>
-                  <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 4 }}>{pm.building} {pm.room}호 · {pm.name}</div>
+                  <div className="text-lg font-extrabold text-hm-text">📷 퇴실사진 등록</div>
+                  <div className="text-xs text-hm-text-muted mt-1">{pm.building} {pm.room}호 · {pm.name}</div>
                 </div>
                 <button onClick={() => setPhotoModalTenant(null)}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, fontFamily: "inherit" }}>✕</button>
+                  className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
               </div>
               <PhotoDropZone
                 photos={photos}
@@ -582,9 +582,9 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                   setSelectedTenant((prev: any) => prev && prev.id === pm.id ? { ...prev, moveOutPhotos: updated } : prev);
                 }}
               />
-              <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+              <div className="mt-4 flex justify-end">
                 <button onClick={() => setPhotoModalTenant(null)}
-                  style={{ padding: "10px 28px", borderRadius: 10, border: "none", background: photos.length > 0 ? "#059669" : "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+                  className={`py-2.5 px-7 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${photos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-blue hover:bg-hm-blue-dark"}`}>
                   {photos.length > 0 ? "✅ 완료" : "닫기"}
                 </button>
               </div>
@@ -597,32 +597,32 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       {checkPhotoView && (() => {
         const cpPhotos = checkPhotoView.moveInCheckPhotos || [];
         return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
             onClick={() => setCheckPhotoView(null)}>
             <div onClick={(e: any) => e.stopPropagation()}
-              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "95%" : 600, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              className={`bg-white rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${isMobile ? "w-[95%]" : "w-[600px]"}`}>
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#EA580C" }}>📋 입주체크사진</div>
-                  <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{checkPhotoView.building} {checkPhotoView.room}호 · {checkPhotoView.name} · {cpPhotos.length}장</div>
+                  <div className="text-lg font-extrabold text-hm-warning">📋 입주체크사진</div>
+                  <div className="text-[11px] text-hm-text-muted mt-0.5">{checkPhotoView.building} {checkPhotoView.room}호 · {checkPhotoView.name} · {cpPhotos.length}장</div>
                 </div>
                 <button onClick={() => setCheckPhotoView(null)}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, fontFamily: "inherit" }}>✕</button>
+                  className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+              <div className="grid grid-cols-4 gap-1.5">
                 {cpPhotos.map((src: any, i: number) => (
-                  <div key={i} style={{ aspectRatio: "1", borderRadius: 8, border: "1.5px solid #FED7AA", overflow: "hidden", background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div key={i} className="aspect-square rounded-lg border-[1.5px] border-hm-warning-border overflow-hidden bg-hm-warning-bg flex items-center justify-center">
                     {src && src.startsWith("data:image/") && !src.includes("placeholder") ? (
-                      <img src={src} alt={`체크 ${i+1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={src} alt={`체크 ${i+1}`} className="w-full h-full object-cover" />
                     ) : (
-                      <span style={{ fontSize: 20 }}>📋</span>
+                      <span className="text-xl">📋</span>
                     )}
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+              <div className="mt-4 flex justify-end">
                 <button onClick={() => setCheckPhotoView(null)}
-                  style={{ padding: "10px 28px", borderRadius: 10, border: "none", background: "#EA580C", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+                  className="py-2.5 px-7 rounded-[10px] border-none bg-hm-warning text-white font-bold text-sm cursor-pointer font-[inherit] hover:brightness-110 transition">
                   닫기
                 </button>
               </div>
@@ -636,17 +636,17 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         const cpe = checkPhotoEdit;
         const cpPhotos = cpe.moveOutCheckPhotos || [];
         return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
             onClick={() => setCheckPhotoEdit(null)}>
             <div onClick={(e: any) => e.stopPropagation()}
-              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "95%" : 600, maxHeight: "85vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              className={`bg-white rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${isMobile ? "w-[95%]" : "w-[600px]"}`}>
+              <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: "#EA580C" }}>📋 입주체크사진 등록</div>
-                  <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{cpe.building} {cpe.room}호 · {cpe.name}</div>
+                  <div className="text-lg font-extrabold text-hm-warning">📋 입주체크사진 등록</div>
+                  <div className="text-[11px] text-hm-text-muted mt-0.5">{cpe.building} {cpe.room}호 · {cpe.name}</div>
                 </div>
                 <button onClick={() => setCheckPhotoEdit(null)}
-                  style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, fontFamily: "inherit" }}>✕</button>
+                  className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
               </div>
               <PhotoDropZone
                 label="입주체크사진" color="#EA580C" maxPhotos={50}
@@ -664,9 +664,9 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                   setSelectedTenant((prev: any) => prev && prev.id === cpe.id ? { ...prev, moveOutCheckPhotos: updated } : prev);
                 }}
               />
-              <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+              <div className="mt-4 flex justify-end">
                 <button onClick={() => setCheckPhotoEdit(null)}
-                  style={{ padding: "10px 28px", borderRadius: 10, border: "none", background: cpPhotos.length > 0 ? "#059669" : "#EA580C", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+                  className={`py-2.5 px-7 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${cpPhotos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-warning hover:brightness-110"}`}>
                   {cpPhotos.length > 0 ? "✅ 완료" : "닫기"}
                 </button>
               </div>
@@ -677,42 +677,42 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
 
       {/* 공과금 청구 이력 팝업 */}
       {billingPopup && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
           onClick={() => setBillingPopup(null)}>
           <div onClick={(e: any) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 16, padding: "24px 28px", maxWidth: 540, width: "90%", maxHeight: "80vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            className="bg-white rounded-2xl py-6 px-7 max-w-[540px] w-[90%] max-h-[80vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23" }}>⚡ 공과금 청구 이력</div>
-                <div style={{ fontSize: 12, color: "#8F95A3" }}>{billingPopup.tenant.building} {billingPopup.tenant.room}호 {billingPopup.tenant.name} · 입주일 {billingPopup.tenant.moveIn}</div>
+                <div className="text-base font-extrabold text-hm-text">⚡ 공과금 청구 이력</div>
+                <div className="text-xs text-hm-text-muted">{billingPopup.tenant.building} {billingPopup.tenant.room}호 {billingPopup.tenant.name} · 입주일 {billingPopup.tenant.moveIn}</div>
               </div>
               <button onClick={() => setBillingPopup(null)}
-                style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+                className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="flex flex-col gap-2">
               {billingPopup.bills.map((bill: any, i: number) => (
-                <div key={i} style={{ padding: "12px 14px", borderRadius: 10, background: i === 0 ? "#FFFBEB" : "#F8FAFC", border: `1px solid ${i === 0 ? "#FDE68A" : "#E8ECF0"}` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{bill.date}</span>
-                      {i === 0 && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#FEF3C7", color: "#92400E", fontWeight: 700 }}>최근</span>}
+                <div key={i} className={`py-3 px-3.5 rounded-[10px] border ${i === 0 ? "bg-amber-50 border-amber-200" : "bg-hm-bg-slate border-hm-border"}`}>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-hm-text">{bill.date}</span>
+                      {i === 0 && <span className="text-[9px] py-0.5 px-1.5 rounded bg-amber-100 text-amber-800 font-bold">최근</span>}
                     </div>
-                    <span style={{ fontSize: 15, fontWeight: 800, color: "#92400E" }}>{fmt(bill.total)}원</span>
+                    <span className="text-[15px] font-extrabold text-amber-800">{fmt(bill.total)}원</span>
                   </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {bill.items.rent > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#fff", border: "1px solid #E8ECF0", color: "#5F6577" }}>월세 {fmt(bill.items.rent)}</span>}
-                    {bill.items.mgmt > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#fff", border: "1px solid #E8ECF0", color: "#5F6577" }}>관리비 {fmt(bill.items.mgmt)}</span>}
-                    {bill.items.elec > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#FEF3C7", color: "#92400E" }}>전기 {fmt(bill.items.elec)}</span>}
-                    {bill.items.gas > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#FEE2E2", color: "#991B1B" }}>가스 {fmt(bill.items.gas)}</span>}
-                    {bill.items.water > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB" }}>수도 {fmt(bill.items.water)}</span>}
-                    {bill.items.cable > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#F0FDF4", color: "#059669" }}>인터넷 {fmt(bill.items.cable)}</span>}
-                    {bill.items.prevUnpaid > 0 && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#FEF2F2", color: "#DC2626" }}>미납 {fmt(bill.items.prevUnpaid)}</span>}
+                  <div className="flex flex-wrap gap-1">
+                    {bill.items.rent > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">월세 {fmt(bill.items.rent)}</span>}
+                    {bill.items.mgmt > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">관리비 {fmt(bill.items.mgmt)}</span>}
+                    {bill.items.elec > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-amber-100 text-amber-800">전기 {fmt(bill.items.elec)}</span>}
+                    {bill.items.gas > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-red-100 text-red-800">가스 {fmt(bill.items.gas)}</span>}
+                    {bill.items.water > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-hm-blue-bg text-hm-blue-dark">수도 {fmt(bill.items.water)}</span>}
+                    {bill.items.cable > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-green-50 text-hm-success">인터넷 {fmt(bill.items.cable)}</span>}
+                    {bill.items.prevUnpaid > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-hm-danger-bg text-hm-danger">미납 {fmt(bill.items.prevUnpaid)}</span>}
                   </div>
                 </div>
               ))}
             </div>
             {billingPopup.bills.length === 0 && (
-              <div style={{ textAlign: "center", padding: "30px 0", color: "#8F95A3", fontSize: 13 }}>청구 이력이 없습니다</div>
+              <div className="text-center py-[30px] text-hm-text-muted text-[13px]">청구 이력이 없습니다</div>
             )}
           </div>
         </div>
@@ -732,17 +732,18 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
           setPhotoViewer((prev: any) => nz <= 1 ? { ...prev, zoom: 1, panX: 0, panY: 0 } : { ...prev, zoom: nz });
         };
         return (
-          <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", userSelect: "none" }}
+          <div className="fixed inset-0 z-[10001] bg-black/[.92] flex items-center justify-center select-none"
             onClick={() => { if (zoom <= 1) setPhotoViewer(null); }}
             onWheel={(e: any) => { e.preventDefault(); setZoomFn(zoom + (e.deltaY < 0 ? 0.3 : -0.3)); }}>
             {photos.length > 1 && zoom <= 1 && (
               <button onClick={(e: any) => { e.stopPropagation(); goPrev(); }}
-                style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,.2)", border: "none", color: "#fff", fontSize: 36, width: 52, height: 52, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3, backdropFilter: "blur(4px)" }}>
+                className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/20 border-none text-white text-4xl w-[52px] h-[52px] rounded-full cursor-pointer flex items-center justify-center z-[3] backdrop-blur-[4px] hover:bg-white/30 transition-colors">
                 &lsaquo;
               </button>
             )}
             <div onClick={(e: any) => e.stopPropagation()}
-              style={{ maxWidth: "85vw", maxHeight: "85vh", position: "relative", overflow: "hidden", cursor: zoom > 1 ? (dragging ? "grabbing" : "grab") : "default" }}
+              className="max-w-[85vw] max-h-[85vh] relative overflow-hidden"
+              style={{ cursor: zoom > 1 ? (dragging ? "grabbing" : "grab") : "default" }}
               onMouseDown={(e: any) => { if (zoom > 1) { e.preventDefault(); setPhotoViewer((prev: any) => ({ ...prev, dragging: true, dragStartX: e.clientX - panX, dragStartY: e.clientY - panY })); } }}
               onMouseMove={(e: any) => { if (photoViewer.dragging && zoom > 1) { setPhotoViewer((prev: any) => ({ ...prev, panX: e.clientX - prev.dragStartX, panY: e.clientY - prev.dragStartY })); } }}
               onMouseUp={() => setPhotoViewer((prev: any) => ({ ...prev, dragging: false }))}
@@ -750,39 +751,40 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               onDoubleClick={(e: any) => { e.stopPropagation(); setZoomFn(zoom <= 1 ? 2.5 : 1); }}>
               {isImg ? (
                 <img src={imgSrc} alt="" draggable={false}
-                  style={{ maxWidth: zoom <= 1 ? "85vw" : "none", maxHeight: zoom <= 1 ? "85vh" : "none", width: zoom > 1 ? `${85 * zoom}vw` : undefined, borderRadius: zoom <= 1 ? 8 : 0, boxShadow: "0 0 60px rgba(0,0,0,.6)", display: "block", transform: zoom > 1 ? `translate(${panX}px, ${panY}px)` : "none", transition: dragging ? "none" : "transform 0.1s" }} />
+                  className="block shadow-[0_0_60px_rgba(0,0,0,.6)]"
+                  style={{ maxWidth: zoom <= 1 ? "85vw" : "none", maxHeight: zoom <= 1 ? "85vh" : "none", width: zoom > 1 ? `${85 * zoom}vw` : undefined, borderRadius: zoom <= 1 ? 8 : 0, transform: zoom > 1 ? `translate(${panX}px, ${panY}px)` : "none", transition: dragging ? "none" : "transform 0.1s" }} />
               ) : (
-                <div style={{ width: 320, height: 320, background: "#222", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12 }}>
-                  <span style={{ fontSize: 72 }}>🏠</span>
-                  <span style={{ color: "#999", fontSize: 13 }}>사진 {index + 1}</span>
+                <div className="w-80 h-80 bg-[#222] rounded-xl flex items-center justify-center flex-col gap-3">
+                  <span className="text-7xl">🏠</span>
+                  <span className="text-gray-400 text-[13px]">사진 {index + 1}</span>
                 </div>
               )}
             </div>
             {photos.length > 1 && zoom <= 1 && (
               <button onClick={(e: any) => { e.stopPropagation(); goNext(); }}
-                style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,.2)", border: "none", color: "#fff", fontSize: 36, width: 52, height: 52, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3, backdropFilter: "blur(4px)" }}>
+                className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/20 border-none text-white text-4xl w-[52px] h-[52px] rounded-full cursor-pointer flex items-center justify-center z-[3] backdrop-blur-[4px] hover:bg-white/30 transition-colors">
                 &rsaquo;
               </button>
             )}
-            <div style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 12, zIndex: 3 }}>
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-[3]">
               <button onClick={(e: any) => { e.stopPropagation(); setZoomFn(zoom - 0.5); }}
-                style={{ background: "rgba(255,255,255,.2)", border: "none", color: "#fff", fontSize: 20, width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                className="bg-white/20 border-none text-white text-xl w-9 h-9 rounded-full cursor-pointer flex items-center justify-center backdrop-blur-[4px] hover:bg-white/30 transition-colors">
                 &minus;
               </button>
-              <div style={{ color: "#fff", fontSize: 13, fontWeight: 700, background: "rgba(0,0,0,.5)", padding: "6px 16px", borderRadius: 20, minWidth: 100, textAlign: "center" }}>
+              <div className="text-white text-[13px] font-bold bg-black/50 py-1.5 px-4 rounded-[20px] min-w-[100px] text-center">
                 {index + 1} / {photos.length}{zoom > 1 ? ` · ${Math.round(zoom * 100)}%` : ""}
               </div>
               <button onClick={(e: any) => { e.stopPropagation(); setZoomFn(zoom + 0.5); }}
-                style={{ background: "rgba(255,255,255,.2)", border: "none", color: "#fff", fontSize: 20, width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>
+                className="bg-white/20 border-none text-white text-xl w-9 h-9 rounded-full cursor-pointer flex items-center justify-center backdrop-blur-[4px] hover:bg-white/30 transition-colors">
                 +
               </button>
             </div>
             <button onClick={() => setPhotoViewer(null)}
-              style={{ position: "absolute", top: 20, right: 20, background: "rgba(255,255,255,.2)", border: "none", fontSize: 24, color: "#fff", cursor: "pointer", borderRadius: "50%", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3, backdropFilter: "blur(4px)" }}>
+              className="absolute top-5 right-5 bg-white/20 border-none text-2xl text-white cursor-pointer rounded-full w-11 h-11 flex items-center justify-center z-[3] backdrop-blur-[4px] hover:bg-white/30 transition-colors">
               ✕
             </button>
             {zoom <= 1 && (
-              <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,.5)", fontSize: 11, zIndex: 3 }}>
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/50 text-[11px] z-[3]">
                 더블클릭 또는 마우스휠로 확대 · 확대 시 드래그로 이동
               </div>
             )}
@@ -791,21 +793,21 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       })()}
     {/* 퇴실확정 후 이동 모달 */}
     {showMoveoutDoneModal && (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
         onMouseDown={() => setShowMoveoutDoneModal(false)}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+        <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>퇴실 확정 완료</div>
-          <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 20 }}>
+          <div className="text-[15px] font-extrabold text-hm-text mb-3">퇴실 확정 완료</div>
+          <div className="text-xs text-hm-text-sub leading-[1.6] mb-5">
             입퇴실일정에서 나머지 단계(청소/입주체크/공실전환)를 진행하시겠습니까?
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <div className="flex justify-end gap-2">
             <button onClick={() => { setShowMoveoutDoneModal(false); setActionMode(null); setSelectedTenant(null); }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="py-2 px-5 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               여기서 계속
             </button>
             <button onClick={() => { setShowMoveoutDoneModal(false); setActionMode(null); setSelectedTenant(null); navigate("/calendar"); }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="py-2 px-5 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
               입퇴실일정으로 이동
             </button>
           </div>

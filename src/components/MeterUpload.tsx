@@ -235,38 +235,34 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
   }, [handleFile]);
 
   return (
-    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', padding: 20, marginBottom: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: '#111' }}>검침 데이터 업로드</span>
-        <div style={{ display: 'flex', gap: 6 }}>
+    <div className="bg-white rounded-xl border border-[#E5E5E5] p-5 mb-5">
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-sm font-extrabold text-hm-text">검침 데이터 업로드</span>
+        <div className="flex gap-1.5">
           {(['elec', 'gas'] as const).map(type => (
             <button
               key={type}
               onClick={() => setUploadType(type)}
-              style={{
-                padding: '4px 12px', borderRadius: 6, fontSize: 12, fontWeight: 700,
-                border: uploadType === type ? '1px solid #346aff' : '1px solid #E5E5E5',
-                background: uploadType === type ? '#EBF0FF' : '#fff',
-                color: uploadType === type ? '#346aff' : '#666',
-                cursor: 'pointer',
-              }}
+              className={`px-3 py-1 rounded-md text-xs font-bold cursor-pointer transition-all duration-150 ${
+                uploadType === type
+                  ? 'border border-[#346aff] bg-[#EBF0FF] text-[#346aff]'
+                  : 'border border-[#E5E5E5] bg-white text-[#666] hover:border-[#346aff]/40'
+              }`}
             >
               {type === 'elec' ? '⚡ 전기' : '🔥 가스'}
             </button>
           ))}
         </div>
-        <span style={{ fontSize: 11, color: '#888', marginLeft: 'auto' }}>{billingMonth}</span>
+        <span className="text-[11px] text-hm-text-muted ml-auto">{billingMonth}</span>
       </div>
 
       {/* 드래그 영역 */}
       <div
         onDragOver={e => e.preventDefault()}
         onDrop={handleDrop}
-        style={{
-          border: '1.5px dashed #D1D5DB', borderRadius: 8, padding: 24,
-          textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
-          background: uploading ? '#F7F8FA' : '#FAFBFC',
-        }}
+        className={`border-[1.5px] border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-all duration-150 hover:border-[#346aff]/40 ${
+          uploading ? 'bg-hm-bg' : 'bg-[#FAFBFC]'
+        }`}
         onClick={() => document.getElementById('meter-upload-input')?.click()}
       >
         <input
@@ -274,16 +270,16 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
           type="file"
           accept=".xlsx,.xls,.csv"
           onChange={handleInputChange}
-          style={{ display: 'none' }}
+          className="hidden"
         />
         {uploading ? (
-          <span style={{ fontSize: 13, color: '#346aff', fontWeight: 600 }}>업로드 중...</span>
+          <span className="text-[13px] text-[#346aff] font-semibold">업로드 중...</span>
         ) : (
           <div>
-            <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>
+            <div className="text-[13px] text-[#666] mb-1">
               {uploadType === 'elec' ? '한전 청구서' : '가스 청구서'} 엑셀 파일을 드래그하거나 클릭
             </div>
-            <div style={{ fontSize: 11, color: '#888' }}>
+            <div className="text-[11px] text-hm-text-muted">
               고객번호로 호실을 자동 매칭하여 meter_readings에 저장합니다
             </div>
           </div>
@@ -292,13 +288,13 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
 
       {/* 결과 표시 */}
       {result && (
-        <div style={{ marginTop: 16 }}>
+        <div className="mt-4">
           {result.matched.length > 0 && (
-            <div style={{ fontSize: 12, color: '#059669', fontWeight: 700, marginBottom: 6 }}>
+            <div className="text-xs text-hm-success font-bold mb-1.5">
               ✓ 매칭 성공: {result.matched.length}건
-              <div style={{ fontWeight: 400, marginTop: 4, maxHeight: 120, overflowY: 'auto' }}>
+              <div className="font-normal mt-1 max-h-[120px] overflow-y-auto">
                 {result.matched.map((m: any, i: number) => (
-                  <div key={i} style={{ fontSize: 11, color: '#333', padding: '2px 0' }}>
+                  <div key={i} className="text-[11px] text-[#333] py-0.5">
                     {m.buildingName} {m.roomNumber} — {m.amount.toLocaleString()}원 ({m.usage}{uploadType === 'elec' ? 'kWh' : '㎥'})
                   </div>
                 ))}
@@ -306,11 +302,11 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
             </div>
           )}
           {result.unmatched.length > 0 && (
-            <div style={{ fontSize: 12, color: '#E52528', fontWeight: 700, marginBottom: 6 }}>
+            <div className="text-xs text-hm-danger font-bold mb-1.5">
               ✗ 미매칭: {result.unmatched.length}건
-              <div style={{ fontWeight: 400, marginTop: 4 }}>
+              <div className="font-normal mt-1">
                 {result.unmatched.map((u: any, i: number) => (
-                  <div key={i} style={{ fontSize: 11, color: '#888', padding: '2px 0' }}>
+                  <div key={i} className="text-[11px] text-hm-text-muted py-0.5">
                     고객번호 {u.customerNumber} — {u.amount.toLocaleString()}원
                   </div>
                 ))}
@@ -318,7 +314,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
             </div>
           )}
           {result.errors.length > 0 && (
-            <div style={{ fontSize: 12, color: '#E52528', fontWeight: 700 }}>
+            <div className="text-xs text-hm-danger font-bold">
               오류: {result.errors.join(', ')}
             </div>
           )}

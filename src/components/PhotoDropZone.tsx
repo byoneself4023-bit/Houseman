@@ -65,8 +65,8 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color, marginBottom: 6 }}>
+    <div className="flex flex-col h-full">
+      <div className="text-[10px] font-bold mb-1.5" style={{ color }}>
         📷 {label} ({count}/{maxPhotos})
       </div>
       <input
@@ -74,7 +74,7 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
         type="file"
         accept="image/*"
         multiple
-        style={{ display: 'none' }}
+        className="hidden"
         onChange={onFileChange}
       />
       <div
@@ -88,37 +88,20 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
           e.currentTarget.style.background = '#FAFBFC';
         }}
         onDrop={onDrop}
-        style={{
-          padding: count > 0 ? '10px' : '20px 10px',
-          borderRadius: 10,
-          border: '2px dashed #D1D5DB',
-          background: '#FAFBFC',
-          textAlign: 'center',
-          cursor: 'pointer',
-          transition: 'all 0.2s',
-          minHeight: 70,
-          flex: 1,
-        }}
+        className={`${count > 0 ? 'p-2.5' : 'px-2.5 py-5'} rounded-[10px] border-2 border-dashed border-gray-300 bg-[#FAFBFC] text-center cursor-pointer transition-all duration-200 min-h-[70px] flex-1`}
       >
         {count > 0 ? (
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)',
-              gap: 6,
-            }}
+            className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-6'} gap-1.5`}
           >
             {photos.map((src, pi) => (
               <div
                 key={pi}
+                className="aspect-square rounded-lg relative overflow-hidden"
                 style={{
-                  aspectRatio: '1',
-                  borderRadius: 8,
                   border: `2px solid ${color}`,
-                  position: 'relative',
                   background: color + '15',
                   cursor: onZoom ? 'pointer' : 'default',
-                  overflow: 'hidden',
                 }}
                 onClick={() => onZoom && onZoom(pi)}
               >
@@ -126,19 +109,11 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
                   <img
                     src={src}
                     alt={`${label} ${pi + 1}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    className="w-full h-full object-cover block"
                   />
                 ) : (
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <span style={{ fontSize: 18 }}>🖼️</span>
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-lg">🖼️</span>
                   </div>
                 )}
                 {onRemove && (
@@ -147,39 +122,12 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
                       e.stopPropagation();
                       onRemove(pi);
                     }}
-                    style={{
-                      position: 'absolute',
-                      top: 2,
-                      right: 2,
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      background: '#DC2626',
-                      color: '#fff',
-                      fontSize: 9,
-                      fontWeight: 800,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                    }}
+                    className="absolute top-0.5 right-0.5 w-[18px] h-[18px] rounded-full bg-hm-danger text-white text-[9px] font-extrabold flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     ✕
                   </div>
                 )}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 1,
-                    left: 0,
-                    right: 0,
-                    fontSize: 7,
-                    color: '#fff',
-                    fontWeight: 700,
-                    textShadow: '0 0 3px rgba(0,0,0,0.7)',
-                    textAlign: 'center',
-                  }}
-                >
+                <div className="absolute bottom-px left-0 right-0 text-[7px] text-white font-bold text-center" style={{ textShadow: '0 0 3px rgba(0,0,0,0.7)' }}>
                   {pi + 1}
                 </div>
               </div>
@@ -187,30 +135,20 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
             {remaining > 0 && (
               <div
                 onClick={openPicker}
-                style={{
-                  aspectRatio: '1',
-                  borderRadius: 8,
-                  border: '2px dashed #D1D5DB',
-                  background: '#fff',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
+                className="aspect-square rounded-lg border-2 border-dashed border-gray-300 bg-white flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
               >
-                <span style={{ fontSize: 16, color }}>+</span>
-                <span style={{ fontSize: 7, color: '#8F95A3' }}>추가</span>
+                <span className="text-base" style={{ color }}>+</span>
+                <span className="text-[7px] text-hm-text-muted">추가</span>
               </div>
             )}
           </div>
         ) : (
           <div onClick={openPicker}>
-            <div style={{ fontSize: 26, marginBottom: 4 }}>📷</div>
-            <div style={{ fontSize: 11, fontWeight: 700, color, marginBottom: 2 }}>
+            <div className="text-[26px] mb-1">📷</div>
+            <div className="text-[11px] font-bold mb-0.5" style={{ color }}>
               사진을 드래그하거나 클릭하여 업로드
             </div>
-            <div style={{ fontSize: 9, color: '#8F95A3' }}>최대 {maxPhotos}장 · JPG, PNG</div>
+            <div className="text-[9px] text-hm-text-muted">최대 {maxPhotos}장 · JPG, PNG</div>
           </div>
         )}
       </div>

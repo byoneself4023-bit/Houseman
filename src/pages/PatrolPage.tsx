@@ -154,44 +154,46 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
     alert(`[${formBuilding}] 순회 기록이 저장되었습니다.`);
   };
 
+  const selectClassName = "w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] outline-none cursor-pointer bg-white focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors";
+
   // Detail view
   if (selectedRecord) {
     const rec = selectedRecord;
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setSelectedRecord(null)}>
-          <span style={{ fontSize: 20 }}>←</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>순회 목록으로</span>
+        <div className="flex items-center gap-2 mb-5 cursor-pointer group" onClick={() => setSelectedRecord(null)}>
+          <span className="text-xl">←</span>
+          <span className="text-sm font-bold text-hm-blue group-hover:underline">순회 목록으로</span>
         </div>
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <Card className="mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23" }}>{rec.building}</div>
-              <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 2 }}>{rec.date} · {rec.assignee}</div>
+              <div className="text-lg font-extrabold text-hm-text">{rec.building}</div>
+              <div className="text-xs text-hm-text-muted mt-0.5">{rec.date} · {rec.assignee}</div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 6, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
+            <span className={`text-xs font-bold px-3 py-1 rounded-md ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
           </div>
 
           {/* Checklist details */}
           {rec.checklist && rec.checklist.length > 0 && (
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 8 }}>✅ 시설 점검 결과</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <div className="mb-4">
+              <div className="text-[10px] font-bold text-hm-blue mb-2">✅ 시설 점검 결과</div>
+              <div className="flex flex-col gap-1">
                 {rec.checklist.map((c, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 8, background: c.status === "이상" ? "#FEF2F2" : "#F0FDF4", border: `1px solid ${c.status === "이상" ? "#FECACA" : "#BBF7D0"}` }}>
-                    <span style={{ fontSize: 14 }}>{c.status === "정상" ? "✅" : "⚠️"}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", flex: 1 }}>{c.item}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: c.status === "이상" ? "#DC2626" : "#059669" }}>{c.status}</span>
-                    {c.comment && <span style={{ fontSize: 11, color: "#DC2626", marginLeft: 4 }}>· {c.comment}</span>}
+                  <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.status === "이상" ? 'bg-hm-danger-bg border border-[#FECACA]' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
+                    <span className="text-sm">{c.status === "정상" ? "✅" : "⚠️"}</span>
+                    <span className="text-[13px] font-bold text-hm-text flex-1">{c.item}</span>
+                    <span className={`text-[11px] font-bold ${c.status === "이상" ? 'text-hm-danger' : 'text-hm-success'}`}>{c.status}</span>
+                    {c.comment && <span className="text-[11px] text-hm-danger ml-1">· {c.comment}</span>}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div style={{ padding: "14px 16px", background: "#F8FAFC", borderRadius: 10, border: "1px solid #E8ECF0", marginBottom: 16 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 6 }}>📝 순회 코멘트</div>
-            <div style={{ fontSize: 13, color: "#1A1D23", lineHeight: 1.8 }}>{rec.comment}</div>
+          <div className="px-4 py-3.5 bg-[#F8FAFC] rounded-[10px] border border-hm-border mb-4">
+            <div className="text-[10px] font-bold text-hm-blue mb-1.5">📝 순회 코멘트</div>
+            <div className="text-[13px] text-hm-text leading-[1.8]">{rec.comment}</div>
           </div>
           <div>
             <PhotoDropZone photos={rec.photos} maxPhotos={30} label={`현장 사진 (${rec.photos.length}장)`} color="#3B82F6" />
@@ -206,18 +208,18 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
     const buildingOptions = myPatrolBuildings.map(b => b.building);
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setShowNewForm(false)}>
-          <span style={{ fontSize: 20 }}>←</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>순회 목록으로</span>
+        <div className="flex items-center gap-2 mb-5 cursor-pointer group" onClick={() => setShowNewForm(false)}>
+          <span className="text-xl">←</span>
+          <span className="text-sm font-bold text-hm-blue group-hover:underline">순회 목록으로</span>
         </div>
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 16, paddingBottom: 10, borderBottom: "2px solid #E8ECF0" }}>🚶 새 순회 기록</div>
+        <Card className="mb-4">
+          <div className="text-[15px] font-extrabold text-hm-text mb-4 pb-2.5 border-b-2 border-hm-border">🚶 새 순회 기록</div>
 
           {/* Building selector */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>건물 선택</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1.5">건물 선택</div>
             <select value={formBuilding} onChange={e => updateFormBuilding(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", outline: "none", cursor: "pointer", background: "#fff" }}>
+              className={selectClassName}>
               {buildingOptions.map(name => (
                 <option key={name} value={name}>{name}</option>
               ))}
@@ -225,10 +227,10 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* Assignee */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>담당자</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1.5">담당자</div>
             <select value={formAssignee} onChange={e => setFormAssignee(e.target.value)}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", outline: "none", cursor: "pointer", background: "#fff" }}>
+              className={selectClassName}>
               {externalStaff.map(name => (
                 <option key={name} value={name}>{name}</option>
               ))}
@@ -236,55 +238,55 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* Date */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>순회일자</div>
-            <div style={{ padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, background: "#F8FAFC", color: "#1A1D23", fontWeight: 600 }}>{todayStr}</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1.5">순회일자</div>
+            <div className="px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] bg-[#F8FAFC] text-hm-text font-semibold">{todayStr}</div>
           </div>
 
           {/* Facility Checklist */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 8 }}>시설 점검 체크리스트</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-2">시설 점검 체크리스트</div>
+            <div className="flex flex-col gap-1.5">
               {formChecklist.map((c, i) => (
-                <div key={i} style={{ padding: "10px 12px", borderRadius: 8, background: c.status === "이상" ? "#FEF2F2" : "#F0FDF4", border: `1.5px solid ${c.status === "이상" ? "#FECACA" : "#BBF7D0"}`, transition: "all 0.15s" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", flex: 1 }}>{c.item}</span>
-                    <div style={{ display: "flex", gap: 4 }}>
+                <div key={i} className={`px-3 py-2.5 rounded-lg border-[1.5px] transition-all ${c.status === "이상" ? 'bg-hm-danger-bg border-[#FECACA]' : 'bg-[#F0FDF4] border-[#BBF7D0]'}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[13px] font-bold text-hm-text flex-1">{c.item}</span>
+                    <div className="flex gap-1">
                       <button onClick={() => { const u = [...formChecklist]; u[i] = { ...u[i], status: "정상", comment: "" }; setFormChecklist(u); }}
-                        style={{ padding: "5px 12px", borderRadius: 6, border: c.status === "정상" ? "2px solid #059669" : "1.5px solid #E0E3E9", background: c.status === "정상" ? "#D1FAE5" : "#fff", color: c.status === "정상" ? "#059669" : "#8F95A3", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+                        className={`px-3 py-1.5 rounded-md font-bold text-[11px] cursor-pointer font-[inherit] transition-all ${c.status === "정상" ? 'border-2 border-hm-success bg-[#D1FAE5] text-hm-success' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-muted hover:bg-hm-bg-hover'}`}>
                         ✅ 정상
                       </button>
                       <button onClick={() => { const u = [...formChecklist]; u[i] = { ...u[i], status: "이상" }; setFormChecklist(u); }}
-                        style={{ padding: "5px 12px", borderRadius: 6, border: c.status === "이상" ? "2px solid #DC2626" : "1.5px solid #E0E3E9", background: c.status === "이상" ? "#FEE2E2" : "#fff", color: c.status === "이상" ? "#DC2626" : "#8F95A3", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>
+                        className={`px-3 py-1.5 rounded-md font-bold text-[11px] cursor-pointer font-[inherit] transition-all ${c.status === "이상" ? 'border-2 border-hm-danger bg-[#FEE2E2] text-hm-danger' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-muted hover:bg-hm-bg-hover'}`}>
                         ⚠ 이상
                       </button>
                     </div>
                   </div>
                   {c.status === "이상" && (
-                    <div style={{ marginTop: 8 }}>
+                    <div className="mt-2">
                       <input value={c.comment} onChange={e => { const u = [...formChecklist]; u[i] = { ...u[i], comment: e.target.value }; setFormChecklist(u); }}
                         placeholder="이상 내용을 입력하세요..."
-                        style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1.5px solid #FECACA", fontSize: 12, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "#fff" }} />
+                        className="w-full px-2.5 py-2 rounded-md border-[1.5px] border-[#FECACA] text-xs font-[inherit] outline-none box-border bg-white focus:ring-2 focus:ring-ring transition-colors" />
                     </div>
                   )}
                 </div>
               ))}
               {formChecklist.length === 0 && (
-                <div style={{ padding: "16px", textAlign: "center", color: "#B0B5C1", fontSize: 12 }}>이 건물에 설정된 체크리스트가 없습니다. 건물 상세에서 추가해주세요.</div>
+                <div className="p-4 text-center text-[#B0B5C1] text-xs">이 건물에 설정된 체크리스트가 없습니다. 건물 상세에서 추가해주세요.</div>
               )}
             </div>
           </div>
 
           {/* General comment */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 5 }}>전체 코멘트</div>
+          <div className="mb-3.5">
+            <div className="text-[11px] font-bold text-hm-text-sub mb-1.5">전체 코멘트</div>
             <textarea value={formComment} onChange={e => setFormComment(e.target.value)}
               placeholder="순회 결과를 기록해주세요..." rows={4}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", minHeight: 80, boxSizing: "border-box" }} />
+              className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] resize-y outline-none min-h-[80px] box-border focus:ring-2 focus:ring-ring transition-colors" />
           </div>
 
           {/* Photos */}
-          <div style={{ marginBottom: 14 }}>
+          <div className="mb-3.5">
             <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="#3B82F6"
               onAdd={(dataUrls: string[]) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(idx: number) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
@@ -292,11 +294,11 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
 
           {/* Save buttons */}
           <button onClick={savePatrolRecord}
-            style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 8 }}>
+            className="w-full py-3.5 rounded-[10px] border-none bg-hm-blue-dark text-white font-extrabold text-sm cursor-pointer font-[inherit] mb-2 hover:opacity-90 active:scale-[0.98] transition-all">
             💾 순회 기록 저장
           </button>
           <button onClick={() => setShowNewForm(false)}
-            style={{ width: "100%", padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            className="w-full py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             취소
           </button>
         </Card>
@@ -315,69 +317,69 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
 
     return (
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setSelectedBuilding(null)}>
-          <span style={{ fontSize: 20 }}>←</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>순회 목록으로</span>
+        <div className="flex items-center gap-2 mb-5 cursor-pointer group" onClick={() => setSelectedBuilding(null)}>
+          <span className="text-xl">←</span>
+          <span className="text-sm font-bold text-hm-blue group-hover:underline">순회 목록으로</span>
         </div>
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <Card className="mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#1A1D23" }}>{b.building}</div>
-              <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 2 }}>월 {b.freq}회 순회 · {interval}일 주기 · 👤 {b.assignee}</div>
+              <div className="text-xl font-extrabold text-hm-text">{b.building}</div>
+              <div className="text-xs text-hm-text-muted mt-0.5">월 {b.freq}회 순회 · {interval}일 주기 · 👤 {b.assignee}</div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: remain > 0 ? "#DC2626" : "#059669" }}>{b.doneCount}<span style={{ fontSize: 14, color: "#8F95A3" }}>/{b.freq}</span></div>
-              <div style={{ fontSize: 10, color: remain > 0 ? "#DC2626" : "#059669", fontWeight: 600 }}>{remain > 0 ? `${remain}회 남음` : "완료"}</div>
+            <div className="text-right">
+              <div className={`text-2xl font-extrabold ${remain > 0 ? 'text-hm-danger' : 'text-hm-success'}`}>{b.doneCount}<span className="text-sm text-hm-text-muted">/{b.freq}</span></div>
+              <div className={`text-[10px] font-semibold ${remain > 0 ? 'text-hm-danger' : 'text-hm-success'}`}>{remain > 0 ? `${remain}회 남음` : "완료"}</div>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#F0F4FF", textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>마지막 순회</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23" }}>{b.lastDate ? b.lastDate.slice(5) : "—"}</div>
-              {daysSince !== null && <div style={{ fontSize: 10, color: daysSince > interval ? "#DC2626" : "#8F95A3" }}>{daysSince}일 전</div>}
+          <div className="flex gap-3 mb-3">
+            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F0F4FF] text-center">
+              <div className="text-[10px] text-hm-text-muted mb-1">마지막 순회</div>
+              <div className="text-sm font-extrabold text-hm-text">{b.lastDate ? b.lastDate.slice(5) : "—"}</div>
+              {daysSince !== null && <div className={`text-[10px] ${daysSince > interval ? 'text-hm-danger' : 'text-hm-text-muted'}`}>{daysSince}일 전</div>}
             </div>
-            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: b.lastStatus === "이상발견" ? "#FEF2F2" : "#F0FDF4", textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>마지막 상태</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: b.lastStatus === "이상발견" ? "#DC2626" : "#059669" }}>{b.lastStatus || "—"}</div>
+            <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${b.lastStatus === "이상발견" ? 'bg-hm-danger-bg' : 'bg-[#F0FDF4]'}`}>
+              <div className="text-[10px] text-hm-text-muted mb-1">마지막 상태</div>
+              <div className={`text-sm font-extrabold ${b.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{b.lastStatus || "—"}</div>
             </div>
           </div>
           {/* New patrol button */}
           <button onClick={() => openNewForm(b.building)}
-            style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+            className="w-full py-3 rounded-[10px] border-none bg-hm-blue-dark text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 active:scale-[0.98] transition-all">
             + 새 순회 기록
           </button>
         </Card>
 
         {/* Report button */}
-        <Card style={{ marginBottom: 16 }}>
+        <Card className="mb-4">
           <button onClick={() => { alert(`[${b.building}] 순회관리 완료 리포트가 건물주에게 발송되었습니다.`); }}
-            style={{ width: "100%", padding: "12px", borderRadius: 10, border: "2px solid #7C3AED", background: "#F5F3FF", color: "#7C3AED", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
+            className="w-full py-3 rounded-[10px] border-2 border-[#7C3AED] bg-[#F5F3FF] text-[#7C3AED] font-extrabold text-sm cursor-pointer font-[inherit] hover:bg-[#EDE9FE] active:scale-[0.98] transition-all">
             📤 순회관리완료 (건물주 리포트 발송)
           </button>
-          <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 6, textAlign: "center" }}>이번 달 순회 기록을 정리하여 건물주 대시보드에 공유합니다</div>
+          <div className="text-[10px] text-hm-text-muted mt-1.5 text-center">이번 달 순회 기록을 정리하여 건물주 대시보드에 공유합니다</div>
         </Card>
 
         {/* History */}
         {records.length > 0 && (
           <Card>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", letterSpacing: "0.05em", marginBottom: 12 }}>📋 순회 이력</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="text-[10px] font-bold text-hm-text-muted tracking-wider mb-3">📋 순회 이력</div>
+            <div className="flex flex-col gap-2">
               {records.map((rec, i) => (
                 <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: 10, cursor: "pointer", background: rec.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${rec.status === "이상발견" ? "#FECACA" : "#E8ECF0"}` }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
+                  className={`flex items-center justify-between px-3.5 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-hm-bg-hover'}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23" }}>{rec.date}</div>
-                      <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 1 }}>
+                      <div className="text-[13px] font-bold text-hm-text">{rec.date}</div>
+                      <div className="text-[11px] text-hm-text-muted mt-px">
                         {rec.checklist ? `${rec.checklist.filter(c => c.status === "이상").length}건 이상 · ` : ""}
                         {rec.comment.slice(0, 40)}...
                       </div>
                     </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 11, color: "#8F95A3" }}>📸 {rec.photos.length}장</span>
-                    <span style={{ color: "#B0B5C1" }}>›</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-hm-text-muted">📸 {rec.photos.length}장</span>
+                    <span className="text-[#B0B5C1]">›</span>
                   </div>
                 </div>
               ))}
@@ -393,42 +395,42 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
       <SectionTitle sub={`${today.getFullYear()}년 ${today.getMonth() + 1}월 · 이번 달 ${totalDone}/${totalRequired}회 완료`}>🚶 순회 관리</SectionTitle>
 
       {/* New patrol button */}
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4">
         <button onClick={() => openNewForm(myPatrolBuildings[0]?.building || "")}
-          style={{ width: "100%", padding: "14px", borderRadius: 12, border: "none", background: "#2563EB", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}>
+          className="w-full py-3.5 rounded-xl border-none bg-hm-blue-dark text-white font-extrabold text-sm cursor-pointer font-[inherit] shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:opacity-90 active:scale-[0.98] transition-all">
           + 새 순회 기록
         </button>
       </div>
 
       {/* Progress */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+      <Card className="mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#1A1D23" }}>{progressPct}<span style={{ fontSize: 14, color: "#8F95A3" }}>%</span></div>
-            <div style={{ fontSize: 11, color: "#8F95A3" }}>이번 달 진행률</div>
+            <div className="text-[22px] font-extrabold text-hm-text">{progressPct}<span className="text-sm text-hm-text-muted">%</span></div>
+            <div className="text-[11px] text-hm-text-muted">이번 달 진행률</div>
           </div>
-          <div style={{ display: "flex", gap: 16 }}>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#059669" }}>{totalDone}</div><div style={{ fontSize: 9, color: "#8F95A3" }}>완료</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#DC2626" }}>{totalRequired - totalDone}</div><div style={{ fontSize: 9, color: "#8F95A3" }}>남음</div></div>
-            <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#EA580C" }}>{overdueBuildings.length}</div><div style={{ fontSize: 9, color: "#8F95A3" }}>주기초과</div></div>
+          <div className="flex gap-4">
+            <div className="text-center"><div className="text-lg font-extrabold text-hm-success">{totalDone}</div><div className="text-[9px] text-hm-text-muted">완료</div></div>
+            <div className="text-center"><div className="text-lg font-extrabold text-hm-danger">{totalRequired - totalDone}</div><div className="text-[9px] text-hm-text-muted">남음</div></div>
+            <div className="text-center"><div className="text-lg font-extrabold text-hm-warning">{overdueBuildings.length}</div><div className="text-[9px] text-hm-text-muted">주기초과</div></div>
           </div>
         </div>
-        <div style={{ height: 8, background: "#E5E7EB", borderRadius: 4, overflow: "hidden" }}>
-          <div style={{ width: `${progressPct}%`, height: "100%", background: Number(progressPct) >= 80 ? "#10B981" : Number(progressPct) >= 50 ? "#F59E0B" : "#EF4444", borderRadius: 4, transition: "width 0.3s" }} />
+        <div className="h-2 bg-[#E5E7EB] rounded overflow-hidden">
+          <div className="h-full rounded transition-[width] duration-300" style={{ width: `${progressPct}%`, background: Number(progressPct) >= 80 ? "#10B981" : Number(progressPct) >= 50 ? "#F59E0B" : "#EF4444" }} />
         </div>
       </Card>
 
       {/* Building List */}
       {/* Assignee filter */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+      <div className="flex gap-1 mb-3">
         {assignees.map(a => (
           <button key={a} onClick={() => setFilterAssignee(a)}
-            style={{ padding: "6px 14px", borderRadius: 8, border: filterAssignee === a ? "2px solid #1A1D23" : "1.5px solid #E0E3E9", background: filterAssignee === a ? "#1A1D23" : "#fff", color: filterAssignee === a ? "#fff" : "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
-            {a} {a !== "전체" && <span style={{ fontSize: 10, opacity: 0.7 }}>({myPatrolBuildings.filter(b => b.assignee === a).length})</span>}
+            className={`px-3.5 py-1.5 rounded-lg font-bold text-xs cursor-pointer font-[inherit] transition-all ${filterAssignee === a ? 'border-2 border-hm-text bg-hm-text text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+            {a} {a !== "전체" && <span className="text-[10px] opacity-70">({myPatrolBuildings.filter(b => b.assignee === a).length})</span>}
           </button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(1, 1fr)" : "repeat(3, 1fr)", gap: 10 }}>
+      <div className={`grid gap-2.5 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
         {sorted.map((b, i) => {
           const remain = b.freq - b.doneCount;
           const interval = Math.floor(28 / b.freq);
@@ -439,41 +441,40 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           const approaching = !overdue && daysLeft >= 0 && daysLeft <= greenThreshold;
           const done = remain <= 0;
           // 색상: 초과=적색, 임박=녹색, 완료=연녹색, 그 외=무색
-          const bgColor = overdue ? "#FEF2F2" : approaching ? "#F0FDF4" : done ? "#F0FDF4" : "#fff";
-          const bdColor = overdue ? "#FECACA" : approaching ? "#BBF7D0" : done ? "#BBF7D0" : "#E8ECF0";
+          const bgClass = overdue ? 'bg-hm-danger-bg' : approaching ? 'bg-[#F0FDF4]' : done ? 'bg-[#F0FDF4]' : 'bg-white';
+          const bdClass = overdue ? 'border-[#FECACA]' : approaching ? 'border-[#BBF7D0]' : done ? 'border-[#BBF7D0]' : 'border-hm-border';
           return (
             <Card key={i} onClick={() => setSelectedBuilding(b.building)}
-              style={{ cursor: "pointer", background: bgColor, border: `1.5px solid ${bdColor}` }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23" }}>{b.building}</span>
+              className={`cursor-pointer border-[1.5px] ${bgClass} ${bdClass} hover:shadow-md transition-shadow`}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm font-extrabold text-hm-text">{b.building}</span>
                 {overdue ? (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#FEE2E2", color: "#DC2626", animation: "pulse 1.5s infinite" }}>🚨 초과 {Math.abs(daysLeft)}일</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#FEE2E2] text-hm-danger animate-pulse">🚨 초과 {Math.abs(daysLeft)}일</span>
                 ) : approaching ? (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#D1FAE5", color: "#059669" }}>🟢 {daysLeft}일 남음</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#D1FAE5] text-hm-success">🟢 {daysLeft}일 남음</span>
                 ) : done ? (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#D1FAE5", color: "#059669" }}>✅ 완료</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#D1FAE5] text-hm-success">✅ 완료</span>
                 ) : (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#F3F4F6", color: "#6B7280" }}>{daysLeft}일 후</span>
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#F3F4F6] text-[#6B7280]">{daysLeft}일 후</span>
                 )}
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 40, height: 5, background: "#E5E7EB", borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ width: `${(b.doneCount / b.freq) * 100}%`, height: "100%", background: done ? "#10B981" : "#3B82F6", borderRadius: 3 }} />
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-10 h-[5px] bg-[#E5E7EB] rounded-sm overflow-hidden">
+                    <div className="h-full rounded-sm" style={{ width: `${(b.doneCount / b.freq) * 100}%`, background: done ? "#10B981" : "#3B82F6" }} />
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#5F6577" }}>{b.doneCount}/{b.freq}</span>
+                  <span className="text-[11px] font-bold text-hm-text-sub">{b.doneCount}/{b.freq}</span>
                 </div>
-                <span style={{ fontSize: 9, color: "#8F95A3" }}>월{b.freq}회 · {interval}일주기</span>
+                <span className="text-[9px] text-hm-text-muted">월{b.freq}회 · {interval}일주기</span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: "#8F95A3" }}>👤 {b.assignee}</span>
-                <span style={{ fontSize: 10, color: overdue ? "#DC2626" : "#8F95A3" }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-hm-text-muted">👤 {b.assignee}</span>
+                <span className={`text-[10px] ${overdue ? 'text-hm-danger' : 'text-hm-text-muted'}`}>
                   {b.lastDate ? `${b.lastDate.slice(5)}` : "미순회"} {b.lastStatus === "이상발견" ? "⚠" : ""}
                 </span>
               </div>
               {(overdue || approaching) && !done && (
-                <div style={{ marginTop: 6, padding: "4px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, textAlign: "center",
-                  background: overdue ? "#DC2626" : "#059669", color: "#fff" }}>
+                <div className={`mt-1.5 px-2 py-1 rounded-[5px] text-[10px] font-bold text-center text-white ${overdue ? 'bg-hm-danger' : 'bg-hm-success'}`}>
                   {overdue ? `⚠ 순회 필요! (주기 ${interval}일 초과)` : `순회 예정 (${daysLeft}일 이내)`}
                 </div>
               )}
@@ -498,20 +499,18 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
         const approachList = alerts.filter(a => !a.overdue).sort((a, b) => a.daysLeft - b.daysLeft);
         if (alerts.length === 0) return null;
         return (
-          <Card style={{ marginTop: 16, marginBottom: 0, padding: "14px 18px" }}>
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 10 }}>⏰ 순회 알림</div>
+          <Card className="mt-4 mb-0 !px-[18px] !py-3.5">
+            <div className="text-[11px] font-extrabold text-hm-text mb-2.5">⏰ 순회 알림</div>
             {overdueList.length > 0 && (
-              <div style={{ marginBottom: approachList.length > 0 ? 10 : 0 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>🚨 주기 초과 ({overdueList.length}건)</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              <div className={approachList.length > 0 ? 'mb-2.5' : ''}>
+                <div className="text-[10px] font-bold text-hm-danger mb-1.5">🚨 주기 초과 ({overdueList.length}건)</div>
+                <div className="flex flex-wrap gap-1.5">
                   {overdueList.map((a, i) => (
                     <div key={i} onClick={() => setSelectedBuilding(a.building)}
-                      style={{ padding: "6px 12px", borderRadius: 8, background: "#FEF2F2", border: "1px solid #FECACA", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-                      onMouseEnter={e => e.currentTarget.style.background = "#FEE2E2"}
-                      onMouseLeave={e => e.currentTarget.style.background = "#FEF2F2"}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{a.building}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#DC2626" }}>+{Math.abs(a.daysLeft)}일</span>
-                      <span style={{ fontSize: 9, color: "#8F95A3" }}>월{a.freq}회</span>
+                      className="px-3 py-1.5 rounded-lg bg-hm-danger-bg border border-[#FECACA] cursor-pointer flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors">
+                      <span className="text-xs font-bold text-hm-text">{a.building}</span>
+                      <span className="text-[10px] font-bold text-hm-danger">+{Math.abs(a.daysLeft)}일</span>
+                      <span className="text-[9px] text-hm-text-muted">월{a.freq}회</span>
                     </div>
                   ))}
                 </div>
@@ -519,16 +518,14 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             )}
             {approachList.length > 0 && (
               <div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 6 }}>🟢 순회 임박 ({approachList.length}건)</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                <div className="text-[10px] font-bold text-hm-success mb-1.5">🟢 순회 임박 ({approachList.length}건)</div>
+                <div className="flex flex-wrap gap-1.5">
                   {approachList.map((a, i) => (
                     <div key={i} onClick={() => setSelectedBuilding(a.building)}
-                      style={{ padding: "6px 12px", borderRadius: 8, background: "#F0FDF4", border: "1px solid #BBF7D0", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-                      onMouseEnter={e => e.currentTarget.style.background = "#DCFCE7"}
-                      onMouseLeave={e => e.currentTarget.style.background = "#F0FDF4"}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{a.building}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#059669" }}>{a.daysLeft}일</span>
-                      <span style={{ fontSize: 9, color: "#8F95A3" }}>월{a.freq}회</span>
+                      className="px-3 py-1.5 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] cursor-pointer flex items-center gap-1.5 hover:bg-[#DCFCE7] transition-colors">
+                      <span className="text-xs font-bold text-hm-text">{a.building}</span>
+                      <span className="text-[10px] font-bold text-hm-success">{a.daysLeft}일</span>
+                      <span className="text-[9px] text-hm-text-muted">월{a.freq}회</span>
                     </div>
                   ))}
                 </div>
@@ -539,27 +536,26 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
       })()}
 
       {/* Recent Records */}
-      <Card style={{ marginTop: 16 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", letterSpacing: "0.05em", marginBottom: 12 }}>📋 최근 순회 기록</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <Card className="mt-4">
+        <div className="text-[10px] font-bold text-hm-text-muted tracking-wider mb-3">📋 최근 순회 기록</div>
+        <div className="flex flex-col gap-1.5">
           {allRecords.slice(0, 20).map((rec, i) => (
             <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, cursor: "pointer",
-                background: rec.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${rec.status === "이상발견" ? "#FECACA" : "#E8ECF0"}` }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-hm-bg-hover'}`}>
+              <div className="flex items-center gap-2.5">
+                <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700 }}>{rec.building} · {rec.date}</div>
-                  <div style={{ fontSize: 10, color: "#8F95A3" }}>
+                  <div className="text-xs font-bold">{rec.building} · {rec.date}</div>
+                  <div className="text-[10px] text-hm-text-muted">
                     {rec.assignee}
                     {rec.checklist ? ` · 점검 ${rec.checklist.length}항목` : ""}
                     {" · "}{rec.comment.slice(0, 35)}...
                   </div>
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <span style={{ fontSize: 10, color: "#8F95A3" }}>📸{rec.photos.length}</span>
-                <span style={{ color: "#B0B5C1" }}>›</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-hm-text-muted">📸{rec.photos.length}</span>
+                <span className="text-[#B0B5C1]">›</span>
               </div>
             </div>
           ))}

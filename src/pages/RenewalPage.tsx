@@ -252,19 +252,19 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
       {/* 65일 알림 배너 */}
       {alert65Tenants.length > 0 && (
         <Card style={{ padding: "14px 18px", marginBottom: 12, background: "linear-gradient(135deg, #FFF7ED, #FFFBEB)", border: "2px solid #F59E0B" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ fontSize: 22, lineHeight: 1 }}>{"\u26A0\uFE0F"}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "#B45309", marginBottom: 3 }}>
+          <div className="flex items-center gap-2.5">
+            <div className="text-[22px] leading-none">{"\u26A0\uFE0F"}</div>
+            <div className="flex-1">
+              <div className="text-[13px] font-extrabold text-amber-800 mb-[3px]">
                 65일 전 알림: {alert65Tenants[0].building} {alert65Tenants[0].room}호 {alert65Tenants[0].name}
                 {alert65Tenants.length > 1 ? ` 외 ${alert65Tenants.length - 1}건` : ""}
                 {" \u2014 "}재계약 협의를 시작하세요
               </div>
-              <div style={{ fontSize: 10, color: "#92400E" }}>
+              <div className="text-[10px] text-amber-900">
                 {alert65Tenants.map(t => `${t.building} ${t.room}호(D-${t.daysLeft})`).join(", ")}
               </div>
             </div>
-            <div style={{ background: "#F59E0B", color: "#fff", padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 800, whiteSpace: "nowrap" }}>
+            <div className="bg-amber-500 text-white px-2.5 py-1 rounded-md text-[11px] font-extrabold whitespace-nowrap">
               {alert65Tenants.length}건
             </div>
           </div>
@@ -272,30 +272,30 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
       )}
 
       {/* 캘린더 */}
-      <Card style={{ padding: 16, marginBottom: 12 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={prevMonth} style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>‹</button>
-            <h3 style={{ fontSize: 18, fontWeight: 800, color: "#1A1D23", margin: 0 }}>{calYear}년 {calMon + 1}월</h3>
-            <button onClick={nextMonth} style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>›</button>
+      <Card className="!p-4 !mb-3">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <button onClick={prevMonth} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-gray-50 transition-colors">‹</button>
+            <h3 className="text-lg font-extrabold text-hm-text m-0">{calYear}년 {calMon + 1}월</h3>
+            <button onClick={nextMonth} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-gray-50 transition-colors">›</button>
           </div>
-          <div style={{ display: "flex", gap: 8, fontSize: 9, color: "#8F95A3" }}>
-            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "#EA580C20", border: "1px solid #EA580C", marginRight: 3, verticalAlign: "middle" }} />만기</span>
-            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: "#7C3AED20", border: "1px solid #7C3AED", marginRight: 3, verticalAlign: "middle" }} />요청</span>
+          <div className="flex gap-2 text-[9px] text-hm-text-muted">
+            <span><span className="inline-block w-2 h-2 rounded-sm bg-[#EA580C20] border border-hm-warning mr-[3px] align-middle" />만기</span>
+            <span><span className="inline-block w-2 h-2 rounded-sm bg-[#7C3AED20] border border-purple-600 mr-[3px] align-middle" />요청</span>
           </div>
         </div>
 
         {/* 요일 헤더 */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
+        <div className={`grid ${isMobile ? "grid-cols-4" : "grid-cols-7"} gap-0.5 mb-1`}>
           {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
-            <div key={i} style={{ textAlign: "center", fontSize: 11.5, fontWeight: 700, color: i === 0 ? "#EF4444" : i === 6 ? "#3B82F6" : "#8F95A3", padding: "8px 0" }}>{d}</div>
+            <div key={i} className={`text-center text-[11.5px] font-bold py-2 ${i === 0 ? "text-red-500" : i === 6 ? "text-hm-blue" : "text-hm-text-muted"}`}>{d}</div>
           ))}
         </div>
 
         {/* 날짜 셀 */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(4, 1fr)" : "repeat(7, 1fr)", gap: 2 }}>
+        <div className={`grid ${isMobile ? "grid-cols-4" : "grid-cols-7"} gap-0.5`}>
           {calDays.map((day, i) => {
-            if (!day) return <div key={i} style={{ minHeight: 120 }} />;
+            if (!day) return <div key={i} className="min-h-[120px]" />;
             const dayOfWeek = (firstDay + day - 1) % 7;
             const selected = selectedDay === day;
             const isDrop = dropTargetDay === day;
@@ -308,25 +308,23 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
                 onDragEnter={(e: DragEvent<HTMLDivElement>) => { e.preventDefault(); setDropTargetDay(day); }}
                 onDragLeave={(e: DragEvent<HTMLDivElement>) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDropTargetDay(null); }}
                 onDrop={(e: DragEvent<HTMLDivElement>) => handleNoteDrop(day, e)}
-                style={{
-                  minHeight: 120, padding: "4px 6px", borderRadius: 8, cursor: "pointer", transition: "all 0.15s",
-                  background: isDrop ? "#F3E8FF" : selected ? "#EFF6FF" : isTodayFn(day) ? "#FFFBEB" : "transparent",
-                  border: isDrop ? "2px dashed #7C3AED" : selected ? "2px solid #3B82F6" : isTodayFn(day) ? "1px solid #FDE68A" : "1px solid #F0F2F5",
-                }}
-                onMouseEnter={(e: MouseEvent<HTMLDivElement>) => !selected && !isDrop && (e.currentTarget.style.background = "#F9FAFB")}
-                onMouseLeave={(e: MouseEvent<HTMLDivElement>) => !selected && !isDrop && (e.currentTarget.style.background = isTodayFn(day) ? "#FFFBEB" : "transparent")}>
-                <div style={{ fontSize: 12, fontWeight: isTodayFn(day) ? 800 : 600, color: dayOfWeek === 0 ? "#EF4444" : dayOfWeek === 6 ? "#3B82F6" : "#1A1D23", marginBottom: 3 }}>
+                className={`min-h-[120px] px-1.5 py-1 rounded-lg cursor-pointer transition-all
+                  ${isDrop ? "bg-purple-50 border-2 border-dashed border-purple-600" :
+                    selected ? "bg-hm-blue-bg border-2 border-hm-blue" :
+                    isTodayFn(day) ? "bg-amber-50 border border-amber-200" :
+                    "border border-[#F0F2F5] hover:bg-hm-bg-hover"}`}>
+                <div className={`text-xs mb-[3px] ${isTodayFn(day) ? "font-extrabold" : "font-semibold"} ${dayOfWeek === 0 ? "text-red-500" : dayOfWeek === 6 ? "text-hm-blue" : "text-hm-text"}`}>
                   {day}
-                  {isTodayFn(day) && <span style={{ fontSize: 8, background: "#F59E0B", color: "#fff", padding: "1px 4px", borderRadius: 3, marginLeft: 3, fontWeight: 700 }}>오늘</span>}
+                  {isTodayFn(day) && <span className="text-[8px] bg-amber-500 text-white px-1 py-px rounded-[3px] ml-[3px] font-bold">오늘</span>}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <div className="flex flex-col gap-0.5">
                   {/* 만기 건 */}
                   {expiryItems.slice(0, 2).map((t, ti) => (
-                    <div key={`e${ti}`} style={{ fontSize: 9.5, fontWeight: 600, padding: "2px 4px", borderRadius: 4, background: getExpiryColor(t.daysLeft) + "18", color: getExpiryColor(t.daysLeft), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div key={`e${ti}`} className="text-[9.5px] font-semibold px-1 py-0.5 rounded whitespace-nowrap overflow-hidden text-ellipsis" style={{ background: getExpiryColor(t.daysLeft) + "18", color: getExpiryColor(t.daysLeft) }}>
                       🔄 {t.building} {t.room}
                     </div>
                   ))}
-                  {expiryItems.length > 2 && <div style={{ fontSize: 8, color: "#8F95A3", textAlign: "center" }}>+{expiryItems.length - 2} 만기</div>}
+                  {expiryItems.length > 2 && <div className="text-[8px] text-hm-text-muted text-center">+{expiryItems.length - 2} 만기</div>}
                   {/* 요청사항 건 */}
                   {noteItems.slice(0, 2).map((n, ni) => (
                     <div key={`n${ni}`}
@@ -334,11 +332,11 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
                       onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
                       onDragStart={(e: DragEvent<HTMLDivElement>) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", n.rk); e.currentTarget.style.opacity = "0.4"; }}
                       onDragEnd={(e: DragEvent<HTMLDivElement>) => { e.currentTarget.style.opacity = "1"; setDropTargetDay(null); }}
-                      style={{ fontSize: 9.5, fontWeight: 600, padding: "2px 4px", borderRadius: 4, background: n.done ? "#ECFDF5" : "#F3E8FF", color: n.done ? "#059669" : "#7C3AED", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "grab", textDecoration: n.done ? "line-through" : "none" }}>
+                      className={`text-[9.5px] font-semibold px-1 py-0.5 rounded whitespace-nowrap overflow-hidden text-ellipsis cursor-grab ${n.done ? "bg-hm-success-bg text-hm-success line-through" : "bg-purple-50 text-purple-600"}`}>
                       📋 {n.time} {n.building} {n.room}
                     </div>
                   ))}
-                  {noteItems.length > 2 && <div style={{ fontSize: 8, color: "#8F95A3", textAlign: "center" }}>+{noteItems.length - 2} 요청</div>}
+                  {noteItems.length > 2 && <div className="text-[8px] text-hm-text-muted text-center">+{noteItems.length - 2} 요청</div>}
                 </div>
               </div>
             );
@@ -348,57 +346,60 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
 
       {/* 선택 일자 상세 */}
       {selectedDay && (
-        <Card style={{ marginBottom: 12, padding: 16 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>{calMon + 1}/{selectedDay} 상세</div>
+        <Card className="!mb-3 !p-4">
+          <div className="text-sm font-extrabold text-hm-text mb-3">{calMon + 1}/{selectedDay} 상세</div>
           {selectedDayExpiry.length > 0 && (
-            <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#EA580C", marginBottom: 6 }}>🔄 만기 도래</div>
+            <div className="mb-2.5">
+              <div className="text-[11px] font-bold text-hm-warning mb-1.5">🔄 만기 도래</div>
               {selectedDayExpiry.map((t, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderRadius: 8, background: "#FFF7ED", border: "1px solid #FED7AA", marginBottom: 4 }}>
+                <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg bg-hm-warning-bg border border-hm-warning-border mb-1">
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700 }}>{t.building} {t.room}호 <span style={{ color: "#5F6577" }}>{t.name}</span></div>
-                    <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 2 }}>{t.phone} · 보증금 {fmt(t.deposit)} · 월세 {fmt(t.rent)}</div>
+                    <div className="text-xs font-bold">{t.building} {t.room}호 <span className="text-hm-text-sub">{t.name}</span></div>
+                    <div className="text-[9px] text-hm-text-muted mt-0.5">{t.phone} · 보증금 {fmt(t.deposit)} · 월세 {fmt(t.rent)}</div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: getExpiryColor(t.daysLeft) }}>{getExpiryLabel(t.daysLeft)}</div>
+                  <div className="text-[13px] font-extrabold" style={{ color: getExpiryColor(t.daysLeft) }}>{getExpiryLabel(t.daysLeft)}</div>
                 </div>
               ))}
             </div>
           )}
           {selectedDayNotes.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>📋 건물주 요청</div>
+              <div className="text-[11px] font-bold text-purple-600 mb-1.5">📋 건물주 요청</div>
               {selectedDayNotes.map((n, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderRadius: 8, background: n.done ? "#ECFDF5" : "#F5F3FF", border: `1px solid ${n.done ? "#A7F3D0" : "#DDD6FE"}`, marginBottom: 4 }}>
+                <div key={i} className={`flex items-center justify-between px-3 py-2 rounded-lg mb-1 ${n.done ? "bg-hm-success-bg border border-hm-success-border" : "bg-purple-50 border border-purple-200"}`}>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, textDecoration: n.done ? "line-through" : "none" }}>{n.building} {n.room}호 · {n.time}</div>
-                    <div style={{ fontSize: 10, color: "#5F6577", marginTop: 2, textDecoration: n.done ? "line-through" : "none" }}>{n.note}</div>
+                    <div className={`text-xs font-bold ${n.done ? "line-through" : ""}`}>{n.building} {n.room}호 · {n.time}</div>
+                    <div className={`text-[10px] text-hm-text-sub mt-0.5 ${n.done ? "line-through" : ""}`}>{n.note}</div>
                   </div>
-                  <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                  <div className="flex gap-1 items-center">
                     <input type="checkbox" checked={n.done} onChange={(e) => { e.stopPropagation(); setRenewalNotes(prev => ({ ...prev, [n.rk]: { ...prev[n.rk], done: e.target.checked } })); }}
-                      style={{ cursor: "pointer", width: 14, height: 14, accentColor: "#059669" }} />
+                      className="cursor-pointer w-3.5 h-3.5 accent-hm-success" />
                     <button onClick={(e: MouseEvent<HTMLButtonElement>) => { e.stopPropagation(); deleteNote(n.rk); }}
-                      style={{ width: 20, height: 20, borderRadius: 4, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                      className="w-5 h-5 rounded border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-[10px] cursor-pointer font-[inherit] flex items-center justify-center hover:bg-red-100 transition-colors">✕</button>
                   </div>
                 </div>
               ))}
             </div>
           )}
           {selectedDayExpiry.length === 0 && selectedDayNotes.length === 0 && (
-            <div style={{ padding: "16px 0", textAlign: "center", color: "#B0B5C1", fontSize: 13 }}>해당일 일정이 없습니다</div>
+            <div className="py-4 text-center text-[#B0B5C1] text-[13px]">해당일 일정이 없습니다</div>
           )}
         </Card>
       )}
 
-      <div style={{ marginBottom: 8 }}>
+      <div className="mb-2">
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="건물명 · 호실 · 이름 검색..."
-          style={{ width: isMobile ? "100%" : 260, padding: "7px 12px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, outline: "none", fontFamily: "inherit", background: "#F9FAFB" }} />
+          className="px-3 py-[7px] rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:ring-1 focus:ring-hm-blue transition-colors"
+          style={{ width: isMobile ? "100%" : 260 }} />
       </div>
 
-      <div style={{ display: "flex", gap: 4, marginBottom: 10, flexWrap: "wrap" }}>
+      <div className="flex gap-1 mb-2.5 flex-wrap">
         {filters.map(f => (
           <button key={f.id} onClick={() => setRangeFilter(f.id)}
-            style={{ padding: "5px 10px", borderRadius: 6, fontSize: f.emphasized ? 11 : 10, fontWeight: f.emphasized ? 800 : 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+            className="px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] transition-all"
+            style={{
+              fontSize: f.emphasized ? 11 : 10, fontWeight: f.emphasized ? 800 : 700,
               background: rangeFilter === f.id ? f.activeBg : f.bg,
               color: rangeFilter === f.id ? f.activeColor : f.color,
               border: `1.5px solid ${rangeFilter === f.id ? f.activeBg : f.emphasized ? f.color : "#E0E3E9"}`,
@@ -409,16 +410,16 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
       </div>
 
       {filtered.length === 0 ? (
-        <Card style={{ textAlign: "center", padding: 48, color: "#8F95A3" }}>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>해당 조건의 임차인이 없습니다</div>
+        <Card className="!text-center !p-12 text-hm-text-muted">
+          <div className="text-sm font-semibold">해당 조건의 임차인이 없습니다</div>
         </Card>
       ) : (
         <Card style={{ overflow: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+          <table className="w-full border-collapse text-[11px]">
             <thead>
-              <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+              <tr className="border-b-2 border-hm-border">
                 {["유형", "건물명", "호실", "입주자", "연락처", "입주일", "만기일", "건물주 요청사항", "완료"].map((h, i) => (
-                  <th key={i} style={{ padding: (i >= 4 && i <= 6) ? "8px 1px" : "8px 2px", textAlign: i === 8 ? "center" : "left", fontSize: 10, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap" }}>{h}</th>
+                  <th key={i} className={`${(i >= 4 && i <= 6) ? "px-[1px]" : "px-0.5"} py-2 text-[10px] font-bold text-hm-text-muted whitespace-nowrap ${i === 8 ? "text-center" : "text-left"}`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -429,50 +430,48 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
                 const hasNote = !!(data as RenewalNote).note;
                 const isFormOpen = editingKey === rk;
                 return (
-                  <tr key={i} style={{ borderBottom: "1px solid #F0F2F5" }}
-                    onMouseEnter={(e: MouseEvent<HTMLTableRowElement>) => { e.currentTarget.style.background = "#F9FAFB"; }}
-                    onMouseLeave={(e: MouseEvent<HTMLTableRowElement>) => { e.currentTarget.style.background = "transparent"; }}>
-                    <td style={{ padding: "8px 2px" }}><RoomTypeBadge building={t.building} room={t.room} /></td>
-                    <td style={{ padding: "8px 2px", fontWeight: 700, fontSize: 11 }}>{t.building}</td>
-                    <td style={{ padding: "8px 2px", fontSize: 11 }}>{t.room}</td>
-                    <td style={{ padding: "8px 2px", fontWeight: 700, fontSize: 11, maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "…" : t.name}</td>
-                    <td style={{ padding: "8px 1px", fontSize: 10, color: "#5F6577" }}>{t.phone}</td>
-                    <td style={{ padding: "8px 1px", fontSize: 10 }}>{t.moveIn ? t.moveIn.slice(2) : "-"}</td>
-                    <td style={{ padding: "8px 1px", fontSize: 10, color: getExpiryColor(t.daysLeft), fontWeight: 700 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 3, flexWrap: "wrap" }}>
+                  <tr key={i} className="border-b border-[#F0F2F5] hover:bg-hm-bg-hover transition-colors">
+                    <td className="py-2 px-0.5"><RoomTypeBadge building={t.building} room={t.room} /></td>
+                    <td className="py-2 px-0.5 font-bold text-[11px]">{t.building}</td>
+                    <td className="py-2 px-0.5 text-[11px]">{t.room}</td>
+                    <td className="py-2 px-0.5 font-bold text-[11px] max-w-[50px] overflow-hidden text-ellipsis whitespace-nowrap" title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "…" : t.name}</td>
+                    <td className="py-2 px-[1px] text-[10px] text-hm-text-sub">{t.phone}</td>
+                    <td className="py-2 px-[1px] text-[10px]">{t.moveIn ? t.moveIn.slice(2) : "-"}</td>
+                    <td className="py-2 px-[1px] text-[10px] font-bold" style={{ color: getExpiryColor(t.daysLeft) }}>
+                      <div className="flex items-center gap-[3px] flex-wrap">
                         <span>{t.renewalDate ? `${t.renewalDate.getFullYear()}-${String(t.renewalDate.getMonth()+1).padStart(2,"0")}-${String(t.renewalDate.getDate()).padStart(2,"0")}`.slice(2) : "-"}</span>
-                        <span style={{ fontSize: 10, fontWeight: 800, color: getExpiryColor(t.daysLeft) }}>{getExpiryLabel(t.daysLeft, t.tacit)}</span>
+                        <span className="text-[10px] font-extrabold" style={{ color: getExpiryColor(t.daysLeft) }}>{getExpiryLabel(t.daysLeft, t.tacit)}</span>
                         {t.tacit && (
-                          <span style={{ display: "inline-block", padding: "1px 5px", borderRadius: 4, background: "#FEF2F2", border: "1px solid #FECACA", color: "#DC2626", fontSize: 9, fontWeight: 800, whiteSpace: "nowrap" }}>묵시적</span>
+                          <span className="inline-block px-[5px] py-px rounded bg-hm-danger-bg border border-hm-danger-border text-hm-danger text-[9px] font-extrabold whitespace-nowrap">묵시적</span>
                         )}
                         {t.daysLeft >= 60 && t.daysLeft <= 70 && (
-                          <span style={{ display: "inline-block", padding: "1px 5px", borderRadius: 4, background: "#FEF3C7", border: "1px solid #F59E0B", color: "#B45309", fontSize: 9, fontWeight: 800, whiteSpace: "nowrap" }}>{"\uD83D\uDD14"} 65일 알림</span>
+                          <span className="inline-block px-[5px] py-px rounded bg-amber-100 border border-amber-500 text-amber-800 text-[9px] font-extrabold whitespace-nowrap">{"\uD83D\uDD14"} 65일 알림</span>
                         )}
                       </div>
                     </td>
-                    <td style={{ padding: "4px 2px", minWidth: 160 }} onClick={(e: MouseEvent<HTMLTableDataCellElement>) => e.stopPropagation()}>
+                    <td className="py-1 px-0.5 min-w-[160px]" onClick={(e: MouseEvent<HTMLTableDataCellElement>) => e.stopPropagation()}>
                       {hasNote ? (
                         <div onClick={() => openNoteForm(rk, t.building, t.room)}
-                          style={{ padding: "4px 6px", fontSize: 10, cursor: "pointer", borderRadius: 4, textDecoration: (data as RenewalNote).done ? "line-through" : "none", color: (data as RenewalNote).done ? "#059669" : "#1A1D23" }}>
-                          <span style={{ color: "#7C3AED", fontWeight: 700, marginRight: 4 }}>{(data as RenewalNote).date?.slice(5)} {(data as RenewalNote).time}</span>
+                          className={`px-1.5 py-1 text-[10px] cursor-pointer rounded hover:bg-gray-50 transition-colors ${(data as RenewalNote).done ? "line-through text-hm-success" : "text-hm-text"}`}>
+                          <span className="text-purple-600 font-bold mr-1">{(data as RenewalNote).date?.slice(5)} {(data as RenewalNote).time}</span>
                           {(data as RenewalNote).note}
                         </div>
                       ) : (
                         <div onClick={() => openNoteForm(rk, t.building, t.room)}
-                          style={{ padding: "4px 6px", fontSize: 10, color: "#B0B5C1", cursor: "pointer" }}>
+                          className="px-1.5 py-1 text-[10px] text-[#B0B5C1] cursor-pointer hover:text-hm-text-muted transition-colors">
                           클릭하여 입력...
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center" }} onClick={(e: MouseEvent<HTMLTableDataCellElement>) => e.stopPropagation()}>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                    <td className="py-1 px-0.5 text-center" onClick={(e: MouseEvent<HTMLTableDataCellElement>) => e.stopPropagation()}>
+                      <div className="flex flex-col items-center gap-0.5">
                         {hasNote && (
                           <input type="checkbox" checked={(data as RenewalNote).done || false}
                             onChange={e => setRenewalNotes(prev => ({ ...prev, [rk]: { ...prev[rk], done: e.target.checked } }))}
-                            style={{ cursor: "pointer", width: 14, height: 14, accentColor: "#059669" }} />
+                            className="cursor-pointer w-3.5 h-3.5 accent-hm-success" />
                         )}
                         <button onClick={() => { if (confirm(`${t.building} ${t.room}호 재계약 완료 처리하시겠습니까?\n목록에서 제외됩니다.`)) { setRenewedRooms(prev => ({ ...prev, [rk]: { date: today.toISOString().slice(0, 10) } })); deleteNote(rk); } }}
-                          style={{ padding: "2px 5px", borderRadius: 3, border: "1px solid #A7F3D0", background: "#ECFDF5", color: "#059669", fontSize: 8, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>재계약</button>
+                          className="px-[5px] py-0.5 rounded-[3px] border border-hm-success-border bg-hm-success-bg text-hm-success text-[8px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">재계약</button>
                       </div>
                     </td>
                   </tr>
@@ -484,41 +483,41 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
       )}
       {/* 요청사항 입력 팝업 */}
       {editingKey && (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-5"
           onClick={() => setEditingKey(null)}>
           <div onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 16, padding: "24px 28px", maxWidth: 400, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 4 }}>📋 건물주 요청사항</div>
-            <div style={{ fontSize: 12, color: "#8F95A3", marginBottom: 16 }}>{formBuilding} {formRoom}호</div>
+            className="bg-white rounded-2xl px-7 py-6 max-w-[400px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+            <div className="text-base font-extrabold text-hm-text mb-1">📋 건물주 요청사항</div>
+            <div className="text-xs text-hm-text-muted mb-4">{formBuilding} {formRoom}호</div>
 
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>요청 내용</div>
+            <div className="mb-3">
+              <div className="text-[11px] font-bold text-hm-text-sub mb-1">요청 내용</div>
               <input autoFocus value={formNote} onChange={e => setFormNote(e.target.value)} placeholder="건물주 요청사항 입력..."
-                style={{ width: "100%", padding: "10px 12px", fontSize: 13, border: "1.5px solid #DDD6FE", borderRadius: 8, outline: "none", fontFamily: "inherit", background: "#F5F3FF", boxSizing: "border-box" }}
+                className="w-full px-3 py-2.5 text-[13px] border-[1.5px] border-purple-200 rounded-lg outline-none font-[inherit] bg-purple-50 box-border focus:ring-1 focus:ring-purple-400 transition-colors"
                 onKeyDown={e => { if (e.key === "Enter" && formNote.trim()) saveNote(); }} />
             </div>
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>날짜</div>
+            <div className="flex gap-2 mb-4">
+              <div className="flex-1">
+                <div className="text-[11px] font-bold text-hm-text-sub mb-1">날짜</div>
                 <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1.5px solid #DDD6FE", borderRadius: 8, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
+                  className="w-full px-2.5 py-2 text-xs border-[1.5px] border-purple-200 rounded-lg outline-none font-[inherit] box-border focus:ring-1 focus:ring-purple-400 transition-colors" />
               </div>
-              <div style={{ width: 110 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>시간</div>
+              <div className="w-[110px]">
+                <div className="text-[11px] font-bold text-hm-text-sub mb-1">시간</div>
                 <input type="time" value={formTime} onChange={e => setFormTime(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", fontSize: 12, border: "1.5px solid #DDD6FE", borderRadius: 8, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
+                  className="w-full px-2.5 py-2 text-xs border-[1.5px] border-purple-200 rounded-lg outline-none font-[inherit] box-border focus:ring-1 focus:ring-purple-400 transition-colors" />
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="flex gap-2">
               <button onClick={saveNote}
-                style={{ flex: 1, padding: "10px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>저장</button>
+                className="flex-1 py-2.5 rounded-lg border-none bg-purple-600 text-white text-[13px] font-extrabold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">저장</button>
               <button onClick={() => setEditingKey(null)}
-                style={{ padding: "10px 20px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
+                className="px-5 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-[13px] font-semibold cursor-pointer font-[inherit] hover:bg-gray-50 transition-colors">취소</button>
               {renewalNotes[editingKey]?.note && (
                 <button onClick={() => { deleteNote(editingKey); setEditingKey(null); }}
-                  style={{ padding: "10px 16px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>삭제</button>
+                  className="px-4 py-2.5 rounded-lg border-[1.5px] border-hm-danger-border bg-hm-danger-bg text-hm-danger text-[13px] font-semibold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
               )}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { TYPE_COLORS } from '../constants';
 import { persistInsert } from '../calendarApi';
 
@@ -23,21 +23,21 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
   if (!showForm || formType !== "휴무") return null;
 
   return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 bg-black/40 z-[1000] flex items-center justify-center"
       onClick={() => { setShowForm(false); setFormDate(""); setFormName(""); }}>
-      <div style={{ background: "#FDFBFF", borderRadius: 16, padding: 24, width: 400, maxWidth: "95vw", boxShadow: "0 8px 32px rgba(0,0,0,0.2)", border: "2px solid #8B5CF6" }}
+      <div className="bg-[#FDFBFF] rounded-2xl p-6 w-[400px] max-w-[95vw] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-[#8B5CF6]"
         onClick={e => e.stopPropagation()}>
-      <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 14 }}>🏖️ 휴무 등록</div>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "end" }}>
-        <div style={{ minWidth: 160 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>휴무일</div>
+      <div className="text-[15px] font-extrabold text-hm-text mb-3.5">🏖️ 휴무 등록</div>
+      <div className="flex gap-2.5 flex-wrap items-end">
+        <div className="min-w-[160px]">
+          <div className="text-[10px] font-bold text-hm-text-sub mb-1">휴무일</div>
           <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
-            style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
+            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>
-        <div style={{ minWidth: 160 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 4 }}>이름</div>
+        <div className="min-w-[160px]">
+          <div className="text-[10px] font-bold text-hm-text-sub mb-1">이름</div>
           <input value={formName} onChange={e => setFormName(e.target.value)} placeholder="직원명"
-            style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
+            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>
         <button onClick={() => {
           if (!formDate) { toast.error("휴무일을 선택하세요"); return; }
@@ -53,7 +53,7 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
           setEvents((prev: any[]) => [...prev, newEvt]);
           setFormDate(""); setFormName(""); setShowForm(false);
         }}
-          style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: "#8B5CF6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+          className="py-[9px] px-5 rounded-lg border-none bg-[#8B5CF6] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#7C3AED] transition-colors">
           휴무 등록
         </button>
       </div>

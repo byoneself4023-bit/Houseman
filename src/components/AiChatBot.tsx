@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useRef, useEffect, CSSProperties, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useTenantStore } from '@/stores/useTenantStore';
 import { useCalendarStore } from '@/stores/useCalendarStore';
@@ -554,14 +554,14 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
 
   if (sidePanel) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <div style={{ padding: "12px 14px", borderBottom: "1px solid #E5E5E5", background: "#fff" }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "#346aff" }}>AI 어시스턴트</div>
-          <div style={{ fontSize: 9, color: "#8B95A1", marginTop: 2 }}>건물/호실/임차인 정보를 자연어로 조회/수정</div>
+      <div className="flex flex-col h-full">
+        <div className="px-3.5 py-3 border-b border-[#E5E5E5] bg-white">
+          <div className="text-[13px] font-extrabold text-[#346aff]">AI 어시스턴트</div>
+          <div className="text-[9px] text-[#8B95A1] mt-0.5">건물/호실/임차인 정보를 자연어로 조회/수정</div>
         </div>
-        <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-2.5">
           {messages.length === 0 && (
-            <div style={{ textAlign: "center", padding: "24px 12px", color: "#8B95A1", fontSize: 11, lineHeight: 1.8 }}>
+            <div className="text-center px-3 py-6 text-[#8B95A1] text-[11px] leading-[1.8]">
               명령 예시:<br/>
               &quot;제이앤제이 현관 비번 1234로 바꿔줘&quot;<br/>
               &quot;스타빌 공실 몇 개야?&quot;<br/>
@@ -569,18 +569,18 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
             </div>
           )}
           {messages.map((msg, i) => (
-            <div key={i} style={msg.role === 'user' ? styles.userMsg : msg.success ? styles.successMsg : msg.error ? styles.errorMsg : styles.assistantMsg}>
-              <span style={styles.msgText}>{msg.content}</span>
+            <div key={i} className={msgClassName(msg)}>
+              <span className="text-[13px] whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
             </div>
           ))}
-          {loading && <div style={styles.assistantMsg}><span style={styles.loadingDots}>응답 대기중...</span></div>}
+          {loading && <div className={MSG_CLS.assistant}><span className="text-[13px] text-gray-500 italic">응답 대기중...</span></div>}
         </div>
-        <div style={{ padding: "10px 12px", borderTop: "1px solid #E5E5E5", background: "#fff" }}>
-          <div style={{ display: "flex", gap: 6 }}>
+        <div className="px-3 py-2.5 border-t border-[#E5E5E5] bg-white">
+          <div className="flex gap-1.5">
             <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-              placeholder="명령 입력..." style={{ ...styles.input, flex: 1 }} disabled={loading} />
+              placeholder="명령 입력..." className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-[13px] outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow" disabled={loading} />
             <button onClick={sendMessage} disabled={loading || !input.trim()}
-              style={{ ...styles.sendBtn, opacity: loading || !input.trim() ? 0.5 : 1 }}>전송</button>
+              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-[13px] cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}>전송</button>
           </div>
         </div>
       </div>
@@ -588,19 +588,19 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
       {/* Toggle header */}
-      <div style={styles.header} onClick={() => setOpen((v) => !v)}>
-        <span style={styles.headerTitle}>AI 어시스턴트</span>
-        <span style={styles.headerToggle}>{open ? '접기' : '펼치기'}</span>
+      <div className="flex justify-between items-center px-4 py-2.5 cursor-pointer bg-[#F8FAFC] border-b border-gray-200 select-none hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
+        <span className="text-sm font-bold text-blue-800">AI 어시스턴트</span>
+        <span className="text-xs text-gray-500">{open ? '접기' : '펼치기'}</span>
       </div>
 
       {open && (
-        <div style={styles.body}>
+        <div className="flex flex-col">
           {/* Messages */}
-          <div ref={scrollRef} style={{ ...styles.messageArea, maxHeight: messages.length > 0 ? 400 : 150, transition: "max-height 0.3s ease" }}>
+          <div ref={scrollRef} className={`overflow-y-auto px-3 py-2 flex flex-col gap-1.5 transition-[max-height] duration-300 ease-in-out ${messages.length > 0 ? 'max-h-[400px]' : 'max-h-[150px]'}`}>
             {messages.length === 0 && (
-              <div style={styles.placeholder}>
+              <div className="text-xs text-gray-400 text-center py-4 leading-[1.6]">
                 건물 정보를 자연어로 조회/수정할 수 있습니다.
                 <br />
                 예: &quot;제이앤제이 현관 비번 1234로 바꿔줘&quot;
@@ -609,28 +609,20 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
             {messages.map((msg, i) => (
               <div
                 key={i}
-                style={
-                  msg.role === 'user'
-                    ? styles.userMsg
-                    : msg.success
-                      ? styles.successMsg
-                      : msg.error
-                        ? styles.errorMsg
-                        : styles.assistantMsg
-                }
+                className={msgClassName(msg)}
               >
-                <span style={styles.msgText}>{msg.content}</span>
+                <span className="text-[13px] whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
               </div>
             ))}
             {loading && (
-              <div style={styles.assistantMsg}>
-                <span style={styles.loadingDots}>응답 대기중...</span>
+              <div className={MSG_CLS.assistant}>
+                <span className="text-[13px] text-gray-500 italic">응답 대기중...</span>
               </div>
             )}
           </div>
 
           {/* Input */}
-          <div style={styles.inputRow}>
+          <div className="flex gap-2 px-3 pt-2 pb-2.5 border-t border-gray-200">
             <input
               ref={inputRef}
               type="text"
@@ -638,16 +630,13 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="건물 정보 조회/수정 명령을 입력하세요..."
-              style={styles.input}
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-[13px] outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow"
               disabled={loading}
             />
             <button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              style={{
-                ...styles.sendBtn,
-                opacity: loading || !input.trim() ? 0.5 : 1,
-              }}
+              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-[13px] cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}
             >
               전송
             </button>
@@ -658,120 +647,16 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    background: '#FFFFFF',
-    border: '1px solid #E5E7EB',
-    borderRadius: 8,
-    marginBottom: 16,
-    overflow: 'hidden',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 16px',
-    cursor: 'pointer',
-    background: '#F8FAFC',
-    borderBottom: '1px solid #E5E7EB',
-    userSelect: 'none',
-  },
-  headerTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: '#1E40AF',
-  },
-  headerToggle: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  body: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  messageArea: {
-    maxHeight: 60,
-    overflowY: 'auto',
-    padding: '8px 12px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 6,
-  },
-  placeholder: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    padding: '16px 0',
-    lineHeight: 1.6,
-  },
-  userMsg: {
-    alignSelf: 'flex-end',
-    background: '#346aff',
-    color: '#FFFFFF',
-    borderRadius: '12px 12px 2px 12px',
-    padding: '6px 12px',
-    maxWidth: '80%',
-  },
-  assistantMsg: {
-    alignSelf: 'flex-start',
-    background: '#F3F4F6',
-    color: '#1F2937',
-    borderRadius: '12px 12px 12px 2px',
-    padding: '6px 12px',
-    maxWidth: '80%',
-  },
-  successMsg: {
-    alignSelf: 'flex-start',
-    background: '#D1FAE5',
-    color: '#065F46',
-    borderRadius: '12px 12px 12px 2px',
-    padding: '6px 12px',
-    maxWidth: '80%',
-    fontWeight: 600,
-  },
-  errorMsg: {
-    alignSelf: 'flex-start',
-    background: '#FEE2E2',
-    color: '#991B1B',
-    borderRadius: '12px 12px 12px 2px',
-    padding: '6px 12px',
-    maxWidth: '80%',
-  },
-  msgText: {
-    fontSize: 13,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    lineHeight: 1.5,
-  },
-  loadingDots: {
-    fontSize: 13,
-    color: '#6B7280',
-    fontStyle: 'italic',
-  },
-  inputRow: {
-    display: 'flex',
-    gap: 8,
-    padding: '8px 12px 10px',
-    borderTop: '1px solid #E5E7EB',
-  },
-  input: {
-    flex: 1,
-    padding: '8px 12px',
-    borderRadius: 8,
-    border: '1px solid #D1D5DB',
-    fontSize: 13,
-    outline: 'none',
-  },
-  sendBtn: {
-    padding: '8px 16px',
-    borderRadius: 8,
-    border: 'none',
-    background: '#346aff',
-    color: '#FFFFFF',
-    fontWeight: 700,
-    fontSize: 13,
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  },
+const MSG_CLS = {
+  user: 'self-end bg-[#346aff] text-white rounded-[12px_12px_2px_12px] px-3 py-1.5 max-w-[80%]',
+  assistant: 'self-start bg-gray-100 text-gray-800 rounded-[12px_12px_12px_2px] px-3 py-1.5 max-w-[80%]',
+  success: 'self-start bg-emerald-100 text-emerald-900 rounded-[12px_12px_12px_2px] px-3 py-1.5 max-w-[80%] font-semibold',
+  error: 'self-start bg-red-100 text-red-900 rounded-[12px_12px_12px_2px] px-3 py-1.5 max-w-[80%]',
 };
+
+function msgClassName(msg: ChatMessage): string {
+  if (msg.role === 'user') return MSG_CLS.user;
+  if (msg.success) return MSG_CLS.success;
+  if (msg.error) return MSG_CLS.error;
+  return MSG_CLS.assistant;
+}

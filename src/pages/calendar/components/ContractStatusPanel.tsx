@@ -32,12 +32,12 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
   if (contractEvts.length === 0) return null;
 
   return (
-    <Card style={{ marginBottom: 16, border: "2px solid #3B82F6", background: "#EFF6FF" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-        <span style={{ fontSize: 16 }}>📦</span>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#3B82F6" }}>계약현황 <span style={{ fontWeight: 600, fontSize: 11, color: "#8F95A3" }}>({contractEvts.length}건)</span></div>
+    <Card className="mb-4 border-2 border-hm-blue bg-hm-blue-bg">
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="text-base">📦</span>
+        <div className="text-[13px] font-extrabold text-hm-blue">계약현황 <span className="font-semibold text-[11px] text-hm-text-muted">({contractEvts.length}건)</span></div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {contractEvts.map((ev, i) => {
           const cSteps = [
             { label: "계약금확인", done: !!ev.depositConfirmed },
@@ -52,38 +52,52 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
           const allDone = cDone === cSteps.length;
           const currentStep = cSteps.findIndex(s => !s.done);
           return (
-            <div key={i} style={{ background: allDone ? "#F9FAFB" : "#fff", border: allDone ? "1px solid #D1D5DB" : "1px solid #BFDBFE", borderRadius: 10, overflow: "hidden", filter: allDone ? "grayscale(1)" : "none", opacity: allDone ? 0.7 : 1, transition: "all 0.3s" }}
+            <div key={i}
+              className={`rounded-[10px] overflow-hidden transition-all duration-300 ${
+                allDone
+                  ? 'bg-hm-bg-hover border border-[#D1D5DB] grayscale opacity-70'
+                  : 'bg-white border border-[#BFDBFE]'
+              }`}
               onDoubleClick={() => openEditEvent(ev)}>
               {/* 스텝 인디케이터 */}
-              <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #EFF6FF, #F8FAFF)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #BFDBFE", display: "flex", alignItems: "center", gap: 0 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#3B82F6", marginRight: 6, whiteSpace: "nowrap" }}>{ev.building} {ev.room}호</div>
+              <div className={`px-4 py-2.5 flex items-center gap-0 ${
+                allDone
+                  ? 'bg-[#F3F4F6] border-b border-[#D1D5DB]'
+                  : 'border-b border-[#BFDBFE]'
+              }`}
+                style={{ background: allDone ? undefined : "linear-gradient(90deg, #EFF6FF, #F8FAFF)" }}>
+                <div className={`text-[11px] font-bold mr-1.5 whitespace-nowrap ${allDone ? 'text-[#9CA3AF]' : 'text-hm-blue'}`}>{ev.building} {ev.room}호</div>
                 {ev.registeredSource === "broker"
-                  ? <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", background: "#EC4899", color: "#fff", borderRadius: 3, marginRight: 6, whiteSpace: "nowrap" }}>부동산</span>
-                  : <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", background: "#6B7280", color: "#fff", borderRadius: 3, marginRight: 6, whiteSpace: "nowrap" }}>직접</span>
+                  ? <span className="text-[9px] font-bold py-0.5 px-1.5 bg-[#EC4899] text-white rounded-[3px] mr-1.5 whitespace-nowrap">부동산</span>
+                  : <span className="text-[9px] font-bold py-0.5 px-1.5 bg-[#6B7280] text-white rounded-[3px] mr-1.5 whitespace-nowrap">직접</span>
                 }
-                <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                <div className="flex-1 flex items-center">
                   {cSteps.map((step, si) => {
                     const isActive = si === currentStep;
                     const stepDone = step.done;
                     return (
-                      <div key={si} style={{ display: "flex", alignItems: "center", flex: 1 }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 56 }}>
-                          <div style={{
-                            width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 11, fontWeight: 800,
-                            background: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#fff" : "#E5E7EB",
-                            color: stepDone ? "#fff" : isActive ? "#3B82F6" : "#9CA3AF",
-                            border: isActive && !stepDone ? "2px solid #3B82F6" : "2px solid transparent",
-                            boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(59,130,246,0.2)" : "none",
-                            animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
-                            transition: "all 0.3s"
-                          }}>
+                      <div key={si} className="flex items-center flex-1">
+                        <div className="flex flex-col items-center gap-0.5 min-w-[56px]">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300"
+                            style={{
+                              background: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#fff" : "#E5E7EB",
+                              color: stepDone ? "#fff" : isActive ? "#3B82F6" : "#9CA3AF",
+                              border: isActive && !stepDone ? "2px solid #3B82F6" : "2px solid transparent",
+                              boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(59,130,246,0.2)" : "none",
+                              animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                            }}>
                             {stepDone ? "✓" : si + 1}
                           </div>
-                          <span style={{ fontSize: 9, fontWeight: stepDone || isActive ? 700 : 500, color: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#1D4ED8" : "#9CA3AF", whiteSpace: "nowrap", animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none" }}>{step.label}</span>
+                          <span className="text-[9px] whitespace-nowrap"
+                            style={{
+                              fontWeight: stepDone || isActive ? 700 : 500,
+                              color: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#1D4ED8" : "#9CA3AF",
+                              animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
+                            }}>{step.label}</span>
                         </div>
                         {si < cSteps.length - 1 && (
-                          <div style={{ flex: 1, height: 2, background: stepDone ? (allDone ? "#D1D5DB" : "#3B82F6") : "#E5E7EB", margin: "0 4px", marginBottom: 16, borderRadius: 1, transition: "background 0.3s" }} />
+                          <div className="flex-1 h-0.5 mx-1 mb-4 rounded-[1px] transition-colors duration-300"
+                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "#3B82F6") : "#E5E7EB" }} />
                         )}
                       </div>
                     );
@@ -91,14 +105,18 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 </div>
               </div>
               {/* 액션 버튼 행 */}
-              <div style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <div className="px-4 py-2 flex items-center gap-2 flex-wrap">
                 {/* 계약금 확인 */}
                 <span onClick={() => {
                   if (ev.depositConfirmed) return;
                   persistUpdate(ev.supabaseId, { depositConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, depositConfirmed: true } : e));
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.depositConfirmed ? "#9CA3AF" : "#0369A1", padding: "4px 10px", borderRadius: 6, border: ev.depositConfirmed ? "1px solid #D1D5DB" : "1px solid #BAE6FD", background: ev.depositConfirmed ? "#F3F4F6" : "#F0F9FF", cursor: ev.depositConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.depositConfirmed ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.depositConfirmed
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-[#0369A1] border border-[#BAE6FD] bg-[#F0F9FF] cursor-pointer hover:bg-[#E0F2FE]'
+                  }`}>
                   {ev.depositConfirmed ? "✔ 계약금확인" : "계약금 확인"}
                 </span>
                 {/* 건물주보고 */}
@@ -129,7 +147,11 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   ].filter(Boolean);
                   setContractReport({ ev, owners, msgText: msgLines.join("\n") });
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.reported ? "#9CA3AF" : "#7C3AED", padding: "4px 10px", borderRadius: 6, border: ev.reported ? "1px solid #D1D5DB" : "1px solid #DDD6FE", background: ev.reported ? "#F3F4F6" : "#F5F3FF", cursor: ev.reported ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.reported ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.reported
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] cursor-pointer hover:bg-[#EDE9FE]'
+                  }`}>
                   {ev.reported ? "✔ 건물주보고" : "건물주보고"}
                 </span>
                 {/* 잔금확인 */}
@@ -139,7 +161,11 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { balanceConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, balanceConfirmed: true } : e));
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.balanceConfirmed ? "#9CA3AF" : "#059669", padding: "4px 10px", borderRadius: 6, border: ev.balanceConfirmed ? "1px solid #D1D5DB" : "1px solid #A7F3D0", background: ev.balanceConfirmed ? "#F3F4F6" : "#ECFDF5", cursor: ev.balanceConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.balanceConfirmed ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.balanceConfirmed
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-hm-success border border-[#A7F3D0] bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
+                  }`}>
                   {ev.balanceConfirmed ? "✔ 잔금확인" : "잔금확인"}
                 </span>
                 {/* 계약서입력 */}
@@ -148,12 +174,11 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     if (!ev.reported) { toast.error("건물주보고가 완료되어야 계약서입력이 가능합니다."); return; }
                     const vacancy = activeVacancies.find((v: any) => v.building === ev.building && String(v.room) === String(ev.room));
                     setPendingContract({ ...ev, vacancyData: vacancy || {} });
-                    // 해당 건물/호실의 계약 이벤트 Supabase에서도 삭제
                     calendarEvents.filter((e: any) => e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)).forEach((e: any) => persistDelete(e.supabaseId));
                     setEvents?.((prev: any[]) => prev.filter((e: any) => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
                     setPage("tenants");
                   }}
-                    style={{ fontSize: 10, fontWeight: 700, color: "#92400E", padding: "4px 10px", borderRadius: 6, border: "1px solid #FDE68A", background: "#FEF3C7", cursor: "pointer", whiteSpace: "nowrap" }}>
+                    className="text-[10px] font-bold text-[#92400E] py-1 px-2.5 rounded-md border border-[#FDE68A] bg-[#FEF3C7] cursor-pointer whitespace-nowrap hover:bg-[#FDE68A] transition-colors">
                     계약서입력 →
                   </span>
                 )}
@@ -164,7 +189,11 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { finalPaymentConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, finalPaymentConfirmed: true } : e));
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.finalPaymentConfirmed ? "#9CA3AF" : "#0369A1", padding: "4px 10px", borderRadius: 6, border: ev.finalPaymentConfirmed ? "1px solid #D1D5DB" : "1px solid #BAE6FD", background: ev.finalPaymentConfirmed ? "#F3F4F6" : "#F0F9FF", cursor: ev.finalPaymentConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.finalPaymentConfirmed ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.finalPaymentConfirmed
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-[#0369A1] border border-[#BAE6FD] bg-[#F0F9FF] cursor-pointer hover:bg-[#E0F2FE]'
+                  }`}>
                   {ev.finalPaymentConfirmed ? "✔ 최종납부" : "최종납부"}
                 </span>
                 {/* 인테리어 관리 */}
@@ -173,7 +202,11 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { interiorManaged: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, interiorManaged: true } : e));
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.interiorManaged ? "#9CA3AF" : "#7C3AED", padding: "4px 10px", borderRadius: 6, border: ev.interiorManaged ? "1px solid #D1D5DB" : "1px solid #DDD6FE", background: ev.interiorManaged ? "#F3F4F6" : "#F5F3FF", cursor: ev.interiorManaged ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.interiorManaged ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.interiorManaged
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] cursor-pointer hover:bg-[#EDE9FE]'
+                  }`}>
                   {ev.interiorManaged ? "✔ 인테리어" : "인테리어"}
                 </span>
                 {/* 중개료 송금 */}
@@ -182,10 +215,14 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { brokerFeeSent: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, brokerFeeSent: true } : e));
                 }}
-                  style={{ fontSize: 10, fontWeight: 700, color: ev.brokerFeeSent ? "#9CA3AF" : "#059669", padding: "4px 10px", borderRadius: 6, border: ev.brokerFeeSent ? "1px solid #D1D5DB" : "1px solid #A7F3D0", background: ev.brokerFeeSent ? "#F3F4F6" : "#ECFDF5", cursor: ev.brokerFeeSent ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.brokerFeeSent ? "line-through" : "none" }}>
+                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                    ev.brokerFeeSent
+                      ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
+                      : 'text-hm-success border border-[#A7F3D0] bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
+                  }`}>
                   {ev.brokerFeeSent ? "✔ 중개료" : "중개료송금"}
                 </span>
-                <div style={{ marginLeft: "auto" }} />
+                <div className="ml-auto" />
                 {/* 계약파기 */}
                 {setEvents && (
                   <span onClick={() => {
@@ -236,7 +273,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
                     setBreakReport({ ev, owners, msgText: msgLines.join("\n") });
                   }}
-                    style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", padding: "4px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#FEF2F2", cursor: "pointer", whiteSpace: "nowrap" }}>
+                    className="text-[10px] font-bold text-hm-danger py-1 px-2.5 rounded-md border border-[#FECACA] bg-hm-danger-bg cursor-pointer whitespace-nowrap hover:bg-[#FEE2E2] transition-colors">
                     계약파기
                   </span>
                 )}

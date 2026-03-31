@@ -70,8 +70,8 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
   const renderVal = (value: any, isNum: boolean) => {
     if (isNum) return value > 0 ? fmt(value) : "—";
-    if (value === "포함") return <span style={{ color: "#059669", fontWeight: 600 }}>포함</span>;
-    if (value === "별도") return <span style={{ color: "#DC2626", fontWeight: 600 }}>별도</span>;
+    if (value === "포함") return <span className="text-hm-success font-semibold">포함</span>;
+    if (value === "별도") return <span className="text-hm-danger font-semibold">별도</span>;
     return value || "—";
   };
   const myVacancies = myBuildings.length > 0 ? activeVacancies.filter((v: Vacancy) => myBuildings.includes(v.building)) : activeVacancies;
@@ -106,53 +106,53 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       grouped[v.building].push(v);
     });
     return (
-      <div id="print-area" style={{ padding: "20px 10px", fontFamily: "'Pretendard', sans-serif", background: "#fff", color: "#000", minHeight: "100vh" }}>
+      <div id="print-area" className="px-2.5 py-5 font-[Pretendard,sans-serif] bg-white text-black min-h-screen">
         <style>{`@media print { body * { visibility: hidden !important; } #print-area, #print-area * { visibility: visible !important; } #print-area { position: fixed; left: 0; top: 0; width: 100%; padding: 24px !important; font-size: 10px !important; } @page { margin: 10mm; size: A4 landscape; } }`}</style>
-        <div style={{ textAlign: "center", borderBottom: "3px solid #000", paddingBottom: 12, marginBottom: 16 }}>
-          <div style={{ fontSize: 10, color: "#666", letterSpacing: "0.1em", marginBottom: 4 }}>하우스맨 HOUSEMAN</div>
-          <div style={{ fontSize: 24, fontWeight: 900 }}>공실 현황표</div>
-          <div style={{ fontSize: 12, color: "#444", marginTop: 6 }}>{todayStr} 기준</div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 8 }}>
+        <div className="text-center border-b-[3px] border-black pb-3 mb-4">
+          <div className="text-[10px] text-gray-500 tracking-widest mb-1">하우스맨 HOUSEMAN</div>
+          <div className="text-2xl font-black">공실 현황표</div>
+          <div className="text-xs text-gray-600 mt-1.5">{todayStr} 기준</div>
+          <div className="flex justify-center gap-4 mt-2">
             {["점검/청소중","홍보중","계약서입력"].map(t => (
-              <span key={t} style={{ fontSize: 12, fontWeight: 700 }}>{t} <span style={{ fontSize: 16, fontWeight: 900 }}>{activeVacancies.filter((v: Vacancy) => getStatus(v) === t).length}</span></span>
+              <span key={t} className="text-xs font-bold">{t} <span className="text-base font-black">{activeVacancies.filter((v: Vacancy) => getStatus(v) === t).length}</span></span>
             ))}
-            <span style={{ fontSize: 12, fontWeight: 700 }}>전체 <span style={{ fontSize: 16, fontWeight: 900, color: "#DC2626" }}>{activeVacancies.length}</span></span>
+            <span className="text-xs font-bold">전체 <span className="text-base font-black text-hm-danger">{activeVacancies.length}</span></span>
           </div>
         </div>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10.5 }}>
+        <table className="w-full border-collapse text-[10.5px]">
           <thead>
-            <tr style={{ background: "#F3F4F6" }}>
+            <tr className="bg-gray-100">
               {["수수료(이벤트/중개)","건물명","호수","현관비번","예치금","월세","NEGO","관리비","수도","케이블","퇴실비","공실기간"].map(h => (
-                <th key={h} style={{ padding: "5px 6px", textAlign: "center", fontWeight: 700, borderBottom: "2px solid #999", fontSize: 10 }}>{h}</th>
+                <th key={h} className="px-1.5 py-[5px] text-center font-bold border-b-2 border-gray-400 text-[10px]">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {activeVacancies.filter((v: Vacancy) => getStatus(v) !== "점검/청소중").map((r: Vacancy, i: number) => (
-              <tr key={i} style={{ borderBottom: "1px solid #ddd" }}>
-                <td style={{ padding: "4px 6px", textAlign: "center", fontSize: 10 }}>{r.commEvent || "—"} / {r.commBroker > 0 ? (r.commBroker < 1 ? r.commBroker + "%" : r.commBroker + "만") : "—"}</td>
-                <td style={{ padding: "4px 6px", fontWeight: 700 }}>{r.building}</td>
-                <td style={{ padding: "4px 6px", textAlign: "center" }}>{r.room}</td>
-                <td style={{ padding: "4px 6px", textAlign: "center", fontFamily: "monospace" }}>{(r as any).commFee || "—"}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right" }}>{fmt(r.deposit)}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right" }}>{fmt(r.rent)}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right", fontWeight: 700, color: r.nego < r.rent ? "#DC2626" : "#000" }}>{fmt(r.nego)}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right" }}>{r.mgmt > 0 ? fmt(r.mgmt) : "—"}</td>
-                <td style={{ padding: "4px 6px", textAlign: "center", fontSize: 10 }}>{r.water || "—"}</td>
-                <td style={{ padding: "4px 6px", textAlign: "center", fontSize: 10 }}>{r.cable || "—"}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right" }}>{r.exitFee > 0 ? r.exitFee : "—"}</td>
-                <td style={{ padding: "4px 6px", textAlign: "right", fontWeight: r.days > 30 ? 800 : 400, color: r.days > 30 ? "#DC2626" : "#000" }}>{r.days > 0 ? r.days : ""}</td>
+              <tr key={i} className="border-b border-gray-300">
+                <td className="px-1.5 py-1 text-center text-[10px]">{r.commEvent || "—"} / {r.commBroker > 0 ? (r.commBroker < 1 ? r.commBroker + "%" : r.commBroker + "만") : "—"}</td>
+                <td className="px-1.5 py-1 font-bold">{r.building}</td>
+                <td className="px-1.5 py-1 text-center">{r.room}</td>
+                <td className="px-1.5 py-1 text-center font-mono">{(r as any).commFee || "—"}</td>
+                <td className="px-1.5 py-1 text-right">{fmt(r.deposit)}</td>
+                <td className="px-1.5 py-1 text-right">{fmt(r.rent)}</td>
+                <td className="px-1.5 py-1 text-right font-bold" style={{ color: r.nego < r.rent ? "#DC2626" : "#000" }}>{fmt(r.nego)}</td>
+                <td className="px-1.5 py-1 text-right">{r.mgmt > 0 ? fmt(r.mgmt) : "—"}</td>
+                <td className="px-1.5 py-1 text-center text-[10px]">{r.water || "—"}</td>
+                <td className="px-1.5 py-1 text-center text-[10px]">{r.cable || "—"}</td>
+                <td className="px-1.5 py-1 text-right">{r.exitFee > 0 ? r.exitFee : "—"}</td>
+                <td className="px-1.5 py-1 text-right" style={{ fontWeight: r.days > 30 ? 800 : 400, color: r.days > 30 ? "#DC2626" : "#000" }}>{r.days > 0 ? r.days : ""}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div style={{ marginTop: 20, paddingTop: 12, borderTop: "2px solid #000", display: "flex", justifyContent: "space-between", fontSize: 10, color: "#888" }}>
+        <div className="mt-5 pt-3 border-t-2 border-black flex justify-between text-[10px] text-gray-400">
           <span>하우스맨 건물관리 시스템</span>
           <span>총 {activeVacancies.length}실 관리</span>
           <span>인쇄일: {todayStr}</span>
         </div>
-        <div style={{ marginTop: 24, textAlign: "center" }}>
-          <button onClick={() => setShowPrint(false)} style={{ padding: "10px 32px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit" }}>← 돌아가기</button>
+        <div className="mt-6 text-center">
+          <button onClick={() => setShowPrint(false)} className="px-8 py-2.5 rounded-lg border border-gray-300 bg-white cursor-pointer text-[13px] font-semibold font-[inherit] hover:bg-gray-50 transition-colors">← 돌아가기</button>
         </div>
       </div>
     );
@@ -167,17 +167,15 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
         }
         .sparkle-btn { animation: sparkle 1.5s ease-in-out infinite; }
       `}</style>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+      <div className="flex justify-between items-start mb-4">
         <SectionTitle sub="">📭 공실 관리</SectionTitle>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           <button onClick={handlePrint}
-            style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 12.5, fontWeight: 700, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, color: "#1A1D23" }}
-            onMouseEnter={e => { e.currentTarget.style.background = "#1B1F2E"; e.currentTarget.style.color = "#fff"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#1A1D23"; }}>
+            className="px-5 py-2 rounded-lg border border-hm-input-border bg-white cursor-pointer text-[12.5px] font-bold font-[inherit] flex items-center gap-1.5 text-hm-text hover:bg-[#1B1F2E] hover:text-white transition-colors">
             🖨️ 인쇄
           </button>
           <button onClick={() => { setLinkModal(true); setLinkSearch(""); }}
-            style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #FECACA", background: "#FEF2F2", cursor: "pointer", fontSize: 12.5, fontWeight: 700, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, color: "#DC2626" }}>
+            className="px-5 py-2 rounded-lg border border-hm-danger-border bg-hm-danger-bg cursor-pointer text-[12.5px] font-bold font-[inherit] flex items-center gap-1.5 text-hm-danger hover:brightness-95 transition-colors">
             🔗 임차인 연결
           </button>
         </div>
@@ -185,40 +183,38 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
       {/* 임차인 연결 팝업 — 현재 입주 중인 임차인에서 선택 */}
       {linkModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-5"
           onClick={() => setLinkModal(false)}>
-          <div onClick={(e: React.MouseEvent) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 520, width: "100%", maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
-            <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>🔗 임차인 연결</div>
-            <div style={{ fontSize: 12, color: "#8F95A3", marginBottom: 16 }}>현재 입주 중인 호실을 선택하면 공실에 "임차인연결"로 등록됩니다</div>
+          <div onClick={(e: React.MouseEvent) => e.stopPropagation()} className="bg-white rounded-2xl p-6 max-w-[520px] w-full max-h-[80vh] flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
+            <div className="text-base font-extrabold mb-1">🔗 임차인 연결</div>
+            <div className="text-xs text-hm-text-muted mb-4">현재 입주 중인 호실을 선택하면 공실에 "임차인연결"로 등록됩니다</div>
             <input autoFocus value={linkSearch} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
-              style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #E0E3E9", fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, boxSizing: "border-box" }}
-              onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = "#DC2626"}
-              onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = "#E0E3E9"} />
+              className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none mb-3 box-border focus:border-hm-danger transition-colors" />
             {/* 이미 연결된 호실 */}
             {Object.keys(linkedRooms).length > 0 && (
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", marginBottom: 6 }}>연결 중 ({Object.keys(linkedRooms).length}건)</div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <div className="mb-3">
+                <div className="text-[11px] font-bold text-hm-danger mb-1.5">연결 중 ({Object.keys(linkedRooms).length}건)</div>
+                <div className="flex gap-1.5 flex-wrap">
                   {Object.keys(linkedRooms).map(key => {
                     const [b, r] = key.split("_");
                     const tenant = activeTenants.find((t: Tenant) => t.building === b && String(t.room) === String(r));
                     return (
-                      <div key={key} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px", borderRadius: 8, background: "#FEF2F2", border: "1px solid #FECACA", fontSize: 11 }}>
-                        <span style={{ fontWeight: 700 }}>{b} {r}호</span>
-                        {tenant && <span style={{ color: "#8F95A3" }}>{tenant.name}</span>}
+                      <div key={key} className="flex items-center gap-1.5 px-2.5 py-[5px] rounded-lg bg-hm-danger-bg border border-hm-danger-border text-[11px]">
+                        <span className="font-bold">{b} {r}호</span>
+                        {tenant && <span className="text-hm-text-muted">{tenant.name}</span>}
                         <span onClick={() => {
                           setLinkedRooms((prev: Record<string, boolean>) => { const next = { ...prev }; delete next[key]; return next; });
                           // 공실에서도 제거
                           setActiveVacancies((prev: Vacancy[]) => prev.filter((v: Vacancy) => !(v.building === b && String(v.room) === String(r) && (v as any).linkedTenant)));
-                        }} style={{ cursor: "pointer", color: "#DC2626", fontWeight: 800, marginLeft: 4 }}>✕</span>
+                        }} className="cursor-pointer text-hm-danger font-extrabold ml-1 hover:opacity-70 transition-opacity">✕</span>
                       </div>
                     );
                   })}
                 </div>
               </div>
             )}
-            <div style={{ flex: 1, overflowY: "auto" }}>
+            <div className="flex-1 overflow-y-auto">
               {activeTenants
                 .filter((t: Tenant) => t.name && t.name !== "퇴실" && (t.status as string) !== "퇴실")
                 .filter((t: Tenant) => !linkSearch || matchKorean(t.building, linkSearch) || t.building.includes(linkSearch) || matchKorean(t.name, linkSearch))
@@ -240,33 +236,32 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                       } as any]);
                     }
                   }}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderRadius: 10, marginBottom: 4, cursor: "pointer", background: "#F9FAFB", transition: "all 0.2s" }}
-                    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = "#FEF2F2"}
-                    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.style.background = "#F9FAFB"}>
+                    className="flex items-center justify-between px-3.5 py-3 rounded-[10px] mb-1 cursor-pointer bg-hm-bg-hover hover:bg-hm-danger-bg transition-all">
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 700 }}>{t.building} {t.room}호 <span style={{ fontWeight: 500, color: "#5F6577" }}>{t.name}</span></div>
-                      <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>만기: {t.expiry || "-"} · 월세: {fmt(t.rent)} · {t.type || "단기"}</div>
+                      <div className="text-[13px] font-bold">{t.building} {t.room}호 <span className="font-medium text-hm-text-sub">{t.name}</span></div>
+                      <div className="text-[11px] text-hm-text-muted mt-0.5">만기: {t.expiry || "-"} · 월세: {fmt(t.rent)} · {t.type || "단기"}</div>
                     </div>
-                    <div style={{ padding: "4px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA", whiteSpace: "nowrap" }}>
+                    <div className="px-3 py-1 rounded-md text-[11px] font-bold bg-hm-danger-bg text-hm-danger border border-hm-danger-border whitespace-nowrap hover:brightness-95 transition-colors">
                       + 연결
                     </div>
                   </div>
                 ))}
             </div>
-            <button onClick={() => setLinkModal(false)} style={{ marginTop: 16, padding: "12px", borderRadius: 10, border: "none", background: "#1A1D23", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>닫기</button>
+            <button onClick={() => setLinkModal(false)} className="mt-4 p-3 rounded-[10px] border-none bg-hm-text text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">닫기</button>
           </div>
         </div>
       )}
 
       {/* Summary badges */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+      <div className="flex gap-2 mb-4 flex-wrap">
         {types.map(t => {
           const count = t === "전체" ? myVacancies.length : myVacancies.filter((v: Vacancy) => getStatus(v) === t).length;
           const colors: Record<string, string> = { "전체": "#1A1D23", "점검/청소중": "#6B7280", "홍보중": "#3B82F6", "임차인연결": "#DC2626", "계약서입력": "#F59E0B" };
           return (
             <button key={t} onClick={() => setTab(t)}
-              style={{ padding: "7px 16px", borderRadius: 8, border: tab === t ? `2px solid ${colors[t]}` : "1px solid #E0E3E9", background: tab === t ? `${colors[t]}10` : "#fff", color: tab === t ? colors[t] : "#5F6577", fontWeight: 600, fontSize: 12.5, cursor: "pointer", fontFamily: "inherit" }}>
-              {t} <span style={{ fontWeight: 800 }}>{count}</span>
+              className="px-4 py-[7px] rounded-lg font-semibold text-[12.5px] cursor-pointer font-[inherit] transition-colors"
+              style={{ border: tab === t ? `2px solid ${colors[t]}` : "1px solid #E0E3E9", background: tab === t ? `${colors[t]}10` : "#fff", color: tab === t ? colors[t] : "#5F6577" }}>
+              {t} <span className="font-extrabold">{count}</span>
             </button>
           );
         })}
@@ -274,12 +269,11 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
       {/* Main Table */}
       <Card style={{ overflow: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <table className="w-full border-collapse text-xs">
           <thead>
-            <tr style={{ borderBottom: "2px solid #E8ECF0" }}>
+            <tr className="border-b-2 border-hm-border">
               {["","연결","수수료(이벤트/중개)","건물명","호수","현관비번","예치금","월세","NEGO","관리비","수도","케이블","퇴실비","공실기간",""].map((h, i) => (
-                <th key={i} style={{ padding: "10px 8px", textAlign: (i >= 5 && i <= 12) ? "right" : (i === 1) ? "center" : "left", fontSize: 11, fontWeight: 700, color: "#8F95A3", whiteSpace: "nowrap",
-                  background: h === "NEGO" ? "#FEF2F2" : "transparent" }}>{h}</th>
+                <th key={i} className={`px-2 py-2.5 text-[11px] font-bold text-hm-text-muted whitespace-nowrap ${(i >= 5 && i <= 12) ? "text-right" : i === 1 ? "text-center" : "text-left"} ${h === "NEGO" ? "bg-hm-danger-bg" : ""}`}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -292,54 +286,52 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
               const cellOpacity = contracted ? 0.5 : 1;
               const rk = rowKey(r);
               const isEditing = editRow === rk;
-              const inpSt: React.CSSProperties = { width: "100%", padding: "4px 6px", borderRadius: 4, border: "1.5px solid #93C5FD", fontSize: 11, fontFamily: "inherit", outline: "none", background: "#EFF6FF" };
+              const inpCls = "w-full px-1.5 py-1 rounded border-[1.5px] border-blue-300 text-[11px] font-[inherit] outline-none bg-hm-blue-bg focus:ring-1 focus:ring-blue-400 transition-colors";
               return (
-                <tr key={i} style={{ borderBottom: "1px solid #F0F2F5", position: "relative", background: isEditing ? "#FAFBFF" : "transparent" }}
-                  onMouseEnter={e => { if (!isEditing) e.currentTarget.style.background = contracted ? "#F0FDF4" : "#F9FAFB"; }}
-                  onMouseLeave={e => { if (!isEditing) e.currentTarget.style.background = "transparent"; }}>
+                <tr key={i} className={`border-b border-[#F0F2F5] relative ${isEditing ? "bg-[#FAFBFF]" : "hover:bg-hm-bg-hover"} ${contracted && !isEditing ? "hover:!bg-[#F0FDF4]" : ""} transition-colors`}>
                   {/* 수정/완료 버튼 (맨앞) — 계약중이면 숨김 */}
-                  <td style={{ padding: "10px 6px", textAlign: "center" }}>
+                  <td className="px-1.5 py-2.5 text-center">
                     {contracted ? null : isEditing ? (
                       <button onClick={() => handleEditSave(r)}
-                        style={{ padding: "5px 10px", borderRadius: 6, border: "none", background: "#059669", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                        className="px-2.5 py-[5px] rounded-md border-none bg-hm-success text-white text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 transition-opacity">
                         ✓ 완료
                       </button>
                     ) : (
                       <button onClick={() => setEditRow(rk)}
-                        style={{ padding: "4px 8px", borderRadius: 5, border: "1px solid #93C5FD", background: "#EFF6FF", color: "#2563EB", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                        className="px-2 py-1 rounded-[5px] border border-blue-300 bg-hm-blue-bg text-hm-blue-dark text-[9px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors">
                         ✏️ 수정
                       </button>
                     )}
                   </td>
                   {/* 연결 */}
-                  <td style={{ padding: "4px 4px", textAlign: "center" }}>
+                  <td className="px-1 py-1 text-center">
                     {linkedRooms[rk] && (
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 5, background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA", whiteSpace: "nowrap" }}>연결</span>
+                      <span className="text-[10px] font-bold px-2 py-[3px] rounded-[5px] bg-hm-danger-bg text-hm-danger border border-hm-danger-border whitespace-nowrap">연결</span>
                     )}
                   </td>
                   {/* 수수료(이벤트/중개) */}
                   {isEditing ? (
-                    <td style={{ padding: "4px 4px", textAlign: "center", whiteSpace: "nowrap" }}>
-                      <div style={{ display: "flex", gap: 2, justifyContent: "center" }}>
-                        <input id={`ve-${rk}-commEvent`} defaultValue={r.commEvent ?? ""} placeholder="이벤트" style={{ ...inpSt, width: 40, textAlign: "center" }} />
-                        <span style={{ fontSize: 10, color: "#B0B5C1", alignSelf: "center" }}>/</span>
-                        <input id={`ve-${rk}-commBroker`} defaultValue={r.commBroker ?? ""} placeholder="중개" style={{ ...inpSt, width: 40, textAlign: "center" }} />
+                    <td className="px-1 py-1 text-center whitespace-nowrap">
+                      <div className="flex gap-0.5 justify-center">
+                        <input id={`ve-${rk}-commEvent`} defaultValue={r.commEvent ?? ""} placeholder="이벤트" className={`${inpCls} !w-10 text-center`} />
+                        <span className="text-[10px] text-[#B0B5C1] self-center">/</span>
+                        <input id={`ve-${rk}-commBroker`} defaultValue={r.commBroker ?? ""} placeholder="중개" className={`${inpCls} !w-10 text-center`} />
                       </div>
                     </td>
                   ) : (
-                    <td style={{ padding: "10px 8px", textAlign: "center", whiteSpace: "nowrap", textDecoration: cellDeco, opacity: cellOpacity }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: r.commEvent ? "#7C3AED" : "#B0B5C1" }}>{r.commEvent || "—"}</span>
-                      <span style={{ fontSize: 10, color: "#B0B5C1", margin: "0 2px" }}>/</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{r.commBroker > 0 ? (r.commBroker < 1 ? r.commBroker + "%" : r.commBroker + "만") : "—"}</span>
+                    <td className="px-2 py-2.5 text-center whitespace-nowrap" style={{ textDecoration: cellDeco, opacity: cellOpacity }}>
+                      <span className={`text-xs font-bold ${r.commEvent ? "text-purple-600" : "text-[#B0B5C1]"}`}>{r.commEvent || "—"}</span>
+                      <span className="text-[10px] text-[#B0B5C1] mx-0.5">/</span>
+                      <span className="text-xs font-bold text-hm-text">{r.commBroker > 0 ? (r.commBroker < 1 ? r.commBroker + "%" : r.commBroker + "만") : "—"}</span>
                     </td>
                   )}
-                  <td style={{ padding: "10px 8px", fontWeight: 700, textDecoration: cellDeco, opacity: cellOpacity }}>{r.building}</td>
-                  <td style={{ padding: "10px 8px", textDecoration: cellDeco, opacity: cellOpacity }}>{r.room}</td>
+                  <td className="px-2 py-2.5 font-bold" style={{ textDecoration: cellDeco, opacity: cellOpacity }}>{r.building}</td>
+                  <td className="px-2 py-2.5" style={{ textDecoration: cellDeco, opacity: cellOpacity }}>{r.room}</td>
                   {/* 현관비번 */}
                   {isEditing ? (
-                    <td style={{ padding: "4px 4px" }}><input id={`ve-${rk}-pw`} defaultValue={r.pw ?? ""} style={{ ...inpSt, textAlign: "left" }} /></td>
+                    <td className="px-1 py-1"><input id={`ve-${rk}-pw`} defaultValue={r.pw ?? ""} className={`${inpCls} text-left`} /></td>
                   ) : (
-                    <td style={{ padding: "10px 8px", textDecoration: cellDeco, opacity: cellOpacity }}>{r.pw ? <code style={{ fontSize: 11, background: "#F3F4F6", padding: "2px 6px", borderRadius: 4, fontWeight: 600 }}>{r.pw}</code> : "—"}</td>
+                    <td className="px-2 py-2.5" style={{ textDecoration: cellDeco, opacity: cellOpacity }}>{r.pw ? <code className="text-[11px] bg-hm-bg px-1.5 py-0.5 rounded font-semibold">{r.pw}</code> : "—"}</td>
                   )}
                   {/* 예치금~공실기간 */}
                   {[
@@ -352,26 +344,25 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                     { field: "exitFee", value: r.exitFee, num: true },
                     { field: "days", value: r.days, num: true },
                   ].map((f, fi) => isEditing ? (
-                    <td key={fi} style={{ padding: "4px 4px" }}><input id={`ve-${rk}-${f.field}`} defaultValue={f.value ?? ""} style={{ ...inpSt, textAlign: "right" }} /></td>
+                    <td key={fi} className="px-1 py-1"><input id={`ve-${rk}-${f.field}`} defaultValue={f.value ?? ""} className={`${inpCls} text-right`} /></td>
                   ) : (
-                    <td key={fi} style={{ padding: "10px 8px", textAlign: "right", textDecoration: cellDeco, opacity: cellOpacity, ...(f.extra || {}), fontSize: !f.num ? 11 : undefined }}>
-                      {f.field === "days" ? (Number(f.value) > 0 ? <span style={{ fontWeight: 700, color: Number(f.value) > 30 ? "#DC2626" : Number(f.value) > 14 ? "#EA580C" : "#1A1D23" }}>{f.value}</span> : <span style={{ color: "#10B981", fontWeight: 600, fontSize: 11 }}>신규</span>) : renderVal(f.value, f.num)}
+                    <td key={fi} className={`px-2 py-2.5 text-right ${!f.num ? "text-[11px]" : ""}`} style={{ textDecoration: cellDeco, opacity: cellOpacity, ...(f.extra || {}) }}>
+                      {f.field === "days" ? (Number(f.value) > 0 ? <span className="font-bold" style={{ color: Number(f.value) > 30 ? "#DC2626" : Number(f.value) > 14 ? "#EA580C" : "#1A1D23" }}>{f.value}</span> : <span className="text-emerald-500 font-semibold text-[11px]">신규</span>) : renderVal(f.value, f.num)}
                     </td>
                   ))}
                   {/* 상태 버튼 (맨뒤) */}
-                  <td style={{ padding: "10px 6px", textAlign: "center" }}>
+                  <td className="px-1.5 py-2.5 text-center">
                     {st === "점검/청소중" ? (
-                      <button className="sparkle-btn" onClick={() => setConfirmPromo(r)}
-                        style={{ padding: "5px 10px", borderRadius: 6, border: "1.5px solid #6B7280", background: "#F3F4F6", color: "#374151", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                      <button className="sparkle-btn px-2.5 py-[5px] rounded-md border-[1.5px] border-gray-500 bg-gray-100 text-gray-700 text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-gray-200 transition-colors" onClick={() => setConfirmPromo(r)}>
                         🔧 점검/청소중
                       </button>
                     ) : st === "홍보중" ? (
                       <button onClick={() => handleStatusChange(r, "점검/청소중")}
-                        style={{ padding: "5px 10px", borderRadius: 6, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                        className="px-2.5 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors">
                         📢 홍보중
                       </button>
                     ) : st === "계약서입력" ? (
-                      <span style={{ padding: "5px 12px", borderRadius: 6, background: "#F3F4F6", color: "#6B7280", fontSize: 10, fontWeight: 700, whiteSpace: "nowrap", cursor: "default" }}>
+                      <span className="px-3 py-[5px] rounded-md bg-gray-100 text-gray-500 text-[10px] font-bold whitespace-nowrap cursor-default">
                         📋 계약중
                       </span>
                     ) : null}
@@ -408,32 +399,32 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
         ];
         const msgText = msgLines.join("\n");
         return (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center"
             onClick={() => setReportModal(null)}>
             <div onClick={(e: React.MouseEvent) => e.stopPropagation()}
-              style={{ background: "#fff", borderRadius: 16, padding: 24, width: isMobile ? "92%" : 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: "#1A1D23", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]" style={{ width: isMobile ? "92%" : 480 }}>
+              <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
                 <span>📩 건물주 보고 — {rv.building} {rv.room}호</span>
-                <button onClick={() => setReportModal(null)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 14, fontFamily: "inherit" }}>✕</button>
+                <button onClick={() => setReportModal(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-gray-50 transition-colors">✕</button>
               </div>
 
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>👤 건물주 정보</div>
+              <div className="mb-3">
+                <div className="text-[11px] font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
                 {owners.map((o: any, oi: number) => (
-                  <div key={oi} style={{ display: "flex", gap: 8, marginBottom: 4, fontSize: 12 }}>
-                    <span style={{ fontWeight: 700 }}>{o.name || `건물주${oi + 1}`}</span>
-                    <span style={{ color: "#3B82F6" }}>{o.phone || "연락처 미등록"}</span>
+                  <div key={oi} className="flex gap-2 mb-1 text-xs">
+                    <span className="font-bold">{o.name || `건물주${oi + 1}`}</span>
+                    <span className="text-hm-blue">{o.phone || "연락처 미등록"}</span>
                   </div>
                 ))}
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#059669", marginBottom: 6 }}>💬 전송 내용</div>
+              <div className="mb-4">
+                <div className="text-[11px] font-bold text-hm-success mb-1.5">💬 전송 내용</div>
                 <textarea id="report-msg" defaultValue={msgText} rows={14}
-                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", resize: "vertical", lineHeight: 1.6 }} />
+                  className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed focus:ring-1 focus:ring-hm-blue outline-none transition-colors" />
               </div>
 
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className="flex gap-2">
                 <button onClick={() => {
                   const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
                   if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
@@ -442,7 +433,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
                   setReportModal(null);
                 }}
-                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  className="flex-1 p-3 rounded-lg border-none bg-hm-blue text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                   📱 문자 보내기
                 </button>
                 <button onClick={() => {
@@ -453,7 +444,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
                   setReportModal(null);
                 }}
-                  style={{ flex: 1, padding: "12px", borderRadius: 8, border: "none", background: "#FEE500", color: "#3C1E1E", fontWeight: 800, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  className="flex-1 p-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                   💬 카카오톡
                 </button>
                 <button onClick={() => {
@@ -461,7 +452,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                   navigator.clipboard.writeText(msg);
                   toast.success("메시지가 클립보드에 복사되었습니다.");
                 }}
-                  style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                  className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-gray-50 transition-colors">
                   📋 복사
                 </button>
               </div>
@@ -472,24 +463,24 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
 
       {/* 홍보 전환 확인 모달 */}
       {confirmPromo && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
           onMouseDown={() => setConfirmPromo(null)}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
             onMouseDown={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📢 홍보 전환</div>
-              <button onClick={() => setConfirmPromo(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-[15px] font-extrabold text-hm-text">📢 홍보 전환</div>
+              <button onClick={() => setConfirmPromo(null)} className="bg-none border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
             </div>
-            <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+            <div className="text-[13px] text-gray-700 leading-relaxed">
               홍보 준비가 완료되었습니까?
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+            <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setConfirmPromo(null)}
-                style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-gray-50 transition-colors">
                 취소
               </button>
               <button onClick={() => { handleStatusChange(confirmPromo, "홍보중"); setConfirmPromo(null); }}
-                style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                 확인
               </button>
             </div>

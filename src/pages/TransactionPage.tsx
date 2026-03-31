@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { buildings } from '@/data';
 import { useIsMobile, fmt } from '@/utils';
 import { Card, SectionTitle, Table } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { useLocalStorage } from '@/utils/useLocalStorage';
 
 // 뱅크다 시뮬레이션 데이터 (실제로는 a.bankda.com API에서 가져옴)
@@ -187,46 +187,48 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
     setTimeout(() => { setDone(false); setShowForm(false); setFormAmount(""); setFormNote(""); }, 1500);
   };
 
+  const selectClassName = "w-full px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors cursor-pointer";
+
   return (
     <div>
       <SectionTitle sub={`총 ${transactions.length}건`}>🏦 입출금 관리</SectionTitle>
 
       {/* 안내 코멘트 */}
-      <Card style={{ marginBottom: 16, padding: "14px 18px", background: "#F8FAFC", border: "1px solid #E8ECF0" }}>
-        <div style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23", marginBottom: 8 }}>a.bankda.com 연동 자동 입금 확인</div>
-        <div style={{ fontSize: 11, color: "#5F6577", lineHeight: 1.8 }}>
+      <Card className="mb-4 !px-[18px] !py-3.5 bg-[#F8FAFC] border border-hm-border">
+        <div className="text-xs font-extrabold text-hm-text mb-2">a.bankda.com 연동 자동 입금 확인</div>
+        <div className="text-[11px] text-hm-text-sub leading-[1.8]">
           뱅크다(a.bankda.com)와 연결되어 입출금 내역을 자동으로 확인합니다.
         </div>
-        <div style={{ marginTop: 8, padding: "10px 12px", borderRadius: 8, background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#2563EB", marginBottom: 6 }}>자동 확인 규칙 (100% 자동매칭)</div>
-          <div style={{ fontSize: 11, color: "#1E40AF", lineHeight: 2 }}>
+        <div className="mt-2 px-3 py-2.5 rounded-lg bg-hm-blue-bg border border-[#BFDBFE]">
+          <div className="text-[11px] font-bold text-hm-blue-dark mb-1.5">자동 확인 규칙 (100% 자동매칭)</div>
+          <div className="text-[11px] text-[#1E40AF] leading-8">
             <strong>1. 이름 + 금액 일치</strong> — 임차인 이름과 월세+관리비 금액이 정확히 일치하면 100% 자동 처리<br />
             <strong>2. 금액 유일 일치</strong> — 이름이 달라도 입금 금액이 1원 단위까지 정확히 일치하고, 해당 금액의 임차인이 1명뿐이면 100% 자동 처리 (입금자명 자동 저장)<br />
             <strong>3. 지정 입금자명</strong> — 회사가 건물+호실별로 지정한 입금자명과 일치하면 100% 자동 처리
           </div>
         </div>
-        <div style={{ marginTop: 6, fontSize: 10, color: "#8F95A3", lineHeight: 1.6 }}>
+        <div className="mt-1.5 text-[10px] text-hm-text-muted leading-relaxed">
           * 100%가 아닌 경우 확률(%)로 표시되며, 담당자가 직접 확인 후 승인하거나 수동으로 임차인을 지정할 수 있습니다.<br />
           * 한번 매칭된 입금자명은 자동 저장되어 다음부터 100% 자동매칭됩니다.
         </div>
       </Card>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
-        <Card style={{ background: "#ECFDF5", border: "1px solid #BBF7D0" }}>
-          <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>이번달 입금</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#059669" }}>{fmt(transactions.filter(t => t.type === "입금").reduce((s, t) => s + t.amount, 0))}원</div>
+      <div className={`grid gap-3 mb-5 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
+        <Card className="bg-hm-success-bg border border-[#BBF7D0]">
+          <div className="text-[10px] text-hm-text-muted font-semibold mb-1">이번달 입금</div>
+          <div className="text-[22px] font-extrabold text-hm-success">{fmt(transactions.filter(t => t.type === "입금").reduce((s, t) => s + t.amount, 0))}원</div>
         </Card>
-        <Card style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
-          <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>총 미수금</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#DC2626" }}>{fmt(Object.values(roomBalances).reduce((s, v) => s + v, 0))}원</div>
+        <Card className="bg-hm-danger-bg border border-[#FECACA]">
+          <div className="text-[10px] text-hm-text-muted font-semibold mb-1">총 미수금</div>
+          <div className="text-[22px] font-extrabold text-hm-danger">{fmt(Object.values(roomBalances).reduce((s, v) => s + v, 0))}원</div>
         </Card>
-        <Card style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-          <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>미납 호실</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#3B82F6" }}>{overdueRooms.length}건</div>
+        <Card className="bg-hm-blue-bg border border-[#BFDBFE]">
+          <div className="text-[10px] text-hm-text-muted font-semibold mb-1">미납 호실</div>
+          <div className="text-[22px] font-extrabold text-hm-blue">{overdueRooms.length}건</div>
         </Card>
-        <Card style={{ background: "#FDF4FF", border: "1px solid #E9D5FF", cursor: "pointer" }} onClick={() => setShowBankda(!showBankda)}>
-          <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>뱅크다 미매칭</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#7C3AED" }}>{bankMatches.length}건</div>
+        <Card className="bg-[#FDF4FF] border border-[#E9D5FF] cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowBankda(!showBankda)}>
+          <div className="text-[10px] text-hm-text-muted font-semibold mb-1">뱅크다 미매칭</div>
+          <div className="text-[22px] font-extrabold text-[#7C3AED]">{bankMatches.length}건</div>
         </Card>
       </div>
 
@@ -238,64 +240,58 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
         if (myDebts.length === 0) return null;
         return (
           <>
-            <Card style={{ marginBottom: 16, cursor: "pointer", border: totalDebtAmt > 0 ? "2px solid #DC2626" : "1.5px solid #E8ECF0", background: totalDebtAmt > 0 ? "#FEF2F2" : "#F8FAFC" }} onClick={() => setShowDebtSection(!showDebtSection)}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 16 }}>🚪</span>
+            <Card className={`mb-4 cursor-pointer ${totalDebtAmt > 0 ? 'border-2 border-hm-danger bg-hm-danger-bg' : 'border-[1.5px] border-hm-border bg-[#F8FAFC]'}`} onClick={() => setShowDebtSection(!showDebtSection)}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🚪</span>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 800, color: totalDebtAmt > 0 ? "#DC2626" : "#1A1D23" }}>퇴실 미수금</div>
-                    <div style={{ fontSize: 10, color: "#8F95A3" }}>퇴실 정산 후 미회수 잔액</div>
+                    <div className={`text-sm font-extrabold ${totalDebtAmt > 0 ? 'text-hm-danger' : 'text-hm-text'}`}>퇴실 미수금</div>
+                    <div className="text-[10px] text-hm-text-muted">퇴실 정산 후 미회수 잔액</div>
                   </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: totalDebtAmt > 0 ? "#DC2626" : "#059669" }}>{totalDebtAmt > 0 ? fmt(totalDebtAmt) + "원" : "없음"}</div>
-                  <div style={{ fontSize: 10, color: "#8F95A3" }}>미수 {pendingDebts.length}건 / 전체 {myDebts.length}건</div>
+                <div className="text-right">
+                  <div className={`text-lg font-extrabold ${totalDebtAmt > 0 ? 'text-hm-danger' : 'text-hm-success'}`}>{totalDebtAmt > 0 ? fmt(totalDebtAmt) + "원" : "없음"}</div>
+                  <div className="text-[10px] text-hm-text-muted">미수 {pendingDebts.length}건 / 전체 {myDebts.length}건</div>
                 </div>
               </div>
             </Card>
             {showDebtSection && (
-              <Card style={{ marginBottom: 16, border: "1.5px solid #FECACA", background: "#fff" }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626", marginBottom: 12 }}>🚪 퇴실 미수금 내역</div>
-                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+              <Card className="mb-4 border-[1.5px] border-[#FECACA] bg-white">
+                <div className="text-[13px] font-extrabold text-hm-danger mb-3">🚪 퇴실 미수금 내역</div>
+                <div className="flex gap-1.5 mb-3">
                   {["전체", "미수", "회수완료", "포기"].map(s => {
                     const cnt = s === "전체" ? myDebts.length : myDebts.filter(d => d.status === s).length;
                     return (
-                      <span key={s} style={{ fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 6,
-                        background: s === "미수" ? "#FEF2F2" : s === "회수완료" ? "#ECFDF5" : s === "포기" ? "#F3F4F6" : "#EFF6FF",
-                        color: s === "미수" ? "#DC2626" : s === "회수완료" ? "#059669" : s === "포기" ? "#8F95A3" : "#2563EB" }}>
+                      <span key={s} className={`text-[10px] font-bold px-2.5 py-1 rounded-md ${s === "미수" ? 'bg-hm-danger-bg text-hm-danger' : s === "회수완료" ? 'bg-hm-success-bg text-hm-success' : s === "포기" ? 'bg-[#F3F4F6] text-hm-text-muted' : 'bg-hm-blue-bg text-hm-blue-dark'}`}>
                         {s} {cnt}
                       </span>
                     );
                   })}
                 </div>
                 {myDebts.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "20px 0", color: "#B0B5C1", fontSize: 13 }}>퇴실 미수금 내역이 없습니다</div>
+                  <div className="text-center py-5 text-[#B0B5C1] text-[13px]">퇴실 미수금 내역이 없습니다</div>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div className="flex flex-col gap-1.5">
                     {myDebts.map((d, i) => (
-                      <div key={d.id || i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8,
-                        background: d.status === "미수" ? "#FEF2F2" : d.status === "회수완료" ? "#ECFDF5" : "#F8FAFC",
-                        border: `1px solid ${d.status === "미수" ? "#FECACA" : d.status === "회수완료" ? "#BBF7D0" : "#E8ECF0"}` }}>
+                      <div key={d.id || i} className={`flex items-center justify-between px-3 py-2.5 rounded-lg ${d.status === "미수" ? 'bg-hm-danger-bg border border-[#FECACA]' : d.status === "회수완료" ? 'bg-hm-success-bg border border-[#BBF7D0]' : 'bg-[#F8FAFC] border border-hm-border'}`}>
                         <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                            <span style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23" }}>{d.building} {d.room}호</span>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "#5F6577" }}>{d.name}</span>
-                            <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4,
-                              background: d.status === "미수" ? "#DC2626" : d.status === "회수완료" ? "#059669" : "#8F95A3",
-                              color: "#fff" }}>{d.status}</span>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-xs font-extrabold text-hm-text">{d.building} {d.room}호</span>
+                            <span className="text-[11px] font-bold text-hm-text-sub">{d.name}</span>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded text-white ${d.status === "미수" ? 'bg-hm-danger' : d.status === "회수완료" ? 'bg-hm-success' : 'bg-hm-text-muted'}`}>{d.status}</span>
                           </div>
-                          <div style={{ fontSize: 10, color: "#8F95A3" }}>퇴실일: {d.date}</div>
+                          <div className="text-[10px] text-hm-text-muted">퇴실일: {d.date}</div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 15, fontWeight: 800, color: d.status === "미수" ? "#DC2626" : d.status === "회수완료" ? "#059669" : "#8F95A3" }}>{fmt(d.amount)}원</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[15px] font-extrabold ${d.status === "미수" ? 'text-hm-danger' : d.status === "회수완료" ? 'text-hm-success' : 'text-hm-text-muted'}`}>{fmt(d.amount)}원</span>
                           {d.status === "미수" && (
-                            <div style={{ display: "flex", gap: 4 }}>
+                            <div className="flex gap-1">
                               <button onClick={(e) => { e.stopPropagation(); setMoveoutDebts(prev => prev.map(x => x.id === d.id ? { ...x, status: "회수완료" } : x)); }}
-                                style={{ fontSize: 9, fontWeight: 700, padding: "4px 8px", borderRadius: 5, border: "none", background: "#059669", color: "#fff", cursor: "pointer", fontFamily: "inherit" }}>
+                                className="text-[9px] font-bold px-2 py-1 rounded-[5px] border-none bg-hm-success text-white cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all">
                                 회수완료
                               </button>
                               <button onClick={(e) => { e.stopPropagation(); if (confirm("정말 포기하시겠습니까?")) setMoveoutDebts(prev => prev.map(x => x.id === d.id ? { ...x, status: "포기" } : x)); }}
-                                style={{ fontSize: 9, fontWeight: 700, padding: "4px 8px", borderRadius: 5, border: "1px solid #E0E3E9", background: "#fff", color: "#8F95A3", cursor: "pointer", fontFamily: "inherit" }}>
+                                className="text-[9px] font-bold px-2 py-1 rounded-[5px] border border-hm-input-border bg-white text-hm-text-muted cursor-pointer font-[inherit] hover:bg-hm-bg-hover active:scale-95 transition-all">
                                 포기
                               </button>
                             </div>
@@ -313,20 +309,20 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
       {/* 뱅크다 자동매칭 섹션 */}
       {showBankda && (
-        <Card style={{ marginBottom: 16, border: "2px solid #7C3AED", background: "#FEFBFF" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 16 }}>🏦</span>
+        <Card className="mb-4 border-2 border-[#7C3AED] bg-[#FEFBFF]">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🏦</span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: "#7C3AED" }}>뱅크다 입금 매칭</div>
-                <div style={{ fontSize: 10, color: "#8F95A3" }}>a.bankda.com 거래내역</div>
+                <div className="text-sm font-extrabold text-[#7C3AED]">뱅크다 입금 매칭</div>
+                <div className="text-[10px] text-hm-text-muted">a.bankda.com 거래내역</div>
               </div>
             </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              <span style={{ fontSize: 10, padding: "4px 10px", borderRadius: 6, background: "#ECFDF5", color: "#059669", fontWeight: 700 }}>100% {auto100.length}건</span>
-              <span style={{ fontSize: 10, padding: "4px 10px", borderRadius: 6, background: "#FEF3C7", color: "#92400E", fontWeight: 700 }}>수동확인 {manualNeeded.length}건</span>
+            <div className="flex gap-1.5">
+              <span className="text-[10px] px-2.5 py-1 rounded-md bg-hm-success-bg text-hm-success font-bold">100% {auto100.length}건</span>
+              <span className="text-[10px] px-2.5 py-1 rounded-md bg-[#FEF3C7] text-[#92400E] font-bold">수동확인 {manualNeeded.length}건</span>
               <button onClick={() => setShowDepositNames(!showDepositNames)}
-                style={{ fontSize: 10, padding: "4px 10px", borderRadius: 6, border: "1px solid #E9D5FF", background: showDepositNames ? "#7C3AED" : "#F5F3FF", color: showDepositNames ? "#fff" : "#7C3AED", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                className={`text-[10px] px-2.5 py-1 rounded-md border font-bold cursor-pointer font-[inherit] transition-colors ${showDepositNames ? 'border-[#E9D5FF] bg-[#7C3AED] text-white' : 'border-[#E9D5FF] bg-[#F5F3FF] text-[#7C3AED] hover:bg-[#EDE9FE]'}`}>
                 지정 입금자명
               </button>
             </div>
@@ -334,29 +330,29 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
           {/* 지정 입금자명 관리 */}
           {showDepositNames && (
-            <div style={{ marginBottom: 16, padding: "12px 14px", borderRadius: 10, background: "#F5F3FF", border: "1px solid #E9D5FF" }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#7C3AED", marginBottom: 10 }}>지정 입금자명 관리</div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 10 }}>건물+호실별로 지정 입금자명을 등록하면 해당 이름으로 입금 시 100% 자동매칭됩니다.</div>
+            <div className="mb-4 px-3.5 py-3 rounded-[10px] bg-[#F5F3FF] border border-[#E9D5FF]">
+              <div className="text-[11px] font-extrabold text-[#7C3AED] mb-2.5">지정 입금자명 관리</div>
+              <div className="text-[10px] text-hm-text-muted mb-2.5">건물+호실별로 지정 입금자명을 등록하면 해당 이름으로 입금 시 100% 자동매칭됩니다.</div>
               {/* 등록된 목록 */}
               {Object.keys(depositNames).length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                <div className="flex flex-wrap gap-1.5 mb-2.5">
                   {Object.entries(depositNames).map(([key, name]) => (
-                    <div key={key} style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 6, background: "#fff", border: "1px solid #E9D5FF", fontSize: 11 }}>
-                      <span style={{ fontWeight: 700 }}>{key.replace("_", " ")}</span>
-                      <span style={{ color: "#7C3AED", fontWeight: 600 }}>{name}</span>
+                    <div key={key} className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-[#E9D5FF] text-[11px]">
+                      <span className="font-bold">{key.replace("_", " ")}</span>
+                      <span className="text-[#7C3AED] font-semibold">{name}</span>
                       <span onClick={() => setDepositNames(prev => { const n = { ...prev }; delete n[key]; return n; })}
-                        style={{ color: "#DC2626", cursor: "pointer", fontWeight: 800, marginLeft: 4 }}>×</span>
+                        className="text-hm-danger cursor-pointer font-extrabold ml-1 hover:opacity-70 transition-opacity">×</span>
                     </div>
                   ))}
                 </div>
               )}
               {/* 저장된 별명 목록 */}
               {Object.keys(nameAliases).length > 0 && (
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>자동 저장된 입금자명</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                <div className="mb-2.5">
+                  <div className="text-[10px] text-hm-text-muted mb-1">자동 저장된 입금자명</div>
+                  <div className="flex flex-wrap gap-1">
                     {Object.entries(nameAliases).map(([key, names]) => names.map((n, i) => (
-                      <span key={`${key}_${i}`} style={{ fontSize: 10, padding: "3px 8px", borderRadius: 4, background: "#ECFDF5", color: "#059669", fontWeight: 600 }}>
+                      <span key={`${key}_${i}`} className="text-[10px] px-2 py-0.5 rounded bg-hm-success-bg text-hm-success font-semibold">
                         {key.replace("_", " ")} ← {n}
                       </span>
                     )))}
@@ -364,20 +360,20 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                 </div>
               )}
               {/* 새로 등록 */}
-              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <div className="flex gap-1.5 items-center">
                 <select value={editDepKey} onChange={e => setEditDepKey(e.target.value)}
-                  style={{ padding: "6px 10px", borderRadius: 6, border: "1.5px solid #E0E3E9", fontSize: 11, fontFamily: "inherit" }}>
+                  className="px-2.5 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-[11px] font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors">
                   <option value="">건물+호실 선택</option>
                   {myTenants.map(t => <option key={`${t.building}_${t.room}`} value={`${t.building}_${t.room}`}>{t.building} {t.room} ({t.name})</option>)}
                 </select>
                 <input value={editDepVal} onChange={e => setEditDepVal(e.target.value)} placeholder="지정 입금자명"
-                  style={{ padding: "6px 10px", borderRadius: 6, border: "1.5px solid #E0E3E9", fontSize: 11, fontFamily: "inherit", width: 120 }} />
+                  className="px-2.5 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-[11px] font-[inherit] w-[120px] outline-none focus:ring-2 focus:ring-ring transition-colors" />
                 <button onClick={() => {
                   if (!editDepKey || !editDepVal) return;
                   setDepositNames(prev => ({ ...prev, [editDepKey]: editDepVal }));
                   setEditDepKey(""); setEditDepVal("");
                 }}
-                  style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: "#7C3AED", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>등록</button>
+                  className="px-3.5 py-1.5 rounded-md border-none bg-[#7C3AED] text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all">등록</button>
               </div>
             </div>
           )}
@@ -385,64 +381,60 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
           {/* 100% 자동매칭 일괄 처리 */}
           {auto100.length > 0 && (
             <button onClick={() => auto100.forEach(m => handleMatch(m.bankTx, m.tenant!, m.saveName))}
-              style={{ width: "100%", padding: "10px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>
+              className="w-full py-2.5 rounded-lg border-none bg-hm-success text-white text-[13px] font-extrabold cursor-pointer font-[inherit] mb-3 hover:opacity-90 active:scale-[0.98] transition-all">
               100% 매칭 {auto100.length}건 일괄 입금처리
             </button>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {bankMatches.map((m) => {
               const { bankTx, score, tenant, reason, saveName, candidates } = m;
               const isManual = manualAssign === bankTx.id;
               return (
-                <div key={bankTx.id} style={{ padding: "12px 14px", borderRadius: 10, background: score === 100 ? "#F0FDF4" : score >= 50 ? "#FFFBEB" : "#FEF2F2", border: `1.5px solid ${score === 100 ? "#BBF7D0" : score >= 50 ? "#FDE68A" : "#FECACA"}` }}>
+                <div key={bankTx.id} className={`px-3.5 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-[#FECACA]'}`}>
                   {/* 뱅크다 거래 정보 */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "#1A1D23" }}>{bankTx.depositor}</span>
-                      <span style={{ fontSize: 10, color: "#8F95A3" }}>{bankTx.date.slice(5)} · {bankTx.bank}은행</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-extrabold text-hm-text">{bankTx.depositor}</span>
+                      <span className="text-[10px] text-hm-text-muted">{bankTx.date.slice(5)} · {bankTx.bank}은행</span>
                     </div>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#059669" }}>{fmt(bankTx.amount)}원</span>
+                    <span className="text-sm font-extrabold text-hm-success">{fmt(bankTx.amount)}원</span>
                   </div>
 
                   {/* 매칭 결과 */}
                   {tenant ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 6 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <span style={{
-                          fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 6,
-                          background: score === 100 ? "#059669" : score >= 50 ? "#F59E0B" : "#EF4444",
-                          color: "#fff"
-                        }}>
+                    <div className="flex items-center justify-between flex-wrap gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-md text-white ${score === 100 ? 'bg-hm-success' : score >= 50 ? 'bg-[#F59E0B]' : 'bg-[#EF4444]'}`}>
                           {score}%
                         </span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>
+                        <span className="text-xs font-bold text-hm-text">
                           {tenant.building} {tenant.room}호 {tenant.name}
                         </span>
-                        <span style={{ fontSize: 10, color: "#8F95A3" }}>({reason})</span>
-                        {saveName && <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#EFF6FF", color: "#2563EB", fontWeight: 600 }}>이름 자동저장</span>}
+                        <span className="text-[10px] text-hm-text-muted">({reason})</span>
+                        {saveName && <span className="text-[9px] px-1.5 py-0.5 rounded bg-hm-blue-bg text-hm-blue-dark font-semibold">이름 자동저장</span>}
                       </div>
-                      <div style={{ display: "flex", gap: 4 }}>
+                      <div className="flex gap-1">
                         <button onClick={() => handleMatch(bankTx, tenant, saveName)}
-                          style={{ fontSize: 10, fontWeight: 700, padding: "4px 12px", borderRadius: 6, border: "none", background: "#059669", color: "#fff", cursor: "pointer", fontFamily: "inherit" }}>
+                          className="text-[10px] font-bold px-3 py-1 rounded-md border-none bg-hm-success text-white cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all">
                           {score === 100 ? "확인" : "승인"}
                         </button>
                         {score < 100 && (
                           <button onClick={() => setManualAssign(isManual ? null : bankTx.id)}
-                            style={{ fontSize: 10, fontWeight: 700, padding: "4px 12px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
+                            className="text-[10px] font-bold px-3 py-1 rounded-md border border-hm-input-border bg-white text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                             {isManual ? "닫기" : "수동"}
                           </button>
                         )}
                       </div>
                     </div>
                   ) : (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 6, background: "#EF4444", color: "#fff" }}>0%</span>
-                        <span style={{ fontSize: 11, color: "#DC2626", fontWeight: 600 }}>매칭 대상 없음</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-[#EF4444] text-white">0%</span>
+                        <span className="text-[11px] text-hm-danger font-semibold">매칭 대상 없음</span>
                       </div>
                       <button onClick={() => setManualAssign(isManual ? null : bankTx.id)}
-                        style={{ fontSize: 10, fontWeight: 700, padding: "4px 12px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", cursor: "pointer", fontFamily: "inherit" }}>
+                        className="text-[10px] font-bold px-3 py-1 rounded-md border border-hm-input-border bg-white text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                         {isManual ? "닫기" : "수동 지정"}
                       </button>
                     </div>
@@ -450,31 +442,27 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
                   {/* 수동 지정 패널 */}
                   {isManual && (
-                    <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 8, background: "#F8FAFC", border: "1px solid #E8ECF0" }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#5F6577", marginBottom: 8 }}>임차인 선택</div>
+                    <div className="mt-2.5 px-3 py-2.5 rounded-lg bg-[#F8FAFC] border border-hm-border">
+                      <div className="text-[10px] font-bold text-hm-text-sub mb-2">임차인 선택</div>
                       {candidates && candidates.length > 0 && (
-                        <div style={{ marginBottom: 8 }}>
-                          <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>추천 (유사도순)</div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        <div className="mb-2">
+                          <div className="text-[9px] text-hm-text-muted mb-1">추천 (유사도순)</div>
+                          <div className="flex flex-wrap gap-1">
                             {candidates.slice(0, 5).map((c, ci) => (
                               <button key={ci} onClick={() => handleMatch(bankTx, c.tenant, true)}
-                                style={{ fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4 }}>
-                                <span style={{
-                                  fontSize: 9, fontWeight: 800, padding: "1px 5px", borderRadius: 4,
-                                  background: c.score >= 80 ? "#D1FAE5" : c.score >= 50 ? "#FEF3C7" : "#FEE2E2",
-                                  color: c.score >= 80 ? "#059669" : c.score >= 50 ? "#92400E" : "#DC2626"
-                                }}>{c.score}%</span>
+                                className="text-[10px] font-semibold px-2.5 py-1 rounded-md border border-hm-input-border bg-white cursor-pointer font-[inherit] flex items-center gap-1 hover:bg-hm-bg-hover transition-colors">
+                                <span className={`text-[9px] font-extrabold px-1.5 py-px rounded ${c.score >= 80 ? 'bg-[#D1FAE5] text-hm-success' : c.score >= 50 ? 'bg-[#FEF3C7] text-[#92400E]' : 'bg-[#FEE2E2] text-hm-danger'}`}>{c.score}%</span>
                                 {c.tenant.building} {c.tenant.room} {c.tenant.name}
                               </button>
                             ))}
                           </div>
                         </div>
                       )}
-                      <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>전체 임차인</div>
-                      <div style={{ maxHeight: 150, overflowY: "auto", display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      <div className="text-[9px] text-hm-text-muted mb-1">전체 임차인</div>
+                      <div className="max-h-[150px] overflow-y-auto flex flex-wrap gap-1">
                         {myTenants.map((t, ti) => (
                           <button key={ti} onClick={() => handleMatch(bankTx, t, true)}
-                            style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit" }}>
+                            className="text-[10px] px-2 py-0.5 rounded-[5px] border border-hm-input-border bg-white cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                             {t.building} {t.room} {t.name}
                           </button>
                         ))}
@@ -487,47 +475,47 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
           </div>
 
           {bankMatches.length === 0 && (
-            <div style={{ textAlign: "center", padding: "30px 0", color: "#8F95A3", fontSize: 13 }}>
+            <div className="text-center py-8 text-hm-text-muted text-[13px]">
               모든 거래가 매칭 완료되었습니다
             </div>
           )}
         </Card>
       )}
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+      <div className="flex justify-between items-center mb-4">
         <select value={filterBld} onChange={e => setFilterBld(e.target.value)}
-          style={{ padding: "7px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontWeight: 600, fontFamily: "inherit" }}>
+          className="px-3 py-[7px] rounded-lg border-[1.5px] border-hm-input-border text-xs font-semibold font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors">
           {buildingNames.map(b => <option key={b}>{b}</option>)}
         </select>
         <button onClick={() => setShowForm(!showForm)}
-          style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: showForm ? "#DC2626" : "#059669", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+          className={`px-5 py-2 rounded-lg border-none text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all ${showForm ? 'bg-hm-danger' : 'bg-hm-success'}`}>
           {showForm ? "✕ 닫기" : "💵 입금 등록"}
         </button>
       </div>
 
       {showForm && (
-        <Card style={{ marginBottom: 16, border: "2px solid #059669" }}>
+        <Card className="mb-4 border-2 border-hm-success">
           {done ? (
-            <div style={{ textAlign: "center", padding: 20 }}>
-              <span style={{ fontSize: 40 }}>✅</span>
-              <div style={{ fontSize: 16, fontWeight: 800, color: "#059669", marginTop: 8 }}>입금 처리 완료</div>
+            <div className="text-center p-5">
+              <span className="text-[40px]">✅</span>
+              <div className="text-base font-extrabold text-hm-success mt-2">입금 처리 완료</div>
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 12, color: "#059669" }}>💵 입금 등록</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+              <div className="text-[13px] font-extrabold mb-3 text-hm-success">💵 입금 등록</div>
+              <div className="grid grid-cols-3 gap-2.5 mb-2.5">
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>건물</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">건물</div>
                   <select value={formBld} onChange={e => { setFormBld(e.target.value); setFormRoom(""); }}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }}>
+                    className={selectClassName}>
                     <option value="">선택</option>
                     {buildingNames.filter(b => b !== "전체").map(b => <option key={b}>{b}</option>)}
                   </select>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>호실</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">호실</div>
                   <select value={formRoom} onChange={e => setFormRoom(e.target.value)}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }}>
+                    className={selectClassName}>
                     <option value="">선택</option>
                     {roomsForBld.map(r => {
                       const bal = roomBalances[`${formBld}_${r}`] || 0;
@@ -536,31 +524,31 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                   </select>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>입금액</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">입금액</div>
                   <input value={formAmount} onChange={e => setFormAmount(e.target.value)} placeholder="금액"
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", textAlign: "right", fontWeight: 700 }} />
+                    className="w-full px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] text-right font-bold outline-none focus:ring-2 focus:ring-ring transition-colors" />
                 </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "120px 1fr auto", gap: 10, alignItems: "end" }}>
+              <div className="grid grid-cols-[120px_1fr_auto] gap-2.5 items-end">
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>입금방법</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">입금방법</div>
                   <select value={formMethod} onChange={e => setFormMethod(e.target.value)}
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }}>
+                    className={selectClassName}>
                     <option>계좌이체</option><option>카드</option><option>현금</option>
                   </select>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>비고</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">비고</div>
                   <input value={formNote} onChange={e => setFormNote(e.target.value)} placeholder="메모"
-                    style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }} />
+                    className="w-full px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors" />
                 </div>
                 <button onClick={handleSubmit}
-                  style={{ padding: "8px 24px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>등록</button>
+                  className="px-6 py-2 rounded-lg border-none bg-hm-success text-white text-[13px] font-extrabold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 active:scale-95 transition-all">등록</button>
               </div>
               {formBld && formRoom && (
-                <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 6, background: "#F8FAFC", fontSize: 12, color: "#5F6577" }}>
-                  현재 잔액: <strong style={{ color: (roomBalances[`${formBld}_${formRoom}`] || 0) > 0 ? "#DC2626" : "#059669" }}>{fmt(roomBalances[`${formBld}_${formRoom}`] || 0)}원</strong>
-                  {formAmount && <> → 입금 후: <strong style={{ color: "#059669" }}>{fmt(Math.max(0, (roomBalances[`${formBld}_${formRoom}`] || 0) - parseInt(formAmount.replace(/,/g, "") || "0")))}원</strong></>}
+                <div className="mt-2.5 px-3 py-2 rounded-md bg-[#F8FAFC] text-xs text-hm-text-sub">
+                  현재 잔액: <strong className={(roomBalances[`${formBld}_${formRoom}`] || 0) > 0 ? 'text-hm-danger' : 'text-hm-success'}>{fmt(roomBalances[`${formBld}_${formRoom}`] || 0)}원</strong>
+                  {formAmount && <> → 입금 후: <strong className="text-hm-success">{fmt(Math.max(0, (roomBalances[`${formBld}_${formRoom}`] || 0) - parseInt(formAmount.replace(/,/g, "") || "0")))}원</strong></>}
                 </div>
               )}
             </>
@@ -569,37 +557,37 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
       )}
 
       {isMobile ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {sortedTx.length === 0 && <div style={{ textAlign: "center", padding: "40px 0", color: "#B0B5C1", fontSize: 13 }}>입출금 내역이 없습니다</div>}
+        <div className="flex flex-col gap-1.5">
+          {sortedTx.length === 0 && <div className="text-center py-10 text-[#B0B5C1] text-[13px]">입출금 내역이 없습니다</div>}
           {sortedTx.map((r, i) => (
-            <Card key={i} style={{ padding: "10px 12px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: r.type === "입금" ? "#ECFDF5" : "#FEF2F2", color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>{r.name}</span>
+            <Card key={i} className="!px-3 !py-2.5">
+              <div className="flex justify-between items-start mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${r.type === "입금" ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'}`}>{r.type}</span>
+                  <span className="text-[13px] font-bold">{r.name}</span>
                 </div>
-                <span style={{ fontSize: 14, fontWeight: 800, color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span>
+                <span className={`text-sm font-extrabold ${r.type === "입금" ? 'text-hm-success' : 'text-hm-danger'}`}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span>
               </div>
-              <div style={{ fontSize: 11, color: "#5F6577" }}>{r.building} {r.room}호 · {r.date.slice(5)} · {r.method}</div>
-              {r.note && <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>{r.note}</div>}
+              <div className="text-[11px] text-hm-text-sub">{r.building} {r.room}호 · {r.date.slice(5)} · {r.method}</div>
+              {r.note && <div className="text-[10px] text-hm-text-muted mt-0.5">{r.note}</div>}
             </Card>
           ))}
         </div>
       ) : (
       <Table
         columns={[
-          { label: "일자", render: (r: Record<string, any>) => <span style={{ fontSize: 11 }}>{r.date.slice(5)}</span> },
-          { label: "유형", render: (r: Record<string, any>) => <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: r.type === "입금" ? "#ECFDF5" : "#FEF2F2", color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type}</span> },
-          { label: "건물", render: (r: Record<string, any>) => <span style={{ fontWeight: 600, fontSize: 11 }}>{r.building}</span> },
+          { label: "일자", render: (r: Record<string, any>) => <span className="text-[11px]">{r.date.slice(5)}</span> },
+          { label: "유형", render: (r: Record<string, any>) => <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${r.type === "입금" ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'}`}>{r.type}</span> },
+          { label: "건물", render: (r: Record<string, any>) => <span className="font-semibold text-[11px]">{r.building}</span> },
           { label: "호실", render: (r: Record<string, any>) => r.room },
-          { label: "입주자", render: (r: Record<string, any>) => <span style={{ fontWeight: 700, display: "inline-block", maxWidth: "5em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{r.name}</span> },
-          { label: "금액", align: "right" as const, render: (r: Record<string, any>) => <span style={{ fontWeight: 800, color: r.type === "입금" ? "#059669" : "#DC2626" }}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span> },
-          { label: "방법", render: (r: Record<string, any>) => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.method}</span> },
+          { label: "입주자", render: (r: Record<string, any>) => <span className="font-bold inline-block max-w-[5em] overflow-hidden text-ellipsis whitespace-nowrap align-middle">{r.name}</span> },
+          { label: "금액", align: "right" as const, render: (r: Record<string, any>) => <span className={`font-extrabold ${r.type === "입금" ? 'text-hm-success' : 'text-hm-danger'}`}>{r.type === "입금" ? "+" : "-"}{fmt(r.amount)}원</span> },
+          { label: "방법", render: (r: Record<string, any>) => <span className="text-[10px] text-hm-text-muted">{r.method}</span> },
           { label: "잔액", align: "right" as const, render: (r: Record<string, any>) => {
             const bal = roomBalances[`${r.building}_${r.room}`] || 0;
-            return <span style={{ fontWeight: 700, fontSize: 11, color: bal > 0 ? "#DC2626" : "#059669" }}>{fmt(bal)}원</span>;
+            return <span className={`font-bold text-[11px] ${bal > 0 ? 'text-hm-danger' : 'text-hm-success'}`}>{fmt(bal)}원</span>;
           }},
-          { label: "비고", render: (r: Record<string, any>) => <span style={{ fontSize: 10, color: "#8F95A3" }}>{r.note}</span> },
+          { label: "비고", render: (r: Record<string, any>) => <span className="text-[10px] text-hm-text-muted">{r.note}</span> },
         ]}
         data={sortedTx}
       />

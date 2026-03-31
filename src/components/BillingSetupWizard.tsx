@@ -114,25 +114,21 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
   }, [buildingId, buildingType, selectedComponents, customItems, onComplete, lateFeeEnabled, lateFeeRate, lateFeeType, lateFeeValue]);
 
   return (
-    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E5E5E5', padding: 32, maxWidth: 700 }}>
+    <div className="bg-white rounded-xl border border-[#E5E5E5] p-8 max-w-[700px]">
       {/* 헤더 */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: '#111', margin: 0 }}>
+      <div className="mb-6">
+        <h2 className="text-lg font-extrabold text-hm-text m-0">
           청구 초기설정
         </h2>
-        <p style={{ fontSize: 13, color: '#888', margin: '6px 0 0' }}>
+        <p className="text-[13px] text-hm-text-muted mt-1.5">
           {buildingName} — {buildingType === 'short' ? '단기' : buildingType === 'variable' ? '변동관리비' : '고정관리비'}
         </p>
       </div>
 
       {/* 스텝 인디케이터 */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 28 }}>
+      <div className="flex gap-2 mb-7">
         {Array.from({ length: totalSteps }, (_, i) => i + 1).map(s => (
-          <div key={s} style={{
-            flex: 1, height: 4, borderRadius: 2,
-            background: s <= step ? '#346aff' : '#E5E5E5',
-            transition: 'background 0.3s',
-          }} />
+          <div key={s} className={`flex-1 h-1 rounded-sm transition-colors duration-300 ${s <= step ? 'bg-[#346aff]' : 'bg-[#E5E5E5]'}`} />
         ))}
       </div>
 
@@ -161,8 +157,8 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 1 (단기): 안내 메시지 */}
       {step === 1 && buildingType === 'short' && (
         <div>
-          <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 6 }}>단기 청구 설정</h3>
-          <p style={{ fontSize: 12, color: '#888', marginBottom: 20 }}>
+          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">단기 청구 설정</h3>
+          <p className="text-xs text-hm-text-muted mb-5">
             단기 건물은 전기/가스 엑셀 업로드로 자동 매칭됩니다.
             초기 검침 데이터는 엑셀 업로드 시 자동으로 설정됩니다.
           </p>
@@ -172,39 +168,37 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 2 (variable): 케이스 선택 */}
       {step === 2 && buildingType === 'variable' && (
         <div>
-          <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 6 }}>청구 케이스 선택</h3>
-          <p style={{ fontSize: 12, color: '#888', marginBottom: 20 }}>
+          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">청구 케이스 선택</h3>
+          <p className="text-xs text-hm-text-muted mb-5">
             이 건물의 기본 청구 발송 방식을 선택하세요 (임차인별로 변경 가능)
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="flex flex-col gap-2.5">
             {CASE_OPTIONS.map(opt => (
               <div
                 key={opt.value}
                 onClick={() => setSelectedCase(opt.value)}
-                style={{
-                  padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
-                  border: selectedCase === opt.value ? '2px solid #346aff' : '1px solid #E5E5E5',
-                  background: selectedCase === opt.value ? '#EBF0FF' : '#fff',
-                  transition: 'all 0.15s',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                }}
+                className={`px-4 py-3.5 rounded-[10px] cursor-pointer flex items-center gap-3 transition-all duration-150 ${
+                  selectedCase === opt.value
+                    ? 'border-2 border-[#346aff] bg-[#EBF0FF]'
+                    : 'border border-[#E5E5E5] bg-white hover:border-[#346aff]/40'
+                }`}
               >
-                <div style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  background: selectedCase === opt.value ? '#346aff' : '#F7F8FA',
-                  color: selectedCase === opt.value ? '#fff' : '#888',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, fontWeight: 800,
-                }}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold ${
+                  selectedCase === opt.value
+                    ? 'bg-[#346aff] text-white'
+                    : 'bg-hm-bg text-hm-text-muted'
+                }`}>
                   {opt.value}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: selectedCase === opt.value ? '#346aff' : '#111' }}>
+                <div className="flex-1">
+                  <div className={`text-[13px] font-bold ${selectedCase === opt.value ? 'text-[#346aff]' : 'text-hm-text'}`}>
                     {opt.label}
                   </div>
-                  <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{opt.desc}</div>
+                  <div className="text-[11px] text-hm-text-muted mt-0.5">{opt.desc}</div>
                 </div>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 4, background: opt.msgs === 1 ? '#ECFDF5' : '#FFF7ED', color: opt.msgs === 1 ? '#059669' : '#EA580C' }}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                  opt.msgs === 1 ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-warning-bg text-hm-warning'
+                }`}>
                   {opt.msgs}통
                 </span>
               </div>
@@ -236,8 +230,8 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 4 (variable) / Step 3 (short) / Step 2 (fixed): 완료 확인 */}
       {step === totalSteps && (
         <div>
-          <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 6 }}>설정 확인</h3>
-          <div style={{ background: '#F7F8FA', borderRadius: 8, padding: 16, fontSize: 12, color: '#333', lineHeight: 2 }}>
+          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">설정 확인</h3>
+          <div className="bg-hm-bg rounded-lg p-4 text-xs text-[#333] leading-8">
             {buildingType === 'variable' && (
               <>
                 <div><strong>변동관리비 항목:</strong> {selectedComponents.map(t => VARIABLE_FEE_OPTIONS.find(o => o.type === t)?.label).filter(Boolean).join(', ') || '없음'}</div>
@@ -251,7 +245,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       )}
 
       {/* 네비게이션 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
+      <div className="flex justify-between mt-7">
         <div>
           {step > 1 && (
             <button className="billing-btn ghost" onClick={() => setStep(s => s - 1)}>← 이전</button>
@@ -302,62 +296,58 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
     });
   };
 
-  const cardStyle = (isSelected: boolean): React.CSSProperties => ({
-    padding: '12px 14px', borderRadius: 10, cursor: isSelected ? 'default' : 'pointer',
-    border: isSelected ? '2px solid #346aff' : '1px solid #E5E5E5',
-    background: isSelected ? '#EBF0FF' : '#fff',
-    transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 10, userSelect: 'none',
-  });
-
   return (
     <div>
-      <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 6 }}>변동관리비 항목 구성</h3>
-      <p style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>왼쪽에서 클릭으로 추가, 오른쪽에서 화살표로 순서 변경</p>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+      <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">변동관리비 항목 구성</h3>
+      <p className="text-xs text-hm-text-muted mb-4">왼쪽에서 클릭으로 추가, 오른쪽에서 화살표로 순서 변경</p>
+      <div className="grid grid-cols-2 gap-4 mb-5">
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 8 }}>사용 가능</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {available.length === 0 && <div style={{ fontSize: 12, color: '#ccc', padding: 20, textAlign: 'center', border: '1px dashed #E5E5E5', borderRadius: 10 }}>모두 선택됨</div>}
+          <div className="text-[11px] font-bold text-hm-text-muted mb-2">사용 가능</div>
+          <div className="flex flex-col gap-2">
+            {available.length === 0 && <div className="text-xs text-[#ccc] p-5 text-center border border-dashed border-[#E5E5E5] rounded-[10px]">모두 선택됨</div>}
             {available.map(opt => (
-              <div key={opt.type} style={cardStyle(false)} onClick={() => setSelectedComponents(p => [...p, opt.type])}>
-                <span style={{ fontSize: 18 }}>{opt.icon}</span>
-                <div style={{ flex: 1 }}><div style={{ fontSize: 12, fontWeight: 700 }}>{opt.label}</div><div style={{ fontSize: 10, color: '#888' }}>{opt.desc}</div></div>
-                <span style={{ fontSize: 16, color: '#346aff', fontWeight: 800 }}>+</span>
+              <div
+                key={opt.type}
+                onClick={() => setSelectedComponents(p => [...p, opt.type])}
+                className="px-3.5 py-3 rounded-[10px] cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-2.5 select-none hover:border-[#346aff]/40"
+              >
+                <span className="text-lg">{opt.icon}</span>
+                <div className="flex-1"><div className="text-xs font-bold">{opt.label}</div><div className="text-[10px] text-hm-text-muted">{opt.desc}</div></div>
+                <span className="text-base text-[#346aff] font-extrabold">+</span>
               </div>
             ))}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#346aff', marginBottom: 8 }}>적용 항목 ({selectedComponents.length})</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: 120, padding: selectedComponents.length === 0 ? 20 : 0, border: selectedComponents.length === 0 ? '2px dashed #D1D5DB' : 'none', borderRadius: 10, textAlign: 'center' }}>
-            {selectedComponents.length === 0 && <div style={{ fontSize: 12, color: '#ccc' }}>왼쪽에서 클릭하세요</div>}
+          <div className="text-[11px] font-bold text-[#346aff] mb-2">적용 항목 ({selectedComponents.length})</div>
+          <div className={`flex flex-col gap-2 min-h-[120px] rounded-[10px] ${
+            selectedComponents.length === 0 ? 'p-5 border-2 border-dashed border-gray-300 text-center' : ''
+          }`}>
+            {selectedComponents.length === 0 && <div className="text-xs text-[#ccc]">왼쪽에서 클릭하세요</div>}
             {selectedComponents.map((type, index) => {
               const opt = VARIABLE_FEE_OPTIONS.find(o => o.type === type);
               return opt ? (
-                <div key={type} style={cardStyle(true)}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div key={type} className="px-3.5 py-3 rounded-[10px] border-2 border-[#346aff] bg-[#EBF0FF] transition-all duration-150 flex items-center gap-2.5 select-none">
+                  <div className="flex flex-col gap-0.5">
                     <button
                       onClick={() => moveItem(index, 'up')}
                       disabled={index === 0}
-                      style={{
-                        background: 'none', border: 'none', fontSize: 10, color: index === 0 ? '#ccc' : '#888',
-                        cursor: index === 0 ? 'default' : 'pointer', padding: 0, lineHeight: 1,
-                      }}
+                      className={`bg-transparent border-none text-[10px] p-0 leading-none ${
+                        index === 0 ? 'text-[#ccc] cursor-default' : 'text-hm-text-muted cursor-pointer hover:text-hm-text'
+                      }`}
                     >▲</button>
                     <button
                       onClick={() => moveItem(index, 'down')}
                       disabled={index === selectedComponents.length - 1}
-                      style={{
-                        background: 'none', border: 'none', fontSize: 10,
-                        color: index === selectedComponents.length - 1 ? '#ccc' : '#888',
-                        cursor: index === selectedComponents.length - 1 ? 'default' : 'pointer', padding: 0, lineHeight: 1,
-                      }}
+                      className={`bg-transparent border-none text-[10px] p-0 leading-none ${
+                        index === selectedComponents.length - 1 ? 'text-[#ccc] cursor-default' : 'text-hm-text-muted cursor-pointer hover:text-hm-text'
+                      }`}
                     >▼</button>
                   </div>
-                  <span style={{ fontSize: 18 }}>{opt.icon}</span>
-                  <div style={{ flex: 1 }}><div style={{ fontSize: 12, fontWeight: 700, color: '#346aff' }}>{opt.label}</div></div>
+                  <span className="text-lg">{opt.icon}</span>
+                  <div className="flex-1"><div className="text-xs font-bold text-[#346aff]">{opt.label}</div></div>
                   <button onClick={(e) => { e.stopPropagation(); setSelectedComponents(p => p.filter(t => t !== type)); }}
-                    style={{ background: 'none', border: 'none', fontSize: 14, color: '#E52528', cursor: 'pointer' }}>✕</button>
+                    className="bg-transparent border-none text-sm text-hm-danger cursor-pointer hover:text-red-700 transition-colors">✕</button>
                 </div>
               ) : null;
             })}
@@ -365,15 +355,15 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
         </div>
       </div>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#666', marginBottom: 8 }}>직접 추가</div>
+        <div className="text-[11px] font-bold text-[#666] mb-2">직접 추가</div>
         {customItems.map((item: any, idx: number) => (
-          <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <div key={idx} className="flex gap-2 mb-2">
             <input value={item.label} onChange={e => updateCustomItem(idx, 'label', e.target.value)} placeholder="항목명"
-              style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC', fontSize: 12, fontFamily: 'inherit' }} />
-            <button onClick={() => removeCustomItem(idx)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #E5E5E5', background: '#fff', fontSize: 12, cursor: 'pointer', color: '#E52528' }}>✕</button>
+              className="flex-1 px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 outline-none transition-colors" />
+            <button onClick={() => removeCustomItem(idx)} className="px-2.5 py-1.5 rounded-md border border-[#E5E5E5] bg-white text-xs cursor-pointer text-hm-danger hover:bg-hm-danger-bg transition-colors">✕</button>
           </div>
         ))}
-        <button onClick={addCustomItem} style={{ padding: '8px 14px', borderRadius: 6, border: '1px dashed #D1D5DB', background: '#FAFBFC', fontSize: 12, fontWeight: 600, color: '#666', cursor: 'pointer', width: '100%' }}>+ 항목 직접 추가</button>
+        <button onClick={addCustomItem} className="px-3.5 py-2 rounded-md border border-dashed border-gray-300 bg-[#FAFBFC] text-xs font-semibold text-[#666] cursor-pointer w-full hover:border-[#346aff] hover:text-[#346aff] transition-colors">+ 항목 직접 추가</button>
       </div>
     </div>
   );
@@ -394,56 +384,47 @@ interface LateFeeStepProps {
 function LateFeeStep({ enabled, setEnabled, rate, setRate, type, setType, value, setValue }: LateFeeStepProps) {
   return (
     <div>
-      <h3 style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 6 }}>연체수수료 설정</h3>
-      <p style={{ fontSize: 12, color: '#888', marginBottom: 20 }}>기본값은 꺼짐입니다. 필요시 활성화하세요.</p>
+      <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">연체수수료 설정</h3>
+      <p className="text-xs text-hm-text-muted mb-5">기본값은 꺼짐입니다. 필요시 활성화하세요.</p>
 
       <div
         onClick={() => setEnabled(!enabled)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 12, padding: 14, borderRadius: 10,
-          border: enabled ? '2px solid #346aff' : '1px solid #E5E5E5',
-          background: enabled ? '#EBF0FF' : '#fff', cursor: 'pointer', marginBottom: 16,
-        }}
+        className={`flex items-center gap-3 p-3.5 rounded-[10px] cursor-pointer mb-4 transition-all duration-150 ${
+          enabled ? 'border-2 border-[#346aff] bg-[#EBF0FF]' : 'border border-[#E5E5E5] bg-white hover:border-[#346aff]/40'
+        }`}
       >
-        <div style={{
-          width: 40, height: 22, borderRadius: 11, padding: 2,
-          background: enabled ? '#346aff' : '#D1D5DB', transition: 'background 0.2s',
-        }}>
-          <div style={{
-            width: 18, height: 18, borderRadius: 9, background: '#fff',
-            transform: enabled ? 'translateX(18px)' : 'translateX(0)',
-            transition: 'transform 0.2s',
-          }} />
+        <div className={`w-10 h-[22px] rounded-full p-0.5 transition-colors duration-200 ${enabled ? 'bg-[#346aff]' : 'bg-gray-300'}`}>
+          <div className={`w-[18px] h-[18px] rounded-full bg-white transition-transform duration-200 ${enabled ? 'translate-x-[18px]' : 'translate-x-0'}`} />
         </div>
-        <span style={{ fontSize: 13, fontWeight: 700, color: enabled ? '#346aff' : '#666' }}>
+        <span className={`text-[13px] font-bold ${enabled ? 'text-[#346aff]' : 'text-[#666]'}`}>
           연체수수료 {enabled ? '활성' : '비활성'}
         </span>
       </div>
 
       {enabled && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#888' }}>수수료율 (%)</span>
+        <div className="grid grid-cols-3 gap-3">
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-hm-text-muted">수수료율 (%)</span>
             <input
               type="number" value={rate} onChange={e => setRate(Number(e.target.value) || 0)}
-              style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC', fontSize: 13, fontFamily: 'inherit' }}
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             />
           </label>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#888' }}>적용 기준</span>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-hm-text-muted">적용 기준</span>
             <select
               value={type} onChange={e => setType(e.target.value)}
-              style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC', fontSize: 13, fontFamily: 'inherit' }}
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             >
               <option value="days">며칠 후</option>
               <option value="months">개월 후</option>
             </select>
           </label>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#888' }}>{type === 'days' ? '일수' : '개월수'}</span>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold text-hm-text-muted">{type === 'days' ? '일수' : '개월수'}</span>
             <input
               type="number" value={value} onChange={e => setValue(Number(e.target.value) || 0)}
-              style={{ padding: '8px 10px', borderRadius: 6, border: '1px solid #CCCCCC', fontSize: 13, fontFamily: 'inherit' }}
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             />
           </label>
         </div>

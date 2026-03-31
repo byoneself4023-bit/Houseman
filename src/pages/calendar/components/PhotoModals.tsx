@@ -18,13 +18,13 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
   if (!photoModalTenant) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
       onClick={() => setPhotoModalTenant(null)}>
-      <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+      <div className="bg-white rounded-2xl p-6 w-[480px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📷 퇴실사진 등록 — {photoModalTenant.building} {photoModalTenant.room}호</div>
-          <button onClick={() => setPhotoModalTenant(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-[15px] font-extrabold text-hm-text">📷 퇴실사진 등록 — {photoModalTenant.building} {photoModalTenant.room}호</div>
+          <button onClick={() => setPhotoModalTenant(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <PhotoDropZone
           label="퇴실사진" color="#DC2626" maxPhotos={50}
@@ -75,9 +75,9 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
             }
           }}
         />
-        <div style={{ textAlign: "right", marginTop: 12 }}>
+        <div className="text-right mt-3">
           <button onClick={() => setPhotoModalTenant(null)}
-            style={{ padding: "8px 24px", borderRadius: 8, border: "none", background: "#DC2626", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-6 py-2 rounded-lg border-none bg-hm-danger text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-red-700 transition-colors">
             확인
           </button>
         </div>
@@ -100,13 +100,13 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
   if (!checkPhotoModalTenant) return null;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+    <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
       onClick={() => setCheckPhotoModalTenant(null)}>
-      <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 480, maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+      <div className="bg-white rounded-2xl p-6 w-[480px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📷 입주체크사진 등록 — {checkPhotoModalTenant.building} {checkPhotoModalTenant.room}호</div>
-          <button onClick={() => setCheckPhotoModalTenant(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-[15px] font-extrabold text-hm-text">📷 입주체크사진 등록 — {checkPhotoModalTenant.building} {checkPhotoModalTenant.room}호</div>
+          <button onClick={() => setCheckPhotoModalTenant(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <PhotoDropZone
           label="입주체크사진" color="#F59E0B" maxPhotos={50}
@@ -156,9 +156,9 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
             }
           }}
         />
-        <div style={{ textAlign: "right", marginTop: 12 }}>
+        <div className="text-right mt-3">
           <button onClick={() => setCheckPhotoModalTenant(null)}
-            style={{ padding: "8px 24px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+            className="px-6 py-2 rounded-lg border-none bg-amber-400 text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-amber-500 transition-colors">
             확인
           </button>
         </div>
@@ -184,7 +184,7 @@ export const ZoomPhotoModal: React.FC<ZoomPhotoModalProps> = ({ zoomPhoto, setZo
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 10001, background: "rgba(0,0,0,.9)", display: "flex", alignItems: "center", justifyContent: "center", userSelect: "none" }}
+    <div className="fixed inset-0 z-[10001] bg-black/90 flex items-center justify-center select-none"
       tabIndex={0} ref={(el: HTMLDivElement | null) => { if (el) el.focus(); }}
       onClick={() => setZoomPhoto(null)}
       onKeyDown={e => {
@@ -199,29 +199,30 @@ export const ZoomPhotoModal: React.FC<ZoomPhotoModalProps> = ({ zoomPhoto, setZo
       }}>
       {zp.index > 0 && (
         <button onClick={e => { e.stopPropagation(); goTo(-1); }}
-          style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,.15)", border: "none", fontSize: 28, color: "#fff", cursor: "pointer", borderRadius: "50%", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-[28px] text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
           &#8249;
         </button>
       )}
       {zp.index < zp.photos.length - 1 && (
         <button onClick={e => { e.stopPropagation(); goTo(1); }}
-          style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", background: "rgba(255,255,255,.15)", border: "none", fontSize: 28, color: "#fff", cursor: "pointer", borderRadius: "50%", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 }}>
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-[28px] text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
           &#8250;
         </button>
       )}
       <img src={src} alt=""
-        style={{ maxWidth: "90vw", maxHeight: "90vh", borderRadius: 8, boxShadow: "0 0 40px rgba(0,0,0,.5)", transform: `scale(${zp.zoom})`, transition: "transform 0.1s ease-out" }}
+        className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-[0_0_40px_rgba(0,0,0,.5)] transition-transform duration-100 ease-out"
+        style={{ transform: `scale(${zp.zoom})` }}
         onClick={e => e.stopPropagation()}
         draggable={false} />
-      <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,.5)", borderRadius: 20, padding: "6px 16px", color: "#fff", fontSize: 13, fontWeight: 700 }}>
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 rounded-[20px] px-4 py-1.5 text-white text-[13px] font-bold">
         {zp.index + 1} / {zp.photos.length}
-        {zp.zoom !== 1 && <span style={{ marginLeft: 8, fontSize: 11, color: "#93C5FD" }}>{Math.round(zp.zoom * 100)}%</span>}
+        {zp.zoom !== 1 && <span className="ml-2 text-[11px] text-blue-300">{Math.round(zp.zoom * 100)}%</span>}
       </div>
       <button onClick={() => setZoomPhoto(null)}
-        style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,.2)", border: "none", fontSize: 24, color: "#fff", cursor: "pointer", borderRadius: "50%", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        className="absolute top-4 right-4 bg-white/20 border-none text-2xl text-white cursor-pointer rounded-full w-10 h-10 flex items-center justify-center hover:bg-white/30 transition-colors">
         ✕
       </button>
-      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,.4)", fontSize: 11 }}>
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-[11px]">
         ← → 이전/다음 · 스크롤 확대/축소 · ESC 닫기
       </div>
     </div>
@@ -251,34 +252,34 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
   const updateCmp = (patch: Record<string, any>) => setCompareData((prev: any) => ({ ...prev, ...patch }));
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.85)", display: "flex", flexDirection: "column" }}
+    <div className="fixed inset-0 z-[9999] bg-black/85 flex flex-col"
       onClick={() => setCompareData(null)}>
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}
+      <div className="w-full h-full flex flex-col"
         onClick={e => e.stopPropagation()}>
         {/* 헤더 */}
-        <div style={{ padding: "12px 24px", background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="px-6 py-3 bg-black/60 flex items-center justify-between shrink-0">
+          <div className="text-[15px] font-extrabold text-white">🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
+          <div className="flex items-center gap-3">
             {isCompareMode && (
               <button onClick={() => updateCmp({ _leftIdx: null, _rightIdx: null, _leftZoom: 1, _rightZoom: 1, _leftPos: { x: 0, y: 0 }, _rightPos: { x: 0, y: 0 } })}
-                style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid rgba(255,255,255,.3)", background: "rgba(255,255,255,.1)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                className="px-3.5 py-[5px] rounded-md border border-white/30 bg-white/10 text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-white/20 transition-colors">
                 목록으로
               </button>
             )}
-            <button onClick={() => setCompareData(null)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff" }}>✕</button>
+            <button onClick={() => setCompareData(null)} className="bg-transparent border-none text-[22px] cursor-pointer text-white hover:text-white/70 transition-colors">✕</button>
           </div>
         </div>
 
         {/* 본문: 좌우 반반 */}
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <div className="flex-1 flex overflow-hidden">
           {/* 왼쪽: 입주체크사진 */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: "2px solid rgba(255,255,255,.15)" }}>
-            <div style={{ padding: "8px 16px", background: "rgba(245,158,11,.15)", textAlign: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: 12, fontWeight: 800, color: "#FCD34D" }}>📋 입주체크사진 (입주 시) — {leftPhotos.length}장</span>
+          <div className="flex-1 flex flex-col border-r-2 border-white/15">
+            <div className="px-4 py-2 bg-amber-500/15 text-center shrink-0">
+              <span className="text-xs font-extrabold text-yellow-300">📋 입주체크사진 (입주 시) — {leftPhotos.length}장</span>
             </div>
-            <div style={{ flex: 1, overflow: "auto", padding: cmpLeft !== null ? 0 : 12 }}>
+            <div className="flex-1 overflow-auto" style={{ padding: cmpLeft !== null ? 0 : 12 }}>
               {cmpLeft !== null && leftPhotos[cmpLeft] ? (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", cursor: "grab", position: "relative" }}
+                <div className="w-full h-full flex items-center justify-center overflow-hidden cursor-grab relative"
                   onWheel={e => {
                     e.stopPropagation();
                     const delta = e.deltaY > 0 ? -0.15 : 0.15;
@@ -295,28 +296,29 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                     window.addEventListener("mouseup", onUp);
                   }}>
                   <img src={typeof leftPhotos[cmpLeft] === "string" ? leftPhotos[cmpLeft] : URL.createObjectURL(leftPhotos[cmpLeft])} alt=""
-                    style={{ maxWidth: "100%", maxHeight: "100%", transform: `scale(${cmpLeftZoom}) translate(${cmpLeftPos.x / cmpLeftZoom}px, ${cmpLeftPos.y / cmpLeftZoom}px)`, transition: "transform 0.1s ease-out", objectFit: "contain" }}
+                    className="max-w-full max-h-full object-contain transition-transform duration-100 ease-out"
+                    style={{ transform: `scale(${cmpLeftZoom}) translate(${cmpLeftPos.x / cmpLeftZoom}px, ${cmpLeftPos.y / cmpLeftZoom}px)` }}
                     draggable={false} />
                   {cmpLeft > 0 && (
                     <button onClick={() => updateCmp({ _leftIdx: cmpLeft - 1, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
-                      style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>&#8249;</button>
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8249;</button>
                   )}
                   {cmpLeft < leftPhotos.length - 1 && (
                     <button onClick={() => updateCmp({ _leftIdx: cmpLeft + 1, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
-                      style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>&#8250;</button>
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8250;</button>
                   )}
-                  <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-[10px] font-bold">
                     {cmpLeft + 1}/{leftPhotos.length} {cmpLeftZoom !== 1 && `· ${Math.round(cmpLeftZoom * 100)}%`}
                   </div>
                 </div>
               ) : leftPhotos.length === 0 ? (
-                <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>등록된 사진 없음</div>
+                <div className="p-10 text-center text-gray-500 text-xs">등록된 사진 없음</div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                <div className="grid grid-cols-3 gap-1.5">
                   {leftPhotos.map((p: any, i: number) => (
                     <div key={i} onClick={() => updateCmp({ _leftIdx: i, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
-                      style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(253,224,71,.4)", aspectRatio: "1", background: "#111" }}>
-                      <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      className="cursor-pointer rounded-lg overflow-hidden border-2 border-yellow-300/40 aspect-square bg-[#111]">
+                      <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" className="w-full h-full object-cover block" />
                     </div>
                   ))}
                 </div>
@@ -325,13 +327,13 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
           </div>
 
           {/* 오른쪽: 퇴실사진 */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <div style={{ padding: "8px 16px", background: "rgba(220,38,38,.15)", textAlign: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: 12, fontWeight: 800, color: "#FCA5A5" }}>🚪 퇴실사진 (퇴실 시) — {rightPhotos.length}장</span>
+          <div className="flex-1 flex flex-col">
+            <div className="px-4 py-2 bg-red-600/15 text-center shrink-0">
+              <span className="text-xs font-extrabold text-red-300">🚪 퇴실사진 (퇴실 시) — {rightPhotos.length}장</span>
             </div>
-            <div style={{ flex: 1, overflow: "auto", padding: cmpRight !== null ? 0 : 12 }}>
+            <div className="flex-1 overflow-auto" style={{ padding: cmpRight !== null ? 0 : 12 }}>
               {cmpRight !== null && rightPhotos[cmpRight] ? (
-                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", cursor: "grab", position: "relative" }}
+                <div className="w-full h-full flex items-center justify-center overflow-hidden cursor-grab relative"
                   onWheel={e => {
                     e.stopPropagation();
                     const delta = e.deltaY > 0 ? -0.15 : 0.15;
@@ -348,18 +350,19 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                     window.addEventListener("mouseup", onUp);
                   }}>
                   <img src={typeof rightPhotos[cmpRight] === "string" ? rightPhotos[cmpRight] : URL.createObjectURL(rightPhotos[cmpRight])} alt=""
-                    style={{ maxWidth: "100%", maxHeight: "100%", transform: `scale(${cmpRightZoom}) translate(${cmpRightPos.x / cmpRightZoom}px, ${cmpRightPos.y / cmpRightZoom}px)`, transition: "transform 0.1s ease-out", objectFit: "contain" }}
+                    className="max-w-full max-h-full object-contain transition-transform duration-100 ease-out"
+                    style={{ transform: `scale(${cmpRightZoom}) translate(${cmpRightPos.x / cmpRightZoom}px, ${cmpRightPos.y / cmpRightZoom}px)` }}
                     draggable={false} />
                   {cmpRight > 0 && (
                     <button onClick={() => updateCmp({ _rightIdx: cmpRight - 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
-                      style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>&#8249;</button>
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8249;</button>
                   )}
                   {cmpRight < rightPhotos.length - 1 && (
                     <button onClick={() => updateCmp({ _rightIdx: cmpRight + 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
-                      style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>&#8250;</button>
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8250;</button>
                   )}
-                  <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                    <div className="bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-[10px] font-bold">
                       {cmpRight + 1}/{rightPhotos.length} {cmpRightZoom !== 1 && `· ${Math.round(cmpRightZoom * 100)}%`}
                     </div>
                     {onRemoveRight && (
@@ -370,19 +373,19 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                         if (newLen === 0) updateCmp({ _rightIdx: null });
                         else if (cmpRight >= newLen) updateCmp({ _rightIdx: newLen - 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } });
                       }}
-                        style={{ padding: "3px 10px", borderRadius: 12, border: "none", background: "rgba(220,38,38,.8)", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        className="px-2.5 py-[3px] rounded-xl border-none bg-red-600/80 text-white text-[10px] font-bold cursor-pointer font-[inherit] hover:bg-red-700 transition-colors">
                         🗑 삭제
                       </button>
                     )}
                   </div>
                 </div>
               ) : rightPhotos.length === 0 ? (
-                <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>
+                <div className="p-10 text-center text-gray-500 text-xs">
                   등록된 사진 없음
                   {onAddRight && (
-                    <div style={{ marginTop: 12 }}>
+                    <div className="mt-3">
                       <button onClick={() => rightFileRef.current?.click()}
-                        style={{ padding: "8px 20px", borderRadius: 8, border: "2px dashed rgba(254,202,202,.6)", background: "rgba(220,38,38,.1)", color: "#FCA5A5", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        className="px-5 py-2 rounded-lg border-2 border-dashed border-red-200/60 bg-red-600/10 text-red-300 text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-600/20 transition-colors">
                         + 사진 추가
                       </button>
                     </div>
@@ -390,15 +393,15 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                 </div>
               ) : (
                 <div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                  <div className="grid grid-cols-3 gap-1.5">
                     {rightPhotos.map((p: any, i: number) => (
-                      <div key={i} style={{ position: "relative", cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(254,202,202,.4)", aspectRatio: "1", background: "#111" }}>
-                        <div onClick={() => updateCmp({ _rightIdx: i, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })} style={{ width: "100%", height: "100%" }}>
-                          <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                      <div key={i} className="relative cursor-pointer rounded-lg overflow-hidden border-2 border-red-200/40 aspect-square bg-[#111]">
+                        <div onClick={() => updateCmp({ _rightIdx: i, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })} className="w-full h-full">
+                          <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" className="w-full h-full object-cover block" />
                         </div>
                         {onRemoveRight && (
                           <div onClick={(e) => { e.stopPropagation(); onRemoveRight(i); toast.success("퇴실사진 삭제됨"); }}
-                            style={{ position: "absolute", top: 2, right: 2, width: 20, height: 20, borderRadius: "50%", background: "rgba(220,38,38,.85)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-red-600/85 text-white text-[10px] font-extrabold flex items-center justify-center cursor-pointer hover:bg-red-700 transition-colors">
                             ✕
                           </div>
                         )}
@@ -406,9 +409,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                     ))}
                   </div>
                   {onAddRight && (
-                    <div style={{ marginTop: 8, textAlign: "center" }}>
+                    <div className="mt-2 text-center">
                       <button onClick={() => rightFileRef.current?.click()}
-                        style={{ padding: "6px 16px", borderRadius: 8, border: "2px dashed rgba(254,202,202,.6)", background: "rgba(220,38,38,.1)", color: "#FCA5A5", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        className="px-4 py-1.5 rounded-lg border-2 border-dashed border-red-200/60 bg-red-600/10 text-red-300 text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-red-600/20 transition-colors">
                         + 사진 추가
                       </button>
                     </div>
@@ -421,7 +424,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
 
         {/* hidden file input for adding photos */}
         {onAddRight && (
-          <input ref={rightFileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+          <input ref={rightFileRef} type="file" accept="image/*" multiple className="hidden"
             onChange={(e) => {
               const files = e.target.files;
               if (!files || files.length === 0) return;
@@ -435,8 +438,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
         )}
 
         {/* 하단 안내 */}
-        <div style={{ padding: "8px 24px", background: "rgba(0,0,0,.6)", textAlign: "center", flexShrink: 0 }}>
-          <span style={{ color: "rgba(255,255,255,.5)", fontSize: 11 }}>사진 클릭하여 확대 · 스크롤로 줌 · 드래그로 이동 · ESC 닫기</span>
+        <div className="px-6 py-2 bg-black/60 text-center shrink-0">
+          <span className="text-white/50 text-[11px]">사진 클릭하여 확대 · 스크롤로 줌 · 드래그로 이동 · ESC 닫기</span>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components';
 import { rtCfg } from '@/components/RoomTypeBadge';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { acctTypeBg, acctTypeColor } from '@/config/accountConfig';
 
 const BUILDING_TYPES = ["단기", "일반임대", "근생", "관리사무소", "기업시설관리"];
@@ -58,81 +58,82 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
   return (
     <>
       {/* Section 1: Basic Info */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec1Open ? 12 : 0 }}>
-          <div onClick={() => setSec1Open(!sec1Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📋 기본 정보</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>건물 유형 · 주소 · 시설 · 관리 시작일</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec1Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec1Open(!sec1Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">📋 기본 정보</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">건물 유형 · 주소 · 시설 · 관리 시작일</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {sec1Open && (sec1Edit ? (
               <>
-                <button onClick={() => setSec1Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                <button onClick={() => setSec1Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
+                <button onClick={() => setSec1Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec1Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec1Edit(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✏️ 수정</button>
+              <button onClick={() => setSec1Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
             ))}
-            <span onClick={() => setSec1Open(!sec1Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec1Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+            <span onClick={() => setSec1Open(!sec1Open)} className="text-sm text-hm-text-muted cursor-pointer transition-transform duration-200" style={{ transform: sec1Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
           </div>
         </div>
-        {sec1Open && <div style={{ pointerEvents: sec1Edit ? "auto" : "none", opacity: sec1Edit ? 1 : 0.7, transition: "opacity 0.2s" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
-            <div style={{ gridColumn: "1 / -1" }}>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>건물 유형 (최대 3개)</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+        {sec1Open && <div className={`transition-opacity duration-200 ${sec1Edit ? 'opacity-100' : 'opacity-70 pointer-events-none'}`}>
+          <div className="grid grid-cols-4 gap-2 mb-2.5">
+            <div className="col-span-full">
+              <div className="text-[9px] text-hm-text-muted mb-0.5">건물 유형 (최대 3개)</div>
+              <div className="flex flex-wrap gap-1.5 items-center">
                 {detailBuildingTypes.map((t, ti) => {
                   const acctKey = t === "기업시설관리" ? "관리사무소" : t;
                   return (
-                    <div key={ti} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <div key={ti} className="flex items-center gap-1">
                       <select value={t} onChange={e => { const updated = [...detailBuildingTypes]; updated[ti] = e.target.value; setDetailBuildingTypes(updated); }}
-                        style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", background: acctTypeBg[acctKey] || "#F3F4F6", color: acctTypeColor[acctKey] || "#5F6577", borderColor: (acctTypeColor[acctKey] || "#E0E3E9") + "60" }}>
+                        className={`${inputClassName} !px-2 !py-[5px] !text-[11px] !font-bold !cursor-pointer`}
+                        style={{ background: acctTypeBg[acctKey] || "#F3F4F6", color: acctTypeColor[acctKey] || "#5F6577", borderColor: (acctTypeColor[acctKey] || "#E0E3E9") + "60" }}>
                         {BUILDING_TYPES.map(bt => (
                           <option key={bt} value={bt} disabled={bt !== t && detailBuildingTypes.includes(bt)}>{bt === "일반임대" ? "일반임대(주택)" : bt}</option>
                         ))}
                       </select>
                       {detailBuildingTypes.length > 1 && (
                         <button onClick={() => setDetailBuildingTypes(detailBuildingTypes.filter((_, i) => i !== ti))}
-                          style={{ width: 20, height: 20, borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", cursor: "pointer", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", padding: 0, fontFamily: "inherit" }}>✕</button>
+                          className="w-5 h-5 rounded-[5px] border border-red-300 bg-hm-danger-bg text-hm-danger cursor-pointer text-[11px] flex items-center justify-center p-0 font-[inherit] hover:brightness-90 transition-all">✕</button>
                       )}
                     </div>
                   );
                 })}
                 {detailBuildingTypes.length < 3 && (
                   <button onClick={() => { const remaining = BUILDING_TYPES.filter(bt => !detailBuildingTypes.includes(bt)); if (remaining.length > 0) setDetailBuildingTypes([...detailBuildingTypes, remaining[0]]); }}
-                    style={{ padding: "5px 12px", borderRadius: 6, border: "1.5px dashed #3B82F6", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                    ＋ 유형 추가
+                    className="px-3 py-[5px] rounded-md border-[1.5px] border-dashed border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[10px] font-bold cursor-pointer font-[inherit] hover:brightness-95 transition-all">
+                    + 유형 추가
                   </button>
                 )}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리시작일</div>
-              <input value={bdStartDate} onChange={e => setBdStartDate(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
+              <div className="text-[9px] text-hm-text-muted mb-0.5">관리시작일</div>
+              <input value={bdStartDate} onChange={e => setBdStartDate(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px]`} />
             </div>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>🔑 현관 비밀번호</div>
-              <input value={bdEntrancePw} onChange={e => setBdEntrancePw(e.target.value)} placeholder="비밀번호" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, fontFamily: "monospace", letterSpacing: 1 }} />
+              <div className="text-[9px] text-hm-text-muted mb-0.5">🔑 현관 비밀번호</div>
+              <input value={bdEntrancePw} onChange={e => setBdEntrancePw(e.target.value)} placeholder="비밀번호" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !font-mono !tracking-wider`} />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div className="grid grid-cols-3 gap-2 mb-2.5">
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주소</div>
-              <input value={bdAddress} onChange={e => setBdAddress(e.target.value)} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
+              <div className="text-[9px] text-hm-text-muted mb-0.5">주소</div>
+              <input value={bdAddress} onChange={e => setBdAddress(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-[11px]`} />
             </div>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>도로명 주소</div>
-              <input value={bdRoadAddress} onChange={e => setBdRoadAddress(e.target.value)} placeholder="도로명 주소" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11 }} />
+              <div className="text-[9px] text-hm-text-muted mb-0.5">도로명 주소</div>
+              <input value={bdRoadAddress} onChange={e => setBdRoadAddress(e.target.value)} placeholder="도로명 주소" className={`${inputClassName} !px-2 !py-1.5 !text-[11px]`} />
             </div>
             <div>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>시설</div>
-              <div style={{ display: "flex", gap: 8, padding: "6px 0", alignItems: "center" }}>
-                <span style={{ fontSize: 10, color: "#3D4251" }}>CCTV</span>
-                <input type="number" min="0" value={bdCctvCount} onChange={e => setBdCctvCount(e.target.value)} placeholder="0" style={{ ...inputStyle, width: 44, padding: "4px 6px", fontSize: 10, textAlign: "center" }} />
-                <span style={{ fontSize: 9, color: "#8F95A3" }}>대</span>
-                <span style={{ fontSize: 10, color: "#3D4251", marginLeft: 6 }}>건물주차총대수</span>
-                <input type="number" min="0" value={bdParkingTotal} onChange={e => setBdParkingTotal(e.target.value)} placeholder="0" style={{ ...inputStyle, width: 44, padding: "4px 6px", fontSize: 10, textAlign: "center" }} />
-                <span style={{ fontSize: 9, color: "#8F95A3" }}>대</span>
+              <div className="text-[9px] text-hm-text-muted mb-0.5">시설</div>
+              <div className="flex gap-2 py-1.5 items-center">
+                <span className="text-[10px] text-[#3D4251]">CCTV</span>
+                <input type="number" min="0" value={bdCctvCount} onChange={e => setBdCctvCount(e.target.value)} placeholder="0" className={`${inputClassName} !w-11 !px-1.5 !py-1 !text-[10px] !text-center`} />
+                <span className="text-[9px] text-hm-text-muted">대</span>
+                <span className="text-[10px] text-[#3D4251] ml-1.5">건물주차총대수</span>
+                <input type="number" min="0" value={bdParkingTotal} onChange={e => setBdParkingTotal(e.target.value)} placeholder="0" className={`${inputClassName} !w-11 !px-1.5 !py-1 !text-[10px] !text-center`} />
+                <span className="text-[9px] text-hm-text-muted">대</span>
               </div>
             </div>
           </div>
@@ -140,50 +141,50 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
       </Card>
 
       {/* Section 2: Owner Info */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: sec2Open ? 12 : 0 }}>
-          <div onClick={() => setSec2Open(!sec2Open)} style={{ cursor: "pointer", flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>👤 건물주 정보</div>
-            <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{`건물주 ${bdOwners.length}명 · 최대 4명`}</div>
+      <Card className="mb-4">
+        <div className={`flex justify-between items-center ${sec2Open ? 'mb-3' : ''}`}>
+          <div onClick={() => setSec2Open(!sec2Open)} className="cursor-pointer flex-1">
+            <div className="text-[15px] font-extrabold text-hm-text">👤 건물주 정보</div>
+            <div className="text-[11px] text-hm-text-muted mt-0.5">{`건물주 ${bdOwners.length}명 · 최대 4명`}</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {sec2Open && (sec2Edit ? (
               <>
-                <button onClick={() => setSec2Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-                <button onClick={() => setSec2Edit(false)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
+                <button onClick={() => setSec2Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec2Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec2Edit(true)} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#2563EB", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>✏️ 수정</button>
+              <button onClick={() => setSec2Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
             ))}
-            <span onClick={() => setSec2Open(!sec2Open)} style={{ fontSize: 14, color: "#8F95A3", cursor: "pointer", transition: "transform 0.2s", transform: sec2Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
+            <span onClick={() => setSec2Open(!sec2Open)} className="text-sm text-hm-text-muted cursor-pointer transition-transform duration-200" style={{ transform: sec2Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
           </div>
         </div>
-        {sec2Open && <div style={{ pointerEvents: sec2Edit ? "auto" : "none", opacity: sec2Edit ? 1 : 0.7, transition: "opacity 0.2s" }}>
+        {sec2Open && <div className={`transition-opacity duration-200 ${sec2Edit ? 'opacity-100' : 'opacity-70 pointer-events-none'}`}>
           {(() => {
             return bdOwners.map((ow: Record<string, any>, oi: number) => {
               const c = OWNER_COLORS[oi] || OWNER_COLORS[0];
               return (
-                <div key={oi} style={{ padding: "10px 12px", background: c.bg, borderRadius: 8, border: `1px solid ${c.border}`, marginBottom: oi < bdOwners.length - 1 ? 10 : 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: c.color }}>건물주 {oi + 1}{c.label ? ` (${c.label})` : ""}</span>
+                <div key={oi} className={`px-3 py-2.5 rounded-lg ${oi < bdOwners.length - 1 ? 'mb-2.5' : ''}`} style={{ background: c.bg, border: `1px solid ${c.border}` }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold" style={{ color: c.color }}>건물주 {oi + 1}{c.label ? ` (${c.label})` : ""}</span>
                       {oi === 0 && bdOwners.length < 4 && (
                         <button onClick={addBdOwner}
-                          style={{ padding: "2px 10px", borderRadius: 5, border: `1.5px dashed ${c.color}`, background: "transparent", color: c.color, fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>＋ 건물주 추가</button>
+                          className="px-2.5 py-0.5 rounded-[5px] border-[1.5px] border-dashed bg-transparent text-[10px] font-bold cursor-pointer font-[inherit] hover:brightness-90 transition-all" style={{ borderColor: c.color, color: c.color }}>+ 건물주 추가</button>
                       )}
                     </div>
                     {oi > 0 && (
                       <button onClick={() => removeBdOwner(oi)}
-                        style={{ padding: "2px 8px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✕ 삭제</button>
+                        className="px-2 py-0.5 rounded-[5px] border border-red-300 bg-hm-danger-bg text-hm-danger text-[10px] font-bold cursor-pointer font-[inherit] hover:brightness-90 transition-all">✕ 삭제</button>
                     )}
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 6 }}>
-                    <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>이름</div><input value={ow.name} onChange={e => setBdOwnerField(oi, "name", e.target.value)} placeholder="홍길동" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                    <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주민등록번호</div><input value={ow.ssn} onChange={e => setBdOwnerField(oi, "ssn", e.target.value)} placeholder="000000-0000000" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11, fontFamily: "monospace" }} /></div>
-                    <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>전화번호</div><input value={ow.phone} onChange={e => setBdOwnerField(oi, "phone", e.target.value)} placeholder="010-0000-0000" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
+                  <div className="grid grid-cols-3 gap-1.5 mb-1.5">
+                    <div><div className="text-[9px] text-hm-text-muted mb-0.5">이름</div><input value={ow.name} onChange={e => setBdOwnerField(oi, "name", e.target.value)} placeholder="홍길동" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                    <div><div className="text-[9px] text-hm-text-muted mb-0.5">주민등록번호</div><input value={ow.ssn} onChange={e => setBdOwnerField(oi, "ssn", e.target.value)} placeholder="000000-0000000" className={`${inputClassName} !px-2 !py-[5px] !text-[11px] !font-mono`} /></div>
+                    <div><div className="text-[9px] text-hm-text-muted mb-0.5">전화번호</div><input value={ow.phone} onChange={e => setBdOwnerField(oi, "phone", e.target.value)} placeholder="010-0000-0000" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
                   </div>
-                  <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주소</div><input value={ow.address} onChange={e => setBdOwnerField(oi, "address", e.target.value)} placeholder="건물주 주소" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
-                  <div style={{ marginTop: 6 }}><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>정산계좌</div><input value={ow.settlement || ""} onChange={e => setBdOwnerField(oi, "settlement", e.target.value)} placeholder="은행명 + 계좌번호 + 예금주" style={{ ...inputStyle, padding: "5px 8px", fontSize: 11 }} /></div>
+                  <div><div className="text-[9px] text-hm-text-muted mb-0.5">주소</div><input value={ow.address} onChange={e => setBdOwnerField(oi, "address", e.target.value)} placeholder="건물주 주소" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
+                  <div className="mt-1.5"><div className="text-[9px] text-hm-text-muted mb-0.5">정산계좌</div><input value={ow.settlement || ""} onChange={e => setBdOwnerField(oi, "settlement", e.target.value)} placeholder="은행명 + 계좌번호 + 예금주" className={`${inputClassName} !px-2 !py-[5px] !text-[11px]`} /></div>
                 </div>
               );
             });

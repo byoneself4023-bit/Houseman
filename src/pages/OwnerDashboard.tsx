@@ -64,41 +64,36 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-          <span style={{ fontSize: 24 }}>🏠</span>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1A1D23" }}>건물주 포털</h1>
+      <div className="mb-6">
+        <div className="flex items-center gap-2.5 mb-1">
+          <span className="text-2xl">🏠</span>
+          <h1 className="text-[22px] font-extrabold text-hm-text">건물주 포털</h1>
         </div>
-        <p style={{ fontSize: 13, color: "#8F95A3" }}>내 건물 현황을 한눈에 확인하세요 · {new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</p>
+        <p className="text-[13px] text-hm-text-muted">내 건물 현황을 한눈에 확인하세요 · {new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</p>
       </div>
 
       {/* Building Selector */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+      <div className="flex gap-2 mb-5">
         {myBuildings.map(name => {
           const bldg = buildings.find(b => b.name === name);
           const active = selectedBldg === name;
           const vc = activeVacancies.filter(v => v.building === name).length;
           return (
             <div key={name} onClick={() => setSelectedBldg(name)}
-              style={{
-                flex: 1, padding: "16px", borderRadius: 14, cursor: "pointer", transition: "all 0.2s",
-                background: active ? "#1B1F2E" : "#fff",
-                border: active ? "2px solid #1B1F2E" : "1.5px solid #E8ECF0",
-                boxShadow: active ? "0 4px 12px rgba(27,31,46,0.15)" : "0 1px 3px rgba(0,0,0,0.04)",
-              }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: active ? "#fff" : "#1A1D23", marginBottom: 8 }}>{name}</div>
-              <div style={{ display: "flex", gap: 12 }}>
+              className={`flex-1 p-4 rounded-[14px] cursor-pointer transition-all ${active ? 'bg-[#1B1F2E] border-2 border-[#1B1F2E] shadow-[0_4px_12px_rgba(27,31,46,0.15)]' : 'bg-white border-[1.5px] border-hm-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md'}`}>
+              <div className={`text-base font-extrabold mb-2 ${active ? 'text-white' : 'text-hm-text'}`}>{name}</div>
+              <div className="flex gap-3">
                 <div>
-                  <div style={{ fontSize: 9, color: active ? "#9CA3B0" : "#8F95A3" }}>입주율</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: active ? "#10B981" : "#059669" }}>{bldg ? ((bldg.occupied / bldg.rooms) * 100).toFixed(0) : 0}%</div>
+                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>입주율</div>
+                  <div className={`text-base font-extrabold ${active ? 'text-[#10B981]' : 'text-hm-success'}`}>{bldg ? ((bldg.occupied / bldg.rooms) * 100).toFixed(0) : 0}%</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, color: active ? "#9CA3B0" : "#8F95A3" }}>공실</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: active ? "#F59E0B" : "#D97706" }}>{vc}</div>
+                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>공실</div>
+                  <div className={`text-base font-extrabold ${active ? 'text-[#F59E0B]' : 'text-[#D97706]'}`}>{vc}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, color: active ? "#9CA3B0" : "#8F95A3" }}>호실</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: active ? "#fff" : "#1A1D23" }}>{bldg ? bldg.rooms : 0}</div>
+                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>호실</div>
+                  <div className={`text-base font-extrabold ${active ? 'text-white' : 'text-hm-text'}`}>{bldg ? bldg.rooms : 0}</div>
                 </div>
               </div>
             </div>
@@ -107,57 +102,57 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       </div>
 
       {/* Summary Row */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 10, marginBottom: 20 }}>
+      <div className={`grid gap-2.5 mb-5 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
         {[
-          { label: "입주", value: filteredTenants.length, unit: "세대", color: "#10B981", bg: "#ECFDF5" },
-          { label: "공실", value: filteredVacancies.length, unit: "실", color: "#F59E0B", bg: "#FFFBEB" },
-          { label: "연체", value: filteredOverdue.length, unit: "건", color: "#EF4444", bg: "#FEF2F2" },
-          { label: "AS", value: filteredAS.filter(a => a.status !== "완료").length, unit: "건", color: "#6366F1", bg: "#F0F4FF" },
+          { label: "입주", value: filteredTenants.length, unit: "세대", color: "text-[#10B981]", bg: "bg-hm-success-bg" },
+          { label: "공실", value: filteredVacancies.length, unit: "실", color: "text-[#F59E0B]", bg: "bg-[#FFFBEB]" },
+          { label: "연체", value: filteredOverdue.length, unit: "건", color: "text-[#EF4444]", bg: "bg-hm-danger-bg" },
+          { label: "AS", value: filteredAS.filter(a => a.status !== "완료").length, unit: "건", color: "text-[#6366F1]", bg: "bg-[#F0F4FF]" },
         ].map((s, i) => (
           <Card key={i}>
-            <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}<span style={{ fontSize: 11, fontWeight: 500, color: "#B0B5C1" }}> {s.unit}</span></div>
+            <div className="text-[10px] text-hm-text-muted font-semibold mb-1">{s.label}</div>
+            <div className={`text-[22px] font-extrabold ${s.color}`}>{s.value}<span className="text-[11px] font-medium text-[#B0B5C1]"> {s.unit}</span></div>
           </Card>
         ))}
       </div>
 
       {/* Pending Approvals (across all buildings) */}
       {pendingApprovals.length > 0 && (
-        <Card style={{ marginBottom: 16, border: "2px solid #FDE68A", background: "#FFFDF5" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#D97706", letterSpacing: "0.05em" }}>📩 승인 대기 AS ({pendingApprovals.length}건)</div>
+        <Card className="mb-4 border-2 border-[#FDE68A] bg-[#FFFDF5]">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[10px] font-bold text-[#D97706] tracking-wider">📩 승인 대기 AS ({pendingApprovals.length}건)</div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex flex-col gap-2.5">
             {pendingApprovals.map((a, i) => (
-              <div key={a.id || i} style={{ padding: "14px 16px", borderRadius: 12, background: "#fff", border: "1px solid #FDE68A" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23" }}>{a.building} {a.room}호</span>
+              <div key={a.id || i} className="px-4 py-3.5 rounded-xl bg-white border border-[#FDE68A]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-extrabold text-hm-text">{a.building} {a.room}호</span>
                     <StatusBadge status={a.status} />
                   </div>
-                  <span style={{ fontSize: 11, color: "#B0B5C1" }}>{a.date}</span>
+                  <span className="text-[11px] text-[#B0B5C1]">{a.date}</span>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1D23", marginBottom: 4 }}>{a.content || a.title}</div>
-                <div style={{ fontSize: 12, color: "#5F6577", marginBottom: 8, lineHeight: 1.5 }}>{a.detail || a.desc}</div>
-                <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                <div className="text-[13px] font-semibold text-hm-text mb-1">{a.content || a.title}</div>
+                <div className="text-xs text-hm-text-sub mb-2 leading-relaxed">{a.detail || a.desc}</div>
+                <div className="flex gap-2 mb-2.5 flex-wrap">
                   {(a.estimatedCost || 0) > 0 && (
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "#FEF2F2", color: "#DC2626" }}>
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-hm-danger-bg text-hm-danger">
                       예상비용 {fmt(a.estimatedCost)}원
                     </span>
                   )}
                   {a.vendor && (
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "#F3F4F6", color: "#5F6577" }}>
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-[#F3F4F6] text-hm-text-sub">
                       업체: {a.vendor}
                     </span>
                   )}
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="flex gap-2">
                   <button onClick={() => handleApproval(a.id, "approved")}
-                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 py-2.5 rounded-lg border-none bg-hm-success text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 active:scale-[0.98] transition-all">
                     ✅ 승인
                   </button>
                   <button onClick={() => handleApproval(a.id, "rejected")}
-                    style={{ flex: 1, padding: "10px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                    className="flex-1 py-2.5 rounded-lg border-[1.5px] border-[#FECACA] bg-hm-danger-bg text-hm-danger font-bold text-xs cursor-pointer font-[inherit] hover:bg-[#FEE2E2] active:scale-[0.98] transition-all">
                     ❌ 반려
                   </button>
                 </div>
@@ -169,40 +164,40 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
       {/* Overdue */}
       {filteredOverdue.length > 0 && (
-        <Card style={{ marginBottom: 16, border: "1.5px solid #FECACA" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", letterSpacing: "0.05em" }}>🚨 연체 현황</div>
-            <span style={{ fontSize: 14, fontWeight: 800, color: "#DC2626" }}>{fmt(filteredOverdue.reduce((s, t) => s + t.overdue, 0))}원</span>
+        <Card className="mb-4 border-[1.5px] border-[#FECACA]">
+          <div className="flex items-center justify-between mb-2.5">
+            <div className="text-[10px] font-bold text-hm-danger tracking-wider">🚨 연체 현황</div>
+            <span className="text-sm font-extrabold text-hm-danger">{fmt(filteredOverdue.reduce((s, t) => s + t.overdue, 0))}원</span>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div className="flex flex-col gap-1.5">
             {filteredOverdue.sort((a, b) => b.overdue - a.overdue).map((t, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", background: "#FEF2F2", borderRadius: 8 }}>
+              <div key={i} className="flex items-center justify-between px-3 py-2.5 bg-hm-danger-bg rounded-lg">
                 <div>
-                  <span style={{ fontWeight: 700, fontSize: 13 }}>{t.room}호</span>
-                  <span style={{ fontSize: 11, color: "#8F95A3", marginLeft: 8 }}>{t.name}</span>
+                  <span className="font-bold text-[13px]">{t.room}호</span>
+                  <span className="text-[11px] text-hm-text-muted ml-2">{t.name}</span>
                 </div>
-                <span style={{ fontWeight: 800, fontSize: 13, color: "#DC2626" }}>{fmt(t.overdue)}원</span>
+                <span className="font-extrabold text-[13px] text-hm-danger">{fmt(t.overdue)}원</span>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 10, fontSize: 11, color: "#8F95A3", textAlign: "center" }}>관리팀에서 독촉 진행 중입니다</div>
+          <div className="mt-2.5 text-[11px] text-hm-text-muted text-center">관리팀에서 독촉 진행 중입니다</div>
         </Card>
       )}
 
       {/* Vacancy */}
       {filteredVacancies.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#D97706", letterSpacing: "0.05em", marginBottom: 10 }}>📭 공실 현황</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-[#D97706] tracking-wider mb-2.5">📭 공실 현황</div>
+          <div className="flex flex-col gap-2">
             {filteredVacancies.map((v, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "#FFFBEB", borderRadius: 10, border: "1px solid #FDE68A" }}>
+              <div key={i} className="flex items-center justify-between px-3.5 py-3 bg-[#FFFBEB] rounded-[10px] border border-[#FDE68A]">
                 <div>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23" }}>{v.room}호</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, marginLeft: 8, padding: "2px 6px", borderRadius: 3, background: "#fff", border: "1px solid #E0E3E9" }}>{v.type}</span>
+                  <span className="text-sm font-extrabold text-hm-text">{v.room}호</span>
+                  <span className="text-[11px] font-semibold ml-2 px-1.5 py-0.5 rounded bg-white border border-hm-input-border">{v.type}</span>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600 }}>{v.deposit > 0 ? `${fmt(v.deposit)}/${fmt(v.rent)}만` : "—"}</div>
-                  <div style={{ fontSize: 10, color: v.days > 30 ? "#DC2626" : "#8F95A3", fontWeight: v.days > 30 ? 700 : 400 }}>{v.days > 0 ? `공실 ${v.days}일` : "신규"}</div>
+                <div className="text-right">
+                  <div className="text-xs font-semibold">{v.deposit > 0 ? `${fmt(v.deposit)}/${fmt(v.rent)}만` : "—"}</div>
+                  <div className={`text-[10px] ${v.days > 30 ? 'text-hm-danger font-bold' : 'text-hm-text-muted font-normal'}`}>{v.days > 0 ? `공실 ${v.days}일` : "신규"}</div>
                 </div>
               </div>
             ))}
@@ -211,25 +206,25 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       )}
 
       {/* AS 현황 */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#6366F1", letterSpacing: "0.05em" }}>🔧 AS 현황 · {selectedBldg}</div>
+      <Card className="mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-[10px] font-bold text-[#6366F1] tracking-wider">🔧 AS 현황 · {selectedBldg}</div>
           {asTotalCost > 0 && (
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>총 {fmt(asTotalCost)}원</span>
+            <span className="text-xs font-bold text-hm-text">총 {fmt(asTotalCost)}원</span>
           )}
         </div>
         {/* Cost breakdown */}
         {asTotalCost > 0 && (
-          <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#FEF2F2", textAlign: "center", border: "1px solid #FECACA" }}>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>유상 (세입자부담)</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#DC2626" }}>{fmt(asCostPaid)}원</div>
-              <div style={{ fontSize: 10, color: "#DC2626" }}>{filteredAS.filter(a => a.paid === "유상").length}건</div>
+          <div className="flex gap-2.5 mb-3.5">
+            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-[#FECACA]">
+              <div className="text-[9px] text-hm-text-muted mb-0.5">유상 (세입자부담)</div>
+              <div className="text-sm font-extrabold text-hm-danger">{fmt(asCostPaid)}원</div>
+              <div className="text-[10px] text-hm-danger">{filteredAS.filter(a => a.paid === "유상").length}건</div>
             </div>
-            <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#ECFDF5", textAlign: "center", border: "1px solid #A7F3D0" }}>
-              <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>무상 (건물주부담)</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#059669" }}>{fmt(asCostFree)}원</div>
-              <div style={{ fontSize: 10, color: "#059669" }}>{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
+            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-success-bg text-center border border-[#A7F3D0]">
+              <div className="text-[9px] text-hm-text-muted mb-0.5">무상 (건물주부담)</div>
+              <div className="text-sm font-extrabold text-hm-success">{fmt(asCostFree)}원</div>
+              <div className="text-[10px] text-hm-success">{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
             </div>
           </div>
         )}
@@ -237,55 +232,51 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
       {/* AS History */}
       {filteredAS.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#EA580C", letterSpacing: "0.05em" }}>🔧 AS 이력</div>
-            <button onClick={() => window.print()} style={{ fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4 }}>
+        <Card className="mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[10px] font-bold text-hm-warning tracking-wider">🔧 AS 이력</div>
+            <button onClick={() => window.print()} className="text-[11px] font-semibold px-3 py-1.5 rounded-md border border-hm-input-border bg-white cursor-pointer font-[inherit] flex items-center gap-1 hover:bg-hm-bg-hover transition-colors">
               💾 저장/출력
             </button>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="flex flex-col gap-3">
             {filteredAS.map((a, i) => (
-              <div key={i} style={{ padding: "16px", borderRadius: 12, background: a.status === "완료" ? "#F9FAFB" : a.status === "진행중" ? "#FFF7ED" : "#F0F4FF", border: `1px solid ${a.status === "완료" ? "#E8ECF0" : a.status === "진행중" ? "#FED7AA" : "#C7D2FE"}` }}>
+              <div key={i} className={`p-4 rounded-xl ${a.status === "완료" ? 'bg-hm-bg-hover border border-hm-border' : a.status === "진행중" ? 'bg-hm-warning-bg border border-[#FED7AA]' : 'bg-[#F0F4FF] border border-[#C7D2FE]'}`}>
                 {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: "#1A1D23" }}>{a.room}호</span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-extrabold text-hm-text">{a.room}호</span>
                     <StatusBadge status={a.status} />
                     <StatusBadge status={a.priority} />
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 5, background: a.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: a.paid === "유상" ? "#DC2626" : "#059669" }}>
+                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-[5px] ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>
                     {a.paid}{a.cost > 0 ? ` ${fmt(a.cost)}원` : ""}
                   </span>
                 </div>
                 {/* Approval badge */}
                 {a.ownerApproval && (
-                  <div style={{ marginBottom: 6 }}>
-                    <span style={{
-                      fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4,
-                      background: a.ownerApproval === "pending" ? "#FFFBEB" : a.ownerApproval === "approved" ? "#ECFDF5" : "#FEF2F2",
-                      color: a.ownerApproval === "pending" ? "#D97706" : a.ownerApproval === "approved" ? "#059669" : "#DC2626",
-                    }}>
+                  <div className="mb-1.5">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${a.ownerApproval === "pending" ? 'bg-[#FFFBEB] text-[#D97706]' : a.ownerApproval === "approved" ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'}`}>
                       {a.ownerApproval === "pending" ? "승인대기" : a.ownerApproval === "approved" ? "승인완료" : "반려"}
                     </span>
                   </div>
                 )}
                 {/* Content */}
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1D23", marginBottom: 4 }}>{a.content || a.title}</div>
-                <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 10 }}>{a.detail || a.desc}</div>
+                <div className="text-sm font-bold text-hm-text mb-1">{a.content || a.title}</div>
+                <div className="text-xs text-hm-text-sub leading-relaxed mb-2.5">{a.detail || a.desc}</div>
                 {/* Timeline */}
                 {a.steps && a.steps.length > 0 && (
-                  <div style={{ padding: "12px", background: "#fff", borderRadius: 10, border: "1px solid #E8ECF0" }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 8 }}>처리 과정</div>
+                  <div className="p-3 bg-white rounded-[10px] border border-hm-border">
+                    <div className="text-[10px] font-bold text-hm-text-muted mb-2">처리 과정</div>
                     {a.steps.map((step: Record<string, any>, si: number) => (
-                      <div key={si} style={{ display: "flex", gap: 10, marginBottom: si < a.steps.length - 1 ? 8 : 0, paddingBottom: si < a.steps.length - 1 ? 8 : 0, borderBottom: si < a.steps.length - 1 ? "1px solid #F0F2F5" : "none" }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: si === a.steps.length - 1 ? "#3B82F6" : "#D1D5DB", marginTop: 5, flexShrink: 0 }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#1A1D23" }}>{step.action}</span>
-                            <span style={{ fontSize: 10, color: "#B0B5C1" }}>{step.date}</span>
+                      <div key={si} className={`flex gap-2.5 ${si < a.steps.length - 1 ? 'mb-2 pb-2 border-b border-[#F0F2F5]' : ''}`}>
+                        <div className={`w-2 h-2 rounded-full mt-[5px] shrink-0 ${si === a.steps.length - 1 ? 'bg-hm-blue' : 'bg-[#D1D5DB]'}`} />
+                        <div className="flex-1">
+                          <div className="flex justify-between mb-0.5">
+                            <span className="text-xs font-bold text-hm-text">{step.action}</span>
+                            <span className="text-[10px] text-[#B0B5C1]">{step.date}</span>
                           </div>
-                          <div style={{ fontSize: 11.5, color: "#5F6577", lineHeight: 1.5 }}>{step.note}</div>
+                          <div className="text-[11.5px] text-hm-text-sub leading-relaxed">{step.note}</div>
                         </div>
                       </div>
                     ))}
@@ -293,12 +284,12 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                 )}
                 {/* Photos */}
                 {(a.photoBefore || a.photoAfter) && (
-                  <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                    {a.photoBefore && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, background: "#FEF2F2", color: "#DC2626" }}>📷 수리 전</span>}
-                    {a.photoAfter && <span style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, background: "#ECFDF5", color: "#059669" }}>📷 수리 후</span>}
+                  <div className="flex gap-2 mt-2.5">
+                    {a.photoBefore && <span className="text-[10px] px-2 py-0.5 rounded-[5px] bg-hm-danger-bg text-hm-danger">📷 수리 전</span>}
+                    {a.photoAfter && <span className="text-[10px] px-2 py-0.5 rounded-[5px] bg-hm-success-bg text-hm-success">📷 수리 후</span>}
                   </div>
                 )}
-                <div style={{ fontSize: 10, color: "#B0B5C1", marginTop: 8 }}>접수일 {a.date} · 담당 {a.assignee} · {a.category || "기타"}{a.vendor ? ` · ${a.vendor}` : ""}</div>
+                <div className="text-[10px] text-[#B0B5C1] mt-2">접수일 {a.date} · 담당 {a.assignee} · {a.category || "기타"}{a.vendor ? ` · ${a.vendor}` : ""}</div>
               </div>
             ))}
           </div>
@@ -306,33 +297,27 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       )}
 
       {/* 최근 순회 요약 (모든 건물) */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: "#7C3AED", letterSpacing: "0.05em", marginBottom: 10 }}>🚶 최근 순회</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <Card className="mb-4">
+        <div className="text-[10px] font-bold text-[#7C3AED] tracking-wider mb-2.5">🚶 최근 순회</div>
+        <div className="flex flex-col gap-1.5">
           {myBuildings.map(bName => {
             const latestRec = allPatrolRecords.find(r => r.building === bName);
             const bldgP = patrolBuildings.find(p => p.building === bName);
             if (!latestRec && !bldgP) return null;
             return (
               <div key={bName} onClick={() => setSelectedBldg(bName)}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, cursor: "pointer",
-                  background: latestRec?.status === "이상발견" ? "#FEF2F2" : "#F8FAFC", border: `1px solid ${latestRec?.status === "이상발견" ? "#FECACA" : "#E8ECF0"}`,
-                  transition: "background 0.1s" }}
-                onMouseEnter={e => e.currentTarget.style.background = latestRec?.status === "이상발견" ? "#FEE2E2" : "#F0F2F5"}
-                onMouseLeave={e => e.currentTarget.style.background = latestRec?.status === "이상발견" ? "#FEF2F2" : "#F8FAFC"}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23" }}>{bName}</span>
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-[#F0F2F5]'}`}>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-[13px] font-extrabold text-hm-text">{bName}</span>
                   {latestRec && (
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 4,
-                      background: latestRec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5",
-                      color: latestRec.status === "이상발견" ? "#DC2626" : "#059669" }}>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${latestRec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
                       {latestRec.status}
                     </span>
                   )}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, color: "#8F95A3" }}>{latestRec ? latestRec.date.slice(5) : "미순회"}</span>
-                  <span style={{ color: "#B0B5C1" }}>›</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-hm-text-muted">{latestRec ? latestRec.date.slice(5) : "미순회"}</span>
+                  <span className="text-[#B0B5C1]">›</span>
                 </div>
               </div>
             );
@@ -347,81 +332,79 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         if (!bldgPatrol && bldgRecords.length === 0) return null;
         const interval = bldgPatrol ? Math.floor(28 / bldgPatrol.freq) : 14;
         return (
-          <Card style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#7C3AED", letterSpacing: "0.05em" }}>🚶 순회 관리 리포트</div>
+          <Card className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-[10px] font-bold text-[#7C3AED] tracking-wider">🚶 순회 관리 리포트</div>
               {bldgPatrol && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontSize: 11, color: "#8F95A3" }}>월 {bldgPatrol.freq}회 · {interval}일 주기</span>
-                  <span style={{ fontSize: 12, fontWeight: 800, padding: "3px 10px", borderRadius: 6, background: bldgPatrol.doneCount >= bldgPatrol.freq ? "#D1FAE5" : "#FEF3C7", color: bldgPatrol.doneCount >= bldgPatrol.freq ? "#059669" : "#D97706" }}>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-hm-text-muted">월 {bldgPatrol.freq}회 · {interval}일 주기</span>
+                  <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-md ${bldgPatrol.doneCount >= bldgPatrol.freq ? 'bg-[#D1FAE5] text-hm-success' : 'bg-[#FEF3C7] text-[#D97706]'}`}>
                     {bldgPatrol.doneCount}/{bldgPatrol.freq}회 완료
                   </span>
                 </div>
               )}
             </div>
             {bldgPatrol && (
-              <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#F5F3FF", textAlign: "center", border: "1px solid #DDD6FE" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>담당자</div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#7C3AED" }}>{bldgPatrol.assignee}</div>
+              <div className="flex gap-2.5 mb-3.5">
+                <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">담당자</div>
+                  <div className="text-[13px] font-extrabold text-[#7C3AED]">{bldgPatrol.assignee}</div>
                 </div>
-                <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#F5F3FF", textAlign: "center", border: "1px solid #DDD6FE" }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>마지막 순회</div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#1A1D23" }}>{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
+                <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">마지막 순회</div>
+                  <div className="text-[13px] font-extrabold text-hm-text">{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
                 </div>
-                <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: bldgPatrol.lastStatus === "이상발견" ? "#FEF2F2" : "#F0FDF4", textAlign: "center", border: `1px solid ${bldgPatrol.lastStatus === "이상발견" ? "#FECACA" : "#BBF7D0"}` }}>
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 3 }}>최근 상태</div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: bldgPatrol.lastStatus === "이상발견" ? "#DC2626" : "#059669" }}>{bldgPatrol.lastStatus || "—"}</div>
+                <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA]' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
+                  <div className="text-[9px] text-hm-text-muted mb-0.5">최근 상태</div>
+                  <div className={`text-[13px] font-extrabold ${bldgPatrol.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{bldgPatrol.lastStatus || "—"}</div>
                 </div>
               </div>
             )}
             {bldgRecords.length > 0 ? (
-              <div style={{ maxHeight: 280, overflowY: "auto", border: "1px solid #E8ECF0", borderRadius: 10 }}>
+              <div className="max-h-[280px] overflow-y-auto border border-hm-border rounded-[10px]">
                 {bldgRecords.map((rec, i) => (
                   <div key={i} onClick={() => setExpandedPatrol(expandedPatrol === i ? null : i)}
-                    style={{ padding: "10px 14px", cursor: "pointer", borderBottom: i < bldgRecords.length - 1 ? "1px solid #F0F2F5" : "none", background: rec.status === "이상발견" ? "#FEF2F2" : "#fff", transition: "background 0.1s" }}
-                    onMouseEnter={e => e.currentTarget.style.background = rec.status === "이상발견" ? "#FEE2E2" : "#F9FAFB"}
-                    onMouseLeave={e => e.currentTarget.style.background = rec.status === "이상발견" ? "#FEF2F2" : "#fff"}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#1A1D23" }}>{rec.date}</span>
-                        <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 3, background: rec.status === "이상발견" ? "#FEE2E2" : "#D1FAE5", color: rec.status === "이상발견" ? "#DC2626" : "#059669" }}>{rec.status}</span>
-                        <span style={{ fontSize: 10, color: "#8F95A3" }}>{rec.assignee}</span>
+                    className={`px-3.5 py-2.5 cursor-pointer transition-colors ${i < bldgRecords.length - 1 ? 'border-b border-[#F0F2F5]' : ''} ${rec.status === "이상발견" ? 'bg-hm-danger-bg hover:bg-[#FEE2E2]' : 'bg-white hover:bg-hm-bg-hover'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold text-hm-text">{rec.date}</span>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
+                        <span className="text-[10px] text-hm-text-muted">{rec.assignee}</span>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontSize: 10, color: "#8F95A3" }}>📸 {rec.photos.length}</span>
-                        <span style={{ fontSize: 12, color: "#B0B5C1", transform: expandedPatrol === i ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.15s" }}>›</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-hm-text-muted">📸 {rec.photos.length}</span>
+                        <span className="text-xs text-[#B0B5C1] transition-transform duration-150" style={{ transform: expandedPatrol === i ? "rotate(90deg)" : "rotate(0)" }}>›</span>
                       </div>
                     </div>
-                    {expandedPatrol !== i && <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{rec.comment}</div>}
+                    {expandedPatrol !== i && <div className="text-[11px] text-hm-text-muted mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{rec.comment}</div>}
                     {expandedPatrol === i && (
-                      <div style={{ marginTop: 8, padding: "10px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
+                      <div className="mt-2 px-3 py-2.5 bg-[#F8FAFC] rounded-lg border border-hm-border">
                         {rec.checklist && rec.checklist.length > 0 && (
-                          <div style={{ marginBottom: 8 }}>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: "#3B82F6", marginBottom: 4 }}>시설 점검 결과</div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                          <div className="mb-2">
+                            <div className="text-[10px] font-bold text-hm-blue mb-1">시설 점검 결과</div>
+                            <div className="flex flex-wrap gap-1">
                               {rec.checklist.map((c: Record<string, any>, ci: number) => (
-                                <span key={ci} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: c.status === "이상" ? "#FEE2E2" : "#D1FAE5", color: c.status === "이상" ? "#DC2626" : "#059669", fontWeight: 600 }}>
+                                <span key={ci} className={`text-[10px] px-2 py-0.5 rounded font-semibold ${c.status === "이상" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
                                   {c.status === "정상" ? "✅" : "⚠"} {c.item}{c.comment ? `: ${c.comment}` : ""}
                                 </span>
                               ))}
                             </div>
                           </div>
                         )}
-                        <div style={{ fontSize: 12, color: "#1A1D23", lineHeight: 1.8, marginBottom: 8 }}>{rec.comment}</div>
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        <div className="text-xs text-hm-text leading-[1.8] mb-2">{rec.comment}</div>
+                        <div className="flex gap-1.5 flex-wrap">
                           {rec.photos.map((p: string, pi: number) => (
-                            <div key={pi} style={{ width: 48, height: 48, borderRadius: 6, background: "#E8ECF0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#8F95A3" }}>📷</div>
+                            <div key={pi} className="w-12 h-12 rounded-md bg-hm-border flex items-center justify-center text-[10px] text-hm-text-muted">📷</div>
                           ))}
                         </div>
-                        {rec.photos.length > 0 && <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 6 }}>사진 {rec.photos.length}장</div>}
+                        {rec.photos.length > 0 && <div className="text-[10px] text-hm-text-muted mt-1.5">사진 {rec.photos.length}장</div>}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={{ padding: "20px", textAlign: "center", color: "#8F95A3", fontSize: 12 }}>이번 달 순회 기록이 아직 없습니다</div>
+              <div className="py-5 text-center text-hm-text-muted text-xs">이번 달 순회 기록이 아직 없습니다</div>
             )}
           </Card>
         );
@@ -429,28 +412,28 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
       {/* Recent Transactions */}
       {filteredTx.length > 0 && (
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", letterSpacing: "0.05em", marginBottom: 10 }}>💰 최근 입출금</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <Card className="mb-4">
+          <div className="text-[10px] font-bold text-hm-success tracking-wider mb-2.5">💰 최근 입출금</div>
+          <div className="flex flex-col gap-1">
             {filteredTx.map((tx, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: "#F9FAFB" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: tx.type === "입금" ? "#10B981" : "#EF4444", flexShrink: 0 }} />
+              <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-hm-bg-hover">
+                <div className="flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tx.type === "입금" ? 'bg-[#10B981]' : 'bg-[#EF4444]'}`} />
                   <div>
-                    <div style={{ fontSize: 12, color: "#3D4251" }}>{tx.room ? `${tx.room}호` : ""} {tx.cat}</div>
-                    <div style={{ fontSize: 10, color: "#B0B5C1" }}>{tx.date}</div>
+                    <div className="text-xs text-[#3D4251]">{tx.room ? `${tx.room}호` : ""} {tx.cat}</div>
+                    <div className="text-[10px] text-[#B0B5C1]">{tx.date}</div>
                   </div>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: tx.type === "입금" ? "#059669" : "#DC2626" }}>{tx.type === "지출" ? "-" : "+"}{fmt(tx.amount)}원</span>
+                <span className={`text-[13px] font-bold ${tx.type === "입금" ? 'text-hm-success' : 'text-hm-danger'}`}>{tx.type === "지출" ? "-" : "+"}{fmt(tx.amount)}원</span>
               </div>
             ))}
           </div>
         </Card>
       )}
       {/* Footer */}
-      <div style={{ marginTop: 24, padding: "16px", textAlign: "center", borderRadius: 10, background: "#F9FAFB", border: "1px solid #E8ECF0" }}>
-        <div style={{ fontSize: 12, color: "#8F95A3" }}>문의사항은 관리팀으로 연락해주세요</div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#1A1D23", marginTop: 4 }}>📞 02-1234-5678 · 하우스맨 관리팀</div>
+      <div className="mt-6 p-4 text-center rounded-[10px] bg-hm-bg-hover border border-hm-border">
+        <div className="text-xs text-hm-text-muted">문의사항은 관리팀으로 연락해주세요</div>
+        <div className="text-[13px] font-bold text-hm-text mt-1">📞 02-1234-5678 · 하우스맨 관리팀</div>
       </div>
     </div>
   );

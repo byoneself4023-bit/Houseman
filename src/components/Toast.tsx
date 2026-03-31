@@ -15,6 +15,14 @@ export function useToast() {
   return { showToast: _showToast };
 }
 
+const bgClasses: Record<ToastType, string> = {
+  success: "bg-emerald-50 text-emerald-900 border-emerald-200",
+  error: "bg-red-50 text-red-900 border-red-200",
+  warning: "bg-amber-50 text-amber-900 border-amber-200",
+};
+
+const icons: Record<ToastType, string> = { success: "\u2713 ", error: "\u2715 ", warning: "\u26A0 " };
+
 export function Toast() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -28,22 +36,13 @@ export function Toast() {
 
   if (toasts.length === 0) return null;
 
-  const bgColors: Record<ToastType, string> = { success: "#ECFDF5", error: "#FEF2F2", warning: "#FFFBEB" };
-  const fgColors: Record<ToastType, string> = { success: "#065F46", error: "#991B1B", warning: "#92400E" };
-  const bdColors: Record<ToastType, string> = { success: "#A7F3D0", error: "#FECACA", warning: "#FDE68A" };
-  const icons: Record<ToastType, string> = { success: "\u2713 ", error: "\u2715 ", warning: "\u26A0 " };
-
   return (
-    <div style={{ position: "fixed", top: 16, right: 16, zIndex: 99999, display: "flex", flexDirection: "column", gap: 8 }}>
+    <div className="fixed top-4 right-4 z-[99999] flex flex-col gap-2">
       {toasts.map(t => (
-        <div key={t.id} style={{
-          padding: "10px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, fontFamily: "inherit",
-          background: bgColors[t.type],
-          color: fgColors[t.type],
-          border: `1px solid ${bdColors[t.type]}`,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          animation: "fadeIn 0.2s ease",
-        }}>
+        <div
+          key={t.id}
+          className={`px-[18px] py-2.5 rounded-lg text-[13px] font-semibold font-inherit border shadow-[0_4px_12px_rgba(0,0,0,0.1)] animate-[fadeIn_0.2s_ease] ${bgClasses[t.type]}`}
+        >
           {icons[t.type]}{t.message}
         </div>
       ))}

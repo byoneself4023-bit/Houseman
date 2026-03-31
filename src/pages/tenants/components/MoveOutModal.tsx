@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, RoomTypeBadge, ContractDropZone } from '@/components';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { getRoomType } from '@/config';
 import { roomMasterData } from '@/data';
 import { fmt } from '@/utils';
@@ -136,19 +136,19 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
   if (actionDone) {
     const msgs: Record<string, string> = { moveout: "퇴실 처리가 완료되었습니다", movein: "입주 처리가 완료되었습니다", renew: "연장계약이 등록되었습니다" };
     return (
-      <Card style={{ padding: "40px 20px", textAlign: "center" }}>
-        <span style={{ fontSize: 48 }}>✅</span>
-        <div style={{ fontSize: 18, fontWeight: 800, color: "#059669", marginTop: 12 }}>{msgs[actionMode!]}</div>
-        <div style={{ fontSize: 13, color: "#8F95A3", marginTop: 6 }}>{t.building} {t.room}호 {t.name}</div>
+      <Card className="px-5 py-10 text-center">
+        <span className="text-[48px]">✅</span>
+        <div className="text-lg font-[800] text-hm-success mt-3">{msgs[actionMode!]}</div>
+        <div className="text-[13px] text-hm-text-muted mt-1.5">{t.building} {t.room}호 {t.name}</div>
       </Card>
     );
   }
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => { setActionMode(null); setSelectedTenant(null); }}>
-        <span style={{ fontSize: 20 }}>&larr;</span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>임차인 목록으로</span>
+      <div className="flex items-center gap-2 mb-5 cursor-pointer" onClick={() => { setActionMode(null); setSelectedTenant(null); }}>
+        <span className="text-xl">&larr;</span>
+        <span className="text-sm font-bold text-hm-blue">임차인 목록으로</span>
       </div>
 
       {actionMode === "moveout" && (() => {
@@ -238,9 +238,9 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           + (netWater < 0 ? -netWater : 0) + (netInternet < 0 ? -netInternet : 0);
         const settlement = t.deposit + totalRefund - totalDeduct;
         const SRow = ({ label, sub, value, color, bold }: { label: string; sub?: string; value: number | string; color?: string; bold?: boolean }) => (
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #F3F4F6" }}>
-            <div><span style={{ fontSize: 11, color: color || "#5F6577", fontWeight: bold ? 700 : 400 }}>{label}</span>{sub && <span style={{ fontSize: 9, color: "#B0B5C1", marginLeft: 6 }}>{sub}</span>}</div>
-            <span style={{ fontSize: 12, fontWeight: bold ? 800 : 600, color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
+          <div className="flex justify-between items-center py-[5px] border-b border-[#F3F4F6]">
+            <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "#5F6577" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
+            <span className={`text-xs ${bold ? 'font-[800]' : 'font-semibold'}`} style={{ color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
           </div>
         );
         const moveOutPhotos = t.moveOutPhotos || [];
@@ -250,9 +250,10 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
         <>
         {/* 사진 비교 버튼 */}
         {hasAnyPhotos && (
-          <div style={{ maxWidth: 720, marginBottom: 12 }}>
+          <div className="max-w-[720px] mb-3">
             <button onClick={() => setMoveoutCompare({ building: t.building, room: t.room, moveInCheckPhotos, moveOutPhotos })}
-              style={{ width: "100%", padding: "14px", borderRadius: 10, border: "2px solid #6366F1", background: "linear-gradient(90deg, #EEF2FF, #FAF5FF)", color: "#6366F1", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+              className="w-full p-3.5 rounded-[10px] border-2 border-[#6366F1] text-[#6366F1] text-sm font-[800] cursor-pointer font-[inherit] flex items-center justify-center gap-2.5 hover:opacity-90 transition-opacity"
+              style={{ background: "linear-gradient(90deg, #EEF2FF, #FAF5FF)" }}>
               🔍 입퇴실 사진 비교 (입주 {moveInCheckPhotos.length}장 / 퇴실 {moveOutPhotos.length}장)
             </button>
           </div>
@@ -272,112 +273,111 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           }
         `}} />
-        <Card id="settlement-print-area" style={{ maxWidth: 720 }}>
+        <Card id="settlement-print-area" className="max-w-[720px]">
           {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div className="flex justify-between items-start mb-4">
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#DC2626", display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="text-lg font-[800] text-hm-danger flex items-center gap-2.5">
                 🚪 퇴실정산서
                 <RoomTypeBadge building={t.building} room={t.room} />
                 <input type="date" value={moveoutDateStr} onChange={e => setMoveoutDateStr(e.target.value)}
-                  style={{ fontSize: 13, fontWeight: 700, padding: "5px 10px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontFamily: "inherit", cursor: "pointer" }} />
+                  className="text-[13px] font-bold px-2.5 py-[5px] rounded-lg border-[1.5px] border-hm-danger-border bg-hm-danger-bg text-hm-danger font-[inherit] cursor-pointer" />
               </div>
-              <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 4 }}>{t.building} {t.room}호 · {t.name} · {t.phone}</div>
+              <div className="text-xs text-hm-text-muted mt-1">{t.building} {t.room}호 · {t.name} · {t.phone}</div>
             </div>
-            <div style={{ padding: "8px 18px", borderRadius: 8, fontSize: 14, fontWeight: 800,
-              background: isEarlyMoveout ? "#FEF2F2" : "#F0FDF4",
-              color: isEarlyMoveout ? "#DC2626" : "#059669",
-              border: `1.5px solid ${isEarlyMoveout ? "#FECACA" : "#BBF7D0"}` }}>
+            <div className={`px-[18px] py-2 rounded-lg text-sm font-[800] ${isEarlyMoveout ? 'bg-hm-danger-bg text-hm-danger' : 'bg-[#F0FDF4] text-hm-success'}`}
+              style={{ border: `1.5px solid ${isEarlyMoveout ? "#FECACA" : "#BBF7D0"}` }}>
               {isEarlyMoveout ? "만기전퇴실" : "만기퇴실"}
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: isManagementOffice ? "1fr" : "3fr 2fr", gap: 16 }}>
+          <div className="gap-4" style={{ display: "grid", gridTemplateColumns: isManagementOffice ? "1fr" : "3fr 2fr" }}>
             {/* Left — 계약/기간 정보 (자동) */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>입주자 정보</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주자</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600 }}>{t.name}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{t.phone}</div></div>
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold">{t.name}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.phone}</div></div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "20px auto 30px 1fr 30px 60px", gap: 2, marginBottom: 12, alignItems: "center" }}>
-                <div style={{ fontSize: 9, color: "#8F95A3" }}>은행</div>
-                <select value={refundBank} onChange={e => setRefundBank(e.target.value)} style={{ ...inputStyle, padding: "5px 4px", fontSize: 10, fontWeight: 600, cursor: "pointer" }}>
+              <div className="grid gap-0.5 mb-3 items-center" style={{ gridTemplateColumns: "20px auto 30px 1fr 30px 60px" }}>
+                <div className="text-[9px] text-hm-text-muted">은행</div>
+                <select value={refundBank} onChange={e => setRefundBank(e.target.value)} className={`${inputClassName} !px-1 !py-[5px] !text-[10px] font-semibold cursor-pointer`}>
                   <option value="" disabled>선택</option>
                   {["KB국민","신한","하나","우리","NH농협","IBK기업","SC제일","씨티","카카오뱅크","케이뱅크","토스뱅크","새마을금고","신협","우체국","수협","광주","전북","제주","경남","부산","대구","BNK","산업","KDB"].map(b => <option key={b} value={b}>{b}</option>)}
                 </select>
-                <div style={{ fontSize: 9, color: "#8F95A3" }}>계좌</div><input value={refundAcct} onChange={e => setRefundAcct(e.target.value)} placeholder="계좌번호" style={{ ...inputStyle, padding: "5px 6px", fontSize: 10 }} />
-                <div style={{ fontSize: 9, color: "#8F95A3" }}>입금자</div><input value={refundName} onChange={e => setRefundName(e.target.value)} placeholder="입금자명" style={{ ...inputStyle, padding: "5px 6px", fontSize: 10, width: 60 }} />
+                <div className="text-[9px] text-hm-text-muted">계좌</div><input value={refundAcct} onChange={e => setRefundAcct(e.target.value)} placeholder="계좌번호" className={`${inputClassName} !px-1.5 !py-[5px] !text-[10px]`} />
+                <div className="text-[9px] text-hm-text-muted">입금자</div><input value={refundName} onChange={e => setRefundName(e.target.value)} placeholder="입금자명" className={`${inputClassName} !px-1.5 !py-[5px] !text-[10px] !w-[60px]`} />
               </div>
 
               {showProRata && <>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>사용 기간</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{moveInStr || "-"}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{t.expiry}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>사용기간</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F0F4FF", fontSize: 12, fontWeight: 700, color: "#2563EB", textAlign: "center" }}>{usagePeriod}</div></div>
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">사용 기간</div>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{moveInStr || "-"}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.expiry}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0F4FF] text-xs font-bold text-hm-blue-dark text-center">{usagePeriod}</div></div>
               </div>
 
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>계약 정보 (자동)</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>{depositLabel}</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F0FDF4", fontSize: 12, fontWeight: 700, color: "#059669", textAlign: "right" }}>{fmt(t.deposit)}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>월세 <span style={{ fontSize: 8, color: isRentPrepaid ? "#059669" : "#DC2626" }}>({isRentPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(t.rent)}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비 <span style={{ fontSize: 8, color: isMgmtPrepaid ? "#059669" : "#DC2626" }}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, fontWeight: 600, textAlign: "right" }}>{fmt(t.mgmt || 0)}</div></div>
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">계약 정보 (자동)</div>
+              <div className="grid grid-cols-3 gap-2 mb-2">
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(t.deposit)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold text-right">{fmt(t.rent)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold text-right">{fmt(t.mgmt || 0)}</div></div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: showCleanFee ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                {showCleanFee && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>퇴실청소비</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#FEF2F2", fontSize: 12, fontWeight: 600, textAlign: "right", color: "#DC2626" }}>{fmt(cleanFee)}</div></div>}
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>수도</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(waterAmt)}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>TV/인터넷</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12, textAlign: "right" }}>{fmt(internetAmt)}</div></div>
-                <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기일</div><div style={{ padding: "7px 10px", borderRadius: 8, background: "#F8FAFC", fontSize: 12 }}>{t.expiry}</div></div>
+              <div className="gap-2 mb-3" style={{ display: "grid", gridTemplateColumns: showCleanFee ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr" }}>
+                {showCleanFee && <div><div className="text-[9px] text-hm-text-muted mb-0.5">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(cleanFee)}</div></div>}
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs text-right">{fmt(waterAmt)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs text-right">{fmt(internetAmt)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.expiry}</div></div>
               </div>
               </>}
 
               {/* 수기 입력 영역 */}
               {showManualInputs && <>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #FED7AA" }}>✏️ 수기 입력 (마지막 청구 이후)</div>
-              <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 90px", gap: 6, marginBottom: 6, marginTop: 6, alignItems: "center" }}>
-                <span style={{ fontSize: 10, color: "#EA580C", fontWeight: 600 }}>애완동물</span>
-                <input value={manRepairDesc} onChange={e => setManRepairDesc(e.target.value)} placeholder="내역" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#FED7AA" }} />
-                <input value={manRepair || ""} onChange={e => setManRepair(e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#FED7AA" }} />
+              <div className="text-[11px] font-[800] text-hm-warning mb-2 pb-1.5 border-b-[1.5px] border-hm-warning-border">✏️ 수기 입력 (마지막 청구 이후)</div>
+              <div className="grid gap-1.5 mb-1.5 mt-1.5 items-center" style={{ gridTemplateColumns: "60px 1fr 90px" }}>
+                <span className="text-[10px] text-hm-warning font-semibold">애완동물</span>
+                <input value={manRepairDesc} onChange={e => setManRepairDesc(e.target.value)} placeholder="내역" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-hm-warning-border`} />
+                <input value={manRepair || ""} onChange={e => setManRepair(e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-hm-warning-border`} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "60px 1fr 90px", gap: 6, marginBottom: 6, alignItems: "center" }}>
-                <span style={{ fontSize: 10, color: "#EA580C", fontWeight: 600 }}>공제1</span>
-                <input value={manWasteDesc} onChange={e => setManWasteDesc(e.target.value)} placeholder="내역" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#FED7AA" }} />
-                <input value={manWaste || ""} onChange={e => setManWaste(e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#FED7AA" }} />
+              <div className="grid gap-1.5 mb-1.5 items-center" style={{ gridTemplateColumns: "60px 1fr 90px" }}>
+                <span className="text-[10px] text-hm-warning font-semibold">공제1</span>
+                <input value={manWasteDesc} onChange={e => setManWasteDesc(e.target.value)} placeholder="내역" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-hm-warning-border`} />
+                <input value={manWaste || ""} onChange={e => setManWaste(e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-hm-warning-border`} />
               </div>
               {manOther.map((row, i) => (
-                <div key={`other${i}`} style={{ display: "grid", gridTemplateColumns: "60px 1fr 90px", gap: 6, marginBottom: i < 2 ? 4 : 8, alignItems: "center" }}>
-                  <span style={{ fontSize: 10, color: "#EA580C", fontWeight: 600 }}>공제{i+2}</span>
-                  <input value={row.desc} onChange={e => setManOtherRow(i,"desc",e.target.value)} placeholder="내역" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#FED7AA" }} />
-                  <input value={row.amt || ""} onChange={e => setManOtherRow(i,"amt",e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#FED7AA" }} />
+                <div key={`other${i}`} className={`grid gap-1.5 items-center ${i < 2 ? 'mb-1' : 'mb-2'}`} style={{ gridTemplateColumns: "60px 1fr 90px" }}>
+                  <span className="text-[10px] text-hm-warning font-semibold">공제{i+2}</span>
+                  <input value={row.desc} onChange={e => setManOtherRow(i,"desc",e.target.value)} placeholder="내역" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-hm-warning-border`} />
+                  <input value={row.amt || ""} onChange={e => setManOtherRow(i,"amt",e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-hm-warning-border`} />
                 </div>
               ))}
-              {showRestoration && <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 90px", gap: 6, marginBottom: 8, alignItems: "center" }}>
-                <span style={{ fontSize: 10, color: "#7C3AED", fontWeight: 600 }}>원상복구비</span>
-                <input value={manRestorationDesc} onChange={e => setManRestorationDesc(e.target.value)} placeholder="내역" style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#C4B5FD" }} />
-                <input value={manRestoration || ""} onChange={e => setManRestoration(e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#C4B5FD" }} />
+              {showRestoration && <div className="grid gap-1.5 mb-2 items-center" style={{ gridTemplateColumns: "80px 1fr 90px" }}>
+                <span className="text-[10px] text-[#7C3AED] font-semibold">원상복구비</span>
+                <input value={manRestorationDesc} onChange={e => setManRestorationDesc(e.target.value)} placeholder="내역" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-[#C4B5FD]`} />
+                <input value={manRestoration || ""} onChange={e => setManRestoration(e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-[#C4B5FD]`} />
               </div>}
               </>}
 
               {/* 관리사무소 — 보증금 정보 + 엘리베이터 사용비 */}
               {isManagementOffice && <>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>공제 항목</div>
-              <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", background: "#FEF2F2", borderRadius: 8, border: "1.5px solid #FECACA", marginBottom: 12, cursor: "pointer" }}>
-                <input type="checkbox" checked={elevatorFee} onChange={e => setElevatorFee(e.target.checked)} style={{ width: 18, height: 18, cursor: "pointer" }} />
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">공제 항목</div>
+              <label className="flex items-center gap-2 px-3.5 py-2.5 bg-hm-danger-bg rounded-lg border-[1.5px] border-hm-danger-border mb-3 cursor-pointer">
+                <input type="checkbox" checked={elevatorFee} onChange={e => setElevatorFee(e.target.checked)} className="w-[18px] h-[18px] cursor-pointer" />
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#DC2626" }}>엘리베이터 사용</div>
-                  <div style={{ fontSize: 10, color: "#991B1B" }}>사용 시 100,000원 공제</div>
+                  <div className="text-xs font-bold text-hm-danger">엘리베이터 사용</div>
+                  <div className="text-[10px] text-[#991B1B]">사용 시 100,000원 공제</div>
                 </div>
-                {elevatorFee && <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 800, color: "#DC2626" }}>{fmt(100000)}원</span>}
+                {elevatorFee && <span className="ml-auto text-sm font-[800] text-hm-danger">{fmt(100000)}원</span>}
               </label>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>보증금 반환</div>
-              <div style={{ background: settlement >= 0 ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
+              <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
+                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
+                <div className="flex justify-between items-center">
                   <div>
-                    <span style={{ fontSize: 14, fontWeight: 800, color: settlement >= 0 ? "#065F46" : "#991B1B" }}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
-                    {elevatorFee && <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 2 }}>보증금 {fmt(t.deposit)} - 엘리베이터 {fmt(100000)}</div>}
+                    <span className={`text-sm font-[800] ${settlement >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
+                    {elevatorFee && <div className="text-[10px] text-hm-text-muted mt-0.5">보증금 {fmt(t.deposit)} - 엘리베이터 {fmt(100000)}</div>}
                   </div>
-                  <span style={{ fontSize: 24, fontWeight: 900, color: settlement >= 0 ? "#059669" : "#DC2626" }}>{settlement < 0 ? `-${fmt(Math.abs(settlement))}` : fmt(settlement)}<span style={{ fontSize: 12 }}>원</span></span>
+                  <span className={`text-2xl font-[900] ${settlement >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>{settlement < 0 ? `-${fmt(Math.abs(settlement))}` : fmt(settlement)}<span className="text-xs">원</span></span>
                 </div>
               </div>
               </>}
@@ -385,26 +385,26 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
             {/* Right — 정산 자동계산 (관리사무소 제외) */}
             {!isManagementOffice && <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>정산 내역 (자동계산)</div>
-              {showProRata && <div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 4 }}>기산일: {startDay}일 · 일할기준: {daysInMonth}일 · 사용일수: {usedDays}일</div>}
+              <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">정산 내역 (자동계산)</div>
+              {showProRata && <div className="text-[9px] text-hm-text-muted mb-1">기산일: {startDay}일 · 일할기준: {daysInMonth}일 · 사용일수: {usedDays}일</div>}
 
               {/* 반환 항목 */}
-              <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #BBF7D0" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#059669", marginBottom: 4 }}>반환 항목</div>
+              <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-[#BBF7D0]">
+                <div className="text-[10px] font-bold text-hm-success mb-1">반환 항목</div>
                 <SRow label={depositLabel} value={t.deposit} color="#059669" bold />
                 {netRent < 0 && <SRow label="월세 환불" sub={`${daysInMonth - usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={-netRent} color="#059669" />}
                 {netMgmt < 0 && <SRow label="관리비 환불" sub={`${daysInMonth - usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={-netMgmt} color="#059669" />}
                 {netWater < 0 && <SRow label="수도 환불" sub={`${daysInMonth - usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={-netWater} color="#059669" />}
                 {netInternet < 0 && <SRow label="TV/인터넷 환불" sub={`${daysInMonth - usedDays}일분${unpaidInternet > 0 ? " · 미납반영" : ""}`} value={-netInternet} color="#059669" />}
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #BBF7D0" }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#065F46" }}>반환소계</span>
-                  <span style={{ fontSize: 14, fontWeight: 900, color: "#059669" }}>{fmt(t.deposit + totalRefund)}</span>
+                <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-[#BBF7D0]">
+                  <span className="text-xs font-[800] text-[#065F46]">반환소계</span>
+                  <span className="text-sm font-[900] text-hm-success">{fmt(t.deposit + totalRefund)}</span>
                 </div>
               </div>
 
               {/* 공제 항목 */}
-              <div style={{ background: "#FEF2F2", borderRadius: 10, padding: "10px 14px", marginBottom: 10, border: "1px solid #FECACA" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", marginBottom: 4 }}>공제 항목</div>
+              <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
+                <div className="text-[10px] font-bold text-hm-danger mb-1">공제 항목</div>
                 {netRent > 0 && <SRow label="월세" sub={`${usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={netRent} color="#DC2626" />}
                 {netMgmt > 0 && <SRow label="관리비" sub={`${usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={netMgmt} color="#DC2626" />}
                 {netWater > 0 && <SRow label="수도" sub={`${usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={netWater} color="#DC2626" />}
@@ -417,39 +417,40 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                 {showManualInputs && manOther.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`o${i}`} label={`공제${i+2}${r.desc ? ` (${r.desc})` : ""}`} value={parseNum(r.amt)} color="#DC2626" />)}
                 {showRestoration && parseNum(manRestoration) > 0 && <SRow label={`원상복구비 ${manRestorationDesc ? `(${manRestorationDesc})` : ""}`} value={parseNum(manRestoration)} color="#7C3AED" />}
                 {showPenalty && penaltyTotal > 0 && <>
-                  <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
+                  <div className="h-px bg-hm-danger-border my-1" />
                   {penalty7 > 0 && <SRow label="7일패널티" sub={`귀속: ${penaltyRecipient}`} value={penalty7} color="#DC2626" />}
                   {penaltyComm > 0 && <SRow label="중개수수료" value={penaltyComm} color="#DC2626" />}
                 </>}
                 {lateFee > 0 && <SRow label="연체수수료" sub="임대료 월 5%" value={lateFee} color="#DC2626" />}
                 {lateFeeOverrides[`${t.building}_${t.room}`]?.type === "exclude" && (
-                  <div style={{ fontSize: 10, color: "#059669", fontWeight: 700, textAlign: "right", padding: "2px 0" }}>수금관리에서 연체수수료 제외 처리됨</div>
+                  <div className="text-[10px] text-hm-success font-bold text-right py-0.5">수금관리에서 연체수수료 제외 처리됨</div>
                 )}
                 {lateFeeOverrides[`${t.building}_${t.room}`]?.type === "discount" && (
-                  <div style={{ fontSize: 10, color: "#2563EB", fontWeight: 700, textAlign: "right", padding: "2px 0" }}>수금관리에서 연체수수료 {fmt(lateFeeOverrides[`${t.building}_${t.room}`].amount)}원 할인 적용</div>
+                  <div className="text-[10px] text-hm-blue-dark font-bold text-right py-0.5">수금관리에서 연체수수료 {fmt(lateFeeOverrides[`${t.building}_${t.room}`].amount)}원 할인 적용</div>
                 )}
                 {prevUnpaid > 0 && <>
-                  <div style={{ height: 1, background: "#FECACA", margin: "4px 0" }} />
+                  <div className="h-px bg-hm-danger-border my-1" />
                   <SRow label="전월 미납금" value={prevUnpaid} color="#DC2626" bold />
                 </>}
-                <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", marginTop: 4, borderTop: "1.5px solid #FECACA" }}>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "#991B1B" }}>공제소계</span>
-                  <span style={{ fontSize: 14, fontWeight: 900, color: "#DC2626" }}>-{fmt(totalDeduct)}</span>
+                <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-danger-border">
+                  <span className="text-xs font-[800] text-[#991B1B]">공제소계</span>
+                  <span className="text-sm font-[900] text-hm-danger">-{fmt(totalDeduct)}</span>
                 </div>
               </div>
 
               {/* 최종 정산 */}
-              <div style={{ background: settlement >= 0 ? "#F0FDF4" : "#FEF2F2", borderRadius: 10, padding: "14px 18px", border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: settlement >= 0 ? "#065F46" : "#991B1B" }}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
-                  <span style={{ fontSize: 24, fontWeight: 900, color: settlement >= 0 ? "#059669" : "#DC2626" }}>{settlement < 0 ? `-${fmt(Math.abs(settlement))}` : fmt(settlement)}<span style={{ fontSize: 12 }}>원</span></span>
+              <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
+                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
+                <div className="flex justify-between items-center">
+                  <span className={`text-sm font-[800] ${settlement >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
+                  <span className={`text-2xl font-[900] ${settlement >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>{settlement < 0 ? `-${fmt(Math.abs(settlement))}` : fmt(settlement)}<span className="text-xs">원</span></span>
                 </div>
               </div>
 
               {showPenalty && isEarlyMoveout && (
-                <div style={{ marginTop: 8, padding: "6px 10px", background: "#FEF2F2", borderRadius: 6, border: "1px solid #FECACA", fontSize: 10, color: "#DC2626", fontWeight: 600 }}>
+                <div className="mt-2 px-2.5 py-1.5 bg-hm-danger-bg rounded-md border border-hm-danger-border text-[10px] text-hm-danger font-semibold">
                   ⚠️ 만기전퇴실 위약금: (월세+관리비)/30x7 = {fmt(penalty7)}원{penaltyComm > 0 ? ` + 중개수수료 ${fmt(penaltyComm)}원` : ""}
-                  <span style={{ marginLeft: 8, padding: "2px 6px", borderRadius: 4, background: penaltyRecipient === "하우스맨" ? "#EFF6FF" : "#FFF7ED", color: penaltyRecipient === "하우스맨" ? "#2563EB" : "#EA580C", fontWeight: 800, fontSize: 9 }}>귀속: {penaltyRecipient}</span>
+                  <span className={`ml-2 px-1.5 py-0.5 rounded text-[9px] font-[800] ${penaltyRecipient === "하우스맨" ? 'bg-hm-blue-bg text-hm-blue-dark' : 'bg-hm-warning-bg text-hm-warning'}`}>귀속: {penaltyRecipient}</span>
                 </div>
               )}
             </div>}
@@ -457,35 +458,35 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
           {/* 퇴실 검침값 현장 입력 */}
           {showManualInputs && (
-            <div style={{ marginTop: 16, padding: "14px 16px", background: "#F0F4FF", borderRadius: 12, border: "2px solid #BFDBFE" }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "#1E40AF", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>📋 퇴실 검침값</div>
+            <div className="mt-4 px-4 py-3.5 bg-[#F0F4FF] rounded-xl border-2 border-[#BFDBFE]">
+              <div className="text-[13px] font-[800] text-[#1E40AF] mb-2.5 flex items-center gap-1.5">📋 퇴실 검침값</div>
               {roomType === "근생" && (
-                <div style={{ padding: "8px 12px", background: "#FEF3C7", borderRadius: 8, marginBottom: 10, fontSize: 11, fontWeight: 600, color: "#92400E", border: "1px solid #FDE68A" }}>
+                <div className="px-3 py-2 bg-[#FEF3C7] rounded-lg mb-2.5 text-[11px] font-semibold text-[#92400E] border border-[#FDE68A]">
                   근생은 전기/가스/수도 이사정산을 임차인이 직접 처리합니다
                 </div>
               )}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#FBBF24", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>⚡ 전기 당월지침</div>
-                  {prevElecReading && <div style={{ fontSize: 9, color: "#6B7280", marginBottom: 4 }}>이전: {prevElecReading.value} kWh ({prevElecReading.date || "-"})</div>}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-xs font-bold text-[#FBBF24] mb-1.5 flex items-center justify-center gap-1">⚡ 전기 당월지침</div>
+                  {prevElecReading && <div className="text-[9px] text-[#6B7280] mb-1">이전: {prevElecReading.value} kWh ({prevElecReading.date || "-"})</div>}
                   <input
                     type="number" inputMode="numeric"
                     value={meterElecReading} onChange={e => setMeterElecReading(e.target.value)}
                     placeholder="0"
-                    style={{ ...inputStyle, width: "100%", padding: "14px 12px", fontSize: 20, fontWeight: 800, textAlign: "center", borderColor: "#FBBF24", borderWidth: 2, borderRadius: 10, background: "#FFFBEB" }}
+                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-[800] !text-center !border-[#FBBF24] !border-2 !rounded-[10px] !bg-[#FFFBEB]`}
                   />
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 3 }}>kWh</div>
+                  <div className="text-[9px] text-hm-text-muted mt-[3px]">kWh</div>
                 </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#60A5FA", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>🔥 가스 당월지침</div>
-                  {prevGasReading && <div style={{ fontSize: 9, color: "#6B7280", marginBottom: 4 }}>이전: {prevGasReading.value} m3 ({prevGasReading.date || "-"})</div>}
+                <div className="text-center">
+                  <div className="text-xs font-bold text-[#60A5FA] mb-1.5 flex items-center justify-center gap-1">🔥 가스 당월지침</div>
+                  {prevGasReading && <div className="text-[9px] text-[#6B7280] mb-1">이전: {prevGasReading.value} m3 ({prevGasReading.date || "-"})</div>}
                   <input
                     type="number" inputMode="numeric"
                     value={meterGasReading} onChange={e => setMeterGasReading(e.target.value)}
                     placeholder="0"
-                    style={{ ...inputStyle, width: "100%", padding: "14px 12px", fontSize: 20, fontWeight: 800, textAlign: "center", borderColor: "#60A5FA", borderWidth: 2, borderRadius: 10, background: "#EFF6FF" }}
+                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-[800] !text-center !border-[#60A5FA] !border-2 !rounded-[10px] !bg-hm-blue-bg`}
                   />
-                  <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 3 }}>m3</div>
+                  <div className="text-[9px] text-hm-text-muted mt-[3px]">m3</div>
                 </div>
               </div>
             </div>
@@ -493,21 +494,21 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
           {/* 전기/가스 금액 입력 */}
           {showManualInputs && (
-            <div style={{ marginTop: 12, padding: "12px 14px", background: "#FFFBEB", borderRadius: 10, border: "1.5px solid #FDE68A" }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#EA580C", marginBottom: 8 }}>⚡🔥 전기 / 가스 청구금액</div>
+            <div className="mt-3 px-3.5 py-3 bg-[#FFFBEB] rounded-[10px] border-[1.5px] border-[#FDE68A]">
+              <div className="text-[11px] font-[800] text-hm-warning mb-2">⚡🔥 전기 / 가스 청구금액</div>
               {(meterPhotos.electric.length > 0 || meterPhotos.gas.length > 0) && (
-                <div className="no-print" style={{ marginBottom: 10, padding: 8, background: "#fff", borderRadius: 8, border: "1px solid #FDE68A" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#92400E", marginBottom: 6 }}>📷 계량기 사진 (클릭하여 확대)</div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div className="no-print mb-2.5 p-2 bg-white rounded-lg border border-[#FDE68A]">
+                  <div className="text-[10px] font-bold text-[#92400E] mb-1.5">📷 계량기 사진 (클릭하여 확대)</div>
+                  <div className="flex gap-2 flex-wrap">
                     {meterPhotos.electric.map(pi => {
                       const photo = moveOutPhotos[pi];
                       if (!photo) return null;
                       const src = typeof photo === "string" ? photo : URL.createObjectURL(photo);
                       return (
                         <div key={`e${pi}`} onClick={() => setMeterZoom({ src, zoom: 1, pos: { x: 0, y: 0 } })}
-                          style={{ position: "relative", cursor: "pointer" }}>
-                          <img src={src} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, border: "2px solid #FBBF24" }} />
-                          <span style={{ position: "absolute", bottom: 2, left: 2, fontSize: 7, fontWeight: 800, padding: "1px 4px", borderRadius: 3, background: "#FBBF24", color: "#000" }}>⚡전기</span>
+                          className="relative cursor-pointer">
+                          <img src={src} alt="" className="w-20 h-20 object-cover rounded-md border-2 border-[#FBBF24]" />
+                          <span className="absolute bottom-0.5 left-0.5 text-[7px] font-[800] px-1 py-px rounded-[3px] bg-[#FBBF24] text-black">⚡전기</span>
                         </div>
                       );
                     })}
@@ -517,31 +518,31 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                       const src = typeof photo === "string" ? photo : URL.createObjectURL(photo);
                       return (
                         <div key={`g${pi}`} onClick={() => setMeterZoom({ src, zoom: 1, pos: { x: 0, y: 0 } })}
-                          style={{ position: "relative", cursor: "pointer" }}>
-                          <img src={src} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6, border: "2px solid #60A5FA" }} />
-                          <span style={{ position: "absolute", bottom: 2, left: 2, fontSize: 7, fontWeight: 800, padding: "1px 4px", borderRadius: 3, background: "#60A5FA", color: "#000" }}>🔥가스</span>
+                          className="relative cursor-pointer">
+                          <img src={src} alt="" className="w-20 h-20 object-cover rounded-md border-2 border-[#60A5FA]" />
+                          <span className="absolute bottom-0.5 left-0.5 text-[7px] font-[800] px-1 py-px rounded-[3px] bg-[#60A5FA] text-black">🔥가스</span>
                         </div>
                       );
                     })}
                   </div>
                 </div>
               )}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div style={{ fontSize: 10, color: "#EA580C", fontWeight: 600, marginBottom: 4 }}>전기</div>
+                  <div className="text-[10px] text-hm-warning font-semibold mb-1">전기</div>
                   {manElec.map((row, i) => (
-                    <div key={`elec${i}`} style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: 4, marginBottom: 4, alignItems: "center" }}>
-                      <input value={row.period} onChange={e => setManElecRow(i,"period",e.target.value)} placeholder={`기간 ${i+1}`} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#FED7AA" }} />
-                      <input value={row.amt || ""} onChange={e => setManElecRow(i,"amt",e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#FED7AA" }} />
+                    <div key={`elec${i}`} className="grid gap-1 mb-1 items-center" style={{ gridTemplateColumns: "1fr 80px" }}>
+                      <input value={row.period} onChange={e => setManElecRow(i,"period",e.target.value)} placeholder={`기간 ${i+1}`} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-hm-warning-border`} />
+                      <input value={row.amt || ""} onChange={e => setManElecRow(i,"amt",e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-hm-warning-border`} />
                     </div>
                   ))}
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: "#EA580C", fontWeight: 600, marginBottom: 4 }}>가스</div>
+                  <div className="text-[10px] text-hm-warning font-semibold mb-1">가스</div>
                   {manGas.map((row, i) => (
-                    <div key={`gas${i}`} style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: 4, marginBottom: 4, alignItems: "center" }}>
-                      <input value={row.period} onChange={e => setManGasRow(i,"period",e.target.value)} placeholder={`기간 ${i+1}`} style={{ ...inputStyle, padding: "6px 8px", fontSize: 11, borderColor: "#FED7AA" }} />
-                      <input value={row.amt || ""} onChange={e => setManGasRow(i,"amt",e.target.value)} placeholder="0" style={{ ...inputStyle, padding: "6px 8px", fontSize: 12, textAlign: "right", borderColor: "#FED7AA" }} />
+                    <div key={`gas${i}`} className="grid gap-1 mb-1 items-center" style={{ gridTemplateColumns: "1fr 80px" }}>
+                      <input value={row.period} onChange={e => setManGasRow(i,"period",e.target.value)} placeholder={`기간 ${i+1}`} className={`${inputClassName} !px-2 !py-1.5 !text-[11px] !border-hm-warning-border`} />
+                      <input value={row.amt || ""} onChange={e => setManGasRow(i,"amt",e.target.value)} placeholder="0" className={`${inputClassName} !px-2 !py-1.5 !text-xs !text-right !border-hm-warning-border`} />
                     </div>
                   ))}
                 </div>
@@ -551,19 +552,19 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
           {/* 근생 원상복구 확인 */}
           {showRestoration && (
-            <div style={{ marginTop: 16, padding: "14px 16px", background: "#F5F3FF", borderRadius: 12, border: "2px solid #DDD6FE" }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "#7C3AED", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>🔧 원상복구 확인</div>
-              <div style={{ padding: "8px 12px", background: "#EDE9FE", borderRadius: 8, marginBottom: 12, fontSize: 11, fontWeight: 600, color: "#6D28D9", border: "1px solid #DDD6FE" }}>
+            <div className="mt-4 px-4 py-3.5 bg-[#F5F3FF] rounded-xl border-2 border-[#DDD6FE]">
+              <div className="text-[13px] font-[800] text-[#7C3AED] mb-2.5 flex items-center gap-1.5">🔧 원상복구 확인</div>
+              <div className="px-3 py-2 bg-[#EDE9FE] rounded-lg mb-3 text-[11px] font-semibold text-[#6D28D9] border border-[#DDD6FE]">
                 근생은 전기/가스/수도 이사정산을 임차인이 직접 처리합니다
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>복구 상태</div>
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div className="text-[10px] text-hm-text-muted mb-1">복구 상태</div>
+                  <div className="flex gap-1.5">
                     {["미확인", "진행중", "확인완료"].map(s => (
                       <button key={s} onClick={() => setRestorationStatus(s)}
+                        className="flex-1 py-2 px-1 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-colors"
                         style={{
-                          flex: 1, padding: "8px 4px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
                           border: restorationStatus === s ? "2px solid" : "1.5px solid #E0E3E9",
                           background: restorationStatus === s ? (s === "확인완료" ? "#F0FDF4" : s === "진행중" ? "#FEF3C7" : "#FEF2F2") : "#fff",
                           color: restorationStatus === s ? (s === "확인완료" ? "#059669" : s === "진행중" ? "#92400E" : "#DC2626") : "#8F95A3",
@@ -575,28 +576,28 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>점검자 코멘트</div>
+                  <div className="text-[10px] text-hm-text-muted mb-1">점검자 코멘트</div>
                   <input value={restorationComment} onChange={e => setRestorationComment(e.target.value)}
                     placeholder="점검 결과 메모..."
-                    style={{ ...inputStyle, width: "100%", padding: "8px 10px", fontSize: 11, borderColor: "#DDD6FE" }} />
+                    className={`${inputClassName} !w-full !px-2.5 !py-2 !text-[11px] !border-[#DDD6FE]`} />
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>점검 사진</div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                <div className="text-[10px] text-hm-text-muted mb-1">점검 사진</div>
+                <div className="flex gap-2 flex-wrap mb-2">
                   {restorationPhotos.map((photo: any, i: number) => {
                     const src = typeof photo === "string" ? photo : URL.createObjectURL(photo);
                     return (
-                      <div key={i} style={{ position: "relative" }}>
-                        <img src={src} alt="" style={{ width: 70, height: 70, objectFit: "cover", borderRadius: 6, border: "2px solid #DDD6FE" }}
+                      <div key={i} className="relative">
+                        <img src={src} alt="" className="w-[70px] h-[70px] object-cover rounded-md border-2 border-[#DDD6FE]"
                           onClick={() => setMeterZoom({ src, zoom: 1, pos: { x: 0, y: 0 } })} />
                         <button onClick={() => setRestorationPhotos((prev: any[]) => prev.filter((_: any, j: number) => j !== i))}
-                          style={{ position: "absolute", top: -4, right: -4, width: 18, height: 18, borderRadius: "50%", border: "none", background: "#DC2626", color: "#fff", fontSize: 10, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>x</button>
+                          className="absolute -top-1 -right-1 w-[18px] h-[18px] rounded-full border-none bg-hm-danger text-white text-[10px] font-[800] cursor-pointer flex items-center justify-center">x</button>
                       </div>
                     );
                   })}
-                  <label style={{ width: 70, height: 70, borderRadius: 6, border: "2px dashed #DDD6FE", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#FAFAFE" }}>
-                    <span style={{ fontSize: 24, color: "#C4B5FD" }}>+</span>
+                  <label className="w-[70px] h-[70px] rounded-md border-2 border-dashed border-[#DDD6FE] flex items-center justify-center cursor-pointer bg-[#FAFAFE]">
+                    <span className="text-2xl text-[#C4B5FD]">+</span>
                     <input type="file" accept="image/*" multiple hidden onChange={e => {
                       const files = Array.from(e.target.files || []);
                       if (files.length > 0) setRestorationPhotos((prev: any[]) => [...prev, ...files]);
@@ -609,25 +610,26 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           )}
 
           {/* 퇴실 메모 */}
-          <div style={{ marginTop: 16, marginBottom: 16 }}>
-            <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>퇴실 메모</div>
-            <textarea rows={2} placeholder="퇴실 사유, 참고사항..." style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6, fontSize: 12, padding: "10px 12px" }} />
+          <div className="mt-4 mb-4">
+            <div className="text-[10px] text-hm-text-muted mb-1">퇴실 메모</div>
+            <textarea rows={2} placeholder="퇴실 사유, 참고사항..." className={`${inputClassName} resize-y leading-[1.6] !text-xs !px-3 !py-2.5`} />
           </div>
 
           {/* 인쇄 전용: 하단 */}
-          <div className="print-only" style={{ display: "none", justifyContent: "center", marginTop: 16, paddingTop: 8, borderTop: "1px solid #ddd", fontSize: 9, color: "#aaa" }}>
+          <div className="print-only hidden justify-center mt-4 pt-2 border-t border-[#ddd] text-[9px] text-[#aaa]">
             하우스맨 건물관리 시스템 · {new Date().toLocaleDateString("ko-KR")} 출력
           </div>
 
           {/* Buttons */}
-          <div className="no-print" style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { setActionMode(null); setSelectedTenant(null); }} style={{ flex: 1, padding: "13px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
+          <div className="no-print flex gap-2">
+            <button onClick={() => { setActionMode(null); setSelectedTenant(null); }}
+              className="flex-1 py-[13px] rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
             <button onClick={() => { window.print(); }}
-              style={{ flex: 1, padding: "13px", borderRadius: 10, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>🖨 프린트</button>
+              className="flex-1 py-[13px] rounded-[10px] border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🖨 프린트</button>
             <button
               disabled={!hasMoveOutPhotos}
               onClick={() => { if (hasMoveOutPhotos) setShowMoveoutConfirmModal(true); }}
-              style={{ flex: 2, padding: "13px", borderRadius: 10, border: "none", background: hasMoveOutPhotos ? "#DC2626" : "#E0E3E9", color: hasMoveOutPhotos ? "#fff" : "#8F95A3", fontWeight: 800, fontSize: 14, cursor: hasMoveOutPhotos ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: hasMoveOutPhotos ? 1 : 0.6 }}
+              className={`flex-[2] py-[13px] rounded-[10px] border-none font-[800] text-sm font-[inherit] transition-opacity ${hasMoveOutPhotos ? 'bg-hm-danger text-white cursor-pointer hover:opacity-90' : 'bg-hm-input-border text-hm-text-muted cursor-not-allowed opacity-60'}`}
             >{hasMoveOutPhotos ? "🚪 퇴실 확정" : "📷 퇴실사진 등록 필요"}</button>
           </div>
         </Card>
@@ -637,97 +639,101 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
       {actionMode === "movein" && (
         <Card>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#059669", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>📦 입주 처리 <span style={{ fontSize: 12, fontWeight: 500, color: "#8F95A3" }}>신규 임차인 등록</span></div>
-          <div style={{ padding: "12px 16px", background: "#F0F4FF", borderRadius: 8, marginBottom: 16, fontSize: 12, color: "#3B82F6", fontWeight: 600 }}>📍 {t.building} {t.room}호 (현 임차인: {t.name})</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>입주자명</div><input placeholder="이름" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>연락처</div><input placeholder="010-0000-0000" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
+          <div className="text-base font-[800] text-hm-success mb-4 flex items-center gap-2">📦 입주 처리 <span className="text-xs font-medium text-hm-text-muted">신규 임차인 등록</span></div>
+          <div className="px-4 py-3 bg-[#F0F4FF] rounded-lg mb-4 text-xs text-hm-blue font-semibold">📍 {t.building} {t.room}호 (현 임차인: {t.name})</div>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div><div className="text-[10px] text-hm-text-muted mb-1">입주자명</div><input placeholder="이름" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">연락처</div><input placeholder="010-0000-0000" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>계약일</div><input type="date" defaultValue="2026-02-22" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>입주일</div><input type="date" defaultValue="2026-03-01" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>만기일</div><input type="date" defaultValue="2026-09-01" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div><div className="text-[10px] text-hm-text-muted mb-1">계약일</div><input type="date" defaultValue="2026-02-22" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">입주일</div><input type="date" defaultValue="2026-03-01" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">만기일</div><input type="date" defaultValue="2026-09-01" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>{depositLabel}</div><input placeholder="0" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>월세</div><input placeholder="0" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>관리비</div><input placeholder="0" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div><div className="text-[10px] text-hm-text-muted mb-1">{depositLabel}</div><input placeholder="0" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">월세</div><input placeholder="0" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">관리비</div><input placeholder="0" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>유형</div>
-              <select defaultValue={t.type} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div><div className="text-[10px] text-hm-text-muted mb-1">유형</div>
+              <select defaultValue={t.type} className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] cursor-pointer">
                 {["단기", "일반임대", "근생", "관리사무소"].map(tp => <option key={tp} value={tp}>{tp}</option>)}
               </select>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { setActionMode(null); setSelectedTenant(null); }} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-            <button onClick={doAction} style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: "#059669", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>📦 입주 확정</button>
+          <div className="flex gap-2">
+            <button onClick={() => { setActionMode(null); setSelectedTenant(null); }}
+              className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+            <button onClick={doAction}
+              className="flex-[2] py-3 rounded-[10px] border-none bg-hm-success text-white font-[800] text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📦 입주 확정</button>
           </div>
         </Card>
       )}
 
       {actionMode === "renew" && (
         <Card>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "#3B82F6", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>📝 연장계약 <span style={{ fontSize: 12, fontWeight: 500, color: "#8F95A3" }}>{t.building} {t.room}호 {t.name}</span></div>
-          <div style={{ padding: "12px 16px", background: "#F8FAFC", borderRadius: 10, border: "1px solid #E8ECF0", marginBottom: 16 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 8 }}>현재 계약</div>
-            <div style={{ display: "flex", gap: 20, fontSize: 12, flexWrap: "wrap" }}>
-              <div><span style={{ color: "#8F95A3" }}>월세</span> <span style={{ fontWeight: 700 }}>{fmt(t.rent)}원</span></div>
-              <div><span style={{ color: "#8F95A3" }}>관리비</span> <span style={{ fontWeight: 700 }}>{fmt(t.mgmt)}원</span></div>
-              <div><span style={{ color: "#8F95A3" }}>{depositLabel}</span> <span style={{ fontWeight: 700 }}>{fmt(t.deposit)}원</span></div>
-              <div><span style={{ color: "#8F95A3" }}>만기</span> <span style={{ fontWeight: 700 }}>{t.expiry}</span></div>
-              <div><span style={{ color: "#8F95A3" }}>임대료</span> <span style={{ fontWeight: 700 }}>{t.rentPayType === "후불" ? "후불" : "선불"}</span></div>
-              <div><span style={{ color: "#8F95A3" }}>관리비</span> <span style={{ fontWeight: 700 }}>{t.mgmtPayType === "후불" ? "후불" : "선불"}</span></div>
+          <div className="text-base font-[800] text-hm-blue mb-4 flex items-center gap-2">📝 연장계약 <span className="text-xs font-medium text-hm-text-muted">{t.building} {t.room}호 {t.name}</span></div>
+          <div className="px-4 py-3 bg-[#F8FAFC] rounded-[10px] border border-hm-border mb-4">
+            <div className="text-[10px] font-bold text-hm-text-muted mb-2">현재 계약</div>
+            <div className="flex gap-5 text-xs flex-wrap">
+              <div><span className="text-hm-text-muted">월세</span> <span className="font-bold">{fmt(t.rent)}원</span></div>
+              <div><span className="text-hm-text-muted">관리비</span> <span className="font-bold">{fmt(t.mgmt)}원</span></div>
+              <div><span className="text-hm-text-muted">{depositLabel}</span> <span className="font-bold">{fmt(t.deposit)}원</span></div>
+              <div><span className="text-hm-text-muted">만기</span> <span className="font-bold">{t.expiry}</span></div>
+              <div><span className="text-hm-text-muted">임대료</span> <span className="font-bold">{t.rentPayType === "후불" ? "후불" : "선불"}</span></div>
+              <div><span className="text-hm-text-muted">관리비</span> <span className="font-bold">{t.mgmtPayType === "후불" ? "후불" : "선불"}</span></div>
             </div>
           </div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#1A1D23", marginBottom: 10 }}>연장계약 조건</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>계약 작성일</div><input id="rn-contractDate" type="date" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>새 계약 시작일</div><input id="rn-startDate" type="date" defaultValue={t.expiry} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
-            <div><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>새 만기일</div><input id="rn-expiry" type="date" style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} /></div>
+          <div className="text-[11px] font-bold text-hm-text mb-2.5">연장계약 조건</div>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div><div className="text-[10px] text-hm-text-muted mb-1">계약 작성일</div><input id="rn-contractDate" type="date" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">새 계약 시작일</div><input id="rn-startDate" type="date" defaultValue={t.expiry} className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
+            <div><div className="text-[10px] text-hm-text-muted mb-1">새 만기일</div><input id="rn-expiry" type="date" className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" /></div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div className="grid grid-cols-3 gap-3 mb-3">
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>새 {depositLabel}</div>
-              <input id="rn-deposit" defaultValue={t.deposit} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} />
-              <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 3 }}>현재 {fmt(t.deposit)}원</div>
+              <div className="text-[10px] text-hm-text-muted mb-1">새 {depositLabel}</div>
+              <input id="rn-deposit" defaultValue={t.deposit} className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" />
+              <div className="text-[9px] text-hm-text-muted mt-[3px]">현재 {fmt(t.deposit)}원</div>
             </div>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 10, color: "#8F95A3" }}>새 월세</span>
-                <label style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
-                  <input id="rn-rentPostpaid" type="checkbox" defaultChecked={t.rentPayType === "후불"} style={{ width: 13, height: 13, cursor: "pointer" }} />
-                  <span style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>후불</span>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-hm-text-muted">새 월세</span>
+                <label className="flex items-center gap-[3px] cursor-pointer">
+                  <input id="rn-rentPostpaid" type="checkbox" defaultChecked={t.rentPayType === "후불"} className="w-[13px] h-[13px] cursor-pointer" />
+                  <span className="text-[9px] text-hm-danger font-semibold">후불</span>
                 </label>
               </div>
-              <input id="rn-rent" defaultValue={t.rent} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} />
-              <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 3 }}>현재 {fmt(t.rent)}원 ({t.rentPayType === "후불" ? "후불" : "선불"})</div>
+              <input id="rn-rent" defaultValue={t.rent} className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" />
+              <div className="text-[9px] text-hm-text-muted mt-[3px]">현재 {fmt(t.rent)}원 ({t.rentPayType === "후불" ? "후불" : "선불"})</div>
             </div>
             <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 10, color: "#8F95A3" }}>새 관리비</span>
-                <label style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }}>
-                  <input id="rn-mgmtPostpaid" type="checkbox" defaultChecked={t.mgmtPayType === "후불"} style={{ width: 13, height: 13, cursor: "pointer" }} />
-                  <span style={{ fontSize: 9, color: "#DC2626", fontWeight: 600 }}>후불</span>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-hm-text-muted">새 관리비</span>
+                <label className="flex items-center gap-[3px] cursor-pointer">
+                  <input id="rn-mgmtPostpaid" type="checkbox" defaultChecked={t.mgmtPayType === "후불"} className="w-[13px] h-[13px] cursor-pointer" />
+                  <span className="text-[9px] text-hm-danger font-semibold">후불</span>
                 </label>
               </div>
-              <input id="rn-mgmt" defaultValue={t.mgmt} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit" }} />
-              <div style={{ fontSize: 9, color: "#8F95A3", marginTop: 3 }}>현재 {fmt(t.mgmt)}원 ({t.mgmtPayType === "후불" ? "후불" : "선불"})</div>
+              <input id="rn-mgmt" defaultValue={t.mgmt} className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit]" />
+              <div className="text-[9px] text-hm-text-muted mt-[3px]">현재 {fmt(t.mgmt)}원 ({t.mgmtPayType === "후불" ? "후불" : "선불"})</div>
             </div>
           </div>
-          <div style={{ marginBottom: 16 }}><div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>계약 메모</div><textarea id="rn-memo" rows={2} placeholder="인상 사유, 협의 내용, 특약 등..." style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #E0E3E9", fontSize: 13, fontFamily: "inherit", resize: "vertical" }} /></div>
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 4 }}>📎 계약서 첨부</div>
+          <div className="mb-4"><div className="text-[10px] text-hm-text-muted mb-1">계약 메모</div><textarea id="rn-memo" rows={2} placeholder="인상 사유, 협의 내용, 특약 등..." className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] resize-y" /></div>
+          <div className="mb-4">
+            <div className="text-[10px] text-hm-text-muted mb-1">📎 계약서 첨부</div>
             <ContractDropZone
               files={renewFiles}
               onAdd={(newFiles: any[]) => setRenewFiles((prev: any[]) => [...prev, ...newFiles])}
               onRemove={(idx: number) => setRenewFiles((prev: any[]) => prev.filter((_: any, i: number) => i !== idx))}
             />
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { setActionMode(null); setSelectedTenant(null); setRenewFiles([]); }} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
-            <button onClick={doAction} style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>📝 연장계약 등록</button>
+          <div className="flex gap-2">
+            <button onClick={() => { setActionMode(null); setSelectedTenant(null); setRenewFiles([]); }}
+              className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+            <button onClick={doAction}
+              className="flex-[2] py-3 rounded-[10px] border-none bg-hm-blue text-white font-[800] text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📝 연장계약 등록</button>
           </div>
         </Card>
       )}
@@ -749,21 +755,21 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
     />
     {/* 퇴실확정 확인 모달 */}
     {showMoveoutConfirmModal && (
-      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      <div className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
         onMouseDown={() => setShowMoveoutConfirmModal(false)}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+        <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>⚠️ 퇴실 확정</div>
-          <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 20 }}>
+          <div className="text-[15px] font-[800] text-hm-text mb-3">⚠️ 퇴실 확정</div>
+          <div className="text-xs text-hm-text-sub leading-[1.6] mb-5">
             정말 퇴실처리 하시겠습니까?<br/>확정 후에는 되돌릴 수 없습니다.
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <div className="flex justify-end gap-2">
             <button onClick={() => setShowMoveoutConfirmModal(false)}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={() => { setShowMoveoutConfirmModal(false); doAction(); }}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#DC2626", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-5 py-2 rounded-lg border-none bg-hm-danger text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
               확인
             </button>
           </div>

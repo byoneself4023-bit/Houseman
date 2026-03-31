@@ -141,38 +141,27 @@ export const DunningTemplateSettings: React.FC = () => {
   };
 
   return (
-    <div style={{ marginTop: 16 }}>
+    <div className="mt-4">
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
+      <div className="flex gap-1 mb-4 flex-wrap">
         {DUNNING_TYPES.map((type) => (
           <button
             key={type.id}
             onClick={() => setActiveTab(type.id)}
-            style={{
-              padding: '10px 20px',
-              borderRadius: 10,
-              border: activeTab === type.id ? '2px solid #3B82F6' : '1.5px solid #E0E3E9',
-              background: activeTab === type.id ? '#EFF6FF' : '#fff',
-              color: activeTab === type.id ? '#2563EB' : '#5F6577',
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
+            className={`px-5 py-2.5 rounded-[10px] font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 ${
+              activeTab === type.id
+                ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark'
+                : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:border-hm-blue/40'
+            }`}
           >
             {type.label}
             {(templates[type.id] || []).length > 0 && (
               <span
-                style={{
-                  marginLeft: 6,
-                  padding: '1px 7px',
-                  borderRadius: 10,
-                  fontSize: 11,
-                  fontWeight: 800,
-                  background: activeTab === type.id ? '#3B82F6' : '#F3F4F6',
-                  color: activeTab === type.id ? '#fff' : '#8F95A3',
-                }}
+                className={`ml-1.5 px-[7px] py-px rounded-[10px] text-[11px] font-extrabold ${
+                  activeTab === type.id
+                    ? 'bg-hm-blue text-white'
+                    : 'bg-[#F3F4F6] text-hm-text-muted'
+                }`}
               >
                 {(templates[type.id] || []).length}
               </span>
@@ -182,24 +171,17 @@ export const DunningTemplateSettings: React.FC = () => {
       </div>
 
       {/* Description */}
-      <Card
-        style={{
-          padding: '14px 18px',
-          marginBottom: 12,
-          background: '#F8FAFC',
-          border: '1px solid #E8ECF0',
-        }}
-      >
-        <div style={{ fontSize: 12, color: '#5F6577', lineHeight: 1.6 }}>
+      <Card className="px-[18px] py-3.5 mb-3 bg-[#F8FAFC] border border-hm-border">
+        <div className="text-xs text-hm-text-sub leading-relaxed">
           {currentType?.fixedStages ? (
             <>
-              <span style={{ fontWeight: 700, color: '#1A1D23' }}>단기</span> — 모든 단기 호실에
+              <span className="font-bold text-hm-text">단기</span> — 모든 단기 호실에
               동일하게 적용되는 5단계 독촉 메시지입니다. 단계 수는 고정이며, 내용과 발송 시간을
               수정할 수 있습니다.
             </>
           ) : (
             <>
-              <span style={{ fontWeight: 700, color: '#1A1D23' }}>{currentType?.label}</span> —
+              <span className="font-bold text-hm-text">{currentType?.label}</span> —
               단계를 자유롭게 추가/삭제할 수 있습니다. 모든 {currentType?.label} 호실에 동일한
               메시지가 적용됩니다.
             </>
@@ -208,25 +190,15 @@ export const DunningTemplateSettings: React.FC = () => {
       </Card>
 
       {/* Stages */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="flex flex-col gap-2.5">
         {stages.length === 0 && (
-          <Card style={{ padding: '40px 20px', textAlign: 'center' }}>
-            <div style={{ fontSize: 13, color: '#8F95A3', marginBottom: 12 }}>
+          <Card className="px-5 py-10 text-center">
+            <div className="text-[13px] text-hm-text-muted mb-3">
               등록된 독촉 단계가 없습니다
             </div>
             <button
               onClick={addStage}
-              style={{
-                padding: '10px 24px',
-                borderRadius: 8,
-                border: '1.5px solid #3B82F6',
-                background: '#EFF6FF',
-                color: '#2563EB',
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
+              className="px-6 py-2.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors"
             >
               + 첫 번째 단계 추가
             </button>
@@ -234,64 +206,36 @@ export const DunningTemplateSettings: React.FC = () => {
         )}
 
         {stages.map((stage, idx) => (
-          <Card key={idx} style={{ padding: '16px 18px' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 12,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Card key={idx} className="px-[18px] py-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
                 <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 8,
-                    background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 800,
-                  }}
+                  className="w-7 h-7 rounded-lg bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white flex items-center justify-center text-xs font-extrabold"
                 >
                   {idx + 1}
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1D23' }}>
+                <span className="text-[13px] font-bold text-hm-text">
                   {idx + 1}단계
                 </span>
               </div>
               {!currentType?.fixedStages && (
                 <button
                   onClick={() => removeStage(idx)}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    border: '1px solid #FECACA',
-                    background: '#FEF2F2',
-                    color: '#DC2626',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
+                  className="px-2.5 py-1 rounded-md border border-red-200 bg-hm-danger-bg text-hm-danger text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors"
                 >
                   삭제
                 </button>
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: 12, marginBottom: 10, flexWrap: 'wrap' }}>
+            <div className="flex gap-3 mb-2.5 flex-wrap">
               {/* Day offset */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 700, color: '#8F95A3' }}>
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-bold text-hm-text-muted">
                   납부일 기준 (일)
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#5F6577' }}>+</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-[13px] font-bold text-hm-text-sub">+</span>
                   <input
                     type="number"
                     min="0"
@@ -299,76 +243,36 @@ export const DunningTemplateSettings: React.FC = () => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       updateStage(idx, 'dayOffset', e.target.value)
                     }
-                    style={{
-                      width: 70,
-                      padding: '8px 10px',
-                      borderRadius: 8,
-                      border: '1.5px solid #E0E3E9',
-                      fontSize: 13,
-                      fontWeight: 600,
-                      fontFamily: 'inherit',
-                      outline: 'none',
-                      textAlign: 'center',
-                    }}
-                    onFocus={(e: React.FocusEvent<HTMLInputElement>) =>
-                      (e.target.style.borderColor = '#3B82F6')
-                    }
-                    onBlur={(e: React.FocusEvent<HTMLInputElement>) =>
-                      (e.target.style.borderColor = '#E0E3E9')
-                    }
+                    className="w-[70px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-semibold font-[inherit] outline-none text-center focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   />
-                  <span style={{ fontSize: 12, color: '#8F95A3' }}>일</span>
+                  <span className="text-xs text-hm-text-muted">일</span>
                 </div>
               </div>
 
               {/* Send time */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 700, color: '#8F95A3' }}>발송 시간</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[11px] font-bold text-hm-text-muted">발송 시간</label>
                 <input
                   type="time"
                   value={stage.time}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateStage(idx, 'time', e.target.value)
                   }
-                  style={{
-                    width: 120,
-                    padding: '8px 10px',
-                    borderRadius: 8,
-                    border: '1.5px solid #E0E3E9',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                  }}
-                  onFocus={(e: React.FocusEvent<HTMLInputElement>) =>
-                    (e.target.style.borderColor = '#3B82F6')
-                  }
-                  onBlur={(e: React.FocusEvent<HTMLInputElement>) =>
-                    (e.target.style.borderColor = '#E0E3E9')
-                  }
+                  className="w-[120px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-semibold font-[inherit] outline-none focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                 />
               </div>
 
               {/* Summary badge */}
-              <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 2 }}>
-                <span
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: 8,
-                    background: '#F3F4F6',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: '#5F6577',
-                  }}
-                >
+              <div className="flex items-end pb-0.5">
+                <span className="px-3 py-1.5 rounded-lg bg-hm-bg text-[11px] font-semibold text-hm-text-sub">
                   납부일 +{stage.dayOffset}일 {stage.time} 발송
                 </span>
               </div>
             </div>
 
             {/* Message textarea */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: '#8F95A3' }}>문자 내용</label>
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-bold text-hm-text-muted">문자 내용</label>
               <textarea
                 value={stage.message}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -376,26 +280,9 @@ export const DunningTemplateSettings: React.FC = () => {
                 }
                 placeholder="독촉 문자 내용을 입력하세요. [건물명]은 실제 건물명으로 자동 치환됩니다."
                 rows={3}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  border: '1.5px solid #E0E3E9',
-                  fontSize: 13,
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  resize: 'vertical',
-                  lineHeight: 1.6,
-                  background: '#FAFBFC',
-                }}
-                onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) =>
-                  (e.target.style.borderColor = '#3B82F6')
-                }
-                onBlur={(e: React.FocusEvent<HTMLTextAreaElement>) =>
-                  (e.target.style.borderColor = '#E0E3E9')
-                }
+                className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-[13px] font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               />
-              <div style={{ fontSize: 10, color: '#B0B5C1' }}>
+              <div className="text-[10px] text-[#B0B5C1]">
                 치환 변수: [건물명], [호수], [임차인명], [월세], [연체일수]
               </div>
             </div>
@@ -404,58 +291,28 @@ export const DunningTemplateSettings: React.FC = () => {
       </div>
 
       {/* Action buttons */}
-      <div
-        style={{ display: 'flex', gap: 8, marginTop: 16, alignItems: 'center', flexWrap: 'wrap' }}
-      >
+      <div className="flex gap-2 mt-4 items-center flex-wrap">
         {!currentType?.fixedStages && stages.length > 0 && (
           <button
             onClick={addStage}
-            style={{
-              padding: '10px 20px',
-              borderRadius: 10,
-              border: '1.5px dashed #BFDBFE',
-              background: '#F8FAFC',
-              color: '#3B82F6',
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
+            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-[#F8FAFC] text-hm-blue font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
           >
             + 단계 추가
           </button>
         )}
         <button
           onClick={handleSave}
-          style={{
-            padding: '10px 28px',
-            borderRadius: 10,
-            border: 'none',
-            background: saved ? '#059669' : 'linear-gradient(135deg, #3B82F6, #2563EB)',
-            color: '#fff',
-            fontWeight: 800,
-            fontSize: 14,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            transition: 'all 0.2s',
-          }}
+          className={`px-7 py-2.5 rounded-[10px] border-none text-white font-extrabold text-sm cursor-pointer font-[inherit] transition-all duration-200 ${
+            saved
+              ? 'bg-hm-success'
+              : 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-md'
+          }`}
         >
           {saved ? '저장 완료' : '저장'}
         </button>
         <button
           onClick={handleReset}
-          style={{
-            padding: '10px 20px',
-            borderRadius: 10,
-            border: '1.5px solid #E0E3E9',
-            background: '#fff',
-            color: '#8F95A3',
-            fontWeight: 700,
-            fontSize: 13,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-          }}
+          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-muted font-bold text-[13px] cursor-pointer font-[inherit] hover:border-hm-text-muted transition-colors"
         >
           기본값 초기화
         </button>

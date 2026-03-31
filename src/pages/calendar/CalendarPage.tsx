@@ -274,8 +274,8 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       />
 
       {/* Calendar Grid + Side Panel */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 16 }}>
-        <Card style={{ padding: 16 }}>
+      <div className="grid grid-cols-[1fr_300px] gap-4">
+        <Card className="p-4">
           <MonthNavigation
             year={year} month={month} prevMonth={prevMonth} nextMonth={nextMonth}
             showForm={showForm} formType={formType} setShowForm={setShowForm} setFormType={setFormType}

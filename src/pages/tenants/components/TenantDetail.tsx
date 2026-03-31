@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, SectionTitle, StatusBadge, ContractDropZone } from '@/components';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { rtCfg } from '@/components/RoomTypeBadge';
-import { inputStyle } from '@/components/Field';
+import { inputClassName } from '@/components/Field';
 import { getRoomType } from '@/config';
 import { flowMap, ownerFieldCfg, defaultHousemanAccount } from '@/config/accountConfig';
 import { roomMasterData } from '@/data';
@@ -51,6 +51,8 @@ interface TenantDetailProps {
   setExtraCarCount?: (fn: any) => void;
 }
 
+const tdInputBase = `${inputClassName} px-[10px] py-[7px] text-xs`;
+
 export const TenantDetail: React.FC<TenantDetailProps> = ({
   selectedTenant,
   setSelectedTenant,
@@ -97,56 +99,57 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, cursor: "pointer" }} onClick={() => setSelectedTenant(null)}>
-        <span style={{ fontSize: 20 }}>&larr;</span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: "#3B82F6" }}>임차인 목록으로</span>
+      <div className="flex items-center gap-2 mb-5 cursor-pointer" onClick={() => setSelectedTenant(null)}>
+        <span className="text-xl">&larr;</span>
+        <span className="text-sm font-bold text-hm-blue">임차인 목록으로</span>
       </div>
 
       {/* Header */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+      <Card className="mb-4">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#1A1D23" }}>{t.name}</div>
-            <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
+            <div className="text-xl font-[800] text-hm-text">{t.name}</div>
+            <div className="text-xs text-hm-text-muted mt-0.5 flex items-center gap-1.5">
               {t.building} {t.room}호 &middot;
-              <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 6px", borderRadius: 4,
+              <span className="text-[11px] font-bold px-1.5 py-0.5 rounded"
+                style={{
                   background: rtCfg(getRoomType(t.building, t.room)).bg,
                   color: rtCfg(getRoomType(t.building, t.room)).c }}>
                 {getRoomType(t.building, t.room)}
               </span>
-              {t.source === "supabase" && <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 5px", borderRadius: 4, background: "#D1FAE5", color: "#065F46" }}>DB</span>}
+              {t.source === "supabase" && <span className="text-[9px] font-bold px-[5px] py-0.5 rounded bg-[#D1FAE5] text-[#065F46]">DB</span>}
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="flex items-center gap-2">
             {/* 임차인연결 — 일반임대/근생만 */}
             {(roomType === "일반임대" || roomType === "근생") && setBuildingData && (() => {
               const listingLockKey = `_listingLock_${t.id}`;
               const isLocked = buildingData[listingLockKey] !== false;
               const toggleLock = () => setBuildingData((prev: any) => ({ ...prev, [listingLockKey]: !isLocked }));
               return (
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 10, border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "#FEF2F2" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: isLocked ? "default" : "pointer" }}>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-[10px]" style={{ border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "#FEF2F2" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
+                    <label className={`flex items-center gap-1.5 ${isLocked ? "cursor-default" : "cursor-pointer"}`}>
                       <input type="checkbox" defaultChecked={!!te.is_listing} disabled={isLocked}
                         onChange={e => {
                           updateTE({ is_listing: e.target.checked, listing_available_date: e.target.checked ? (te.listing_available_date || "") : "" });
                           persistUpdateTenant(t.supabaseId, { is_listing: e.target.checked, listing_available_date: e.target.checked ? (te.listing_available_date || null) : null }).catch(() => {});
                         }}
-                        style={{ width: 16, height: 16, accentColor: "#DC2626" }} />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: te.is_listing ? "#DC2626" : "#D4A0A0" }}>임차인연결</span>
+                        className="w-4 h-4 accent-hm-danger" />
+                      <span className={`text-[13px] font-bold ${te.is_listing ? "text-hm-danger" : "text-[#D4A0A0]"}`}>임차인연결</span>
                     </label>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{ fontSize: 11, color: "#8F95A3" }}>입주가능일</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] text-hm-text-muted">입주가능일</span>
                       <input type="date" defaultValue={te.listing_available_date || ""} disabled={isLocked || !te.is_listing}
                         onChange={e => {
                           updateTE({ listing_available_date: e.target.value });
                           persistUpdateTenant(t.supabaseId, { listing_available_date: e.target.value || null }).catch(() => {});
                         }}
-                        style={{ padding: "4px 8px", borderRadius: 6, border: "1.5px solid #D1D5DB", fontSize: 12, opacity: (!isLocked && te.is_listing) ? 1 : 0.4 }} />
+                        className="px-2 py-1 rounded-md border-[1.5px] border-[#D1D5DB] text-xs" style={{ opacity: (!isLocked && te.is_listing) ? 1 : 0.4 }} />
                     </div>
                   </div>
                   <button type="button" onClick={toggleLock}
-                    style={{ padding: "6px 8px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: isLocked ? "#F8FAFC" : "#FEF2F2", cursor: "pointer", fontSize: 14, lineHeight: 1 }}
+                    className={`px-2 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-sm leading-none cursor-pointer transition-colors hover:opacity-80 ${isLocked ? "bg-[#F8FAFC]" : "bg-hm-danger-bg"}`}
                     title={isLocked ? "잠금 해제" : "잠금"}>{isLocked ? "\uD83D\uDD12" : "\uD83D\uDD13"}</button>
                 </div>
               );
@@ -157,8 +160,8 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
       </Card>
 
       {/* Full Info */}
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+      <Card className="mb-4">
+        <div className="flex justify-between items-center mb-3">
           <SectionTitle sub="임차인 전체 정보">📋 임차인 상세</SectionTitle>
           {detailEdit ? (
             <button onClick={() => {
@@ -191,103 +194,103 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               persistUpdateTenant(t.supabaseId, updated).catch(() => toast.error("DB 저장 실패"));
               setDetailEdit(false);
             }}
-              style={{ padding: "6px 16px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-4 py-1.5 rounded-lg border-none bg-hm-success text-white font-bold text-xs cursor-pointer font-[inherit] transition-opacity hover:opacity-90">
               &#10003; 수정완료
             </button>
           ) : (
             <button onClick={() => setDetailEdit(true)}
-              style={{ padding: "6px 16px", borderRadius: 8, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              className="px-4 py-1.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-xs cursor-pointer font-[inherit] transition-opacity hover:opacity-90">
               ✏️ 수정
             </button>
           )}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="grid grid-cols-2 gap-4">
           {/* Left */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>기본 정보</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>입주자명</div><input id="td-name" defaultValue={t.name} readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
+            <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">기본 정보</div>
+            <div className="grid grid-cols-1 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자명</div><input id="td-name" defaultValue={t.name} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: renewEditMode ? "#DC2626" : "#8F95A3", marginBottom: 2, fontWeight: renewEditMode ? 700 : 400 }}>입주일</div><input id="td-movein" type="date" defaultValue={t.moveIn || ""} readOnly={!detailEdit && !renewEditMode} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: renewEditMode ? "#FEF2F2" : detailEdit ? "#fff" : "#F8FAFC", border: renewEditMode ? "2px solid #DC2626" : undefined, color: renewEditMode ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode ? 700 : 400 }} /></div>
-              <div><div style={{ fontSize: 9, color: renewEditMode ? "#DC2626" : "#8F95A3", marginBottom: 2, fontWeight: renewEditMode ? 700 : 400 }}>만기일</div><input id="td-expiry" type="date" defaultValue={t.expiry} readOnly={!detailEdit && !renewEditMode} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, color: renewEditMode ? "#DC2626" : daysToExpiry < 30 ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode || daysToExpiry < 30 ? 700 : 400, background: renewEditMode ? "#FEF2F2" : detailEdit ? "#fff" : "#F8FAFC", border: renewEditMode ? "2px solid #DC2626" : undefined }} /></div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>입주일</div><input id="td-movein" type="date" defaultValue={t.moveIn || ""} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} /></div>
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>만기일</div><input id="td-expiry" type="date" defaultValue={t.expiry} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={{ color: renewEditMode ? "#DC2626" : daysToExpiry < 30 ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode || daysToExpiry < 30 ? 700 : 400 }} /></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>월세일(납부일) <span style={{ fontSize: 8, color: "#B0B5C1" }}>미입력시 입주일</span></div><input id="td-rentday" type="number" min="1" max="31" defaultValue={t.rentDay || ""} placeholder={t.moveIn ? new Date(t.moveIn).getDate() + "일" : "입주일"} readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC", textAlign: "center", fontWeight: 700 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>관리비납부일 <span style={{ fontSize: 8, color: "#B0B5C1" }}>미입력시 월세일</span></div><input id="td-mgmtday" type="number" min="1" max="31" defaultValue={t.mgmtDay || ""} placeholder="월세일과 동일" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC", textAlign: "center", fontWeight: 700 }} /></div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세일(납부일) <span className="text-[8px] text-[#B0B5C1]">미입력시 입주일</span></div><input id="td-rentday" type="number" min="1" max="31" defaultValue={t.rentDay || ""} placeholder={t.moveIn ? new Date(t.moveIn).getDate() + "일" : "입주일"} readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비납부일 <span className="text-[8px] text-[#B0B5C1]">미입력시 월세일</span></div><input id="td-mgmtday" type="number" min="1" max="31" defaultValue={t.mgmtDay || ""} placeholder="월세일과 동일" readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처1</div><input id="td-phone" defaultValue={t.phone} readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처2</div><input id="td-phone2" defaultValue={t.phone2 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>연락처3</div><input id="td-phone3" defaultValue={t.phone3 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처1</div><input id="td-phone" defaultValue={t.phone} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처2</div><input id="td-phone2" defaultValue={t.phone2 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처3</div><input id="td-phone3" defaultValue={t.phone3 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주민등록번호</div><input id="td-ssn" defaultValue={t.ssn || ""} placeholder="000000-0000000" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, fontFamily: "monospace", background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>전입신고</div>
-                <select id="td-resident" defaultValue={t.resident || ""} disabled={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, cursor: detailEdit ? "pointer" : "default", background: detailEdit ? "#fff" : "#F8FAFC" }}>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">주민등록번호</div><input id="td-ssn" defaultValue={t.ssn || ""} placeholder="000000-0000000" readOnly={!detailEdit} className={`${tdInputBase} font-mono ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">전입신고</div>
+                <select id="td-resident" defaultValue={t.resident || ""} disabled={!detailEdit} className={`${tdInputBase} ${detailEdit ? "cursor-pointer bg-white" : "cursor-default bg-[#F8FAFC]"}`}>
                   <option value="">미확인</option><option value="완료">완료</option><option value="미신고">미신고</option>
                 </select>
               </div>
             </div>
 
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>💰 금액 정보</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: renewEditMode ? "#DC2626" : "#8F95A3", marginBottom: 2, fontWeight: renewEditMode ? 700 : 400 }}>{depositLabel}</div><input id="td-deposit" defaultValue={(t.deposit || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right", background: renewEditMode ? "#FEF2F2" : detailEdit ? "#fff" : "#F8FAFC", border: renewEditMode ? "2px solid #DC2626" : undefined, color: renewEditMode ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode ? 700 : 400 }} /></div>
+            <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">💰 금액 정보</div>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>{depositLabel}</div><input id="td-deposit" defaultValue={(t.deposit || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} /></div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                  <span style={{ fontSize: 9, color: renewEditMode ? "#DC2626" : "#8F95A3", fontWeight: renewEditMode ? 700 : 400 }}>임대료</span>
-                  <label style={{ display: "flex", alignItems: "center", gap: 2, cursor: detailEdit ? "pointer" : "default" }}>
-                    <input id="td-rentPostpaid" type="checkbox" defaultChecked={t.rentPayType === "후불"} disabled={!detailEdit} style={{ width: 12, height: 12, cursor: detailEdit ? "pointer" : "default" }} />
-                    <span style={{ fontSize: 8, color: t.rentPayType === "후불" ? "#DC2626" : "#8F95A3", fontWeight: t.rentPayType === "후불" ? 700 : 400 }}>후불</span>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className={`text-[9px] ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>임대료</span>
+                  <label className={`flex items-center gap-0.5 ${detailEdit ? "cursor-pointer" : "cursor-default"}`}>
+                    <input id="td-rentPostpaid" type="checkbox" defaultChecked={t.rentPayType === "후불"} disabled={!detailEdit} className={`w-3 h-3 ${detailEdit ? "cursor-pointer" : "cursor-default"}`} />
+                    <span className={`text-[8px] ${t.rentPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-rent" defaultValue={(t.rent || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right", background: renewEditMode ? "#FEF2F2" : detailEdit ? "#fff" : "#F8FAFC", border: renewEditMode ? "2px solid #DC2626" : undefined, color: renewEditMode ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode ? 700 : 400 }} />
+                <input id="td-rent" defaultValue={(t.rent || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} />
               </div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                  <span style={{ fontSize: 9, color: renewEditMode ? "#DC2626" : "#8F95A3", fontWeight: renewEditMode ? 700 : 400 }}>관리비</span>
-                  <label style={{ display: "flex", alignItems: "center", gap: 2, cursor: detailEdit ? "pointer" : "default" }}>
-                    <input id="td-mgmtPostpaid" type="checkbox" defaultChecked={t.mgmtPayType === "후불"} disabled={!detailEdit} style={{ width: 12, height: 12, cursor: detailEdit ? "pointer" : "default" }} />
-                    <span style={{ fontSize: 8, color: t.mgmtPayType === "후불" ? "#DC2626" : "#8F95A3", fontWeight: t.mgmtPayType === "후불" ? 700 : 400 }}>후불</span>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className={`text-[9px] ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>관리비</span>
+                  <label className={`flex items-center gap-0.5 ${detailEdit ? "cursor-pointer" : "cursor-default"}`}>
+                    <input id="td-mgmtPostpaid" type="checkbox" defaultChecked={t.mgmtPayType === "후불"} disabled={!detailEdit} className={`w-3 h-3 ${detailEdit ? "cursor-pointer" : "cursor-default"}`} />
+                    <span className={`text-[8px] ${t.mgmtPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-mgmt" defaultValue={t.mgmt > 0 ? (t.mgmt || 0).toLocaleString() : ""} placeholder="0" readOnly={!detailEdit && !renewEditMode} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right", background: renewEditMode ? "#FEF2F2" : detailEdit ? "#fff" : "#F8FAFC", border: renewEditMode ? "2px solid #DC2626" : undefined, color: renewEditMode ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode ? 700 : 400 }} />
+                <input id="td-mgmt" defaultValue={t.mgmt > 0 ? (t.mgmt || 0).toLocaleString() : ""} placeholder="0" readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} />
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+            <div className="grid grid-cols-2 gap-2 mb-3">
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                  <span style={{ fontSize: 9, color: "#8F95A3" }}>수도</span>
-                  <label style={{ display: "flex", alignItems: "center", gap: 2, cursor: detailEdit ? "pointer" : "default" }}>
-                    <input id="td-waterPostpaid" type="checkbox" defaultChecked={t.waterPayType === "후불"} disabled={!detailEdit} style={{ width: 12, height: 12, cursor: detailEdit ? "pointer" : "default" }} />
-                    <span style={{ fontSize: 8, color: t.waterPayType === "후불" ? "#DC2626" : "#8F95A3", fontWeight: t.waterPayType === "후불" ? 700 : 400 }}>후불</span>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[9px] text-hm-text-muted">수도</span>
+                  <label className={`flex items-center gap-0.5 ${detailEdit ? "cursor-pointer" : "cursor-default"}`}>
+                    <input id="td-waterPostpaid" type="checkbox" defaultChecked={t.waterPayType === "후불"} disabled={!detailEdit} className={`w-3 h-3 ${detailEdit ? "cursor-pointer" : "cursor-default"}`} />
+                    <span className={`text-[8px] ${t.waterPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-water" defaultValue={t.waterAmount || ""} placeholder="10,000" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right", background: detailEdit ? "#fff" : "#F8FAFC" }} />
+                <input id="td-water" defaultValue={t.waterAmount || ""} placeholder="10,000" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} />
               </div>
               <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                  <span style={{ fontSize: 9, color: "#8F95A3" }}>케이블</span>
-                  <label style={{ display: "flex", alignItems: "center", gap: 2, cursor: detailEdit ? "pointer" : "default" }}>
-                    <input id="td-cablePostpaid" type="checkbox" defaultChecked={t.cablePayType === "후불"} disabled={!detailEdit} style={{ width: 12, height: 12, cursor: detailEdit ? "pointer" : "default" }} />
-                    <span style={{ fontSize: 8, color: t.cablePayType === "후불" ? "#DC2626" : "#8F95A3", fontWeight: t.cablePayType === "후불" ? 700 : 400 }}>후불</span>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[9px] text-hm-text-muted">케이블</span>
+                  <label className={`flex items-center gap-0.5 ${detailEdit ? "cursor-pointer" : "cursor-default"}`}>
+                    <input id="td-cablePostpaid" type="checkbox" defaultChecked={t.cablePayType === "후불"} disabled={!detailEdit} className={`w-3 h-3 ${detailEdit ? "cursor-pointer" : "cursor-default"}`} />
+                    <span className={`text-[8px] ${t.cablePayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-cable" defaultValue={t.cableAmount || ""} placeholder="0" readOnly={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right", background: detailEdit ? "#fff" : "#F8FAFC" }} />
+                <input id="td-cable" defaultValue={t.cableAmount || ""} placeholder="0" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} />
               </div>
             </div>
 
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>🏠 중개 정보</div>
+            <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">🏠 중개 정보</div>
             {(() => { const rm = roomMasterData[`${t.building}_${t.room}`] || {}; return (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>중개수수료 (기본)</div><input id="td-commBase" defaultValue={rm.commFee || ""} placeholder="200,000" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right" }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>중개수수료 (이벤트)</div><input id="td-commEvent" defaultValue="" placeholder="0" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right" }} /></div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">중개수수료 (기본)</div><input id="td-commBase" defaultValue={rm.commFee || ""} placeholder="200,000" className={`${tdInputBase} text-right`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">중개수수료 (이벤트)</div><input id="td-commEvent" defaultValue="" placeholder="0" className={`${tdInputBase} text-right`} /></div>
             </div>
             ); })()}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부동산명</div><input defaultValue="" placeholder="부동산명" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부동산 연락처</div><input defaultValue="" placeholder="02-000-0000" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>부동산 담당자</div><input defaultValue="" placeholder="담당자명" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
+            <div className="grid grid-cols-3 gap-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">부동산명</div><input defaultValue="" placeholder="부동산명" className={tdInputBase} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">부동산 연락처</div><input defaultValue="" placeholder="02-000-0000" className={tdInputBase} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">부동산 담당자</div><input defaultValue="" placeholder="담당자명" className={tdInputBase} /></div>
             </div>
           </div>
 
@@ -304,10 +307,10 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               setBillingPopup={setBillingPopup}
             />
 
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>🅿️ 주차</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차번호</div><input value={parkingInfo[t.id]?.carNumber ?? t.carNumber ?? ""} onChange={e => setParkingInfo && setParkingInfo((prev: any) => ({ ...prev, [t.id]: { ...prev[t.id], carNumber: e.target.value, carType: prev[t.id]?.carType ?? t.carType ?? "" } }))} placeholder="12가 3456" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차종</div><input value={parkingInfo[t.id]?.carType ?? t.carType ?? ""} onChange={e => setParkingInfo && setParkingInfo((prev: any) => ({ ...prev, [t.id]: { ...prev[t.id], carType: e.target.value, carNumber: prev[t.id]?.carNumber ?? t.carNumber ?? "" } }))} placeholder="현대 아반떼" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
+            <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">🅿️ 주차</div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">차번호</div><input value={parkingInfo[t.id]?.carNumber ?? t.carNumber ?? ""} onChange={e => setParkingInfo && setParkingInfo((prev: any) => ({ ...prev, [t.id]: { ...prev[t.id], carNumber: e.target.value, carType: prev[t.id]?.carType ?? t.carType ?? "" } }))} placeholder="12가 3456" className={tdInputBase} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">차종</div><input value={parkingInfo[t.id]?.carType ?? t.carType ?? ""} onChange={e => setParkingInfo && setParkingInfo((prev: any) => ({ ...prev, [t.id]: { ...prev[t.id], carType: e.target.value, carNumber: prev[t.id]?.carNumber ?? t.carNumber ?? "" } }))} placeholder="현대 아반떼" className={tdInputBase} /></div>
             </div>
             {/* 근생: 추가 차량 (2~5) */}
             {roomType === "근생" && (() => {
@@ -322,15 +325,15 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               const totalParkingFee = [1,2,3,4,5].reduce((sum, i) => sum + (parseInt(String(te[`parking_fee_${i}`] || 0).replace(/,/g,'')) || 0), 0);
               const totalRemoteDeposit = [1,2,3,4,5].reduce((sum, i) => sum + (parseInt(String(te[`parking_remote_deposit_${i}`] || 0).replace(/,/g,'')) || 0), 0);
               return (
-                <div style={{ marginBottom: 12 }}>
+                <div className="mb-3">
                   {visibleCars.map(i => {
                     const pt = te[`parking_type_${i}`] || "";
                     const showRemote = pt === "remote" || pt === "remote_paid";
                     const showPaid = pt === "paid" || pt === "remote_paid";
                     return (
-                      <div key={i} style={{ padding: "8px 0", borderTop: "1px solid #F0F2F5" }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3" }}>🚗 차량 {i}</span>
+                      <div key={i} className="py-2 border-t border-[#F0F2F5]">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] font-bold text-hm-text-muted">🚗 차량 {i}</span>
                           {detailEdit && (
                             <button type="button" onClick={() => {
                               const clearPatch: Record<string, any> = {};
@@ -342,63 +345,63 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                               updateTE(clearPatch);
                               setExtraCarCount?.((prev: number) => Math.max(prev - 1, 0));
                             }}
-                              style={{ padding: "2px 8px", borderRadius: 4, border: "1px solid #FECACA", background: "#FEF2F2", fontSize: 9, fontWeight: 700, color: "#DC2626", cursor: "pointer", fontFamily: "inherit" }}>
+                              className="px-2 py-0.5 rounded border border-hm-danger-border bg-hm-danger-bg text-[9px] font-bold text-hm-danger cursor-pointer font-[inherit] transition-opacity hover:opacity-80">
                               ✕ 삭제
                             </button>
                           )}
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 4 }}>
-                          <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주차유형</div>
-                            <select id={`te-parkingType${i}`} defaultValue={pt} disabled={!detailEdit} style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, cursor: detailEdit ? "pointer" : "default" }}>
+                        <div className="grid grid-cols-4 gap-2 mb-1">
+                          <div><div className="text-[9px] text-hm-text-muted mb-0.5">주차유형</div>
+                            <select id={`te-parkingType${i}`} defaultValue={pt} disabled={!detailEdit} className={`${tdInputBase} ${detailEdit ? "cursor-pointer" : "cursor-default"}`}>
                               <option value="">선택</option>
                               {extraOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                             </select>
                           </div>
-                          {showRemote && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>리모컨 보증금</div><input id={`te-parkingRemoteDeposit${i}`} defaultValue={te[`parking_remote_deposit_${i}`] || ""} readOnly={!detailEdit} placeholder="50,000" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right" }} /></div>}
-                          {showPaid && <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>주차비</div><input id={`te-parkingFee${i}`} defaultValue={te[`parking_fee_${i}`] || ""} readOnly={!detailEdit} placeholder="50,000" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, textAlign: "right" }} /></div>}
+                          {showRemote && <div><div className="text-[9px] text-hm-text-muted mb-0.5">리모컨 보증금</div><input id={`te-parkingRemoteDeposit${i}`} defaultValue={te[`parking_remote_deposit_${i}`] || ""} readOnly={!detailEdit} placeholder="50,000" className={`${tdInputBase} text-right`} /></div>}
+                          {showPaid && <div><div className="text-[9px] text-hm-text-muted mb-0.5">주차비</div><input id={`te-parkingFee${i}`} defaultValue={te[`parking_fee_${i}`] || ""} readOnly={!detailEdit} placeholder="50,000" className={`${tdInputBase} text-right`} /></div>}
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                          <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차번호</div><input id={`te-carNumber${i}`} defaultValue={te[`car_number_${i}`] || ""} readOnly={!detailEdit} placeholder="12가 3456" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-                          <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>차종</div><input id={`te-carType${i}`} defaultValue={te[`car_type_${i}`] || ""} readOnly={!detailEdit} placeholder="현대 아반떼" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><div className="text-[9px] text-hm-text-muted mb-0.5">차번호</div><input id={`te-carNumber${i}`} defaultValue={te[`car_number_${i}`] || ""} readOnly={!detailEdit} placeholder="12가 3456" className={tdInputBase} /></div>
+                          <div><div className="text-[9px] text-hm-text-muted mb-0.5">차종</div><input id={`te-carType${i}`} defaultValue={te[`car_type_${i}`] || ""} readOnly={!detailEdit} placeholder="현대 아반떼" className={tdInputBase} /></div>
                         </div>
                       </div>
                     );
                   })}
                   {detailEdit && extraCarCount < 4 && (
-                    <div style={{ textAlign: "center", padding: "8px 0" }}>
+                    <div className="text-center py-2">
                       <button type="button" onClick={() => setExtraCarCount?.((prev: number) => Math.min(prev + 1, 4))}
-                        style={{ padding: "6px 20px", borderRadius: 8, border: "1px dashed #9CA3AF", background: "#F9FAFB", fontSize: 11, fontWeight: 700, color: "#6B7280", cursor: "pointer", fontFamily: "inherit" }}>
+                        className="px-5 py-1.5 rounded-lg border border-dashed border-[#9CA3AF] bg-hm-bg-hover text-[11px] font-bold text-[#6B7280] cursor-pointer font-[inherit] transition-colors hover:bg-[#F3F4F6]">
                         + 차량 추가 (현재 {extraCarCount + 1}대 / 최대 5대)
                       </button>
                     </div>
                   )}
                   {(totalParkingFee > 0 || totalRemoteDeposit > 0) && (
-                    <div style={{ marginTop: 8, padding: "8px 12px", borderRadius: 8, background: "#FEF3C7", border: "1px solid #FDE68A", display: "flex", gap: 16, fontSize: 12 }}>
-                      <span style={{ fontWeight: 700, color: "#92400E" }}>🅿️ 주차 총 비용</span>
-                      {totalParkingFee > 0 && <span style={{ color: "#92400E" }}>월 주차비: <b>{totalParkingFee.toLocaleString()}원</b></span>}
-                      {totalRemoteDeposit > 0 && <span style={{ color: "#92400E" }}>리모컨 보증금: <b>{totalRemoteDeposit.toLocaleString()}원</b></span>}
+                    <div className="mt-2 px-3 py-2 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] flex gap-4 text-xs">
+                      <span className="font-bold text-[#92400E]">🅿️ 주차 총 비용</span>
+                      {totalParkingFee > 0 && <span className="text-[#92400E]">월 주차비: <b>{totalParkingFee.toLocaleString()}원</b></span>}
+                      {totalRemoteDeposit > 0 && <span className="text-[#92400E]">리모컨 보증금: <b>{totalRemoteDeposit.toLocaleString()}원</b></span>}
                     </div>
                   )}
                 </div>
               );
             })()}
 
-            <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 8, paddingBottom: 6, borderBottom: "1.5px solid #E8ECF0" }}>📌 기타</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>애완동물 신고</div><input id="td-pet" defaultValue={t.pet || ""} readOnly={!detailEdit} placeholder="애완동물 신고 내용" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12, background: detailEdit ? "#fff" : "#F8FAFC" }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>만기</div>
-                <div style={{ padding: "7px 10px", borderRadius: 8, background: daysToExpiry < 30 ? "#FEF2F2" : daysToExpiry < 90 ? "#FFFBEB" : "#F0FDF4", fontSize: 13, fontWeight: 800, color: daysToExpiry < 30 ? "#DC2626" : daysToExpiry < 90 ? "#D97706" : "#059669", textAlign: "center" }}>
+            <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">📌 기타</div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">애완동물 신고</div><input id="td-pet" defaultValue={t.pet || ""} readOnly={!detailEdit} placeholder="애완동물 신고 내용" className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기</div>
+                <div className="px-[10px] py-[7px] rounded-lg text-[13px] font-[800] text-center" style={{ background: daysToExpiry < 30 ? "#FEF2F2" : daysToExpiry < 90 ? "#FFFBEB" : "#F0FDF4", color: daysToExpiry < 30 ? "#DC2626" : daysToExpiry < 90 ? "#D97706" : "#059669" }}>
                   {daysToExpiry > 0 ? `${daysToExpiry}일 남음` : `${Math.abs(daysToExpiry)}일 경과`}
                 </div>
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>기타1</div><input defaultValue="" placeholder="입력" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>기타2</div><input defaultValue="" placeholder="입력" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
-              <div><div style={{ fontSize: 9, color: "#8F95A3", marginBottom: 2 }}>기타3</div><input defaultValue="" placeholder="입력" style={{ ...inputStyle, padding: "7px 10px", fontSize: 12 }} /></div>
+            <div className="flex flex-col gap-1.5">
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">기타1</div><input defaultValue="" placeholder="입력" className={tdInputBase} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">기타2</div><input defaultValue="" placeholder="입력" className={tdInputBase} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">기타3</div><input defaultValue="" placeholder="입력" className={tdInputBase} /></div>
             </div>
-            <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 6 }}>📎 계약서</div>
+            <div className="mt-3">
+              <div className="text-[11px] font-[800] text-hm-text mb-1.5">📎 계약서</div>
               <ContractDropZone
                 files={t.contractFiles || []}
                 onAdd={(newFiles: any[]) => {
@@ -415,22 +418,22 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
             </div>
             {/* 입주사진 갤러리 */}
             {(t.moveInPhotos || []).length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "#1A1D23", marginBottom: 6 }}>📷 입주사진 ({(t.moveInPhotos || []).length}장) <span style={{ fontSize: 9, color: "#8F95A3", fontWeight: 600 }}>{t.moveIn || ""}</span></div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6 }}>
+            <div className="mt-3">
+              <div className="text-[11px] font-[800] text-hm-text mb-1.5">📷 입주사진 ({(t.moveInPhotos || []).length}장) <span className="text-[9px] text-hm-text-muted font-semibold">{t.moveIn || ""}</span></div>
+              <div className="grid grid-cols-6 gap-1.5">
                 {(t.moveInPhotos || []).map((src: any, pi: number) => {
                   const imgSrc = src instanceof File ? URL.createObjectURL(src) : src;
                   const isReal = imgSrc && typeof imgSrc === "string" && (imgSrc.startsWith("data:image/") || imgSrc.startsWith("blob:") || imgSrc.startsWith("http"));
                   return (
                     <div key={pi}
                       onClick={(e) => { e.stopPropagation(); setPhotoViewer({ photos: t.moveInPhotos, index: pi }); }}
-                      style={{ aspectRatio: "1", borderRadius: 8, border: "2px solid #BBF7D0", overflow: "hidden", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative" }}>
+                      className="aspect-square rounded-lg border-2 border-[#BBF7D0] overflow-hidden bg-[#F0FDF4] flex items-center justify-center cursor-pointer relative">
                       {isReal ? (
-                        <img src={imgSrc} alt={`입주 ${pi+1}`} style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+                        <img src={imgSrc} alt={`입주 ${pi+1}`} className="w-full h-full object-cover pointer-events-none" />
                       ) : (
-                        <span style={{ fontSize: 18 }}>🏠</span>
+                        <span className="text-lg">🏠</span>
                       )}
-                      <div style={{ position: "absolute", bottom: 2, right: 2, background: "rgba(0,0,0,.5)", color: "#fff", fontSize: 8, fontWeight: 700, padding: "1px 4px", borderRadius: 3 }}>{pi+1}</div>
+                      <div className="absolute bottom-0.5 right-0.5 bg-black/50 text-white text-[8px] font-bold px-1 py-px rounded-[3px]">{pi+1}</div>
                     </div>
                   );
                 })}
@@ -444,10 +447,10 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
 
       {/* 재계약 저장/취소 */}
       {renewEditMode && (
-        <Card style={{ marginBottom: 16, border: "2px solid #DC2626", background: "#FEF2F2" }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "#DC2626", marginBottom: 12 }}>📝 재계약 입력 모드 — 적색 필드를 수정 후 저장하세요</div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { setRenewEditMode(false); }} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
+        <Card className="mb-4 border-2 border-hm-danger bg-hm-danger-bg">
+          <div className="text-[13px] font-[800] text-hm-danger mb-3">📝 재계약 입력 모드 — 적색 필드를 수정 후 저장하세요</div>
+          <div className="flex gap-2">
+            <button onClick={() => { setRenewEditMode(false); }} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] transition-colors hover:bg-hm-bg-hover">취소</button>
             <button onClick={() => {
               const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value ?? "";
               const newMoveIn = g("td-movein") || t.moveIn || "";
@@ -482,7 +485,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               setSelectedTenant({ ...t, ...updated });
               setRenewEditMode(false);
               alert("재계약이 저장되었습니다.");
-            }} style={{ flex: 2, padding: "12px", borderRadius: 10, border: "none", background: "#DC2626", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>📝 재계약 저장</button>
+            }} className="flex-[2] py-3 rounded-[10px] border-none bg-hm-danger text-white font-[800] text-sm cursor-pointer font-[inherit] transition-opacity hover:opacity-90">📝 재계약 저장</button>
           </div>
         </Card>
       )}
@@ -490,26 +493,26 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
 
       {/* Action Buttons */}
       {t.status === "퇴실" ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
-          <Card onClick={() => setActionMode("movein")} style={{ cursor: "pointer", textAlign: "center", padding: "20px 12px", border: "1.5px solid #BBF7D0", background: "#F0FDF4" }}>
-            <span style={{ fontSize: 28 }}>📦</span>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#059669", marginTop: 8 }}>입주 처리</div>
-            <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 4 }}>신규 임차인 등록</div>
+        <div className="grid grid-cols-1 gap-2.5">
+          <Card onClick={() => setActionMode("movein")} className="cursor-pointer text-center py-5 px-3 border-[1.5px] border-[#BBF7D0] bg-[#F0FDF4] transition-shadow hover:shadow-md">
+            <span className="text-[28px]">📦</span>
+            <div className="text-sm font-[800] text-hm-success mt-2">입주 처리</div>
+            <div className="text-[10px] text-hm-text-muted mt-1">신규 임차인 등록</div>
           </Card>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: roomType === "단기" ? "1fr" : "1fr 1fr", gap: 10 }}>
+        <div className={`grid gap-2.5 ${roomType === "단기" ? "grid-cols-1" : "grid-cols-2"}`}>
           {roomType !== "단기" && (
-            <Card onClick={() => { setRenewEditMode(true); setShowContractHistory(false); }} style={{ cursor: "pointer", textAlign: "center", padding: "20px 12px", border: "1.5px solid #BFDBFE", background: "#EFF6FF" }}>
-              <span style={{ fontSize: 28 }}>📝</span>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#2563EB", marginTop: 8 }}>재계약입력</div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 4 }}>입주일·만기일·금액 변경</div>
+            <Card onClick={() => { setRenewEditMode(true); setShowContractHistory(false); }} className="cursor-pointer text-center py-5 px-3 border-[1.5px] border-[#BFDBFE] bg-hm-blue-bg transition-shadow hover:shadow-md">
+              <span className="text-[28px]">📝</span>
+              <div className="text-sm font-[800] text-hm-blue-dark mt-2">재계약입력</div>
+              <div className="text-[10px] text-hm-text-muted mt-1">입주일·만기일·금액 변경</div>
             </Card>
           )}
-          <Card onClick={() => setActionMode("moveout")} style={{ cursor: "pointer", textAlign: "center", padding: "20px 12px", border: "1.5px solid #E9D5FF", background: "#FAF5FF" }}>
-            <span style={{ fontSize: 28 }}>🧮</span>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#7C3AED", marginTop: 8 }}>가상퇴실계산</div>
-            <div style={{ fontSize: 10, color: "#8F95A3", marginTop: 4 }}>정산 시뮬레이션</div>
+          <Card onClick={() => setActionMode("moveout")} className="cursor-pointer text-center py-5 px-3 border-[1.5px] border-[#E9D5FF] bg-[#FAF5FF] transition-shadow hover:shadow-md">
+            <span className="text-[28px]">🧮</span>
+            <div className="text-sm font-[800] text-[#7C3AED] mt-2">가상퇴실계산</div>
+            <div className="text-[10px] text-hm-text-muted mt-1">정산 시뮬레이션</div>
           </Card>
         </div>
       )}

@@ -218,40 +218,40 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
   return (
     <div>
       {/* Header with Back */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: bldg.special ? 12 : 24 }}>
-        <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>‹</button>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1A1D23", letterSpacing: "-0.02em" }}>{buildingName}</h1>
+      <div className={`flex items-center gap-3 ${bldg.special ? 'mb-3' : 'mb-6'}`}>
+        <button onClick={onBack} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-hm-bg-hover transition-colors">‹</button>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-[22px] font-extrabold text-hm-text tracking-tight">{buildingName}</h1>
             {bldg.special && (
-              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 5, background: bldg.special === "무리한 요구" ? "#FEF2F2" : "#FFF7ED", color: bldg.special === "무리한 요구" ? "#DC2626" : "#EA580C", border: `1px solid ${bldg.special === "무리한 요구" ? "#FECACA" : "#FED7AA"}` }}>
+              <span className={`text-[11px] font-bold px-2.5 py-[3px] rounded-[5px] border ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg text-hm-danger border-red-300' : 'bg-hm-warning-bg text-hm-warning border-orange-200'}`}>
                 ⚠ 특별관리 · {bldg.special}
               </span>
             )}
           </div>
-          <p style={{ fontSize: 12, color: "#8F95A3", marginTop: 2 }}>
+          <p className="text-xs text-hm-text-muted mt-0.5">
             {detail.owner && `건물주: ${detail.owner}`}{feeLabel(bldg as any) && ` · ${feeLabel(bldg as any)}`}{detail.start && ` · 관리시작 ${detail.start}`}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => setShowDetailPreview(true)} style={{ padding: "9px 20px", borderRadius: 8, border: "1.5px solid #2563EB", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>📋 미리보기</button>
-          <button onClick={() => setDeleteStep(1)} style={{ padding: "9px 20px", borderRadius: 8, border: "1.5px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>🗑 삭제</button>
+        <div className="flex gap-2">
+          <button onClick={() => setShowDetailPreview(true)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark font-bold text-[13px] cursor-pointer font-[inherit] hover:brightness-95 transition-all">📋 미리보기</button>
+          <button onClick={() => setDeleteStep(1)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-red-300 bg-hm-danger-bg text-hm-danger font-bold text-[13px] cursor-pointer font-[inherit] hover:brightness-95 transition-all">🗑 삭제</button>
         </div>
       </div>
 
       {/* Special Management Alert */}
       {bldg.special && (
-        <div style={{ marginBottom: 20, padding: "14px 18px", borderRadius: 10, background: bldg.special === "무리한 요구" ? "#FEF2F2" : "#FFF7ED", border: `1.5px solid ${bldg.special === "무리한 요구" ? "#FECACA" : "#FED7AA"}`, display: "flex", alignItems: "flex-start", gap: 12 }}>
-          <span style={{ fontSize: 20, flexShrink: 0 }}>⚠️</span>
+        <div className={`mb-5 px-[18px] py-3.5 rounded-[10px] border-[1.5px] flex items-start gap-3 ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg border-red-300' : 'bg-hm-warning-bg border-orange-200'}`}>
+          <span className="text-xl shrink-0">⚠️</span>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: bldg.special === "무리한 요구" ? "#991B1B" : "#92400E", marginBottom: 4 }}>특별관리 건물 · {bldg.special}</div>
-            <div style={{ fontSize: 12, color: bldg.special === "무리한 요구" ? "#B91C1C" : "#B45309", lineHeight: 1.6 }}>{bldg.specialNote}</div>
+            <div className={`text-[13px] font-bold mb-1 ${bldg.special === "무리한 요구" ? 'text-red-800' : 'text-amber-800'}`}>특별관리 건물 · {bldg.special}</div>
+            <div className={`text-xs leading-relaxed ${bldg.special === "무리한 요구" ? 'text-red-700' : 'text-amber-700'}`}>{bldg.specialNote}</div>
           </div>
         </div>
       )}
 
       {/* Summary Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 10, marginBottom: 8 }}>
+      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2.5 mb-2`}>
         {[
           { label: "전체", value: bldg.rooms, unit: "실", color: "#3B82F6" },
           { label: "입주", value: bldg.occupied, unit: "실", color: "#10B981" },
@@ -259,15 +259,15 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
           { label: "연체", value: overdueCount, unit: "건", color: "#EF4444" },
         ].map((s, i) => (
           <Card key={i}>
-            <div style={{ fontSize: 10, color: "#8F95A3", fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}<span style={{ fontSize: 11, fontWeight: 500, color: "#B0B5C1" }}> {s.unit}</span></div>
+            <div className="text-[10px] text-hm-text-muted font-semibold mb-1">{s.label}</div>
+            <div className="text-[22px] font-extrabold" style={{ color: s.color }}>{s.value}<span className="text-[11px] font-medium text-[#B0B5C1]"> {s.unit}</span></div>
           </Card>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, padding: "8px 12px", background: "#F8FAFC", borderRadius: 8, border: "1px solid #E8ECF0" }}>
-        <span style={{ fontSize: 11, color: "#8F95A3", fontWeight: 600 }}>유형별:</span>
+      <div className="flex gap-2 mb-5 px-3 py-2 bg-[#F8FAFC] rounded-lg border border-hm-border">
+        <span className="text-[11px] text-hm-text-muted font-semibold">유형별:</span>
         {Object.entries(typeCounts).filter(([,v]) => v > 0).map(([t, v]) => (
-          <span key={t} style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
+          <span key={t} className="text-[11px] font-bold px-2 py-0.5 rounded" style={{ background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
         ))}
       </div>
 

@@ -505,102 +505,27 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
     setExpandedDay(prev => prev === idx ? null : idx);
   }, []);
 
-  // ── Styles ──
-  const containerStyle: React.CSSProperties = {
-    padding: isMobile ? 16 : 24,
-    maxWidth: 1200,
-    margin: '0 auto',
-  };
-
-  const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-    flexWrap: 'wrap',
-    gap: 12,
-  };
-
-  const navBtnStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    borderRadius: 8,
-    border: '1px solid #D1D5DB',
-    background: '#fff',
-    cursor: 'pointer',
-    fontSize: 14,
-    fontWeight: 600,
-    color: '#374151',
-  };
-
-  const weekLabelStyle: React.CSSProperties = {
-    fontSize: isMobile ? 16 : 20,
-    fontWeight: 800,
-    color: '#111827',
-  };
-
-  const mainGrid: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : nearbyBuildings.length > 0 || delayRanking.length > 0 ? '1fr 300px' : '1fr',
-    gap: 20,
-  };
-
-  const cardStyle: React.CSSProperties = {
-    background: '#fff',
-    borderRadius: 12,
-    border: '1px solid #E8ECF0',
-    padding: 16,
-    marginBottom: 12,
-    cursor: 'pointer',
-    transition: 'box-shadow 0.15s',
-  };
-
-  const dotStyle = (color: string): React.CSSProperties => ({
-    width: 10,
-    height: 10,
-    borderRadius: '50%',
-    background: color,
-    flexShrink: 0,
-  });
-
-  const lineStyle: React.CSSProperties = {
-    width: 2,
-    background: '#E5E7EB',
-    minHeight: 24,
-    marginLeft: 4,
-  };
-
-  const taskBadge = (type: string): React.CSSProperties => ({
-    display: 'inline-block',
-    padding: '2px 8px',
-    borderRadius: 6,
-    fontSize: 11,
-    fontWeight: 700,
-    color: '#fff',
-    background: TASK_COLORS[type] || '#6B7280',
-    marginRight: 6,
-  });
-
   return (
-    <div style={containerStyle}>
+    <div className="max-w-[1200px] mx-auto" style={{ padding: isMobile ? 16 : 24 }}>
       {/* ── Header / Week Nav ── */}
-      <div style={headerStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, color: '#111827' }}>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div className="flex items-center gap-2">
+          <div className={`${isMobile ? "text-lg" : "text-[22px]"} font-extrabold text-gray-900`}>
             순회 동선 제안
           </div>
-          <div style={{ fontSize: 12, color: '#9CA3AF', background: '#F3F4F6', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>
+          <div className="text-xs text-gray-400 bg-gray-100 rounded-md px-2 py-0.5 font-semibold">
             {pendingTasks.length}건 미처리
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button style={navBtnStyle} onClick={() => setWeekOffset(w => w - 1)}>&lt;</button>
-          <div style={weekLabelStyle}>
+        <div className="flex items-center gap-2">
+          <button className="px-4 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setWeekOffset(w => w - 1)}>&lt;</button>
+          <div className={`${isMobile ? "text-base" : "text-xl"} font-extrabold text-gray-900`}>
             {weekLabel} ({formatDate(weekDates[0])} ~ {formatDate(weekDates[4])})
           </div>
-          <button style={navBtnStyle} onClick={() => setWeekOffset(w => w + 1)}>&gt;</button>
+          <button className="px-4 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setWeekOffset(w => w + 1)}>&gt;</button>
           {weekOffset !== 0 && (
             <button
-              style={{ ...navBtnStyle, fontSize: 12, padding: '4px 10px', color: '#6B7280' }}
+              className="px-2.5 py-1 rounded-lg border border-gray-300 bg-white cursor-pointer text-xs font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
               onClick={() => setWeekOffset(0)}
             >
               오늘
@@ -610,8 +535,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       </div>
 
       {/* ── Staff Filter ── */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: '#6B7280', marginRight: 4 }}>담당자:</span>
+      <div className="flex gap-2 mb-4 flex-wrap items-center">
+        <span className="text-[13px] font-bold text-gray-500 mr-1">담당자:</span>
         {['전체', ...externalStaff.map(s => s.name)].map(name => {
           const isActive = selectedStaff === name;
           const staffInfo = externalStaff.find(s => s.name === name);
@@ -620,21 +545,15 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             <button
               key={name}
               onClick={() => setSelectedStaff(name)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: 8,
-                border: isActive ? '2px solid #3B82F6' : '1px solid #D1D5DB',
-                background: isActive ? '#EFF6FF' : '#fff',
-                color: isActive ? '#1D4ED8' : '#374151',
-                fontSize: 13,
-                fontWeight: isActive ? 800 : 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
+              className={`px-3.5 py-1.5 rounded-lg text-[13px] cursor-pointer transition-all ${
+                isActive
+                  ? 'border-2 border-hm-blue bg-hm-blue-bg text-blue-700 font-extrabold'
+                  : 'border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50'
+              }`}
             >
               {name}
               {buildingCount != null && (
-                <span style={{ fontSize: 11, color: isActive ? '#3B82F6' : '#9CA3AF', marginLeft: 4 }}>
+                <span className={`text-[11px] ml-1 ${isActive ? 'text-hm-blue' : 'text-gray-400'}`}>
                   ({buildingCount})
                 </span>
               )}
@@ -644,16 +563,16 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       </div>
 
       {/* ── Legend + View Toggle ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <div className="flex justify-between items-center mb-5 flex-wrap gap-3">
+        <div className="flex gap-4 flex-wrap">
           {Object.entries(TASK_LABELS).map(([type, label]) => (
-            <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6B7280' }}>
-              <div style={dotStyle(TASK_COLORS[type])} />
+            <div key={type} className="flex items-center gap-1 text-xs text-gray-500">
+              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TASK_COLORS[type] }} />
               <span>{label}</span>
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 4, background: '#F3F4F6', borderRadius: 8, padding: 2 }}>
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
           {([['list', '목록'], ['map', '지도']] as [string, string][]).map(([mode, label]) => (
             <button
               key={mode}
@@ -666,17 +585,11 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   setViewMode(mode as 'list' | 'map');
                 }
               }}
-              style={{
-                padding: '5px 14px',
-                borderRadius: 6,
-                border: 'none',
-                background: viewMode === mode ? '#fff' : 'transparent',
-                color: viewMode === mode ? '#111827' : '#6B7280',
-                fontSize: 13,
-                fontWeight: viewMode === mode ? 700 : 500,
-                cursor: 'pointer',
-                boxShadow: viewMode === mode ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-              }}
+              className={`px-3.5 py-[5px] rounded-md border-none text-[13px] cursor-pointer transition-all ${
+                viewMode === mode
+                  ? 'bg-white text-gray-900 font-bold shadow-sm'
+                  : 'bg-transparent text-gray-500 font-medium hover:text-gray-700'
+              }`}
             >
               {label}
             </button>
@@ -686,16 +599,14 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
       {/* ── Map View ── */}
       {viewMode === 'map' && (
-        <div style={{ marginBottom: 20 }}>
+        <div className="mb-5">
           {/* 요일 필터 */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+          <div className="flex gap-1.5 mb-3 flex-wrap">
             <button
               onClick={() => setMapDay(null)}
-              style={{
-                padding: '5px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                background: mapDay === null ? '#111827' : '#F3F4F6',
-                color: mapDay === null ? '#fff' : '#6B7280',
-              }}
+              className={`px-3 py-[5px] rounded-md border-none text-xs font-bold cursor-pointer transition-colors ${
+                mapDay === null ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
             >
               전체
             </button>
@@ -705,8 +616,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                 <button
                   key={idx}
                   onClick={() => setMapDay(idx)}
+                  className="px-3 py-[5px] rounded-md border-none text-xs font-bold cursor-pointer transition-colors"
                   style={{
-                    padding: '5px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer',
                     background: mapDay === idx ? DAY_COLORS[idx] : '#F3F4F6',
                     color: mapDay === idx ? '#fff' : '#6B7280',
                   }}
@@ -718,10 +629,10 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           </div>
 
           {/* 지도 요일 범례 */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
+          <div className="flex gap-3 mb-2 flex-wrap">
             {WEEKDAY_NAMES.map((name, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6B7280' }}>
-                <div style={{ width: 12, height: 3, background: DAY_COLORS[idx], borderRadius: 2 }} />
+              <div key={idx} className="flex items-center gap-1 text-[11px] text-gray-500">
+                <div className="w-3 h-[3px] rounded-sm" style={{ background: DAY_COLORS[idx] }} />
                 <span>{name.slice(0, 1)}</span>
               </div>
             ))}
@@ -730,47 +641,30 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           {/* 지도 컨테이너 */}
           <div
             ref={mapRef}
-            style={{
-              width: '100%',
-              height: isMobile ? 400 : 550,
-              borderRadius: 12,
-              border: '1px solid #E8ECF0',
-              overflow: 'hidden',
-            }}
+            className="w-full rounded-xl border border-hm-border overflow-hidden"
+            style={{ height: isMobile ? 400 : 550 }}
           />
 
           {/* 선택된 날의 동선 순서 표시 */}
           {mapDay !== null && optimizedSchedule[mapDay]?.buildings.length > 0 && (
-            <div style={{
-              marginTop: 12, padding: 12, background: '#F9FAFB', borderRadius: 10,
-              border: `2px solid ${DAY_COLORS[mapDay]}20`,
-            }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', marginBottom: 8 }}>
+            <div className="mt-3 p-3 bg-hm-bg-hover rounded-[10px]" style={{ border: `2px solid ${DAY_COLORS[mapDay]}20` }}>
+              <div className="text-[13px] font-extrabold text-gray-900 mb-2">
                 {WEEKDAY_NAMES[mapDay]} 최적 동선 ({optimizedSchedule[mapDay].buildings.length}개 건물)
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>
+              <div className="flex items-center flex-wrap gap-1">
                 {optimizedSchedule[mapDay].buildings.map((b, i) => {
                   const coord = buildingCoords[b.building];
                   const prevCoord = i > 0 ? buildingCoords[optimizedSchedule[mapDay!].buildings[i - 1].building] : null;
                   const dist = prevCoord && coord ? haversine(prevCoord.lat, prevCoord.lng, coord.lat, coord.lng).toFixed(1) : null;
                   return (
-                    <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span key={i} className="flex items-center gap-1">
                       {i > 0 && (
-                        <span style={{ fontSize: 11, color: '#9CA3AF' }}>
+                        <span className="text-[11px] text-gray-400">
                           → {dist && `${dist}km`}
                         </span>
                       )}
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        padding: '3px 8px', borderRadius: 6, fontSize: 12, fontWeight: 700,
-                        background: `${DAY_COLORS[mapDay!]}15`, color: '#111827',
-                        border: `1px solid ${DAY_COLORS[mapDay!]}30`,
-                      }}>
-                        <span style={{
-                          width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 800,
-                          background: DAY_COLORS[mapDay!], color: '#fff',
-                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        }}>{i + 1}</span>
+                      <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-md text-xs font-bold text-gray-900" style={{ background: `${DAY_COLORS[mapDay!]}15`, border: `1px solid ${DAY_COLORS[mapDay!]}30` }}>
+                        <span className="w-[18px] h-[18px] rounded-full text-[10px] font-extrabold text-white inline-flex items-center justify-center" style={{ background: DAY_COLORS[mapDay!] }}>{i + 1}</span>
                         {b.building}
                       </span>
                     </span>
@@ -786,8 +680,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   if (prev && curr) totalDist += haversine(prev.lat, prev.lng, curr.lat, curr.lng);
                 }
                 return totalDist > 0 ? (
-                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
-                    총 이동거리: <strong style={{ color: '#111827' }}>{totalDist.toFixed(1)}km</strong> (직선거리 기준)
+                  <div className="text-[11px] text-gray-500 mt-2">
+                    총 이동거리: <strong className="text-gray-900">{totalDist.toFixed(1)}km</strong> (직선거리 기준)
                   </div>
                 ) : null;
               })()}
@@ -796,7 +690,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
         </div>
       )}
 
-      {viewMode === 'list' && <div style={mainGrid}>
+      {viewMode === 'list' && <div className={`grid gap-5 ${isMobile ? "grid-cols-1" : nearbyBuildings.length > 0 || delayRanking.length > 0 ? "grid-cols-[1fr_300px]" : "grid-cols-1"}`}>
         {/* ── Left: Daily Schedule Cards ── */}
         <div>
           {dailySchedule.map((day, idx) => {
@@ -809,32 +703,30 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             return (
               <div
                 key={idx}
-                style={{
-                  ...cardStyle,
-                  borderLeft: `4px solid ${totalTasks > 0 ? '#3B82F6' : '#E5E7EB'}`,
-                }}
+                className="bg-white rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md"
+                style={{ borderLeft: `4px solid ${totalTasks > 0 ? '#3B82F6' : '#E5E7EB'}` }}
                 onClick={() => isMobile && toggleDay(idx)}
               >
                 {/* Day Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isExpanded && totalTasks > 0 ? 12 : 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 15, fontWeight: 800, color: '#111827' }}>
+                <div className={`flex justify-between items-center ${isExpanded && totalTasks > 0 ? "mb-3" : ""}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-extrabold text-gray-900">
                       {WEEKDAY_NAMES[idx]} ({formatDate(date)})
                     </span>
                     {day.region && (
-                      <span style={{ fontSize: 12, color: '#6366F1', background: '#EEF2FF', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>
+                      <span className="text-xs text-indigo-500 bg-indigo-50 rounded-md px-2 py-0.5 font-semibold">
                         {day.region} 권역
                       </span>
                     )}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: totalTasks > 0 ? '#3B82F6' : '#9CA3AF' }}>
+                  <span className={`text-[13px] font-bold ${totalTasks > 0 ? 'text-hm-blue' : 'text-gray-400'}`}>
                     {totalTasks}건
                   </span>
                 </div>
 
                 {/* Timeline */}
                 {isExpanded && totalTasks > 0 && (
-                  <div style={{ paddingLeft: 4 }}>
+                  <div className="pl-1">
                     {day.buildings.map((b, bIdx) => (
                       b.tasks.map((task, tIdx) => {
                         const isFirst = bIdx === 0 && tIdx === 0;
@@ -845,36 +737,29 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                         return (
                           <div
                             key={`${b.building}-${tIdx}`}
-                            style={{ display: 'flex', alignItems: 'flex-start', gap: 10, position: 'relative' }}
+                            className="flex items-start gap-2.5 relative"
                             onMouseEnter={() => setHighlightedBuilding(b.building)}
                             onMouseLeave={() => setHighlightedBuilding(null)}
                           >
                             {/* Timeline connector */}
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 10 }}>
-                              {!isFirst && <div style={lineStyle} />}
-                              <div style={dotStyle(TASK_COLORS[task.type])} />
-                              {!isLast && <div style={{ ...lineStyle, flex: 1 }} />}
+                            <div className="flex flex-col items-center w-2.5">
+                              {!isFirst && <div className="w-0.5 bg-gray-200 min-h-[24px] ml-1" />}
+                              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TASK_COLORS[task.type] }} />
+                              {!isLast && <div className="w-0.5 bg-gray-200 flex-1 ml-1" />}
                             </div>
 
                             {/* Content */}
-                            <div style={{
-                              flex: 1,
-                              paddingBottom: isLast ? 0 : 8,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 8,
-                              flexWrap: 'wrap',
-                            }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: '#6B7280', minWidth: 40, fontVariantNumeric: 'tabular-nums' }}>
+                            <div className={`flex-1 flex items-center gap-2 flex-wrap ${isLast ? "" : "pb-2"}`}>
+                              <span className="text-[13px] font-bold text-gray-500 min-w-[40px] tabular-nums">
                                 {currentSlot}
                               </span>
-                              <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>
+                              <span className="text-sm font-bold text-gray-900">
                                 {b.building}
                               </span>
-                              <span style={taskBadge(task.type)}>
+                              <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold text-white mr-1.5" style={{ background: TASK_COLORS[task.type] || '#6B7280' }}>
                                 {TASK_LABELS[task.type]}
                               </span>
-                              <span style={{ fontSize: 12, color: '#6B7280' }}>
+                              <span className="text-xs text-gray-500">
                                 {task.label}
                               </span>
                             </div>
@@ -887,7 +772,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
                 {/* Empty day */}
                 {totalTasks === 0 && (
-                  <div style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>
+                  <div className="text-[13px] text-gray-400 mt-1">
                     배정된 일정 없음
                   </div>
                 )}
@@ -897,22 +782,22 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
           {/* ── Unassigned Section ── */}
           {unassigned.length > 0 && (
-            <div style={{ ...cardStyle, borderLeft: '4px solid #F59E0B', background: '#FFFBEB' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#92400E', marginBottom: 8 }}>
+            <div className="bg-amber-50 rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md" style={{ borderLeft: '4px solid #F59E0B' }}>
+              <div className="text-sm font-extrabold text-amber-900 mb-2">
                 {'\u26A0\uFE0F'} 미배정 건물 (별도 일정 필요)
               </div>
               {unassigned.map((b, i) => (
                 <div
                   key={i}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 13 }}
+                  className="flex items-center gap-2 py-1 text-[13px]"
                   onMouseEnter={() => setHighlightedBuilding(b.building)}
                   onMouseLeave={() => setHighlightedBuilding(null)}
                 >
-                  <span style={{ fontWeight: 700, color: '#111827' }}>{b.building}</span>
+                  <span className="font-bold text-gray-900">{b.building}</span>
                   {b.region && (
-                    <span style={{ fontSize: 11, color: '#92400E' }}>({b.region})</span>
+                    <span className="text-[11px] text-amber-900">({b.region})</span>
                   )}
-                  <span style={{ color: '#6B7280' }}>
+                  <span className="text-gray-500">
                     {b.tasks.map(t => `${TASK_LABELS[t.type]} ${t.label}`).join(', ')}
                   </span>
                 </div>
@@ -926,18 +811,18 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           <div>
             {/* 근처 건물 제안 */}
             {highlightedBuilding && nearbyBuildings.length > 0 && (
-              <div style={{ ...cardStyle, background: '#F0F9FF', borderColor: '#BAE6FD' }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#0369A1', marginBottom: 8 }}>
+              <div className="bg-sky-50 rounded-xl border border-sky-200 p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
+                <div className="text-[13px] font-extrabold text-sky-700 mb-2">
                   {'\uD83D\uDCCD'} 근처 건물 제안
                 </div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 8 }}>
+                <div className="text-xs text-gray-500 mb-2">
                   <strong>{highlightedBuilding}</strong>에서 같은 권역 내:
                 </div>
                 {nearbyBuildings.map((nb, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 0', fontSize: 12 }}>
-                    <div style={dotStyle(TASK_COLORS[nb.type])} />
-                    <span style={{ fontWeight: 600, color: '#111827' }}>{nb.building}</span>
-                    <span style={{ color: '#6B7280' }}>({TASK_LABELS[nb.type]} {nb.label})</span>
+                  <div key={i} className="flex items-center gap-1.5 py-[3px] text-xs">
+                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TASK_COLORS[nb.type] }} />
+                    <span className="font-semibold text-gray-900">{nb.building}</span>
+                    <span className="text-gray-500">({TASK_LABELS[nb.type]} {nb.label})</span>
                   </div>
                 ))}
               </div>
@@ -945,8 +830,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
             {/* 순회 지연 TOP 5 */}
             {delayRanking.length > 0 && (
-              <div style={{ ...cardStyle }}>
-                <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', marginBottom: 10 }}>
+              <div className="bg-white rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
+                <div className="text-[13px] font-extrabold text-gray-900 mb-2.5">
                   순회 지연 TOP {delayRanking.length}
                 </div>
                 {delayRanking.map((t, i) => {
@@ -955,21 +840,15 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   return (
                     <div
                       key={i}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '6px 0',
-                        borderBottom: i < delayRanking.length - 1 ? '1px solid #F3F4F6' : 'none',
-                      }}
+                      className={`flex items-center justify-between py-1.5 ${i < delayRanking.length - 1 ? 'border-b border-gray-100' : ''}`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#9CA3AF', width: 18 }}>{i + 1}.</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{t.building}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] font-extrabold text-gray-400 w-[18px]">{i + 1}.</span>
+                        <span className="text-[13px] font-bold text-gray-900">{t.building}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: severity }}>{t.daysSince}일 경과</span>
-                        <span style={{ fontSize: 12 }}>{icon}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-bold" style={{ color: severity }}>{t.daysSince}일 경과</span>
+                        <span className="text-xs">{icon}</span>
                       </div>
                     </div>
                   );
@@ -978,25 +857,25 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             )}
 
             {/* 요약 통계 */}
-            <div style={{ ...cardStyle, background: '#F9FAFB' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', marginBottom: 8 }}>
+            <div className="bg-hm-bg-hover rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
+              <div className="text-[13px] font-extrabold text-gray-900 mb-2">
                 이번 주 요약
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div className="grid grid-cols-2 gap-2">
                 {Object.entries(TASK_LABELS).map(([type, label]) => {
                   const count = pendingTasks.filter(t => t.type === type).length;
                   return (
-                    <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-                      <div style={dotStyle(TASK_COLORS[type])} />
-                      <span style={{ color: '#6B7280' }}>{label}</span>
-                      <span style={{ fontWeight: 800, color: '#111827' }}>{count}</span>
+                    <div key={type} className="flex items-center gap-1.5 text-xs">
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TASK_COLORS[type] }} />
+                      <span className="text-gray-500">{label}</span>
+                      <span className="font-extrabold text-gray-900">{count}</span>
                     </div>
                   );
                 })}
               </div>
-              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #E5E7EB', fontSize: 12, color: '#6B7280' }}>
-                총 <strong style={{ color: '#111827' }}>{new Set(pendingTasks.map(t => t.building)).size}</strong>개 건물 /{' '}
-                <strong style={{ color: '#111827' }}>{pendingTasks.length}</strong>건 미처리
+              <div className="mt-2.5 pt-2.5 border-t border-gray-200 text-xs text-gray-500">
+                총 <strong className="text-gray-900">{new Set(pendingTasks.map(t => t.building)).size}</strong>개 건물 /{' '}
+                <strong className="text-gray-900">{pendingTasks.length}</strong>건 미처리
               </div>
             </div>
           </div>
@@ -1005,8 +884,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
       {/* ── Mobile: delay ranking at bottom ── */}
       {isMobile && delayRanking.length > 0 && (
-        <div style={{ ...cardStyle, marginTop: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#111827', marginBottom: 10 }}>
+        <div className="bg-white rounded-xl border border-hm-border p-4 mt-3 cursor-pointer transition-shadow hover:shadow-md">
+          <div className="text-[13px] font-extrabold text-gray-900 mb-2.5">
             순회 지연 TOP {delayRanking.length}
           </div>
           {delayRanking.map((t, i) => {
@@ -1015,21 +894,15 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             return (
               <div
                 key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '6px 0',
-                  borderBottom: i < delayRanking.length - 1 ? '1px solid #F3F4F6' : 'none',
-                }}
+                className={`flex items-center justify-between py-1.5 ${i < delayRanking.length - 1 ? 'border-b border-gray-100' : ''}`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: '#9CA3AF', width: 18 }}>{i + 1}.</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{t.building}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[13px] font-extrabold text-gray-400 w-[18px]">{i + 1}.</span>
+                  <span className="text-[13px] font-bold text-gray-900">{t.building}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: severity }}>{t.daysSince}일 경과</span>
-                  <span style={{ fontSize: 12 }}>{icon}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-bold" style={{ color: severity }}>{t.daysSince}일 경과</span>
+                  <span className="text-xs">{icon}</span>
                 </div>
               </div>
             );

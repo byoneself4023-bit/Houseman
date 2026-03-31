@@ -42,6 +42,8 @@ interface CashBookPageProps {
   isLoading?: boolean;
 }
 
+const inputCls = "w-full px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors";
+
 export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildingData = {}, isLoading }: CashBookPageProps) => {
   const isMobile = useIsMobile();
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -143,106 +145,107 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
       <SectionTitle sub={`${monthLabel} 출납 내역`}>출납관리</SectionTitle>
 
       {/* 월 선택기 + 필터 */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 20, alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", padding: "8px 16px", borderRadius: 10, border: "1px solid #E8ECF0" }}>
-          <button onClick={() => changeMonth(-1)} style={{ border: "none", background: "none", fontSize: 16, cursor: "pointer", color: "#5F6577", padding: "2px 6px" }}>◀</button>
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#1A1D23", minWidth: 110, textAlign: "center" }}>{monthLabel}</span>
-          <button onClick={() => changeMonth(1)} style={{ border: "none", background: "none", fontSize: 16, cursor: "pointer", color: "#5F6577", padding: "2px 6px" }}>▶</button>
+      <div className="flex flex-wrap gap-3 mb-5 items-center">
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
+          <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
+          <span className="text-[15px] font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
+          <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
         </div>
-        <div style={{ display: "flex", gap: 4 }}>
+        <div className="flex gap-1">
           {["전체", "settlement", "moveout", "manual"].map(t => (
             <button key={t} onClick={() => setFilterType(t)}
-              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #E8ECF0", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", background: filterType === t ? "#1e40af" : "#fff", color: filterType === t ? "#fff" : "#5F6577" }}>
+              className={`px-3 py-1.5 rounded-lg border border-hm-border text-[11px] font-semibold cursor-pointer font-[inherit] transition-colors ${filterType === t ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}>
               {t === "전체" ? "전체" : TYPE_LABELS[t]}
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 4 }}>
+        <div className="flex gap-1">
           {["전체", "대기", "완료", "보류"].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
-              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #E8ECF0", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", background: filterStatus === s ? (STATUS_MAP[s]?.color || "#1e40af") : "#fff", color: filterStatus === s ? "#fff" : "#5F6577" }}>
+              className={`px-3 py-1.5 rounded-lg border border-hm-border text-[11px] font-semibold cursor-pointer font-[inherit] transition-colors ${filterStatus === s && s !== "전체" ? "text-white border-transparent" : filterStatus === s ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}
+              style={filterStatus === s && s !== "전체" ? { background: STATUS_MAP[s]?.color || "#1e40af" } : undefined}>
               {s === "전체" ? "전체" : STATUS_MAP[s]?.label || s}
             </button>
           ))}
         </div>
         <button onClick={() => setShowAddForm(!showAddForm)}
-          style={{ marginLeft: "auto", padding: "8px 16px", borderRadius: 8, border: "none", background: "#1e40af", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+          className="ml-auto px-4 py-2 rounded-lg border-none bg-[#1e40af] text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-[#1e3a8a] transition-colors">
           + 수동 입력
         </button>
       </div>
 
       {/* 요약 카드 */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
+      <div className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-4"} gap-3 mb-6`}>
         <Card style={{ borderLeft: "4px solid #6366F1" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 4 }}>전체 건수</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#6366F1" }}>{summary.totalCount}건</div>
-          <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{fmt(summary.totalAmount)}원</div>
+          <div className="text-[11px] font-semibold text-gray-500 mb-1">전체 건수</div>
+          <div className="text-xl font-extrabold text-[#6366F1]">{summary.totalCount}건</div>
+          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.totalAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #F59E0B" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 4 }}>송금 대기</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#F59E0B" }}>{summary.pendingCount}건</div>
-          <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{fmt(summary.pendingAmount)}원</div>
+          <div className="text-[11px] font-semibold text-gray-500 mb-1">송금 대기</div>
+          <div className="text-xl font-extrabold text-[#F59E0B]">{summary.pendingCount}건</div>
+          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.pendingAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #10B981" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 4 }}>송금 완료</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#10B981" }}>{summary.doneCount}건</div>
-          <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{fmt(summary.doneAmount)}원</div>
+          <div className="text-[11px] font-semibold text-gray-500 mb-1">송금 완료</div>
+          <div className="text-xl font-extrabold text-[#10B981]">{summary.doneCount}건</div>
+          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.doneAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #EF4444" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#6B7280", marginBottom: 4 }}>보류</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#EF4444" }}>{summary.heldCount}건</div>
-          <div style={{ fontSize: 11, color: "#8F95A3", marginTop: 2 }}>{fmt(summary.heldAmount)}원</div>
+          <div className="text-[11px] font-semibold text-gray-500 mb-1">보류</div>
+          <div className="text-xl font-extrabold text-[#EF4444]">{summary.heldCount}건</div>
+          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.heldAmount)}원</div>
         </Card>
       </div>
 
       {/* 수동 입력 폼 */}
       {showAddForm && (
-        <Card style={{ marginBottom: 16, border: "2px solid #6366F1" }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "#6366F1", marginBottom: 12 }}>수동 출납 입력</div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr 1fr 1fr auto", gap: 8, alignItems: "end" }}>
+        <Card style={{ border: "2px solid #6366F1" }} className="mb-4">
+          <div className="text-[13px] font-extrabold text-[#6366F1] mb-3">수동 출납 입력</div>
+          <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-[1fr_1fr_1fr_1fr_1fr_auto]"} gap-2 items-end`}>
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>건물</div>
+              <div className="text-[10px] text-hm-text-muted mb-0.5">건물</div>
               <input value={formBuilding} onChange={e => setFormBuilding(e.target.value)} placeholder="건물명"
-                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }} />
+                className={inputCls} />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>내역</div>
+              <div className="text-[10px] text-hm-text-muted mb-0.5">내역</div>
               <input value={formDesc} onChange={e => setFormDesc(e.target.value)} placeholder="송금 내역"
-                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }} />
+                className={inputCls} />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>금액</div>
+              <div className="text-[10px] text-hm-text-muted mb-0.5">금액</div>
               <input value={formAmount} onChange={e => setFormAmount(e.target.value)} type="number" placeholder="금액"
-                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", textAlign: "right" }} />
+                className={`${inputCls} text-right`} />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>계좌</div>
+              <div className="text-[10px] text-hm-text-muted mb-0.5">계좌</div>
               <input value={formAccount} onChange={e => setFormAccount(e.target.value)} placeholder="은행 계좌번호"
-                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit" }} />
+                className={inputCls} />
             </div>
             <div>
-              <div style={{ fontSize: 10, color: "#8F95A3", marginBottom: 2 }}>구분</div>
+              <div className="text-[10px] text-hm-text-muted mb-0.5">구분</div>
               <select value={formDirection} onChange={e => setFormDirection(e.target.value)}
-                style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #E0E3E9", fontSize: 12, fontFamily: "inherit", cursor: "pointer" }}>
+                className={`${inputCls} cursor-pointer`}>
                 <option value="출금">출금 (송금)</option>
                 <option value="입금">입금</option>
               </select>
             </div>
             <button onClick={handleAddManual}
-              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#6366F1", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>추가</button>
+              className="px-5 py-2 rounded-lg border-none bg-[#6366F1] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#4F46E5] transition-colors">추가</button>
           </div>
         </Card>
       )}
 
       {/* 날짜별 출납 내역 */}
       {dateGroups.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, color: "#8F95A3" }}>
-          <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.3 }}>📋</div>
-          <div style={{ fontSize: 14, fontWeight: 600 }}>이번 달 출납 내역이 없습니다</div>
-          <div style={{ fontSize: 12, marginTop: 4 }}>건물주 정산 또는 퇴실정산 완료 시 자동으로 추가됩니다</div>
+        <div className="text-center py-[60px] text-hm-text-muted">
+          <div className="text-[40px] mb-3 opacity-30">📋</div>
+          <div className="text-sm font-semibold">이번 달 출납 내역이 없습니다</div>
+          <div className="text-xs mt-1">건물주 정산 또는 퇴실정산 완료 시 자동으로 추가됩니다</div>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="flex flex-col gap-4">
           {dateGroups.map(([date, entries]) => {
             const dateObj = new Date(date + "T00:00:00");
             const dow = ["일", "월", "화", "수", "목", "금", "토"][dateObj.getDay()];
@@ -252,20 +255,20 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
             return (
               <div key={date}>
                 {/* 날짜 헤더 */}
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>{date.slice(5)}</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#8F95A3" }}>({dow})</span>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[15px] font-extrabold text-hm-text">{date.slice(5)}</span>
+                    <span className="text-xs font-semibold text-hm-text-muted">({dow})</span>
                   </div>
-                  <div style={{ flex: 1, height: 1, background: "#E8ECF0" }} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>{fmt(dayTotal)}원</span>
+                  <div className="flex-1 h-px bg-hm-border" />
+                  <span className="text-xs font-bold text-gray-700">{fmt(dayTotal)}원</span>
                   {pendingCount > 0 && (
-                    <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 10, background: "#FEF3C7", color: "#92400E", fontWeight: 700 }}>대기 {pendingCount}</span>
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-[#FEF3C7] text-[#92400E] font-bold">대기 {pendingCount}</span>
                   )}
                 </div>
 
                 {/* 내역 카드들 */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div className="flex flex-col gap-1.5">
                   {entries.map(entry => {
                     const typeStyle = TYPE_COLORS[entry.type] || TYPE_COLORS.manual;
                     const statusStyle = STATUS_MAP[entry.status] || STATUS_MAP["대기"];
@@ -273,89 +276,87 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
 
                     return (
                       <div key={entry.id}
+                        className="px-4 py-3.5 rounded-xl transition-all"
                         style={{
-                          padding: "14px 16px", borderRadius: 12,
                           background: isSent ? "#FAFBFC" : "#fff",
                           border: `1.5px solid ${isSent ? "#D1D5DB" : typeStyle.border}`,
                           opacity: isSent ? 0.75 : 1,
-                          transition: "all 0.15s",
                         }}>
                         {/* 상단: 유형 + 건물 + 상태 + 금액 */}
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 6, background: typeStyle.bg, color: typeStyle.color, fontWeight: 700, border: `1px solid ${typeStyle.border}` }}>
+                        <div className="flex justify-between items-center mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] px-2.5 py-[3px] rounded-md font-bold"
+                              style={{ background: typeStyle.bg, color: typeStyle.color, border: `1px solid ${typeStyle.border}` }}>
                               {TYPE_LABELS[entry.type] || entry.type}
                             </span>
-                            <span style={{ fontSize: 14, fontWeight: 800, color: isSent ? "#9CA3AF" : "#1A1D23" }}>{entry.building}</span>
+                            <span className={`text-sm font-extrabold ${isSent ? "text-gray-400" : "text-hm-text"}`}>{entry.building}</span>
                             {entry.round && entry.round > 0 && (
-                              <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: "#8B5CF6", color: "#fff", fontWeight: 700 }}>{entry.round}차</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-[#8B5CF6] text-white font-bold">{entry.round}차</span>
                             )}
                             {entry.room && (
-                              <span style={{ fontSize: 11, color: "#5F6577", fontWeight: 600 }}>{entry.room}호</span>
+                              <span className="text-[11px] text-hm-text-sub font-semibold">{entry.room}호</span>
                             )}
                           </div>
-                          <div style={{ textAlign: "right" }}>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: isSent ? "#9CA3AF" : entry.direction === "입금" ? "#059669" : "#2563EB" }}>
+                          <div className="text-right">
+                            <div className={`text-lg font-extrabold ${isSent ? "text-gray-400" : entry.direction === "입금" ? "text-hm-success" : "text-hm-blue-dark"}`}>
                               {entry.direction === "입금" ? "+" : ""}{fmt(entry.amount)}원
                             </div>
                           </div>
                         </div>
 
                         {/* 중단: 내역 + 계좌 */}
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, fontSize: 12, color: "#5F6577", marginBottom: 8 }}>
+                        <div className="flex flex-wrap gap-4 text-xs text-hm-text-sub mb-2">
                           <span>{entry.description}</span>
                           {entry.account && entry.account !== "—" && (
-                            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <span style={{ fontSize: 10, color: "#8F95A3" }}>계좌</span>
-                              <strong style={{ color: "#1A1D23", fontFamily: "monospace", fontSize: 11 }}>{entry.account}</strong>
+                            <span className="flex items-center gap-1">
+                              <span className="text-[10px] text-hm-text-muted">계좌</span>
+                              <strong className="text-hm-text font-mono text-[11px]">{entry.account}</strong>
                             </span>
                           )}
                           {entry.accountHolder && (
-                            <span style={{ fontSize: 11, color: "#374151" }}>({entry.accountHolder})</span>
+                            <span className="text-[11px] text-gray-700">({entry.accountHolder})</span>
                           )}
                         </div>
 
                         {/* 하단: 상태 + 보냄 시각 + 액션 버튼 */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                          <span style={{
-                            fontSize: 10, padding: "3px 12px", borderRadius: 10,
-                            background: statusStyle.bg, color: statusStyle.color, fontWeight: 700,
-                          }}>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] px-3 py-[3px] rounded-[10px] font-bold"
+                            style={{ background: statusStyle.bg, color: statusStyle.color }}>
                             {statusStyle.label}
                           </span>
                           {isSent && entry.sentAt && (
-                            <span style={{ fontSize: 10, color: "#059669", fontWeight: 600 }}>
+                            <span className="text-[10px] text-hm-success font-semibold">
                               {entry.sentAt} 송금완료
                             </span>
                           )}
-                          <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+                          <div className="ml-auto flex gap-1">
                             {entry.status === "대기" && (
                               <>
                                 <button onClick={() => markSent(entry.id)}
-                                  style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "linear-gradient(135deg, #10B981, #059669)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                                  className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
                                   송금 완료
                                 </button>
                                 <button onClick={() => markHold(entry.id)}
-                                  style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #FECACA", background: "#fff", color: "#DC2626", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                                  className="px-3 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
                                   보류
                                 </button>
                               </>
                             )}
                             {entry.status === "완료" && (
                               <button onClick={() => markPending(entry.id)}
-                                style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                                className="px-3 py-[5px] rounded-md border border-hm-input-border bg-white text-hm-text-sub text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                                 되돌리기
                               </button>
                             )}
                             {entry.status === "보류" && (
                               <button onClick={() => markPending(entry.id)}
-                                style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                                className="px-3 py-[5px] rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
                                 대기로 변경
                               </button>
                             )}
                             {entry.type === "manual" && (
                               <button onClick={() => deleteEntry(entry.id)}
-                                style={{ padding: "5px 10px", borderRadius: 6, border: "1px solid #FECACA", background: "#fff", color: "#DC2626", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                                className="px-2.5 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
                                 삭제
                               </button>
                             )}
