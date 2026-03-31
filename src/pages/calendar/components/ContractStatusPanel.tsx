@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { buildingFloors } from '@/data';
 import { Card } from '@/components';
 import { TYPE_COLORS } from '../constants';
@@ -100,7 +101,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 {/* 건물주보고 */}
                 <span onClick={() => {
                   if (ev.reported) return;
-                  if (!ev.depositConfirmed) return alert("계약금 확인이 완료되어야 건물주보고가 가능합니다.");
+                  if (!ev.depositConfirmed) { toast.error("계약금 확인이 완료되어야 건물주보고가 가능합니다."); return; }
                   const bd = buildingData[ev.building] || {};
                   const bf = (buildingFloors as any)[ev.building] || {};
                   const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name
@@ -131,7 +132,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 {/* 잔금확인 */}
                 <span onClick={() => {
                   if (ev.balanceConfirmed) return;
-                  if (!ev.reported) return alert("건물주보고가 완료되어야 잔금확인이 가능합니다.");
+                  if (!ev.reported) { toast.error("건물주보고가 완료되어야 잔금확인이 가능합니다."); return; }
                   persistUpdate(ev.supabaseId, { balanceConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, balanceConfirmed: true } : e));
                 }}
@@ -141,7 +142,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                 {/* 계약서입력 */}
                 {setPendingContract && setPage && (
                   <span onClick={() => {
-                    if (!ev.reported) return alert("건물주보고가 완료되어야 계약서입력이 가능합니다.");
+                    if (!ev.reported) { toast.error("건물주보고가 완료되어야 계약서입력이 가능합니다."); return; }
                     const vacancy = activeVacancies.find((v: any) => v.building === ev.building && String(v.room) === String(ev.room));
                     setPendingContract({ ...ev, vacancyData: vacancy || {} });
                     // 해당 건물/호실의 계약 이벤트 Supabase에서도 삭제

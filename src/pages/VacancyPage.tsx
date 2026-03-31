@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import { buildingFloors } from '@/data';
 import { useIsMobile, fmt } from '@/utils';
 import { matchKorean } from '@/utils/koreanSearch';
@@ -30,6 +31,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
   const [linkModal, setLinkModal] = useState(false);
   const [linkSearch, setLinkSearch] = useState("");
   const [showHelp, setShowHelp] = useState(false);
+  const [confirmPromo, setConfirmPromo] = useState<any>(null);
   const [linkedRooms, setLinkedRooms] = useLocalStorage<Record<string, boolean>>("hm_linkedRooms", {}); // { "건물_호실": true }
   const types = ["전체", "점검/청소중", "홍보중", "임차인연결", "계약서입력"];
 
@@ -359,7 +361,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                   {/* 상태 버튼 (맨뒤) */}
                   <td style={{ padding: "10px 6px", textAlign: "center" }}>
                     {st === "점검/청소중" ? (
-                      <button className="sparkle-btn" onClick={() => { if (window.confirm("홍보 준비가 완료되었습니까?")) handleStatusChange(r, "홍보중"); }}
+                      <button className="sparkle-btn" onClick={() => setConfirmPromo(r)}
                         style={{ padding: "5px 10px", borderRadius: 6, border: "1.5px solid #6B7280", background: "#F3F4F6", color: "#374151", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
                         🔧 점검/청소중
                       </button>
@@ -434,7 +436,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={() => {
                   const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
-                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
                   const smsUrl = `sms:${ownerPhone}?body=${encodeURIComponent(msg)}`;
                   window.open(smsUrl, "_blank");
 
@@ -445,7 +447,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                 </button>
                 <button onClick={() => {
                   const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
-                  if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+                  if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
                   const kakaoUrl = `https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`;
                   window.open(kakaoUrl, "_blank");
 
@@ -457,7 +459,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                 <button onClick={() => {
                   const msg = (document.getElementById("report-msg") as HTMLTextAreaElement | null)?.value || msgText;
                   navigator.clipboard.writeText(msg);
-                  alert("메시지가 클립보드에 복사되었습니다.");
+                  toast.success("메시지가 클립보드에 복사되었습니다.");
                 }}
                   style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
                   📋 복사
@@ -468,6 +470,32 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
         );
       })()}
 
+      {/* 홍보 전환 확인 모달 */}
+      {confirmPromo && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onMouseDown={() => setConfirmPromo(null)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+            onMouseDown={e => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>📢 홍보 전환</div>
+              <button onClick={() => setConfirmPromo(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+            </div>
+            <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+              홍보 준비가 완료되었습니까?
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button onClick={() => setConfirmPromo(null)}
+                style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                취소
+              </button>
+              <button onClick={() => { handleStatusChange(confirmPromo, "홍보중"); setConfirmPromo(null); }}
+                style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

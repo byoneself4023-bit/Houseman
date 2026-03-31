@@ -96,6 +96,11 @@ const BrokerWrapper = React.lazy(() =>
 const PayrollWrapper = React.lazy(() =>
   import('@/pages/wrappers/PayrollWrapper').then((m) => ({ default: m.PayrollWrapper })),
 );
+const CompanySettingsWrapper = React.lazy(() =>
+  import('@/pages/wrappers/CompanySettingsWrapper').then((m) => ({
+    default: m.CompanySettingsWrapper,
+  })),
+);
 const OwnerWrapper = React.lazy(() =>
   import('@/pages/wrappers/OwnerWrapper').then((m) => ({ default: m.OwnerWrapper })),
 );
@@ -105,6 +110,10 @@ const OwnerWrapper = React.lazy(() =>
 const HomepagePublic = React.lazy(() =>
   import('./pages/HomepagePage').then((m) => ({ default: m.HomepagePage as React.ComponentType<any> })),
 );
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MoveOutLinkPublic = React.lazy(() =>
+  import('./pages/MoveOutLinkPage').then((m) => ({ default: m.MoveOutLinkPage as React.ComponentType<any> })),
+);
 
 export const router = createBrowserRouter([
   // Standalone homepage — accessed via ?mode=homepage redirect
@@ -113,6 +122,15 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={null}>
         <HomepagePublic />
+      </Suspense>
+    ),
+  },
+  // Public move-out link — tenants access without auth
+  {
+    path: '/move-out/:eventId',
+    element: (
+      <Suspense fallback={null}>
+        <MoveOutLinkPublic />
       </Suspense>
     ),
   },
@@ -145,6 +163,7 @@ export const router = createBrowserRouter([
           { path: 'task-driver', element: <TaskDriverWrapper /> },
           { path: 'profit-dashboard', element: <ProfitDashboardWrapper /> },
           { path: 'route-schedule', element: <RouteScheduleWrapper /> },
+          { path: 'company-settings', element: <CompanySettingsWrapper /> },
           { path: 'data-upload', element: <DataUploadWrapper /> },
           { path: 'homepage-edit', element: <HomepageEditWrapper /> },
           { path: 'homepage', element: <HomepageWrapper /> },

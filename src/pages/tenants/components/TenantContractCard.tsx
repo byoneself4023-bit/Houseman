@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, SectionTitle, ContractDropZone } from '@/components';
 import { inputStyle } from '@/components/Field';
 import { getRoomType } from '@/config';
+import { persistInsertTenant } from '../tenantsApi';
+import { toast } from 'sonner';
 
 interface TenantContractCardProps {
   pendingContract: Record<string, any>;
@@ -238,7 +240,18 @@ export const TenantContractCard: React.FC<TenantContractCardProps> = ({
                   setParkingInfo((prev: any) => ({ ...prev, [newId]: { carNumber: carNum || "", carType: carType || "" } }));
                 }
                 setPendingContract && setPendingContract(null);
-                alert(`${pc.building} ${pc.room}호 ${name} 호실등록 완료`);
+                // Supabase 동기화 (신규 임차인 등록)
+                persistInsertTenant({
+                  ...newTenant,
+                  ssn: (document.getElementById("pc-ssn") as HTMLInputElement)?.value?.trim() || null,
+                  carNumber: carNum || null,
+                  carType: carType || null,
+                }).then(result => {
+                  if (result?.data?.id) {
+                    setActiveTenants?.((prev: any[]) => prev.map(x => x.id === newId ? { ...x, supabaseId: result.data.id, source: "supabase" } : x));
+                  }
+                }).catch(() => toast.error("DB 등록 실패"));
+                toast.success(`${pc.building} ${pc.room}호 ${name} 입주 등록 완료`);
               }}
                 style={{ flex: 2, padding: "12px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>🏠 호실등록</button>
             </div>

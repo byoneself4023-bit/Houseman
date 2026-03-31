@@ -12,8 +12,6 @@ import { Card, SectionTitle, RoomFormSection } from '../components';
 import { inputStyle } from '../components/Field';
 import { BuildingTypeCards, BuildingInfoSection, OwnerSection, SettlementBillingSection, DocumentSection } from '../components/BuildingFormSections';
 import { useMyBuildings } from '../hooks/useMyBuildings';
-import { useBuildingStore, useTenantStore, useCalendarStore } from '../stores';
-
 const emptyVendor = (withManager) => ({
   company: "", phone: "", contact: "", contactPhone: "",
   ...(withManager ? { manager: "", managerPhone: "", managerNote: "" } : {}),
@@ -197,13 +195,19 @@ const RegFileUpload = ({ saved, field, label, col, updateBD }) => {
   );
 };
 
-export const BuildingsPage = () => {
+export const BuildingsPage = ({
+  customBuildings = [],
+  setCustomBuildings,
+  allBuildings = [],
+  setAllBuildings,
+  buildingData = {},
+  activeTenants = [],
+  activeVacancies = [],
+  isLoading = false,
+}) => {
   const navigate = useNavigate();
   const onSelectBuilding = (name) => navigate(`/buildings/${encodeURIComponent(name)}`);
   const { myBuildings } = useMyBuildings();
-  const { customBuildings, setCustomBuildings, allBuildings, setAllBuildings, buildingData } = useBuildingStore();
-  const { activeTenants } = useTenantStore();
-  const { activeVacancies } = useCalendarStore();
   const isMobile = useIsMobile();
   const [staffList] = useLocalStorage("hm_staffList", initialStaffMembers);
   const filteredBuildings = myBuildings.length > 0 ? allBuildings.filter(b => myBuildings.includes(b.name)) : allBuildings;

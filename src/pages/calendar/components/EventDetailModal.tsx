@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { inputStyle } from '@/components/Field';
 import { persistUpdate, persistDelete } from '../calendarApi';
 
@@ -7,10 +8,11 @@ interface EventDetailModalProps {
   setEditEvent: (v: any) => void;
   setEvents: (fn: any) => void;
   saveEditEvent: () => void;
+  setActiveVacancies?: (fn: any) => void;
 }
 
 export const EventDetailModal: React.FC<EventDetailModalProps> = ({
-  editEvent, setEditEvent, setEvents, saveEditEvent,
+  editEvent, setEditEvent, setEvents, saveEditEvent, setActiveVacancies,
 }) => {
   if (!editEvent) return null;
 
@@ -124,8 +126,11 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
           <button onClick={() => {
             const { idx, evt } = editEvent;
-            if (evt.type === "퇴실" && evt.externalCheckDone) return alert("퇴실체크가 완료된 일정은 삭제할 수 없습니다.");
+            if (evt.type === "퇴실" && (evt.externalCheckDone || evt.moveOutLinkCompleted || evt.moveOutLinkSent || evt.settled || evt.cleaningDone)) { toast.error("퇴실 워크플로우가 진행된 일정은 삭제할 수 없습니다."); return; }
             persistDelete(evt.supabaseId);
+            if (evt.type === "계약" && evt.building && evt.room) {
+              setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === evt.building && String(v.room) === String(evt.room) ? { ...v, status: "홍보중" } : v));
+            }
             setEditEvent(null);
             setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx));
           }}

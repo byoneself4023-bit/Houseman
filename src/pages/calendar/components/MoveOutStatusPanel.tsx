@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { buildingFloors } from '@/data';
 import { getRoomType } from '@/config';
 import { Card } from '@/components';
+import { inputStyle } from '@/components/Field';
 import { persistUpdate } from '../calendarApi';
 
 interface MoveOutStatusPanelProps {
@@ -33,6 +35,9 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
   setExternalCheckModal, setDirectInputModal, setSendLinkModal,
   openEditEvent,
 }) => {
+  const [cleaningModal, setCleaningModal] = useState<{ origEvent: any; supabaseId?: string } | null>(null);
+  const [vacantModal, setVacantModal] = useState<{ origEvent: any; ev: any } | null>(null);
+  const [cleaningCheckModal, setCleaningCheckModal] = useState<{ origEvent: any; tm: any } | null>(null);
   const todayD = new Date(); todayD.setHours(23,59,59,999);
   const moveOutEvts = calendarEvents
     .filter(ev => ev.type === "퇴실" && ev.building && ev.room && new Date(ev.date) <= todayD)
@@ -40,7 +45,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
       const hk = `${ev.building}_${ev.room}`;
       const tenant = activeTenants.find((t: any) => t.building === ev.building && String(t.room) === String(ev.room));
       const pastRecords = pastTenantsData[hk] || [];
-      const settled = !tenant && pastRecords.length > 0;
+      const settled = ev.settled || (!tenant && pastRecords.length > 0);
       const pastInfo = settled ? pastRecords[pastRecords.length - 1] : null;
       const hasPhotos = ev.moveOutPhotos?.length > 0 || (tenant
         ? (tenant.moveOutPhotos && tenant.moveOutPhotos.length > 0)
@@ -51,7 +56,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
       // _holderMismatch: 임차인 이름과 예금주가 다르면 true
       const tenantName = tenant?.name || ev.name || pastInfo?.name || "";
       const _holderMismatch = ev.refundHolder && ev.refundHolder !== tenantName;
-      const allDone = hasPhotos && hasCheckPhotos && settled;
+      const allDone = !!ev.vacantConfirmed;
       const tenantForModal = tenant || {
         building: ev.building, room: ev.room,
         name: tenantName,
@@ -65,10 +70,11 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
     })
     .filter(Boolean) as any[];
 
-  const activeMoveOutEvts = moveOutEvts.filter((ev: any) => !ev.allDone);
+  const activeMoveOutEvts = moveOutEvts.filter((ev: any) => !ev.allDone && !ev.isCompleted);
   if (activeMoveOutEvts.length === 0) return null;
 
   return (
+    <>
     <Card style={{ marginBottom: 16, border: "2px solid #DC2626", background: "#FEF2F2" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span style={{ fontSize: 16 }}>{"\uD83D\uDEAA"}</span>
@@ -86,6 +92,12 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
           // 일반/근생: 기존 선형 스텝
           const mSteps = isShortTerm ? [
             { label: "퇴실링크", icon: "\uD83D\uDCE9", done: !!ev.moveOutLinkCompleted,
+              sentStatus: ev.moveOutLinkSent && !ev.moveOutLinkCompleted ? "전송완료" : null,
+              onClick: () => {
+                const linkId = ev.supabaseId || `${ev.building}_${ev.room}_${ev.date}`;
+                const link = `${window.location.origin}/move-out/${linkId}`;
+                setSendLinkModal?.({ ev: ev._origEvent, link, building: ev.building, room: ev.room });
+              },
               actions: setSendLinkModal ? [
                 { label: "\uD83D\uDCE9 다른번호로 보내기", onClick: () => {
                   const linkId = ev.supabaseId || `${ev.building}_${ev.room}_${ev.date}`;
@@ -97,7 +109,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               ] : undefined },
             { label: "퇴실체크", icon: "\uD83D\uDD0D", done: !!ev.externalCheckDone,
               onClick: () => {
-                if (!ev.moveOutLinkCompleted) return alert("퇴실링크 완료 후 진행 가능합니다.");
+                if (!ev.moveOutLinkCompleted) { toast.error("퇴실링크 완료 후 진행 가능합니다."); return; }
                 const di = ev.deductionItems || [];
                 setExternalCheckModal?.({
                   ev: ev._origEvent, tm,
@@ -113,40 +125,29 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               extraIcon: ev.externalCheckDone && ev.hasPhotos ? { icon: "\uD83D\uDD0D", onClick: () => setCompareData({ building: ev.building, room: ev.room, moveInCheckPhotos: tm.moveInCheckPhotos || [], moveOutPhotos: tm.moveOutPhotos || [] }) } : null },
             { label: "정산서", icon: "\uD83D\uDCCB", done: ev.settled,
               onClick: () => {
-                if (!ev.externalCheckDone) return alert("퇴실체크 완료 후 정산서 작성이 가능합니다.");
-                if (ev._holderMismatch) alert(`\u26A0\uFE0F 임차인 이름과 예금주가 다릅니다.\n\n임차인: ${t?.name || ev.name || "\u2014"}\n예금주: ${ev.refundHolder}\n계좌: ${ev.refundBank} ${ev.refundAccount}\n\n정산서 작성 시 확인해주세요.`);
+                if (!ev.externalCheckDone) { toast.error("퇴실체크 완료 후 정산서 작성이 가능합니다."); return; }
+                if (ev._holderMismatch) toast.warning(`⚠️ 임차인 이름과 예금주가 다릅니다.\n임차인: ${t?.name || ev.name || "—"} / 예금주: ${ev.refundHolder}`);
                 setPendingMoveout?.({ building: ev.building, room: ev.room });
                 setPage?.("tenants");
               }},
             { label: "청소", icon: "\uD83E\uDDF9", done: !!ev.cleaningDone,
               onClick: () => {
                 if (!ev.externalCheckDone) {
-                  if (confirm("퇴실체크가 완료되지 않았습니다.\n청소팀이 퇴실체크를 대신 진행하시겠습니까?")) {
-                    setExternalCheckModal?.({ ev: ev._origEvent, tm });
-                  }
+                  setCleaningCheckModal({ origEvent: ev._origEvent, tm });
                   return;
                 }
-                const fee = prompt("청소비 가중치 (없으면 빈칸):");
-                const comment = prompt("청소 코멘트 (없으면 빈칸):");
-                const cleaningPatch = { cleaningDone: true, cleaningFeeExtra: fee || null, cleaningComment: comment || null };
-                persistUpdate(ev._origEvent?.supabaseId, cleaningPatch);
-                setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, ...cleaningPatch } : e));
+                setCleaningModal({ origEvent: ev._origEvent, supabaseId: ev._origEvent?.supabaseId });
               }},
             { label: "입주체크", icon: "\uD83D\uDCF7", done: ev.hasCheckPhotos,
               onClick: () => {
-                if (!ev.cleaningDone) return alert("청소 완료 후 입주체크사진을 등록할 수 있습니다.");
+                if (!ev.cleaningDone) { toast.error("청소 완료 후 입주체크사진을 등록할 수 있습니다."); return; }
                 setCheckPhotoModalTenant(tm);
               }},
             { label: "공실전환", icon: "\uD83C\uDFE0", done: !!ev.vacantConfirmed,
               onClick: () => {
-                if (!ev.settled) return alert("정산서 완료가 필요합니다.");
-                if (!ev.hasCheckPhotos) return alert("입주체크사진 등록이 필요합니다.");
-                if (confirm("공실로 전환하시겠습니까? (금액체크 상태로 공실에 등록됩니다)")) {
-                  const vacantPatch = { vacantConfirmed: true, isCompleted: true };
-                  persistUpdate(ev._origEvent?.supabaseId, vacantPatch);
-                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev._origEvent ? { ...e, ...vacantPatch } : e));
-                  setActiveVacancies?.((prev: any[]) => [...prev, { building: ev.building, room: ev.room, type: "단기", status: "금액체크", deposit: "", rent: "", managementFee: "" }]);
-                }
+                if (!ev.settled) { toast.error("정산서 완료가 필요합니다."); return; }
+                if (!ev.hasCheckPhotos) { toast.error("입주체크사진 등록이 필요합니다."); return; }
+                setVacantModal({ origEvent: ev._origEvent, ev });
               }},
           ] : [
             { label: "퇴실문자", done: !!ev.moveOutMsg },
@@ -167,7 +168,12 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               {/* 스텝 인디케이터 */}
               <div style={{ padding: "10px 16px", background: allDone ? "#F3F4F6" : "linear-gradient(90deg, #FEF2F2, #FFF8F8)", borderBottom: allDone ? "1px solid #D1D5DB" : "1px solid #FECACA", display: "flex", alignItems: "center", gap: 0 }}>
                 <div style={{ display: "flex", flexDirection: "column", marginRight: 12, whiteSpace: "nowrap" }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#DC2626" }}>{ev.building} {ev.room}호</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: allDone ? "#9CA3AF" : "#DC2626" }}>{ev.building} {ev.room}호
+                    <span style={{ fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 4, marginLeft: 4, verticalAlign: "middle",
+                      background: evRoomType === "단기" ? "#FEF3C7" : evRoomType === "근생" ? "#D1FAE5" : "#DBEAFE",
+                      color: evRoomType === "단기" ? "#92400E" : evRoomType === "근생" ? "#065F46" : "#1E40AF",
+                    }}>{evRoomType}</span>
+                  </span>
                   <span style={{ fontSize: 9, color: allDone ? "#B0B5C1" : "#8F95A3" }}>{ev.date} · {ev.name || (t ? t.name : ev.pastInfo?.name || "\u2014")}</span>
                 </div>
                 <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
@@ -176,7 +182,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                     const stepDone = step.done;
                     return (
                       <div key={si} style={{ display: "flex", alignItems: "center", flex: 1 }}
-                        onClick={() => { if (step.onClick && !stepDone) step.onClick(); }}>
+                        onClick={() => { if (step.onClick) step.onClick(); }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, minWidth: 52, cursor: step.onClick ? "pointer" : "default", position: "relative" }}>
                           <div style={{
                             width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
@@ -191,8 +197,11 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                             {stepDone ? "\u2713" : (step.icon || String(si + 1))}
                           </div>
                           <span style={{ fontSize: 9, fontWeight: stepDone || isActive ? 700 : 500, color: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#B91C1C" : "#9CA3AF", whiteSpace: "nowrap", animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none" }}>{step.label}</span>
+                          {step.sentStatus && (
+                            <span style={{ fontSize: 7, fontWeight: 700, color: "#F59E0B", whiteSpace: "nowrap" }}>📩 {step.sentStatus}</span>
+                          )}
                           {/* 단기 퇴실링크: 액션 드롭다운 아이콘 */}
-                          {step.actions && stepDone && (
+                          {step.actions && (
                             <span style={{ position: "absolute", top: -4, right: 1, fontSize: 16, cursor: "pointer", animation: "hm-wobble 1s ease-in-out infinite", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))", lineHeight: 1 }}
                               onClick={(e) => { e.stopPropagation(); step.actions[2]?.onClick(); }}>
                               {"\u270F\uFE0F"}
@@ -265,7 +274,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                         style={{ fontSize: 10, fontWeight: 700, color: "#9CA3AF", padding: "4px 10px", borderRadius: 6, border: "1px solid #D1D5DB", background: "#F3F4F6", cursor: "pointer", textDecoration: "line-through" }}>{"\u2714"} 건물주연락</span>
                     ) : (
                       <span onClick={() => {
-                        if (!ev.settled) return alert("정산서가 완료되어야 건물주연락이 가능합니다.");
+                        if (!ev.settled) { toast.error("정산서가 완료되어야 건물주연락이 가능합니다."); return; }
                         const bd = buildingData[ev.building] || {};
                         const bf = (buildingFloors as any)[ev.building] || {};
                         const owners = bd.owners && bd.owners.length > 0 && bd.owners[0].name ? bd.owners : [{ name: bf.owner || "", phone: bf.phone || "" }];
@@ -341,5 +350,118 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
         })}
       </div>
     </Card>
+
+    {/* 청소 완료 모달 */}
+    {cleaningModal && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onMouseDown={() => setCleaningModal(null)}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          onMouseDown={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🧹 청소 완료</div>
+            <button onClick={() => setCleaningModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>청소비 가중치</div>
+              <input id="cl-fee" placeholder="없으면 빈칸" style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%" }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>청소 코멘트</div>
+              <input id="cl-comment" placeholder="없으면 빈칸" style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%" }} />
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+            <button onClick={() => setCleaningModal(null)}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              취소
+            </button>
+            <button onClick={() => {
+              const fee = (document.getElementById("cl-fee") as HTMLInputElement)?.value;
+              const comment = (document.getElementById("cl-comment") as HTMLInputElement)?.value;
+              const cleaningPatch = { cleaningDone: true, cleaningFeeExtra: fee || null, cleaningComment: comment || null };
+              persistUpdate(cleaningModal.supabaseId, cleaningPatch);
+              setEvents?.((prev: any[]) => prev.map((e: any) => e === cleaningModal.origEvent ? { ...e, ...cleaningPatch } : e));
+              setCleaningModal(null);
+            }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              완료
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* 공실전환 확인 모달 */}
+    {vacantModal && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onMouseDown={() => setVacantModal(null)}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          onMouseDown={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🏠 공실 전환</div>
+            <button onClick={() => setVacantModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          </div>
+          <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+            공실로 전환하시겠습니까?<br />
+            금액체크 상태로 공실에 등록됩니다.
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+            <button onClick={() => setVacantModal(null)}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              취소
+            </button>
+            <button onClick={() => {
+              const { origEvent, ev } = vacantModal;
+              const vacantPatch = { vacantConfirmed: true, isCompleted: true };
+              persistUpdate(origEvent?.supabaseId, vacantPatch);
+              setEvents?.((prev: any[]) => prev.map((e: any) => e === origEvent ? { ...e, ...vacantPatch } : e));
+              setActiveVacancies?.((prev: any[]) => {
+                const exists = prev.some((v: any) => v.building === ev.building && String(v.room) === String(ev.room));
+                if (exists) return prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "금액체크" } : v);
+                return [...prev, { building: ev.building, room: ev.room, type: "단기", status: "금액체크", deposit: "", rent: "", managementFee: "" }];
+              });
+              toast.success(`${ev.building} ${ev.room}호 공실 전환 완료`);
+              setVacantModal(null);
+            }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* 청소팀 퇴실체크 확인 모달 */}
+    {cleaningCheckModal && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onMouseDown={() => setCleaningCheckModal(null)}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          onMouseDown={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>🔍 퇴실체크</div>
+            <button onClick={() => setCleaningCheckModal(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#8F95A3" }}>✕</button>
+          </div>
+          <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+            퇴실체크가 완료되지 않았습니다.<br />
+            청소팀이 퇴실체크를 대신 진행하시겠습니까?
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+            <button onClick={() => setCleaningCheckModal(null)}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              취소
+            </button>
+            <button onClick={() => {
+              setExternalCheckModal?.({ ev: cleaningCheckModal.origEvent, tm: cleaningCheckModal.tm });
+              setCleaningCheckModal(null);
+            }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };

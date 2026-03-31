@@ -22,6 +22,7 @@ const PAGE_TO_PATH: Record<string, string> = {
   'task-driver': '/task-driver',
   'profit-dashboard': '/profit-dashboard',
   'route-schedule': '/route-schedule',
+  'company-settings': '/company-settings',
   'data-upload': '/data-upload',
   'homepage-edit': '/homepage-edit',
   homepage: '/homepage',

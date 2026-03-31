@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { Card } from '@/components';
 import { TYPE_COLORS, TYPE_BG, TYPE_BORDER, TYPE_ICON } from '../constants';
 import { persistDelete } from '../calendarApi';
@@ -13,11 +14,12 @@ interface EventListViewProps {
   calendarEvents: Record<string, any>[];
   openEditEvent: (evt: Record<string, any>) => void;
   openSendModal: (evt: Record<string, any>) => void;
+  setActiveVacancies?: (fn: any) => void;
 }
 
 export const EventListView: React.FC<EventListViewProps> = ({
   selectedDay, month, selectedEvents, filteredMonthEvents,
-  setSelectedDay, setEvents, calendarEvents, openEditEvent, openSendModal,
+  setSelectedDay, setEvents, calendarEvents, openEditEvent, openSendModal, setActiveVacancies,
 }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -46,9 +48,15 @@ export const EventListView: React.FC<EventListViewProps> = ({
                 )}
                 {setEvents && (
                   <button onClick={() => {
-                    if (evt.type === "퇴실" && evt.externalCheckDone) return alert("퇴실체크가 완료된 일정은 삭제할 수 없습니다.");
+                    if (evt.type === "퇴실" && (evt.externalCheckDone || evt.moveOutLinkCompleted || evt.moveOutLinkSent || evt.settled || evt.cleaningDone)) { toast.error("퇴실 워크플로우가 진행된 일정은 삭제할 수 없습니다."); return; }
                     const idx = calendarEvents.indexOf(evt);
-                    if (idx > -1) { persistDelete(evt.supabaseId); setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx)); }
+                    if (idx > -1) {
+                      persistDelete(evt.supabaseId);
+                      if (evt.type === "계약" && evt.building && evt.room) {
+                        setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === evt.building && String(v.room) === String(evt.room) ? { ...v, status: "홍보중" } : v));
+                      }
+                      setEvents((prev: any[]) => prev.filter((_: any, j: number) => j !== idx));
+                    }
                   }}
                     style={{ padding: "3px 10px", borderRadius: 5, border: "1px solid #FECACA", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                     삭제

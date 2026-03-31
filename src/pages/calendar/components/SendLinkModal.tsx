@@ -1,12 +1,15 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { inputStyle } from '@/components/Field';
+import { persistUpdate } from '../calendarApi';
 
 interface SendLinkModalProps {
   sendLinkModal: { ev: any; link: string; building: string; room: string } | null;
   setSendLinkModal: (v: any) => void;
+  setEvents?: (fn: any) => void;
 }
 
-export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, setSendLinkModal }) => {
+export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, setSendLinkModal, setEvents }) => {
   if (!sendLinkModal) return null;
 
   const { building, room, link } = sendLinkModal;
@@ -31,8 +34,13 @@ export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, set
         </div>
         <button onClick={() => {
           const phone = (document.getElementById("sl-phone") as HTMLInputElement)?.value;
-          if (!phone) return alert("연락처를 입력하세요.");
+          if (!phone) { toast.error("연락처를 입력하세요."); return; }
           window.open(`sms:${phone}?body=${encodeURIComponent(msgText)}`);
+          const now = new Date();
+          const sentAt = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+          const patch = { moveOutLinkSent: true, moveOutLinkSentAt: sentAt };
+          persistUpdate(sendLinkModal.ev?.supabaseId, patch);
+          setEvents?.((prev: any[]) => prev.map((e: any) => e === sendLinkModal.ev ? { ...e, ...patch } : e));
           setSendLinkModal(null);
         }}
           style={{ width: "100%", padding: "10px", borderRadius: 8, border: "none", background: "#F59E0B", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>

@@ -18,6 +18,7 @@ function truncateResidentNumber(val) {
 
 // Supabase에서 건물 목록 가져오기
 export async function fetchBuildings() {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('buildings')
     .select('*')
@@ -28,6 +29,7 @@ export async function fetchBuildings() {
 
 // Supabase에서 호실 목록 가져오기 (건물 정보 포함)
 export async function fetchRooms() {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('rooms')
     .select('*, buildings(building_name, building_nickname)')
@@ -38,6 +40,7 @@ export async function fetchRooms() {
 
 // Supabase에서 임차인 목록 가져오기 (호실+건물 정보 포함)
 export async function fetchTenants() {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('tenants')
     .select('*, rooms(room_number, building_id, buildings(building_name, building_nickname))')
@@ -318,6 +321,7 @@ function regFormToSupabase(regForm) {
  * 건물 신규 등록 → Supabase INSERT
  */
 export async function insertBuilding(regForm) {
+  if (!supabase) return null;
   const row = regFormToSupabase(regForm);
   const { data, error } = await supabase
     .from('buildings')
@@ -332,6 +336,7 @@ export async function insertBuilding(regForm) {
  * 변경 이력 기록 (audit_logs)
  */
 async function writeAuditLog(tableName, recordId, action, changedFields, changedBy) {
+  if (!supabase) return;
   try {
     await supabase.from('audit_logs').insert({
       table_name: tableName,
@@ -347,6 +352,7 @@ async function writeAuditLog(tableName, recordId, action, changedFields, changed
  * 건물 부분 수정 → Supabase UPDATE (patch 방식)
  */
 export async function updateBuildingPatch(buildingId, uiPatch) {
+  if (!supabase) return null;
   const sbPatch = convertBuildingPatch(uiPatch);
   if (Object.keys(sbPatch).length === 0) return null;
   const { data, error } = await supabase
@@ -364,6 +370,7 @@ export async function updateBuildingPatch(buildingId, uiPatch) {
  * 건물 이름으로 부분 수정 → Supabase UPDATE (supabaseId 없을 때 fallback)
  */
 export async function updateBuildingDataByName(buildingName, uiPatch) {
+  if (!supabase) return null;
   const sbPatch = convertBuildingPatch(uiPatch);
   if (Object.keys(sbPatch).length === 0) return null;
 
@@ -393,6 +400,7 @@ export async function updateBuildingDataByName(buildingName, uiPatch) {
  * FK CASCADE: rooms, tenants, bank_transactions, partners, staff_assignments, vendors 전부 함께 삭제
  */
 export async function deleteBuilding(buildingId) {
+  if (!supabase) return false;
   const { error } = await supabase
     .from('buildings')
     .delete()
@@ -408,6 +416,7 @@ export async function deleteBuilding(buildingId) {
  * @returns [{assignment_role, assigned_name, assigned_phone, assignment_note}, ...]
  */
 export async function fetchBuildingStaff(buildingId) {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('building_staff_assignments')
     .select('*')
@@ -421,6 +430,7 @@ export async function fetchBuildingStaff(buildingId) {
  * 한 건물에 같은 역할은 1명만 (UNIQUE: building_id + assignment_role)
  */
 export async function upsertBuildingStaff(buildingId, role, name, phone) {
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from('building_staff_assignments')
     .upsert({
@@ -439,6 +449,7 @@ export async function upsertBuildingStaff(buildingId, role, name, phone) {
  * 호실 일괄 등록 → Supabase INSERT (건물 등록 시 호실도 함께)
  */
 export async function insertRooms(buildingId, roomList) {
+  if (!supabase) return [];
   if (!roomList || roomList.length === 0) return [];
   const rows = roomList.map(r => ({
     building_id: buildingId,
@@ -525,6 +536,7 @@ function convertRoomValue(dbCol, val) {
  * 호실 단건 수정 → Supabase UPDATE
  */
 export async function updateRoom(roomId, patch) {
+  if (!supabase) return { error: null };
   const dbPatch = {};
   for (const [key, value] of Object.entries(patch)) {
     const dbCol = ROOM_FIELD_MAP[key];
@@ -545,6 +557,7 @@ export async function updateRoom(roomId, patch) {
  * 건물명 + 호실번호로 rooms.id 찾기
  */
 export async function findRoom(buildingName, roomNumber) {
+  if (!supabase) return null;
   const { data: blds } = await supabase
     .from('buildings')
     .select('id')
@@ -743,6 +756,7 @@ function convertTenantValue(dbCol, val) {
  * @param {object} patch - UI 필드 or DB 컬럼 혼합 가능
  */
 export async function updateTenant(tenantId, patch) {
+  if (!supabase) return { error: null };
   const dbPatch = {};
 
   for (const [key, value] of Object.entries(patch)) {
@@ -768,6 +782,7 @@ export async function updateTenant(tenantId, patch) {
  * 임차인 신규 등록 → Supabase INSERT
  */
 export async function insertTenant(tenant) {
+  if (!supabase) return { data: null, error: null };
   const dbTenant = {
     room_id: tenant.roomId,
     building_id: tenant.buildingId,
@@ -805,6 +820,7 @@ export async function insertTenant(tenant) {
  * 임차인 비활성화 (퇴실 처리)
  */
 export async function deactivateTenant(tenantId, moveOutDate) {
+  if (!supabase) return { error: null };
   const { error } = await supabase
     .from('tenants')
     .update({
@@ -821,6 +837,7 @@ export async function deactivateTenant(tenantId, moveOutDate) {
  * 건물명 + 호실번호로 room_id, building_id 찾기 (임차인 등록 시 사용)
  */
 export async function findRoomAndBuilding(buildingName, roomNumber) {
+  if (!supabase) return null;
   const { data: blds } = await supabase
     .from('buildings')
     .select('id')
@@ -842,6 +859,7 @@ export async function findRoomAndBuilding(buildingName, roomNumber) {
 
 // 임차인 사진 업로드 (입주/퇴실)
 export async function uploadTenantPhotos(tenantId, files, type) {
+  if (!supabase) return [];
   const col = type === 'move_in' ? 'move_in_photos' : 'move_out_photos';
   const urls = [];
   for (const file of files) {
@@ -862,6 +880,7 @@ export async function uploadTenantPhotos(tenantId, files, type) {
 
 // 계약서 파일 업로드
 export async function uploadContractFile(tenantId, file) {
+  if (!supabase) return null;
   const ext = file.name.split('.').pop();
   const path = `tenants/${tenantId}/contract_${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from('tenant-files').upload(path, file);
@@ -893,6 +912,7 @@ export async function fetchAllData() {
  * calendar_events 전체 조회
  */
 export async function fetchCalendarEvents() {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('calendar_events')
     .select('*')
@@ -1031,6 +1051,7 @@ function convertEventToDb(evt) {
  * 캘린더 이벤트 등록
  */
 export async function insertCalendarEvent(evt) {
+  if (!supabase) return { data: null, error: null };
   const dbEvt = convertEventToDb(evt);
   const { data, error } = await supabase
     .from('calendar_events')
@@ -1044,6 +1065,7 @@ export async function insertCalendarEvent(evt) {
  * 캘린더 이벤트 수정
  */
 export async function updateCalendarEvent(eventId, patch) {
+  if (!supabase) return { data: null, error: null };
   const dbPatch = convertEventToDb(patch);
   const { data, error } = await supabase
     .from('calendar_events')
@@ -1058,6 +1080,7 @@ export async function updateCalendarEvent(eventId, patch) {
  * 캘린더 이벤트 삭제
  */
 export async function deleteCalendarEvent(eventId) {
+  if (!supabase) return { error: null };
   const { error } = await supabase
     .from('calendar_events')
     .delete()

@@ -115,14 +115,14 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
                   aspectRatio: '1',
                   borderRadius: 8,
                   border: `2px solid ${color}`,
-                  overflow: 'hidden',
                   position: 'relative',
                   background: color + '15',
                   cursor: onZoom ? 'pointer' : 'default',
+                  overflow: 'hidden',
                 }}
                 onClick={() => onZoom && onZoom(pi)}
               >
-                {src && src.startsWith('data:') ? (
+                {src && (src.startsWith('data:') || src.startsWith('http')) ? (
                   <img
                     src={src}
                     alt={`${label} ${pi + 1}`}
@@ -149,8 +149,8 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
                     }}
                     style={{
                       position: 'absolute',
-                      top: -1,
-                      right: -1,
+                      top: 2,
+                      right: 2,
                       width: 18,
                       height: 18,
                       borderRadius: '50%',

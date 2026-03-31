@@ -5,14 +5,16 @@
  * - prefill 모드: 임차인 자동저장값 수정
  * - 예금주 ≠ 계약자 이름 불일치 경고
  */
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { inputStyle } from '@/components/Field';
 import { persistUpdate } from '../calendarApi';
 
 const BANKS = [
-  "국민은행","신한은행","우리은행","하나은행","농협은행","IBK기업은행",
-  "SC제일은행","씨티은행","케이뱅크","카카오뱅크","토스뱅크","수협은행",
-  "대구은행","부산은행","경남은행","광주은행","전북은행","제주은행",
-  "우체국","새마을금고","신협","산업은행",
+  "KB국민","신한","우리","하나","NH농협","IBK기업",
+  "SC제일","씨티","케이뱅크","카카오뱅크","토스뱅크","수협",
+  "대구","부산","경남","광주","전북","제주",
+  "우체국","새마을금고","신협","산업","BNK","KDB",
 ];
 
 interface DirectInputModalProps {
@@ -22,6 +24,7 @@ interface DirectInputModalProps {
 }
 
 export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, setEvents }: DirectInputModalProps) => {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   if (!dim) return null;
 
   const isPrefill = dim.prefill;
@@ -41,7 +44,7 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
     const holder = (document.getElementById("di-holder") as HTMLInputElement)?.value;
     const date = (document.getElementById("di-date") as HTMLInputElement)?.value;
     const time = (document.getElementById("di-time") as HTMLInputElement)?.value;
-    if (!pw) return alert("호실 비밀번호를 입력하세요.");
+    if (!pw) { toast.error("호실 비밀번호를 입력하세요."); return; }
 
     const completedAt = `${date} ${time} (직접입력)`;
     const patch: Record<string, any> = {
@@ -54,6 +57,7 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
     };
     if (holder && dim.tenantName && holder !== dim.tenantName) {
       patch._holderMismatch = true;
+      toast.warning(`⚠️ 예금주가 임차인 이름과 다릅니다.\n임차인: ${dim.tenantName} / 예금주: ${holder}`);
     }
 
     persistUpdate(dim.ev.supabaseId, patch);
@@ -85,13 +89,13 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
             <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>퇴실일시</div>
             <div style={{ display: "flex", gap: 6 }}>
               <input id="di-date" type="date" defaultValue={defaultDate} style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, flex: 1 }} />
-              <input id="di-time" type="time" defaultValue={defaultTime} style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: 100 }} />
+              <input id="di-time" type="time" defaultValue={defaultTime} style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, minWidth: 130 }} />
             </div>
           </div>
           {/* 비밀번호 */}
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>호실 비밀번호</div>
-            <input id="di-pw" defaultValue={isPrefill ? (evData.doorPassword || "") : ""} placeholder="비밀번호 입력"
+            <input id="di-pw" defaultValue={isPrefill ? (evData.doorPassword || "") : ""} placeholder="비밀번호 입력 (숫자)"
               style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%" }} />
           </div>
           {/* 환불 은행 */}
@@ -106,7 +110,8 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
           {/* 계좌번호 */}
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 3 }}>계좌번호</div>
-            <input id="di-acct" defaultValue={isPrefill ? (evData.refundAccount || "") : ""} placeholder="계좌번호 입력"
+            <input id="di-acct" defaultValue={isPrefill ? (evData.refundAccount || "") : ""} placeholder="숫자만 입력 (예: 12612772801011)"
+              onInput={(e: any) => { e.target.value = e.target.value.replace(/[^0-9]/g, ""); }}
               style={{ ...inputStyle, padding: "8px 10px", fontSize: 12, width: "100%", fontFamily: "monospace" }} />
           </div>
           {/* 예금주 */}
@@ -119,6 +124,10 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
 
         {/* 버튼 */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <button onClick={() => setShowResetConfirm(true)}
+            style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #FCA5A5", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+            초기화
+          </button>
           <button onClick={() => setDirectInputModal(null)}
             style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
             취소
@@ -129,6 +138,38 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
           </button>
         </div>
       </div>
+
+      {/* 초기화 확인 모달 */}
+      {showResetConfirm && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onMouseDown={() => setShowResetConfirm(false)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+            onMouseDown={e => e.stopPropagation()}>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>🔄 초기화</div>
+            <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>퇴실링크 입력을 초기화하시겠습니까?</div>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 20 }}>
+              <button onClick={() => setShowResetConfirm(false)}
+                style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                취소
+              </button>
+              <button onClick={() => {
+                const resetPatch: Record<string, any> = {
+                  moveOutLinkCompleted: undefined, moveOutLinkCompletedAt: undefined,
+                  doorPassword: undefined, refundBank: undefined, refundAccount: undefined,
+                  refundHolder: undefined, _holderMismatch: undefined,
+                };
+                persistUpdate(dim.ev.supabaseId, resetPatch);
+                setEvents((prev: any[]) => prev.map((e: any) => e === dim.ev ? { ...e, ...resetPatch } : e));
+                setShowResetConfirm(false);
+                setDirectInputModal(null);
+              }}
+                style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#DC2626", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

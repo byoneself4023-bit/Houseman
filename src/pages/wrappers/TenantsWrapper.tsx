@@ -35,6 +35,7 @@ export function TenantsWrapper() {
       roomBalances={ctx.roomBalances}
       lateFeeOverrides={ctx.lateFeeOverrides}
       buildingData={ctx.buildingData}
+      setBuildingData={USE_API ? undefined : ctx.setBuildingData}
       isLoading={USE_API && (contractsQ.isLoading || vacanciesQ.isLoading)}
     />
   );

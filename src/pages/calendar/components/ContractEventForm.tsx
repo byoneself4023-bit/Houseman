@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { inputStyle } from '@/components/Field';
 import { useIsMobile } from '@/utils';
 import { TYPE_COLORS } from '../constants';
@@ -111,7 +112,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                 <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 4, gap: 4 }}>
                   {isDangi ? (
                     <button onClick={() => {
-                      if (!formDate) return alert("입주일을 먼저 선택하세요");
+                      if (!formDate) { toast.error("입주일을 먼저 선택하세요"); return; }
                       const d = new Date(formDate); d.setMonth(d.getMonth() + 3); d.setDate(d.getDate() - 1);
                       setVacancyEdits((prev: any) => ({ ...prev, expiry: d.toISOString().slice(0, 10) }));
                     }}
@@ -120,7 +121,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                     </button>
                   ) : (<>
                     <button onClick={() => {
-                      if (!formDate) return alert("입주일을 먼저 선택하세요");
+                      if (!formDate) { toast.error("입주일을 먼저 선택하세요"); return; }
                       const d = new Date(formDate); d.setFullYear(d.getFullYear() + 1); d.setDate(d.getDate() - 1);
                       setVacancyEdits((prev: any) => ({ ...prev, expiry: d.toISOString().slice(0, 10) }));
                     }}
@@ -128,7 +129,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                       1년 →
                     </button>
                     <button onClick={() => {
-                      if (!formDate) return alert("입주일을 먼저 선택하세요");
+                      if (!formDate) { toast.error("입주일을 먼저 선택하세요"); return; }
                       const d = new Date(formDate); d.setFullYear(d.getFullYear() + 2); d.setDate(d.getDate() - 1);
                       setVacancyEdits((prev: any) => ({ ...prev, expiry: d.toISOString().slice(0, 10) }));
                     }}
@@ -219,8 +220,8 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
             )}
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
               <button onClick={() => {
-                if (!formDate) return alert("입주일을 선택하세요");
-                if (!(vacancyEdits.brokerPhone || "").trim()) return alert("부동산 연락처를 입력하세요");
+                if (!formDate) { toast.error("입주일을 선택하세요"); return; }
+                if (!(vacancyEdits.brokerPhone || "").trim()) { toast.error("부동산 연락처를 입력하세요"); return; }
                 const now = new Date();
                 const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
                 const registeredAt = `${todayStr} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;

@@ -57,7 +57,7 @@ export const TenantList: React.FC<TenantListProps> = ({
                   <td style={{ padding: "10px 8px" }}><RoomTypeBadge building={r.building} room={r.room} /></td>
                   <td style={{ padding: "10px 8px", fontWeight: 700 }}>{r.building}</td>
                   <td style={{ padding: "10px 8px" }}>{r.room}</td>
-                  <td style={{ padding: "10px 4px", fontWeight: 700, maxWidth: 55, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.name}>{r.name.length > 5 ? r.name.slice(0, 5) + "\u2026" : r.name}</td>
+                  <td style={{ padding: "10px 4px", fontWeight: 700, maxWidth: 70, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.name}>{r.name.length > 5 ? r.name.slice(0, 5) + "\u2026" : r.name}{r.source === "supabase" && <span style={{ fontSize: 8, fontWeight: 700, marginLeft: 3, padding: "1px 4px", borderRadius: 3, background: "#DCFCE7", color: "#16A34A" }}>DB</span>}</td>
                   <td style={{ padding: "10px 2px", fontSize: 11, color: "#5F6577" }}>{r.phone}</td>
                   <td style={{ padding: "10px 2px", fontSize: 11 }}>{r.moveIn ? r.moveIn.slice(2) : "-"}</td>
                   <td style={{ padding: "10px 4px", fontSize: 11 }}>{r.expiry ? r.expiry.slice(2) : "-"}</td>

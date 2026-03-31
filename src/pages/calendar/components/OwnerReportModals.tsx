@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { useIsMobile } from '@/utils';
 
 interface ContractReportModalProps {
@@ -42,7 +43,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={() => {
             const msg = (document.getElementById("contract-report-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
@@ -52,7 +53,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
           </button>
           <button onClick={() => {
             const msg = (document.getElementById("contract-report-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
@@ -64,7 +65,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             const msg = (document.getElementById("contract-report-msg") as HTMLTextAreaElement)?.value || msgText;
             navigator.clipboard.writeText(msg);
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
-            alert("메시지가 클립보드에 복사되었습니다.");
+            toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
             style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
             📋 복사
@@ -116,7 +117,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={() => {
             const msg = (document.getElementById("moveout-owner-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
@@ -126,7 +127,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
           </button>
           <button onClick={() => {
             const msg = (document.getElementById("moveout-owner-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
@@ -138,7 +139,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             const msg = (document.getElementById("moveout-owner-msg") as HTMLTextAreaElement)?.value || msgText;
             navigator.clipboard.writeText(msg);
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
-            alert("메시지가 클립보드에 복사되었습니다.");
+            toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
             style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
             📋 복사
@@ -201,7 +202,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={() => {
             const msg = (document.getElementById("break-report-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
@@ -210,7 +211,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
           </button>
           <button onClick={() => {
             const msg = (document.getElementById("break-report-msg") as HTMLTextAreaElement)?.value || msgText;
-            if (!ownerPhone) return alert("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요.");
+            if (!ownerPhone) { toast.error("건물주 연락처가 등록되지 않았습니다.\n건물 호실정보에서 건물주 연락처를 등록해주세요."); return; }
             window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
@@ -220,7 +221,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
           <button onClick={() => {
             const msg = (document.getElementById("break-report-msg") as HTMLTextAreaElement)?.value || msgText;
             navigator.clipboard.writeText(msg);
-            alert("메시지가 클립보드에 복사되었습니다.");
+            toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
             style={{ padding: "12px 16px", borderRadius: 8, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
             📋 복사

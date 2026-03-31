@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { asItems, buildingFloors, roomMasterData } from '@/data';
 import { getRoomType } from '@/config';
 import { useLocalStorage } from '@/utils/useLocalStorage';
@@ -6,6 +6,7 @@ import { initialStaffMembers } from '@/config';
 import { useIsMobile, fmt, feeLabel } from '@/utils';
 import { Card } from '@/components';
 import { rtCfg } from '@/components/RoomTypeBadge';
+import { persistBuildingPatch } from './buildingDetailApi';
 
 import { BuildingInfoCard } from './components/BuildingInfoCard';
 import { BuildingAccountSection } from './components/BuildingAccountSection';
@@ -60,10 +61,15 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
 
   // Persistent data: buildingData[buildingName]
   const saved = buildingData[buildingName] || {};
-  const updateBD = (patch: Record<string, any>) => setBuildingData && setBuildingData((prev: Record<string, any>) => ({
-    ...prev,
-    [buildingName]: { ...(prev[buildingName] || {}), ...patch }
-  }));
+  const updateBD = useCallback((patch: Record<string, any>) => {
+    // 1. 로컬 상태 즉시 반영
+    setBuildingData && setBuildingData((prev: Record<string, any>) => ({
+      ...prev,
+      [buildingName]: { ...(prev[buildingName] || {}), ...patch }
+    }));
+    // 2. Supabase 비동기 저장 (silent)
+    persistBuildingPatch(bldg?.supabaseId, buildingName, patch);
+  }, [setBuildingData, buildingName, bldg?.supabaseId]);
 
   // Building types (persistent)
   const initTypes = () => {
@@ -188,6 +194,15 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
     return counts;
   }, [allRooms, buildingName]);
 
+  // beforeunload 경고: 편집 모드 중 페이지 이탈 방지
+  const isEditing = sec1Edit || sec2Edit || sec3Edit || sec4Edit || secAcctEdit || notesEdit || roomEditMode;
+  useEffect(() => {
+    if (!isEditing) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isEditing]);
+
   if (!bldg || !detail) return <div>건물 정보를 찾을 수 없습니다.</div>;
 
   const getRoomStatus = (room: string) => {
@@ -283,6 +298,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
       {/* Staff, Vendors, Notes, Checklist Sections */}
       <BuildingStaffSection
         isMobile={isMobile} detailBuildingTypes={detailBuildingTypes}
+        supabaseId={bldg?.supabaseId}
         sec3Open={sec3Open} setSec3Open={setSec3Open} sec3Edit={sec3Edit} setSec3Edit={setSec3Edit}
         staffList={staffList} buildingMgrs={buildingMgrs} setBldgMgr={setBldgMgr}
         detailFeeType={detailFeeType} setDetailFeeType={setDetailFeeType}
@@ -340,7 +356,8 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
       {/* Modals, Past Tenant Photos, AS, Photo View */}
       <BuildingTypeEditor
         isMobile={isMobile} buildingName={buildingName}
-        bldg={bldg} detail={detail}
+        bldg={bldg} detail={detail} supabaseId={bldg?.supabaseId}
+        setAllBuildings={setAllBuildings}
         detailBuildingTypes={detailBuildingTypes}
         buildingAccounts={buildingAccounts}
         buildingMgrs={buildingMgrs} bdMgmtType={bdMgmtType}

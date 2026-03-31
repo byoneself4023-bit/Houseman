@@ -4,9 +4,8 @@ import { useIsMobile } from '../utils';
 import { Card, SectionTitle } from '../components';
 import { inputStyle } from '../components/Field';
 import { useLocalStorage } from '../utils/useLocalStorage';
-import { useCalendarStore } from '../stores';
 
-export const BrokerPage = () => {
+export const BrokerPage = ({ calendarEvts = [] }: { calendarEvts?: any[] }) => {
   const isMobile = useIsMobile();
   const [brokerList, setBrokerList] = useLocalStorage("hm_brokerList", []);
   const [showAdd, setShowAdd] = useState(false);
@@ -17,7 +16,7 @@ export const BrokerPage = () => {
   // 기존 계약에서 부동산 정보 수집 (중복 제거)
   const collectedBrokers = useMemo(() => {
     try {
-      const evts = useCalendarStore.getState().calendarEvts || [];
+      const evts = calendarEvts || [];
       const map = {};
       for (const ev of evts) {
         if (ev.type === "계약" && ev.brokerPhone) {
@@ -30,7 +29,7 @@ export const BrokerPage = () => {
       }
       return Object.values(map).map(b => ({ ...b, buildings: [...b.buildings] }));
     } catch { return []; }
-  }, []);
+  }, [calendarEvts]);
 
   const normalize = (p) => (p || "").replace(/[-\s()]/g, "");
   const importBroker = (b) => {

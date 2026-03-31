@@ -9,6 +9,7 @@ import {
 } from '@/config/accountConfig';
 import { roomMasterData } from '@/data';
 import { fmt } from '@/utils';
+import { persistUpdateRoom } from '../buildingDetailApi';
 
 const acctTypeLabel: Record<string, string> = { "단기": "단기", "일반임대": "일반임대", "근생": "근생", "관리사무소": "관리사무소" };
 
@@ -533,6 +534,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                 const rmKey = `${buildingName}_${selectedRoom}`;
                 (roomMasterData as Record<string, any>)[rmKey] = { ...((roomMasterData as Record<string, any>)[rmKey] || {}), ...updated };
                 updateBD({ [`room_${selectedRoom}`]: updated });
+                persistUpdateRoom(buildingName, selectedRoom, updated);
                 setRoomEditMode(false);
               }} style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>💾 저장</button>
             </>

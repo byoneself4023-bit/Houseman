@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, RoomTypeBadge, ContractDropZone } from '@/components';
 import { inputStyle } from '@/components/Field';
 import { getRoomType } from '@/config';
 import { roomMasterData } from '@/data';
 import { fmt } from '@/utils';
 import { getLateFee } from '../utils/billingStatus';
+import { CompareModal } from '@/pages/calendar/components/PhotoModals';
 
 interface MoveOutModalProps {
   selectedTenant: Record<string, any>;
@@ -62,6 +63,7 @@ interface MoveOutModalProps {
   setMeterZoom: (v: Record<string, any> | null) => void;
   moveoutCompare: Record<string, any> | null;
   setMoveoutCompare: (v: Record<string, any> | null) => void;
+  setActiveTenants?: (fn: any) => void;
   // Renew specific state
   renewFiles: any[];
   setRenewFiles: (fn: any) => void;
@@ -122,9 +124,11 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
   setMeterZoom,
   moveoutCompare,
   setMoveoutCompare,
+  setActiveTenants,
   renewFiles,
   setRenewFiles,
 }) => {
+  const [showMoveoutConfirmModal, setShowMoveoutConfirmModal] = useState(false);
   const t = activeTenants.find(x => x.id === selectedTenant.id) || selectedTenant;
   const depositLabel = getRoomType(t.building, t.room) === "단기" ? "예치금" : "보증금";
   const hasMoveOutPhotos = (t.moveOutPhotos || []).length > 0;
@@ -247,7 +251,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
         {/* 사진 비교 버튼 */}
         {hasAnyPhotos && (
           <div style={{ maxWidth: 720, marginBottom: 12 }}>
-            <button onClick={() => setMoveoutCompare({ leftIdx: null, rightIdx: null, leftZoom: 1, rightZoom: 1, leftPos: { x: 0, y: 0 }, rightPos: { x: 0, y: 0 }, photos: { left: moveInCheckPhotos, right: moveOutPhotos }, building: t.building, room: t.room })}
+            <button onClick={() => setMoveoutCompare({ building: t.building, room: t.room, moveInCheckPhotos, moveOutPhotos })}
               style={{ width: "100%", padding: "14px", borderRadius: 10, border: "2px solid #6366F1", background: "linear-gradient(90deg, #EEF2FF, #FAF5FF)", color: "#6366F1", fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
               🔍 입퇴실 사진 비교 (입주 {moveInCheckPhotos.length}장 / 퇴실 {moveOutPhotos.length}장)
             </button>
@@ -622,9 +626,9 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               style={{ flex: 1, padding: "13px", borderRadius: 10, border: "1.5px solid #3B82F6", background: "#EFF6FF", color: "#2563EB", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>🖨 프린트</button>
             <button
               disabled={!hasMoveOutPhotos}
-              onClick={() => { if (hasMoveOutPhotos && window.confirm("정말 퇴실처리하겠습니다.\nYes를 누르면 다시 되돌릴 수 없습니다.")) doAction(); }}
+              onClick={() => { if (hasMoveOutPhotos) setShowMoveoutConfirmModal(true); }}
               style={{ flex: 2, padding: "13px", borderRadius: 10, border: "none", background: hasMoveOutPhotos ? "#DC2626" : "#E0E3E9", color: hasMoveOutPhotos ? "#fff" : "#8F95A3", fontWeight: 800, fontSize: 14, cursor: hasMoveOutPhotos ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: hasMoveOutPhotos ? 1 : 0.6 }}
-            >{hasMoveOutPhotos ? "🚪 퇴실확정" : "📷 퇴실사진 등록 필요"}</button>
+            >{hasMoveOutPhotos ? "🚪 퇴실 확정" : "📷 퇴실사진 등록 필요"}</button>
           </div>
         </Card>
         </>
@@ -727,6 +731,45 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           </div>
         </Card>
       )}
+    <CompareModal compareData={moveoutCompare} setCompareData={setMoveoutCompare}
+      onRemoveRight={(idx: number) => {
+        if (!moveoutCompare) return;
+        const updated = (moveoutCompare.moveOutPhotos || []).filter((_: any, i: number) => i !== idx);
+        setMoveoutCompare({ ...moveoutCompare, moveOutPhotos: updated });
+        setActiveTenants?.((prev: any[]) => prev.map((x: any) =>
+          x.building === moveoutCompare.building && String(x.room) === String(moveoutCompare.room) ? { ...x, moveOutPhotos: updated } : x));
+      }}
+      onAddRight={(dataUrls: string[]) => {
+        if (!moveoutCompare) return;
+        const merged = [...(moveoutCompare.moveOutPhotos || []), ...dataUrls];
+        setMoveoutCompare({ ...moveoutCompare, moveOutPhotos: merged });
+        setActiveTenants?.((prev: any[]) => prev.map((x: any) =>
+          x.building === moveoutCompare.building && String(x.room) === String(moveoutCompare.room) ? { ...x, moveOutPhotos: merged } : x));
+      }}
+    />
+    {/* 퇴실확정 확인 모달 */}
+    {showMoveoutConfirmModal && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onMouseDown={() => setShowMoveoutConfirmModal(false)}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          onMouseDown={e => e.stopPropagation()}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>⚠️ 퇴실 확정</div>
+          <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 20 }}>
+            정말 퇴실처리 하시겠습니까?<br/>확정 후에는 되돌릴 수 없습니다.
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <button onClick={() => setShowMoveoutConfirmModal(false)}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              취소
+            </button>
+            <button onClick={() => { setShowMoveoutConfirmModal(false); doAction(); }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#DC2626", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

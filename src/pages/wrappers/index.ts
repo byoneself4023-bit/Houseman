@@ -1,4 +1,5 @@
 export { CalendarWrapper } from './CalendarWrapper';
+export { CompanySettingsWrapper } from './CompanySettingsWrapper';
 export { BuildingsWrapper } from './BuildingsWrapper';
 export { BuildingDetailWrapper } from './BuildingDetailWrapper';
 export { TenantsWrapper } from './TenantsWrapper';

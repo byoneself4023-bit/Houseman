@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { inputStyle } from '@/components/Field';
 import { TYPE_COLORS } from '../constants';
 import { persistInsert } from '../calendarApi';
@@ -39,8 +40,8 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
             style={{ ...inputStyle, padding: "9px 10px", fontSize: 12, width: "100%", background: "#fff" }} />
         </div>
         <button onClick={() => {
-          if (!formDate) return alert("휴무일을 선택하세요");
-          if (!formName) return alert("이름을 입력하세요");
+          if (!formDate) { toast.error("휴무일을 선택하세요"); return; }
+          if (!formName) { toast.error("이름을 입력하세요"); return; }
           const now = new Date();
           const registeredAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
           const newEvt = { date: formDate, type: "휴무", name: formName, color: TYPE_COLORS["휴무"], registeredAt, registeredBy: currentStaff?.name || "알수없음" };

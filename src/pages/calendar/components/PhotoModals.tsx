@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { toast } from 'sonner';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { persistUploadPhotos } from '../calendarApi';
@@ -231,9 +231,12 @@ export const ZoomPhotoModal: React.FC<ZoomPhotoModalProps> = ({ zoomPhoto, setZo
 interface CompareModalProps {
   compareData: Record<string, any> | null;
   setCompareData: (v: any) => void;
+  onRemoveRight?: (index: number) => void;
+  onAddRight?: (dataUrls: string[]) => void;
 }
 
-export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setCompareData }) => {
+export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setCompareData, onRemoveRight, onAddRight }) => {
+  const rightFileRef = useRef<HTMLInputElement>(null);
   if (!compareData) return null;
 
   const leftPhotos = compareData.moveInCheckPhotos || [];
@@ -355,25 +358,81 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                     <button onClick={() => updateCmp({ _rightIdx: cmpRight + 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
                       style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,.5)", border: "none", color: "#fff", fontSize: 20, cursor: "pointer", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center" }}>&#8250;</button>
                   )}
-                  <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
-                    {cmpRight + 1}/{rightPhotos.length} {cmpRightZoom !== 1 && `· ${Math.round(cmpRightZoom * 100)}%`}
+                  <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ background: "rgba(0,0,0,.6)", borderRadius: 12, padding: "3px 10px", color: "#fff", fontSize: 10, fontWeight: 700 }}>
+                      {cmpRight + 1}/{rightPhotos.length} {cmpRightZoom !== 1 && `· ${Math.round(cmpRightZoom * 100)}%`}
+                    </div>
+                    {onRemoveRight && (
+                      <button onClick={() => {
+                        onRemoveRight(cmpRight);
+                        toast.success("퇴실사진 삭제됨");
+                        const newLen = rightPhotos.length - 1;
+                        if (newLen === 0) updateCmp({ _rightIdx: null });
+                        else if (cmpRight >= newLen) updateCmp({ _rightIdx: newLen - 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } });
+                      }}
+                        style={{ padding: "3px 10px", borderRadius: 12, border: "none", background: "rgba(220,38,38,.8)", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        🗑 삭제
+                      </button>
+                    )}
                   </div>
                 </div>
               ) : rightPhotos.length === 0 ? (
-                <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>등록된 사진 없음</div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-                  {rightPhotos.map((p: any, i: number) => (
-                    <div key={i} onClick={() => updateCmp({ _rightIdx: i, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })}
-                      style={{ cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(254,202,202,.4)", aspectRatio: "1", background: "#111" }}>
-                      <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <div style={{ padding: 40, textAlign: "center", color: "#6B7280", fontSize: 12 }}>
+                  등록된 사진 없음
+                  {onAddRight && (
+                    <div style={{ marginTop: 12 }}>
+                      <button onClick={() => rightFileRef.current?.click()}
+                        style={{ padding: "8px 20px", borderRadius: 8, border: "2px dashed rgba(254,202,202,.6)", background: "rgba(220,38,38,.1)", color: "#FCA5A5", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        + 사진 추가
+                      </button>
                     </div>
-                  ))}
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                    {rightPhotos.map((p: any, i: number) => (
+                      <div key={i} style={{ position: "relative", cursor: "pointer", borderRadius: 8, overflow: "hidden", border: "2px solid rgba(254,202,202,.4)", aspectRatio: "1", background: "#111" }}>
+                        <div onClick={() => updateCmp({ _rightIdx: i, _rightZoom: 1, _rightPos: { x: 0, y: 0 } })} style={{ width: "100%", height: "100%" }}>
+                          <img src={typeof p === "string" ? p : URL.createObjectURL(p)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        </div>
+                        {onRemoveRight && (
+                          <div onClick={(e) => { e.stopPropagation(); onRemoveRight(i); toast.success("퇴실사진 삭제됨"); }}
+                            style={{ position: "absolute", top: 2, right: 2, width: 20, height: 20, borderRadius: "50%", background: "rgba(220,38,38,.85)", color: "#fff", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                            ✕
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {onAddRight && (
+                    <div style={{ marginTop: 8, textAlign: "center" }}>
+                      <button onClick={() => rightFileRef.current?.click()}
+                        style={{ padding: "6px 16px", borderRadius: 8, border: "2px dashed rgba(254,202,202,.6)", background: "rgba(220,38,38,.1)", color: "#FCA5A5", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        + 사진 추가
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* hidden file input for adding photos */}
+        {onAddRight && (
+          <input ref={rightFileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
+            onChange={(e) => {
+              const files = e.target.files;
+              if (!files || files.length === 0) return;
+              const readers = Array.from(files).filter(f => f.type.startsWith("image/")).map(f =>
+                new Promise<string>((resolve) => { const r = new FileReader(); r.onload = () => resolve(r.result as string); r.readAsDataURL(f); })
+              );
+              Promise.all(readers).then(dataUrls => { if (dataUrls.length > 0) onAddRight(dataUrls); });
+              e.target.value = "";
+            }}
+          />
+        )}
 
         {/* 하단 안내 */}
         <div style={{ padding: "8px 24px", background: "rgba(0,0,0,.6)", textAlign: "center", flexShrink: 0 }}>

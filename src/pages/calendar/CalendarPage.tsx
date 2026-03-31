@@ -32,14 +32,15 @@ const blinkStyle = document.getElementById("hm-blink-style") || (() => {
   return s;
 })();
 
-export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, activeVacancies = [], setActiveVacancies, activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, setPage, setPendingMoveout, setPendingContract, buildingData = {} }: Record<string, any>) => {
+export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, activeVacancies = [], setActiveVacancies, activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, setPage, setPendingMoveout, setPendingContract, buildingData = {}, allBuildings = [] }: Record<string, any>) => {
   const BUILDING_NAMES = useMemo(() => {
     const set = new Set(STATIC_BUILDING_NAMES);
     Object.keys(buildingFloors).forEach(n => set.add(n));
+    allBuildings.forEach((b: any) => b.name && set.add(b.name));
     activeTenants.forEach((t: any) => t.building && set.add(t.building));
     activeVacancies.forEach((v: any) => v.building && set.add(v.building));
     return [...set].sort();
-  }, [activeTenants, activeVacancies]);
+  }, [allBuildings, activeTenants, activeVacancies]);
 
   const calendarEvents = propEvents || defaultEvents;
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -101,16 +102,14 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
         return activeTenants.some((t: any) => t.building === ev.building && String(t.room) === String(ev.room) && t.name === ev.name && ev.name);
       }
       if (ev.type === "퇴실" && ev.building && ev.room) {
-        // 퇴실체크 완료된 건은 자동 삭제 불가
-        if (ev.externalCheckDone) return false;
-        const hk = `${ev.building}_${ev.room}`;
-        const pastRecords = pastTenantsData[hk] || [];
+        // 공실전환 완료(isCompleted)된 이벤트만 자동 삭제
+        if (ev.isCompleted) return true;
+        // 워크플로우 어떤 단계라도 진행됐으면 삭제 불가
+        if (ev.moveOutLinkCompleted || ev.moveOutLinkSent || ev.externalCheckDone || ev.settled || ev.cleaningDone || ev.vacantConfirmed) return false;
+        // 아직 아무 단계도 안 진행된 퇴실: 임차인 있으면 유지
         const hasTenant = activeTenants.some((t: any) => t.building === ev.building && String(t.room) === String(ev.room));
         if (hasTenant) return false;
-        if (pastRecords.length === 0) return true;
-        const lastRecord = pastRecords[pastRecords.length - 1];
-        const hasCheckPhotos = (lastRecord.moveOutCheckPhotos || []).some((p: any) => p && p.startsWith("data:image/"));
-        return hasCheckPhotos;
+        return true;
       }
       return false;
     });
@@ -175,7 +174,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
   const handleSendKakao = (evt: Record<string, any>, msg: string) => {
     const text = msg || buildContractMsg(evt, "기본");
     navigator.clipboard.writeText(text).then(() => {
-      alert("계약정보가 클립보드에 복사되었습니다.\n카카오톡에서 붙여넣기(Ctrl+V) 하세요.");
+      toast.success("계약정보가 클립보드에 복사되었습니다.\n카카오톡에서 붙여넣기(Ctrl+V) 하세요.");
     }).catch(() => {
       prompt("아래 내용을 복사하세요:", text);
     });
@@ -302,6 +301,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
           setSelectedDay={setSelectedDay}
           setEvents={setEvents} calendarEvents={calendarEvents}
           openEditEvent={openEditEvent} openSendModal={openSendModal}
+          setActiveVacancies={setActiveVacancies}
         />
       </div>
 
@@ -319,6 +319,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       <EventDetailModal
         editEvent={editEvent} setEditEvent={setEditEvent}
         setEvents={setEvents} saveEditEvent={saveEditEvent}
+        setActiveVacancies={setActiveVacancies}
       />
       <MoveOutMsgModal
         moveOutMsgModal={moveOutMsgModal} setMoveOutMsgModal={setMoveOutMsgModal}
@@ -326,6 +327,20 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       />
       <CompareModal
         compareData={compareData} setCompareData={setCompareData}
+        onRemoveRight={(idx: number) => {
+          if (!compareData) return;
+          const updated = (compareData.moveOutPhotos || []).filter((_: any, i: number) => i !== idx);
+          setCompareData((prev: any) => ({ ...prev, moveOutPhotos: updated }));
+          setActiveTenants?.((prev: any[]) => prev.map((x: any) =>
+            x.building === compareData.building && String(x.room) === String(compareData.room) ? { ...x, moveOutPhotos: updated } : x));
+        }}
+        onAddRight={(dataUrls: string[]) => {
+          if (!compareData) return;
+          const merged = [...(compareData.moveOutPhotos || []), ...dataUrls];
+          setCompareData((prev: any) => ({ ...prev, moveOutPhotos: merged }));
+          setActiveTenants?.((prev: any[]) => prev.map((x: any) =>
+            x.building === compareData.building && String(x.room) === String(compareData.room) ? { ...x, moveOutPhotos: merged } : x));
+        }}
       />
       <ZoomPhotoModal
         zoomPhoto={zoomPhoto} setZoomPhoto={setZoomPhoto}
@@ -343,6 +358,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
       />
       <SendLinkModal
         sendLinkModal={sendLinkModal} setSendLinkModal={setSendLinkModal}
+        setEvents={setEvents}
       />
       <DirectInputModal
         directInputModal={directInputModal} setDirectInputModal={setDirectInputModal}

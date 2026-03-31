@@ -769,3 +769,61 @@ houseman/
 ├── .github/workflows/ci.yml
 └── README.md
 ```
+
+---
+
+# Houseman 프로젝트 고유 규칙 — 모든 코드 작업 시 필수 준수
+
+## 아키텍처
+- props → Zustand 전환 안 함. wrapper + props 패턴 유지.
+- Supabase 호출은 VITE_USE_API feature flag로 분기.
+- 캘린더 이벤트 수정/생성/삭제 시 반드시 persistUpdate/persistInsert/persistDelete 호출.
+- 페이지 추가 시: App.tsx 라우팅 + 사이드바 메뉴 + wrapper(필요시) 모두 확인.
+
+## UI/UX
+- alert() / confirm() / prompt() 전면 금지. toast(sonner) 또는 커스텀 모달만 사용.
+- 모든 모달: ESC 키 닫기 + 배경 클릭 닫기 + X 버튼 포함.
+- 커스텀 모달 스타일: position fixed, 중앙 배치, 반투명 배경(rgba(0,0,0,.45)), borderRadius 16, padding 24.
+- 공실 추가 시 중복 체크 필수: exists → status 업데이트, 없으면 push.
+
+## 도메인
+- 도메인 로직(정산, 연체, 청구, 일할 계산)은 절대 수정 안 함.
+- config/data 파일(billingMaster, billingConfig, buildingFloors, roomMasterData)은 원본 기준.
+- 퇴실 이벤트는 vacantConfirmed(공실전환) 전까지 절대 자동 삭제 안 됨.
+
+## 빌드
+- 매 수정마다 npx tsc --noEmit + npm run build 확인.
+- BuildingsWrapper TS 에러는 기존 허용. 그 외 새 에러 발생 시 즉시 수정.
+
+---
+
+# 프롬프트 설계 체크리스트 — 모든 작업 전 참고
+
+## 통합 (모든 작업 공통)
+1. 역할 복합: "직접 운영하는 8명 직원 중 한 명이면서 시니어 개발자" 관점
+2. "왜"를 먼저: 문제의 맥락을 이해하고 해결 범위를 스스로 판단
+3. 실패 조건: 빌드 통과만으로 끝이 아님. 기존 워크플로우 깨지면 실패
+4. 결과물 소비자: 누가 읽는지에 따라 품질 조절
+5. 제약 구체적으로: wrapper+props 유지, alert 금지→toast만, persist 패턴 준수
+6. 사고 과정: 바로 수정 대신 영향 범위 분석→계획→실행
+7. Before/After: 변경 전후를 명확히
+
+## 백엔드
+1. 도메인 로직 불가침: 정산/연체/청구 계산 공식 절대 안 바꿈
+2. 데이터 무결성: 퇴실확정 시 3개(임차인제거+퇴실이력+공실등록) 다 돼야 성공
+3. 엣지 케이스: 0원 보증금, 연락처 없음, 공실 중복, 동시 이벤트
+4. 마이그레이션 안전성: localStorage 키 변경 시 기존 데이터 보호
+5. 계산 결과 검증: 원본과 숫자 비교로 검증
+
+## 프론트엔드
+1. 사용자 시나리오로 요구: 기능이 아닌 직원의 행동 흐름으로 생각
+2. 상태 전이: 각 단계 완료돼야 다음 단계 가능, 미완료 시 toast
+3. 반응형: 최소 320px, 모달 max-width 95vw, 터치 44px
+4. 기존 패턴 참조: "DirectInputModal과 동일한 스타일로"
+5. 에러/빈 상태: 데이터 0건, 로딩, 에러 모두 처리
+
+## DevOps
+1. 환경별 차이: 로컬/스테이징/프로덕션 분리
+2. 실패 복구: 배포 실패 시 30초 내 롤백
+3. 모니터링 기준: 에러율/응답시간 임계값 설정
+4. CI 검증: typecheck→lint→test→build→E2E, 실패→머지 차단

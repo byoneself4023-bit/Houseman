@@ -26,6 +26,7 @@ export function CalendarWrapper() {
       setPendingMoveout={ctx.setPendingMoveout}
       setPendingContract={ctx.setPendingContract}
       buildingData={ctx.buildingData}
+      allBuildings={ctx.allBuildings}
       isLoading={USE_API && (calendarQ.isLoading || contractsQ.isLoading)}
     />
   );

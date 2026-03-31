@@ -5,6 +5,7 @@
  * viewOnly 모드: 완료된 체크 결과 표시
  */
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { persistUpdate, persistUploadPhotos } from '../calendarApi';
 import { supabase } from '@/lib/supabase';
@@ -51,7 +52,7 @@ export const ExternalCheckModal = ({
 
   const handleComplete = () => {
     const photos = ecTm?.moveOutPhotos || [];
-    if (photos.length === 0) return alert("퇴실사진을 1장 이상 업로드해주세요.");
+    if (photos.length === 0) { toast.error("퇴실사진을 1장 이상 업로드해주세요."); return; }
 
     const commentSummary = comments.filter(c => c && c.trim()).join(" / ");
     const deductionItems = comments.map((c, i) => ({

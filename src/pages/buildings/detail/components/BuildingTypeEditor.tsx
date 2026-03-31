@@ -8,6 +8,7 @@ import {
   flowMap, acctTypeBg, acctTypeColor, defaultHousemanAccount,
 } from '@/config/accountConfig';
 import { fmt } from '@/utils';
+import { persistDeleteBuilding } from '../buildingDetailApi';
 
 const statusStyle = (status: string) => {
   switch (status) {
@@ -42,6 +43,8 @@ interface BuildingTypeEditorProps {
   deleteStep: number;
   setDeleteStep: (v: number) => void;
   onBack: () => void;
+  supabaseId?: string;
+  setAllBuildings?: (fn: (prev: any) => any) => void;
   // Photo view
   photoViewTarget: Record<string, any> | null;
   setPhotoViewTarget: (v: Record<string, any> | null) => void;
@@ -56,6 +59,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
   vendorEnabled, floorKeys, getRoomStatus,
   showDetailPreview, setShowDetailPreview,
   deleteStep, setDeleteStep, onBack,
+  supabaseId, setAllBuildings,
   photoViewTarget, setPhotoViewTarget,
 }) => {
   return (
@@ -340,7 +344,17 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   <button onClick={() => setDeleteStep(0)} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "1.5px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>취소</button>
                   <button onClick={() => {
                     const input = document.getElementById("deleteConfirmInput") as HTMLInputElement | null;
-                    if (input && input.value === buildingName) { setDeleteStep(0); onBack(); }
+                    if (input && input.value === buildingName) {
+                      persistDeleteBuilding(supabaseId);
+                      if (setAllBuildings) {
+                        setAllBuildings((prev: any) => {
+                          const next = { ...prev };
+                          delete next[buildingName];
+                          return next;
+                        });
+                      }
+                      setDeleteStep(0); onBack();
+                    }
                     else if (input) { input.style.borderColor = "#DC2626"; input.style.background = "#FEF2F2"; input.placeholder = "건물명이 일치하지 않습니다"; }
                   }} style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "#7F1D1D", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>🗑 영구 삭제</button>
                 </div>

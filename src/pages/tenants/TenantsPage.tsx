@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { buildings, roomMasterData, billingConfig } from '@/data';
 import { getRoomType } from '@/config';
 import { useIsMobile, fmt } from '@/utils';
@@ -13,20 +14,27 @@ import { TenantList } from './components/TenantList';
 import { TenantDetail } from './components/TenantDetail';
 import { TenantContractCard } from './components/TenantContractCard';
 import { MoveOutModal } from './components/MoveOutModal';
+import { persistUpdateTenant, persistDeactivateTenant } from './tenantsApi';
+import { toast } from 'sonner';
 
-export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo, pendingContract, setPendingContract, pendingMoveout, setPendingMoveout, buildingAccounts = {}, allBuildings = [], activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, activeVacancies = [], setActiveVacancies, calendarEvts = [], setCalendarEvts, billingHistory = [], roomBalances = {}, lateFeeOverrides = {}, buildingData = {} }: Record<string, any>) => {
+export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo, pendingContract, setPendingContract, pendingMoveout, setPendingMoveout, buildingAccounts = {}, allBuildings = [], activeTenants = [], setActiveTenants, pastTenantsData = {}, setPastTenantsData, activeVacancies = [], setActiveVacancies, calendarEvts = [], setCalendarEvts, billingHistory = [], roomBalances = {}, lateFeeOverrides = {}, buildingData = {}, setBuildingData }: Record<string, any>) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("전체");
+  const [statusFilter, setStatusFilter] = useState("전체");
+  const [buildingFilter, setBuildingFilter] = useState("전체");
   const [selectedTenant, setSelectedTenant] = useState<Record<string, any> | null>(null);
   const [actionMode, setActionMode] = useState<string | null>(null);
   const [actionDone, setActionDone] = useState(false);
   const [hasParking, setHasParking] = useState(false);
+  const [extraCarCount, setExtraCarCount] = useState(0);
   const [detailEdit, setDetailEdit] = useState(false);
   const [renewEditMode, setRenewEditMode] = useState(false);
   const [showContractHistory, setShowContractHistory] = useState(false);
   const [renewFiles, setRenewFiles] = useState<any[]>([]);
+  const [showMoveoutDoneModal, setShowMoveoutDoneModal] = useState(false);
   const [photoModalTenant, setPhotoModalTenant] = useState<Record<string, any> | null>(null);
   const [checkPhotoEdit, setCheckPhotoEdit] = useState<Record<string, any> | null>(null);
   const [checkPhotoView, setCheckPhotoView] = useState<Record<string, any> | null>(null);
@@ -68,6 +76,16 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         setActionMode("moveout");
         // 퇴실문자에서 은행/계좌/입금자 자동 추출
         const calEvt = (calendarEvts || []).find((e: any) => e.type === "퇴실" && e.building === pendingMoveout.building && String(e.room) === String(pendingMoveout.room));
+        // 퇴실체크 공제 데이터 연동
+        if (calEvt?.deductionItems?.length > 0) {
+          setManOther(calEvt.deductionItems.map((d: any) => ({ desc: d.label || "", amt: d.amount || 0 })));
+        }
+        // 직접입력 환불계좌 연동
+        if (calEvt?.refundBank) {
+          setRefundBank(calEvt.refundBank);
+          if (calEvt.refundAccount) setRefundAcct(calEvt.refundAccount);
+          if (calEvt.refundHolder) setRefundName(calEvt.refundHolder);
+        }
         if (calEvt && calEvt.moveOutMsg) {
           const msg = calEvt.moveOutMsg;
           const bankList = ["KB국민","신한","하나","우리","NH농협","IBK기업","SC제일","씨티","카카오뱅크","케이뱅크","토스뱅크","새마을금고","신협","우체국","수협","광주","전북","제주","경남","부산","대구","BNK","산업","KDB","국민은행","농협은행","기업은행","국민","농협","기업"];
@@ -105,6 +123,11 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       const emptyGas = [{period:"",amt:0},{period:"",amt:0},{period:"",amt:0}];
       const emptyOther = [{desc:"",amt:0},{desc:"",amt:0},{desc:"",amt:0}];
       const t = activeTenants.find((x: any) => x.id === selectedTenant.id) || selectedTenant;
+      // 캘린더 이벤트에서 공제 데이터 가져오기
+      const calEvtForDeduction = (calendarEvts || []).find((e: any) => e.type === "퇴실" && e.building === t.building && String(e.room) === String(t.room));
+      const deductFromEvt = calEvtForDeduction?.deductionItems?.length > 0
+        ? calEvtForDeduction.deductionItems.map((d: any) => ({ desc: d.label || "", amt: d.amount || 0 }))
+        : null;
       const rt = getRoomType(t.building, t.room);
       if (rt === "단기" && (t.overdue || 0) > 0) {
         const bcList = billingConfig.filter((x: any) => x.b === t.building && x.r === t.room);
@@ -126,7 +149,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         setManElec(emptyElec);
         setManGas(emptyGas);
       }
-      setManOther(emptyOther);
+      setManOther(deductFromEvt || emptyOther);
     }
   }, [actionMode, selectedTenant]);
 
@@ -145,6 +168,9 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
   const filtered = useMemo(() => myTenants.filter((t: any) => {
     if (search && !matchKorean(t.name, search) && !matchKorean(t.building, search) && !t.room.includes(search)) return false;
     if (typeFilter !== "전체" && getRoomType(t.building, t.room) !== typeFilter) return false;
+    if (buildingFilter !== "전체" && t.building !== buildingFilter) return false;
+    if (statusFilter === "연체" && !(t.overdue > 0 || t.overdueDays > 0)) return false;
+    if (statusFilter === "정상" && (t.overdue > 0 || t.overdueDays > 0)) return false;
     return true;
   }).sort((a: any, b: any) => {
     const bi = buildingOrder.indexOf(a.building) - buildingOrder.indexOf(b.building);
@@ -154,7 +180,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
     if (aBase && !bBase) return -1;
     if (!aBase && bBase) return 1;
     return a.room.localeCompare(b.room, undefined, { numeric: true });
-  }), [myTenants, search, typeFilter, buildingOrder]);
+  }), [myTenants, search, typeFilter, statusFilter, buildingFilter, buildingOrder]);
 
   const [visibleCount, setVisibleCount] = useState(100);
   useEffect(() => { setVisibleCount(100); }, [search, typeFilter]);
@@ -198,6 +224,8 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       };
       setActiveTenants?.((prev: any[]) => prev.map(x => x.id === t.id ? { ...x, ...updated } : x));
       setSelectedTenant({ ...t, ...updated });
+      // Supabase 동기화 (재계약)
+      persistUpdateTenant(t.supabaseId, updated).catch(() => toast.error("재계약 DB 저장 실패"));
       setRenewFiles([]);
     }
     if (actionMode === "moveout" && selectedTenant) {
@@ -327,18 +355,28 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       const tenantBills = billingHistory.filter((b: any) => b.building === t.building && b.room === t.room && b.name === t.name);
       if (tenantBills.length > 0) record.billingHistory = tenantBills;
 
+      // 캘린더 퇴실 이벤트에 settled: true 마킹 (공실전환까지 이벤트 유지)
+      setCalendarEvts?.((prev: any[]) => prev.map((e: any) =>
+        e.type === "퇴실" && e.building === t.building && String(e.room) === String(t.room)
+          ? { ...e, settled: true } : e));
       setParkingInfo?.((prev: any) => ({ ...prev, [t.id]: { carNumber: "", carType: "" } }));
       setPastTenantsData?.((prev: any) => ({ ...prev, [historyKey]: [...(prev[historyKey] || []), record] }));
       setActiveTenants?.((prev: any[]) => prev.filter(x => x.id !== t.id));
-      setActiveVacancies?.((prev: any[]) => [...prev, {
-        building: t.building, room: t.room, type: roomType,
-        commBroker: 10, commEvent: "", pw: "",
-        deposit: Math.round(t.deposit / 10000), rent: Math.round(t.rent / 10000),
-        nego: Math.round(t.rent / 10000), mgmt: Math.round(t.mgmt / 10000),
-        water: "포함", cable: "포함", exitFee: 8, days: 0,
-        status: "점검/청소중",
-        moveInPhotos: t.moveOutCheckPhotos || [],
-      }]);
+      // Supabase 동기화 (퇴실 비활성화)
+      persistDeactivateTenant(t.supabaseId, moveoutDateStr).catch(() => toast.error("퇴실 DB 반영 실패"));
+      setActiveVacancies?.((prev: any[]) => {
+        const exists = prev.some((v: any) => v.building === t.building && String(v.room) === String(t.room));
+        if (exists) return prev.map((v: any) => v.building === t.building && String(v.room) === String(t.room) ? { ...v, status: "점검/청소중" } : v);
+        return [...prev, {
+          building: t.building, room: t.room, type: roomType,
+          commBroker: 10, commEvent: "", pw: "",
+          deposit: Math.round(t.deposit / 10000), rent: Math.round(t.rent / 10000),
+          nego: Math.round(t.rent / 10000), mgmt: Math.round(t.mgmt / 10000),
+          waterFee: "포함", cable: "포함", exitFee: 8, days: 0,
+          status: "점검/청소중",
+          moveInPhotos: t.moveOutCheckPhotos || [],
+        }];
+      });
       if (finalSettlement < 0) {
         try {
           const debts = JSON.parse(localStorage.getItem("hm_moveoutDebts") || "[]");
@@ -355,6 +393,10 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         } catch (e) { console.warn("퇴실 미수금 저장 실패:", e); }
       }
       console.log("[퇴실확정]", t.building, t.room, t.name, "→ 공실추가, 정산이력추가");
+      // 퇴실확정 후 입퇴실일정으로 이동 제안
+      toast.success("퇴실이 확정되었습니다", { duration: 3000 });
+      setTimeout(() => setShowMoveoutDoneModal(true), 300);
+      return;
     }
     setActionDone(true);
     setTimeout(() => { setActionDone(false); setActionMode(null); setSelectedTenant(null); }, 1500);
@@ -418,6 +460,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         setMeterZoom={setMeterZoom}
         moveoutCompare={moveoutCompare}
         setMoveoutCompare={setMoveoutCompare}
+        setActiveTenants={setActiveTenants}
         renewFiles={renewFiles}
         setRenewFiles={setRenewFiles}
       />
@@ -458,6 +501,10 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         setCheckPhotoView={setCheckPhotoView}
         photoViewer={photoViewer}
         setPhotoViewer={setPhotoViewer}
+        buildingData={buildingData}
+        setBuildingData={setBuildingData}
+        extraCarCount={extraCarCount}
+        setExtraCarCount={setExtraCarCount}
       />
     );
   }
@@ -484,7 +531,12 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       )}
 
       <TenantSummaryCards myTenants={myTenants} typeFilter={typeFilter} setTypeFilter={setTypeFilter} />
-      <TenantSearchBar search={search} setSearch={setSearch} />
+      <TenantSearchBar
+        search={search} setSearch={setSearch}
+        statusFilter={statusFilter} setStatusFilter={setStatusFilter}
+        buildingFilter={buildingFilter} setBuildingFilter={setBuildingFilter}
+        buildingNames={[...new Set(myTenants.map((t: any) => t.building))] as string[]}
+      />
       <TenantList
         filtered={filtered}
         visibleFiltered={visibleFiltered}
@@ -737,6 +789,29 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
           </div>
         );
       })()}
+    {/* 퇴실확정 후 이동 모달 */}
+    {showMoveoutDoneModal && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+        onMouseDown={() => setShowMoveoutDoneModal(false)}>
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, width: 380, boxShadow: "0 20px 60px rgba(0,0,0,.3)" }}
+          onMouseDown={e => e.stopPropagation()}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23", marginBottom: 12 }}>퇴실 확정 완료</div>
+          <div style={{ fontSize: 12, color: "#5F6577", lineHeight: 1.6, marginBottom: 20 }}>
+            입퇴실일정에서 나머지 단계(청소/입주체크/공실전환)를 진행하시겠습니까?
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <button onClick={() => { setShowMoveoutDoneModal(false); setActionMode(null); setSelectedTenant(null); }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "1px solid #E0E3E9", background: "#fff", color: "#5F6577", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              여기서 계속
+            </button>
+            <button onClick={() => { setShowMoveoutDoneModal(false); setActionMode(null); setSelectedTenant(null); navigate("/calendar"); }}
+              style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#3B82F6", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+              입퇴실일정으로 이동
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

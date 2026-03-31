@@ -44,6 +44,7 @@ export const menuSections: MenuSection[] = [
   {
     section: '설정',
     items: [
+      { id: 'company-settings', icon: '🏢', label: '하우스맨 기본정보' },
       { id: 'payroll', icon: '💵', label: '급여내역' },
       { id: 'broker', icon: '🏠', label: '부동산 관리' },
       { id: 'staff', icon: '👥', label: '담당자 관리' },
@@ -54,3 +55,34 @@ export const menuSections: MenuSection[] = [
 ];
 
 export const menuItems: MenuItem[] = menuSections.flatMap((s) => s.items);
+
+// page id → URL path mapping
+export const pageIdToPath: Record<string, string> = {
+  calendar: '/calendar',
+  buildings: '/buildings',
+  tenants: '/tenants',
+  pastTenants: '/past-tenants',
+  renewal: '/renewal',
+  contracts: '/vacancies',
+  collection: '/collection',
+  billing: '/billing',
+  'utility-fixed': '/billing/fixed',
+  'utility-variable': '/billing/variable',
+  transactions: '/transactions',
+  parking: '/parking',
+  as: '/as',
+  patrol: '/patrol',
+  settlement: '/settlement',
+  cashbook: '/cashbook',
+  payroll: '/payroll',
+  'task-driver': '/task-driver',
+  'profit-dashboard': '/profit-dashboard',
+  'route-schedule': '/route-schedule',
+  'company-settings': '/company-settings',
+  'data-upload': '/data-upload',
+  'homepage-edit': '/homepage-edit',
+  homepage: '/homepage',
+  staff: '/staff',
+  broker: '/broker',
+  owner: '/owner',
+};

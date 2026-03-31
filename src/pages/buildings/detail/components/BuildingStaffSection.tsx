@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '@/components';
 import { inputStyle } from '@/components/Field';
 import { staffRoles } from '@/config';
+import { persistFetchStaff, persistUpsertStaff } from '../buildingDetailApi';
 
 interface BuildingStaffSectionProps {
   isMobile: boolean;
   detailBuildingTypes: string[];
+  supabaseId?: string;
   // Section 3: Staff & Contract conditions
   sec3Open: boolean;
   setSec3Open: (v: boolean) => void;
@@ -65,7 +67,7 @@ interface BuildingStaffSectionProps {
 }
 
 export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
-  isMobile, detailBuildingTypes,
+  isMobile, detailBuildingTypes, supabaseId,
   sec3Open, setSec3Open, sec3Edit, setSec3Edit,
   staffList, buildingMgrs, setBldgMgr,
   detailFeeType, setDetailFeeType,
@@ -87,6 +89,16 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
   bdFacilityChecklist, setBdFacilityChecklist,
   newChecklistItem, setNewChecklistItem,
 }) => {
+  // Supabase: 담당자 초기 로드
+  useEffect(() => {
+    if (!supabaseId) return;
+    persistFetchStaff(supabaseId).then(map => {
+      Object.entries(map).forEach(([role, name]) => {
+        if (name) setBldgMgr(role, name);
+      });
+    });
+  }, [supabaseId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <>
       {/* Section 3: Staff & Contract Conditions */}
@@ -116,7 +128,12 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
               {staffRoles.map((d: any, i: number) => (
                 <div key={i}>
                   <div style={{ fontSize: 9, color: d.color, fontWeight: 700, marginBottom: 2 }}>{d.icon} {d.label}</div>
-                  <select value={buildingMgrs[d.id] || ""} onChange={e => setBldgMgr(d.id, e.target.value)} style={{ ...inputStyle, padding: "5px 8px", fontSize: 10, cursor: "pointer" }}>
+                  <select value={buildingMgrs[d.id] || ""} onChange={e => {
+                    const name = e.target.value;
+                    setBldgMgr(d.id, name);
+                    const staff = staffList.find((s: any) => s.name === name);
+                    persistUpsertStaff(supabaseId, d.id, name, staff?.phone || '');
+                  }} style={{ ...inputStyle, padding: "5px 8px", fontSize: 10, cursor: "pointer" }}>
                     <option value="">선택</option>
                     {staffList.filter((s: any) => s.roles.includes(d.id)).map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
