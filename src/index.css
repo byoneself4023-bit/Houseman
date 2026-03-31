@@ -126,9 +126,11 @@
   --color-hm-text-muted: #8F95A3;
   --color-hm-text-sub: #5F6577;
   --color-hm-border: #E8ECF0;
+  --color-hm-input-border: #E0E3E9;
   --color-hm-bg: #F3F4F8;
   --color-hm-bg-hover: #F9FAFB;
   --color-hm-bg-muted: #F7F8FA;
+  --color-hm-bg-slate: #F8FAFC;
   --color-hm-success: #059669;
   --color-hm-success-bg: #ECFDF5;
   --color-hm-success-border: #A7F3D0;
@@ -138,6 +140,9 @@
   --color-hm-danger: #DC2626;
   --color-hm-danger-bg: #FEF2F2;
   --color-hm-danger-border: #FECACA;
+  --color-hm-blue: #3B82F6;
+  --color-hm-blue-dark: #2563EB;
+  --color-hm-blue-bg: #EFF6FF;
 }
 
 /* ── Global base styles ── */

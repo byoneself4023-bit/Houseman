@@ -14,51 +14,20 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = "검색...",
   style,
 }) => (
-  <div style={{ position: "relative", ...style }}>
+  <div className="relative" style={style}>
     <input
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      style={{
-        width: "100%",
-        padding: "10px 14px 10px 36px",
-        borderRadius: 10,
-        border: "1.5px solid #E0E3E9",
-        fontSize: 13,
-        fontFamily: "inherit",
-        background: "#F8FAFC",
-        outline: "none",
-        boxSizing: "border-box",
-      }}
+      className="w-full py-2.5 pl-9 pr-3.5 rounded-[10px] border-[1.5px] border-hm-input-border text-[13px] font-[inherit] bg-hm-bg-slate outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
     />
-    <span
-      style={{
-        position: "absolute",
-        left: 12,
-        top: "50%",
-        transform: "translateY(-50%)",
-        fontSize: 15,
-        color: "#8F95A3",
-        pointerEvents: "none",
-      }}
-    >
+    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[15px] text-hm-text-muted pointer-events-none">
       {"\uD83D\uDD0D"}
     </span>
     {value && (
       <button
         onClick={() => onChange("")}
-        style={{
-          position: "absolute",
-          right: 10,
-          top: "50%",
-          transform: "translateY(-50%)",
-          background: "none",
-          border: "none",
-          fontSize: 14,
-          color: "#8F95A3",
-          cursor: "pointer",
-          padding: 0,
-        }}
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-sm text-hm-text-muted cursor-pointer p-0 hover:text-hm-text transition-colors"
       >
         {"\u2715"}
       </button>

@@ -31,56 +31,25 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, wi
 
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        background: "rgba(0,0,0,0.45)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      className="fixed inset-0 z-[9999] bg-black/45 flex items-center justify-center"
       onClick={onClose}
     >
       <div
-        style={{
-          background: "#FAFBFF",
-          borderRadius: 16,
-          padding: 24,
-          width,
-          maxWidth: "95vw",
-          maxHeight: "90vh",
-          overflowY: "auto",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-          border: "2px solid #3B82F6",
-          position: "relative",
-        }}
+        className="bg-[#FAFBFF] rounded-2xl p-6 max-w-[95vw] max-h-[90vh] overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-hm-blue relative"
+        style={{ width }}
         onClick={(e) => e.stopPropagation()}
       >
         {(title || onClose) && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 14,
-            }}
-          >
+          <div className="flex items-center justify-between mb-3.5">
             {title && (
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1D23" }}>
+              <div className="text-[15px] font-extrabold text-hm-text">
                 {title}
               </div>
             )}
             {onClose && (
               <div
                 onClick={onClose}
-                style={{
-                  cursor: "pointer",
-                  fontSize: 18,
-                  color: "#8F95A3",
-                  padding: "4px 8px",
-                  marginLeft: "auto",
-                }}
+                className="cursor-pointer text-lg text-hm-text-muted px-2 py-1 ml-auto hover:text-hm-text transition-colors"
               >
                 {"\u2715"}
               </div>

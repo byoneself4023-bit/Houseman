@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 import { getRoomType } from '../config';
 
 interface RoomTypeCfgEntry {
@@ -6,15 +7,17 @@ interface RoomTypeCfgEntry {
   c: string;
   bg: string;
   label: string;
+  textClass: string;
+  bgClass: string;
 }
 
 type RoomTypeKey = '단기' | '일반임대' | '근생' | '관리사무소';
 
 export const ROOM_TYPE_CFG: Record<RoomTypeKey, RoomTypeCfgEntry> = {
-  단기: { icon: '🏠', c: '#EA580C', bg: '#FFF7ED', label: '단기' },
-  일반임대: { icon: '🏢', c: '#2563EB', bg: '#EFF6FF', label: '일반임대' },
-  근생: { icon: '🏪', c: '#7C3AED', bg: '#F5F3FF', label: '근생' },
-  관리사무소: { icon: '🏛️', c: '#0D9488', bg: '#F0FDFA', label: '관리사무소' },
+  단기: { icon: '🏠', c: '#EA580C', bg: '#FFF7ED', label: '단기', textClass: 'text-[#EA580C]', bgClass: 'bg-[#FFF7ED]' },
+  일반임대: { icon: '🏢', c: '#2563EB', bg: '#EFF6FF', label: '일반임대', textClass: 'text-[#2563EB]', bgClass: 'bg-[#EFF6FF]' },
+  근생: { icon: '🏪', c: '#7C3AED', bg: '#F5F3FF', label: '근생', textClass: 'text-[#7C3AED]', bgClass: 'bg-[#F5F3FF]' },
+  관리사무소: { icon: '🏛️', c: '#0D9488', bg: '#F0FDFA', label: '관리사무소', textClass: 'text-[#0D9488]', bgClass: 'bg-[#F0FDFA]' },
 };
 
 export const rtCfg = (rt: string): RoomTypeCfgEntry =>
@@ -30,8 +33,11 @@ export const RoomTypeBadge: React.FC<RoomTypeBadgeProps> = ({ building, room }) 
   const cfg = rtCfg(rt);
   return (
     <span
-      className="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded"
-      style={{ background: cfg.bg, color: cfg.c }}
+      className={cn(
+        'inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded',
+        cfg.bgClass,
+        cfg.textClass,
+      )}
     >
       {rt}
     </span>

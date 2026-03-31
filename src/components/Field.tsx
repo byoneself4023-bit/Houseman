@@ -25,3 +25,5 @@ export const inputStyle: React.CSSProperties = {
   fontFamily: 'inherit',
   outline: 'none',
 };
+
+export const inputClassName = 'w-full px-3 py-[9px] rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';

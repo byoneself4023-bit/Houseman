@@ -6,7 +6,7 @@ export { Table } from './Table';
 export type { TableColumn } from './Table';
 export { PhotoDropZone } from './PhotoDropZone';
 export { ContractDropZone } from './ContractDropZone';
-export { Field, inputStyle } from './Field';
+export { Field, inputStyle, inputClassName } from './Field';
 export { DunningTemplateSettings } from './DunningTemplateSettings';
 export { SettlementPrintView } from './SettlementPrintView';
 export { CardSkeleton, TableSkeleton, DetailSkeleton } from './LoadingSkeleton';
