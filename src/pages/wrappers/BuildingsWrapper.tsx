@@ -4,6 +4,7 @@ import { useVacancies } from '@/hooks/queries/useVacancyQuery';
 import { useBuildings } from '@/hooks/queries/useBuildingQuery';
 import { useApiOr } from '@/hooks/useApiOr';
 import { USE_API } from '@/lib/featureFlag';
+import { contractToTenant, vacancyResponseToVacancy, buildingListToBuilding } from '@/lib/transforms';
 import { BuildingsPage } from '../BuildingsPage';
 
 export function BuildingsWrapper() {
@@ -16,11 +17,11 @@ export function BuildingsWrapper() {
     <BuildingsPage
       customBuildings={ctx.customBuildings}
       setCustomBuildings={USE_API ? undefined : ctx.setCustomBuildings}
-      allBuildings={useApiOr(buildingsQ.data, ctx.allBuildings)}
+      allBuildings={useApiOr(buildingsQ.data?.map(buildingListToBuilding), ctx.allBuildings)}
       setAllBuildings={USE_API ? undefined : (ctx.setAllBuildings as any)}
       buildingData={ctx.buildingData}
-      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
-      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
+      activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
+      activeVacancies={useApiOr(vacanciesQ.data?.map(vacancyResponseToVacancy), ctx.activeVacancies)}
       isLoading={USE_API && (contractsQ.isLoading || buildingsQ.isLoading)}
     />
   );

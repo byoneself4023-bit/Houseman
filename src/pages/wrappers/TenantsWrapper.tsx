@@ -2,6 +2,7 @@ import { useAppContext } from '@/types/appContext';
 import { useContracts, usePastContracts, useVacancies, useCalendarEvents, useBillingRecords } from '@/hooks/queries';
 import { useApiOr } from '@/hooks/useApiOr';
 import { USE_API } from '@/lib/featureFlag';
+import { contractToTenant, vacancyResponseToVacancy, calendarResponseToEvent, pastContractGroupsToMap, billingRecordToLocal } from '@/lib/transforms';
 import { TenantsPage } from '../tenants';
 
 export function TenantsWrapper() {
@@ -23,15 +24,15 @@ export function TenantsWrapper() {
       setPendingMoveout={ctx.setPendingMoveout}
       buildingAccounts={ctx.buildingAccounts}
       allBuildings={ctx.allBuildings}
-      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
+      activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
       setActiveTenants={USE_API ? undefined : ctx.setActiveTenants as any}
-      pastTenantsData={useApiOr(pastContractsQ.data, ctx.pastTenantsData)}
+      pastTenantsData={useApiOr(pastContractsQ.data && pastContractGroupsToMap(pastContractsQ.data), ctx.pastTenantsData)}
       setPastTenantsData={USE_API ? undefined : ctx.setPastTenantsData as any}
-      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
+      activeVacancies={useApiOr(vacanciesQ.data?.map(vacancyResponseToVacancy), ctx.activeVacancies)}
       setActiveVacancies={USE_API ? undefined : ctx.setActiveVacancies as any}
-      calendarEvts={useApiOr(calendarQ.data, ctx.calendarEvts)}
+      calendarEvts={useApiOr(calendarQ.data?.map(calendarResponseToEvent), ctx.calendarEvts)}
       setCalendarEvts={USE_API ? undefined : ctx.setCalendarEvts as any}
-      billingHistory={useApiOr(billingQ.data, ctx.billingHistory)}
+      billingHistory={useApiOr(billingQ.data?.map(billingRecordToLocal), ctx.billingHistory)}
       roomBalances={ctx.roomBalances}
       lateFeeOverrides={ctx.lateFeeOverrides}
       buildingData={ctx.buildingData}

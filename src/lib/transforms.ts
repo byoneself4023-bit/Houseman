@@ -13,6 +13,9 @@ import type {
   PastContractGroupResponse,
   SettlementExpenseResponse,
   StaffResponse,
+  BillingRecordResponse,
+  CashbookEntryResponse,
+  ParkingInfoResponse,
 } from '@/types/api';
 import type {
   Building,
@@ -212,4 +215,68 @@ export function staffResponseToStaff(s: StaffResponse): Staff {
     roles: s.roles,
     assignedBuildings: s.assignedBuildings,
   };
+}
+
+// === Billing Record → FE local format ===
+// FE pages expect: { building, room, name, date, total, id, items: { rent, mgmt, elec, gas, water, cable, lateFee, asRepair } }
+
+export function billingRecordToLocal(b: BillingRecordResponse): Record<string, unknown> {
+  return {
+    id: b.id,
+    building: b.buildingName,
+    room: b.roomNumber,
+    name: b.tenantName,
+    date: `${b.periodYear}-${String(b.periodMonth).padStart(2, '0')}`,
+    total: b.total,
+    status: b.status,
+    confirmedAt: b.confirmedAt,
+    sentAt: b.sentAt,
+    notes: b.notes,
+    items: {
+      rent: b.rent,
+      mgmt: b.mgmt,
+      elec: b.electricity,
+      gas: b.gas,
+      water: b.water,
+      cable: b.internet,
+      lateFee: b.lateFee,
+      asRepair: 0,
+    },
+  };
+}
+
+// === Cashbook Entry → FE local format ===
+// FE pages expect: { building, room, ... } — API has buildingName
+
+export function cashbookEntryToLocal(e: CashbookEntryResponse): Record<string, unknown> {
+  return {
+    id: e.id,
+    building: e.buildingName,
+    room: e.room,
+    date: e.date,
+    type: e.type,
+    direction: e.direction,
+    description: e.description,
+    amount: e.amount,
+    account: e.account,
+    accountHolder: e.accountHolder,
+    status: e.status,
+    sentAt: e.sentAt,
+    round: e.round,
+  };
+}
+
+// === Parking Array → Record<tenantId, {carNumber, carType}> ===
+// FE pages expect: parkingInfo[tenantId].carNumber, .carType
+
+export function parkingArrayToRecord(
+  arr: ParkingInfoResponse[],
+): Record<string, { carNumber: string; carType: string }> {
+  const result: Record<string, { carNumber: string; carType: string }> = {};
+  for (const p of arr) {
+    if (p.contractId != null) {
+      result[p.contractId] = { carNumber: p.carNumber, carType: p.carType };
+    }
+  }
+  return result;
 }

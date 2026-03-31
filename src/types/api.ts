@@ -302,6 +302,7 @@ export interface SettlementExpenseResponse {
 export interface CashbookEntryResponse {
   id: number;
   buildingId: number;
+  buildingName: string;
   date: string;
   type: string;
   direction: string;

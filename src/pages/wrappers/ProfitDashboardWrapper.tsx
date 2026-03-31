@@ -2,6 +2,7 @@ import { useAppContext } from '@/types/appContext';
 import { useContracts, useVacancies, useBuildings, useSettlementExpenses } from '@/hooks/queries';
 import { useApiOr } from '@/hooks/useApiOr';
 import { USE_API } from '@/lib/featureFlag';
+import { contractToTenant, vacancyResponseToVacancy, buildingListToBuilding, settlementExpenseResponseToExpense } from '@/lib/transforms';
 import { ProfitDashboardPage } from '../ProfitDashboardPage';
 
 export function ProfitDashboardWrapper() {
@@ -14,11 +15,11 @@ export function ProfitDashboardWrapper() {
   return (
     <ProfitDashboardPage
       myBuildings={ctx.myBuildings}
-      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
-      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
-      settlementExpenses={useApiOr(settlementQ.data, ctx.settlementExpenses)}
+      activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
+      activeVacancies={useApiOr(vacanciesQ.data?.map(vacancyResponseToVacancy), ctx.activeVacancies)}
+      settlementExpenses={useApiOr(settlementQ.data?.map(settlementExpenseResponseToExpense), ctx.settlementExpenses)}
       buildingData={ctx.buildingData}
-      allBuildings={useApiOr(buildingsQ.data, ctx.allBuildings)}
+      allBuildings={useApiOr(buildingsQ.data?.map(buildingListToBuilding), ctx.allBuildings)}
       isLoading={USE_API && (contractsQ.isLoading || vacanciesQ.isLoading)}
     />
   );

@@ -34,13 +34,13 @@ async function tryRefreshToken(): Promise<boolean> {
       const res = await fetch(`${API_BASE}/api/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken }),
+        body: JSON.stringify({ refreshToken }),
       });
 
       if (!res.ok) return false;
 
       const body = await res.json();
-      useAuthStore.getState().setTokens(body.data.access_token, body.data.refresh_token);
+      useAuthStore.getState().setTokens(body.data.accessToken, body.data.refreshToken);
       return true;
     } catch {
       return false;

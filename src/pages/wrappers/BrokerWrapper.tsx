@@ -1,6 +1,7 @@
 import { useAppContext } from '@/types/appContext';
 import { useCalendarEvents } from '@/hooks/queries/useCalendarQuery';
 import { useApiOr } from '@/hooks/useApiOr';
+import { calendarResponseToEvent } from '@/lib/transforms';
 import { BrokerPage } from '../BrokerPage';
 
 export function BrokerWrapper() {
@@ -9,7 +10,7 @@ export function BrokerWrapper() {
 
   return (
     <BrokerPage
-      calendarEvts={useApiOr(calendarQ.data, ctx.calendarEvts)}
+      calendarEvts={useApiOr(calendarQ.data?.map(calendarResponseToEvent), ctx.calendarEvts)}
     />
   );
 }

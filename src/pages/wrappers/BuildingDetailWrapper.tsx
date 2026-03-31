@@ -5,6 +5,7 @@ import { useVacancies } from '@/hooks/queries/useVacancyQuery';
 import { useBuildings } from '@/hooks/queries/useBuildingQuery';
 import { useApiOr } from '@/hooks/useApiOr';
 import { USE_API } from '@/lib/featureFlag';
+import { contractToTenant, vacancyResponseToVacancy, buildingListToBuilding, pastContractGroupsToMap } from '@/lib/transforms';
 import { BuildingDetailPage } from '../buildings/detail';
 
 export function BuildingDetailWrapper() {
@@ -23,13 +24,13 @@ export function BuildingDetailWrapper() {
       buildingAccounts={ctx.buildingAccounts}
       setBuildingAccounts={USE_API ? undefined : ctx.setBuildingAccounts}
       customBuildings={ctx.customBuildings}
-      allBuildings={useApiOr(buildingsQ.data, ctx.allBuildings)}
+      allBuildings={useApiOr(buildingsQ.data?.map(buildingListToBuilding), ctx.allBuildings)}
       setAllBuildings={USE_API ? undefined : (ctx.setAllBuildings as any)}
       buildingData={ctx.buildingData}
       setBuildingData={USE_API ? undefined : ctx.setBuildingData}
-      activeTenants={useApiOr(contractsQ.data, ctx.activeTenants)}
-      activeVacancies={useApiOr(vacanciesQ.data, ctx.activeVacancies)}
-      pastTenantsData={useApiOr(pastContractsQ.data, ctx.pastTenantsData)}
+      activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
+      activeVacancies={useApiOr(vacanciesQ.data?.map(vacancyResponseToVacancy), ctx.activeVacancies)}
+      pastTenantsData={useApiOr(pastContractsQ.data && pastContractGroupsToMap(pastContractsQ.data), ctx.pastTenantsData)}
       isLoading={USE_API && (contractsQ.isLoading || buildingsQ.isLoading)}
     />
   );

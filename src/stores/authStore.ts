@@ -6,7 +6,7 @@ interface StaffInfo {
   name: string;
   phone: string;
   roles: string[];
-  assigned_buildings: string[];
+  assignedBuildings: string[];
 }
 
 interface LoginPayload {
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
           refreshToken,
           staffName: staff.name,
           roles: staff.roles,
-          assignedBuildings: staff.assigned_buildings,
+          assignedBuildings: staff.assignedBuildings,
           role: staff.roles.includes('general') ? 'admin' : 'admin',
         }),
 

@@ -10,14 +10,14 @@ import { USE_API } from '@/lib/featureFlag';
 import { api, ApiError } from '@/lib/api';
 
 interface LoginApiResponse {
-  access_token: string;
-  refresh_token: string;
+  accessToken: string;
+  refreshToken: string;
   staff: {
     id: number;
     name: string;
     phone: string;
     roles: string[];
-    assigned_buildings: string[];
+    assignedBuildings: string[];
   };
 }
 
@@ -40,8 +40,8 @@ export function AuthGate() {
           password: loginPw,
         });
         login({
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
           staff: data.staff,
         });
         setLoginPhone('');

@@ -4,14 +4,14 @@ import { useAuthStore } from '@/stores/authStore';
 import { USE_API } from '@/lib/featureFlag';
 
 interface LoginResponse {
-  access_token: string;
-  refresh_token: string;
+  accessToken: string;
+  refreshToken: string;
   staff: {
     id: number;
     name: string;
     phone: string;
     roles: string[];
-    assigned_buildings: string[];
+    assignedBuildings: string[];
   };
 }
 
@@ -20,7 +20,7 @@ interface StaffResponse {
   name: string;
   phone: string;
   roles: string[];
-  assigned_buildings: string[];
+  assignedBuildings: string[];
 }
 
 export function useLogin() {
@@ -29,8 +29,8 @@ export function useLogin() {
       api.post<LoginResponse>('/api/auth/login', data),
     onSuccess: (data) => {
       useAuthStore.getState().login({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
         staff: data.staff,
       });
     },
