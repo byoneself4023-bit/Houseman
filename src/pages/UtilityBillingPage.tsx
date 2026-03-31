@@ -7,6 +7,12 @@ import { Card, SectionTitle, Table, StatusBadge, RoomTypeBadge } from '@/compone
 import { getRoomType } from '@/config';
 import { useLocalStorage } from '@/utils/useLocalStorage';
 import { initialStaffMembers } from '@/config/staff';
+import VariableBillingView from '@/components/VariableBillingView';
+import BillingSetupWizard from '@/components/BillingSetupWizard';
+import MeterUpload from '@/components/MeterUpload';
+import RoomBillingSettingsPanel from '@/components/RoomBillingSettingsPanel';
+import BillingInvoiceTemplate from '@/components/BillingInvoiceTemplate';
+import { autoGenerateBillingRecords, bulkSendBilling } from '@/lib/billingEngine';
 import type { Tenant, BillingConfigItem, Staff } from '@/types';
 
 interface UtilityBillingPageProps {
@@ -44,6 +50,11 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
   const [editValues, setEditValues] = useLocalStorage<Record<string, any>>("hm_editValues", {});
   const [showUpload, setShowUpload] = useState<string | null>(null); // "elec" | "gas" | null
   const [uploadResult, setUploadResult] = useState<any>(null);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
+  const [showMeterUpload, setShowMeterUpload] = useState<string | null>(null); // "elec" | "gas" | null
+  const [showVariableView, setShowVariableView] = useState<string | null>(null); // building name
+  const [showRoomSettings, setShowRoomSettings] = useState<any>(null); // { roomId, buildingId }
+  const [showInvoice, setShowInvoice] = useState<any>(null); // billing record
   const today = new Date().getDate();
   const billingMonth = `2026-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 

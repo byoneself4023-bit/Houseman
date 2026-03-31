@@ -149,6 +149,34 @@ export function TaskDriverPage({
   // 직원별 완료 태스크 (로그인 직원의 localStorage)
   const [completedTasks, setCompletedTasks] = useState<Record<string, string>>(() => loadCompleted(currentStaff?.id));
 
+  // 직원별 커스텀 태스크 (hm_tasks_${staffId})
+  const customTasksKey = `hm_tasks_${currentStaff?.id || 'global'}`;
+  const [customTasks, setCustomTasks] = useState<{ id: string; title: string; createdAt: string }[]>(() => {
+    try { return JSON.parse(localStorage.getItem(customTasksKey) || '[]'); } catch { return []; }
+  });
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+
+  const addCustomTask = useCallback(() => {
+    if (!newTaskTitle.trim()) return;
+    const task = { id: `custom_${Date.now()}`, title: newTaskTitle.trim(), createdAt: new Date().toISOString() };
+    setCustomTasks(prev => {
+      const next = [...prev, task];
+      localStorage.setItem(customTasksKey, JSON.stringify(next));
+      return next;
+    });
+    setNewTaskTitle('');
+    setShowAddTask(false);
+  }, [newTaskTitle, customTasksKey]);
+
+  const removeCustomTask = useCallback((taskId: string) => {
+    setCustomTasks(prev => {
+      const next = prev.filter(t => t.id !== taskId);
+      localStorage.setItem(customTasksKey, JSON.stringify(next));
+      return next;
+    });
+  }, [customTasksKey]);
+
   const [sortBy, setSortBy] = useState('due');
 
   const toggleTask = useCallback((taskId: string) => {
@@ -377,8 +405,24 @@ export function TaskDriverPage({
       });
     });
 
+    // 직원별 커스텀 태스크 합류
+    customTasks.forEach(ct => {
+      tasks.push({
+        id: ct.id,
+        type: 'custom',
+        title: ct.title,
+        building: '',
+        room: null,
+        assignee: myName,
+        dueDate: today,
+        priority: 'low',
+        category: '직접등록',
+        overdueDays: 0,
+      });
+    });
+
     return tasks;
-  }, [myBuildings, activeTenants, activeVacancies, calendarEvts, buildingData, roomBalances, today]);
+  }, [myBuildings, activeTenants, activeVacancies, calendarEvts, buildingData, roomBalances, today, customTasks, myName]);
 
   // 보이는 태스크: 일반 직원은 자기 것만, 대표는 선택에 따라
   const visibleTasks = useMemo(() => {

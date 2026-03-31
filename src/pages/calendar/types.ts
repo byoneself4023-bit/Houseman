@@ -34,6 +34,10 @@ export interface CalendarEvent {
   depositConfirmed?: boolean;
   reported?: boolean;
   balanceConfirmed?: boolean;
+  contractEntered?: boolean;        // 계약서 입력 완료
+  finalPaymentConfirmed?: boolean;  // 최종 납부 확인
+  interiorManaged?: boolean;        // 인테리어 관리 완료
+  brokerFeeSent?: boolean;          // 중개수수료 송금 완료
   // 단기 전용 필드
   waterFee?: string;
   cable?: string;
@@ -63,6 +67,7 @@ export interface CalendarEvent {
   cleaningComment?: string;
   vacantConfirmed?: boolean;
   ownerReported?: boolean;
+  moveOutOwnerReported?: boolean;    // 퇴실 시 건물주 보고 (ownerReported와 별도)
   ownerReportMsg?: string;
   moveOutMsg?: string;
   settled?: boolean;

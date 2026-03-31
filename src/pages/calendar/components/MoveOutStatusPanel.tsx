@@ -5,6 +5,7 @@ import { getRoomType } from '@/config';
 import { Card } from '@/components';
 import { inputStyle } from '@/components/Field';
 import { persistUpdate } from '../calendarApi';
+import { resetBillingSettingsOnMoveOut } from '@/lib/billingEngine';
 
 interface MoveOutStatusPanelProps {
   calendarEvents: Record<string, any>[];
@@ -421,6 +422,11 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                 if (exists) return prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "금액체크" } : v);
                 return [...prev, { building: ev.building, room: ev.room, type: "단기", status: "금액체크", deposit: "", rent: "", managementFee: "" }];
               });
+              // billing_settings 리셋 (Supabase)
+              const tenant = activeTenants.find((t: any) => t.building === ev.building && String(t.room) === String(ev.room));
+              if (tenant?.roomId || tenant?.room_id) {
+                resetBillingSettingsOnMoveOut(tenant.roomId || tenant.room_id).catch(console.error);
+              }
               toast.success(`${ev.building} ${ev.room}호 공실 전환 완료`);
               setVacantModal(null);
             }}

@@ -43,7 +43,10 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
             { label: "계약금확인", done: !!ev.depositConfirmed },
             { label: "건물주보고", done: !!ev.reported },
             { label: "잔금확인", done: !!ev.balanceConfirmed },
-            { label: "계약서입력", done: false },
+            { label: "계약서입력", done: !!ev.contractEntered },
+            { label: "최종납부", done: !!ev.finalPaymentConfirmed },
+            { label: "인테리어", done: !!ev.interiorManaged },
+            { label: "중개료송금", done: !!ev.brokerFeeSent },
           ];
           const cDone = cSteps.filter(s => s.done).length;
           const allDone = cDone === cSteps.length;
@@ -154,6 +157,34 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     계약서입력 →
                   </span>
                 )}
+                {/* 최종납부 확인 */}
+                <span onClick={() => {
+                  if (ev.finalPaymentConfirmed) return;
+                  if (!ev.balanceConfirmed) { toast.error("잔금확인이 완료되어야 최종납부확인이 가능합니다."); return; }
+                  persistUpdate(ev.supabaseId, { finalPaymentConfirmed: true });
+                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, finalPaymentConfirmed: true } : e));
+                }}
+                  style={{ fontSize: 10, fontWeight: 700, color: ev.finalPaymentConfirmed ? "#9CA3AF" : "#0369A1", padding: "4px 10px", borderRadius: 6, border: ev.finalPaymentConfirmed ? "1px solid #D1D5DB" : "1px solid #BAE6FD", background: ev.finalPaymentConfirmed ? "#F3F4F6" : "#F0F9FF", cursor: ev.finalPaymentConfirmed ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.finalPaymentConfirmed ? "line-through" : "none" }}>
+                  {ev.finalPaymentConfirmed ? "✔ 최종납부" : "최종납부"}
+                </span>
+                {/* 인테리어 관리 */}
+                <span onClick={() => {
+                  if (ev.interiorManaged) return;
+                  persistUpdate(ev.supabaseId, { interiorManaged: true });
+                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, interiorManaged: true } : e));
+                }}
+                  style={{ fontSize: 10, fontWeight: 700, color: ev.interiorManaged ? "#9CA3AF" : "#7C3AED", padding: "4px 10px", borderRadius: 6, border: ev.interiorManaged ? "1px solid #D1D5DB" : "1px solid #DDD6FE", background: ev.interiorManaged ? "#F3F4F6" : "#F5F3FF", cursor: ev.interiorManaged ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.interiorManaged ? "line-through" : "none" }}>
+                  {ev.interiorManaged ? "✔ 인테리어" : "인테리어"}
+                </span>
+                {/* 중개료 송금 */}
+                <span onClick={() => {
+                  if (ev.brokerFeeSent) return;
+                  persistUpdate(ev.supabaseId, { brokerFeeSent: true });
+                  setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, brokerFeeSent: true } : e));
+                }}
+                  style={{ fontSize: 10, fontWeight: 700, color: ev.brokerFeeSent ? "#9CA3AF" : "#059669", padding: "4px 10px", borderRadius: 6, border: ev.brokerFeeSent ? "1px solid #D1D5DB" : "1px solid #A7F3D0", background: ev.brokerFeeSent ? "#F3F4F6" : "#ECFDF5", cursor: ev.brokerFeeSent ? "default" : "pointer", whiteSpace: "nowrap", textDecoration: ev.brokerFeeSent ? "line-through" : "none" }}>
+                  {ev.brokerFeeSent ? "✔ 중개료" : "중개료송금"}
+                </span>
                 <div style={{ marginLeft: "auto" }} />
                 {/* 계약파기 */}
                 {setEvents && (
