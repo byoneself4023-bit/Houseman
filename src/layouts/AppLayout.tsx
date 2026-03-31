@@ -10,6 +10,7 @@ import { TopBar } from './TopBar';
 import { MobileNav } from './MobileNav';
 import { queryClient } from '@/lib/queryClient';
 import { useSse } from '@/hooks/useSse';
+import { AiChatBot } from '@/components/AiChatBot';
 import type { AppData } from '@/types/appContext';
 
 export function AppLayout() {
@@ -72,6 +73,9 @@ export function AppLayout() {
           onLogout={handleLogout}
         />
       )}
+
+      {/* 플로팅 AI 챗봇 */}
+      <AiChatBot />
     </div>
   );
 }

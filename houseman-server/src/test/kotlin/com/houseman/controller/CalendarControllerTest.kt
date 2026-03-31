@@ -52,12 +52,12 @@ class CalendarControllerTest : IntegrationTestSupport() {
             post("/api/calendar")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"date": "2026-04-01", "type": "계약", "building_id": 1, "room_id": 1, "name": "테스트", "color": "#3B82F6"}""")
+                .content("""{"date": "2026-04-01", "type": "계약", "buildingId": 1, "roomId": 1, "name": "테스트", "color": "#3B82F6"}""")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.type").value("계약"))
-            .andExpect(jsonPath("$.data.building_id").isNumber)
+            .andExpect(jsonPath("$.data.buildingId").isNumber)
             .andExpect(jsonPath("$.data.name").value("테스트"))
     }
 
@@ -75,8 +75,8 @@ class CalendarControllerTest : IntegrationTestSupport() {
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.type").value("휴무"))
-            .andExpect(jsonPath("$.data.building_id").doesNotExist())
-            .andExpect(jsonPath("$.data.room_id").doesNotExist())
+            .andExpect(jsonPath("$.data.buildingId").doesNotExist())
+            .andExpect(jsonPath("$.data.roomId").doesNotExist())
     }
 
     @Test

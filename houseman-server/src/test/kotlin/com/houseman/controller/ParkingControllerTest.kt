@@ -38,19 +38,19 @@ class ParkingControllerTest : IntegrationTestSupport() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """{
-                        "building_id": 1,
-                        "tenant_name": "김철수",
-                        "room_number": "101",
-                        "car_number": "12가 3456",
-                        "car_type": "현대 아반떼"
+                        "buildingId": 1,
+                        "tenantName": "김철수",
+                        "roomNumber": "101",
+                        "carNumber": "12가 3456",
+                        "carType": "현대 아반떼"
                     }"""
                 )
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.tenant_name").value("김철수"))
-            .andExpect(jsonPath("$.data.car_number").value("12가 3456"))
-            .andExpect(jsonPath("$.data.car_type").value("현대 아반떼"))
+            .andExpect(jsonPath("$.data.tenantName").value("김철수"))
+            .andExpect(jsonPath("$.data.carNumber").value("12가 3456"))
+            .andExpect(jsonPath("$.data.carType").value("현대 아반떼"))
     }
 
     @Test
@@ -62,7 +62,7 @@ class ParkingControllerTest : IntegrationTestSupport() {
             post("/api/parking")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "tenant_name": "이영희", "room_number": "201", "car_number": "34나 5678", "car_type": "기아 K5"}""")
+                .content("""{"buildingId": 1, "tenantName": "이영희", "roomNumber": "201", "carNumber": "34나 5678", "carType": "기아 K5"}""")
         )
             .andExpect(status().isCreated)
 
@@ -83,7 +83,7 @@ class ParkingControllerTest : IntegrationTestSupport() {
             post("/api/parking")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "tenant_name": "박민수", "room_number": "301", "car_number": "56다 7890", "car_type": "쉐보레 말리부"}""")
+                .content("""{"buildingId": 1, "tenantName": "박민수", "roomNumber": "301", "carNumber": "56다 7890", "carType": "쉐보레 말리부"}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -95,11 +95,11 @@ class ParkingControllerTest : IntegrationTestSupport() {
             put("/api/parking/$parkingId")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"car_number": "78라 1234", "car_type": "테슬라 모델3"}""")
+                .content("""{"carNumber": "78라 1234", "carType": "테슬라 모델3"}""")
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.data.car_number").value("78라 1234"))
-            .andExpect(jsonPath("$.data.car_type").value("테슬라 모델3"))
+            .andExpect(jsonPath("$.data.carNumber").value("78라 1234"))
+            .andExpect(jsonPath("$.data.carType").value("테슬라 모델3"))
     }
 
     @Test
@@ -111,7 +111,7 @@ class ParkingControllerTest : IntegrationTestSupport() {
             post("/api/parking")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "tenant_name": "삭제대상", "room_number": "401", "car_number": "00가 0000", "car_type": "삭제"}""")
+                .content("""{"buildingId": 1, "tenantName": "삭제대상", "roomNumber": "401", "carNumber": "00가 0000", "carType": "삭제"}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -136,7 +136,7 @@ class ParkingControllerTest : IntegrationTestSupport() {
             post("/api/parking")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "tenant_name": "건물1", "room_number": "101", "car_number": "11가 1111", "car_type": "A"}""")
+                .content("""{"buildingId": 1, "tenantName": "건물1", "roomNumber": "101", "carNumber": "11가 1111", "carType": "A"}""")
         )
             .andExpect(status().isCreated)
 
@@ -144,18 +144,18 @@ class ParkingControllerTest : IntegrationTestSupport() {
             post("/api/parking")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "tenant_name": "건물2", "room_number": "101", "car_number": "22나 2222", "car_type": "B"}""")
+                .content("""{"buildingId": 2, "tenantName": "건물2", "roomNumber": "101", "carNumber": "22나 2222", "carType": "B"}""")
         )
             .andExpect(status().isCreated)
 
         mockMvc.perform(
             get("/api/parking")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.length()").value(1))
-            .andExpect(jsonPath("$.data[0].tenant_name").value("건물1"))
+            .andExpect(jsonPath("$.data[0].tenantName").value("건물1"))
     }
 
     @Test

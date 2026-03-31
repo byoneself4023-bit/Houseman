@@ -33,13 +33,13 @@ class ContractControllerTest : IntegrationTestSupport() {
 
         mockMvc.perform(
             get("/api/contracts")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.length()").value(4))
-            .andExpect(jsonPath("$.data[0].building_name").value("제이앤제이"))
+            .andExpect(jsonPath("$.data[0].buildingName").value("제이앤제이"))
     }
 
     @Test
@@ -54,8 +54,8 @@ class ContractControllerTest : IntegrationTestSupport() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.id").value(1))
-            .andExpect(jsonPath("$.data.building_name").isNotEmpty)
-            .andExpect(jsonPath("$.data.room_number").isNotEmpty)
+            .andExpect(jsonPath("$.data.buildingName").isNotEmpty)
+            .andExpect(jsonPath("$.data.roomNumber").isNotEmpty)
             .andExpect(jsonPath("$.data.name").isNotEmpty)
     }
 
@@ -85,8 +85,8 @@ class ContractControllerTest : IntegrationTestSupport() {
                 .content(
                     """
                     {
-                        "building_id": 1,
-                        "room_id": 1,
+                        "buildingId": 1,
+                        "roomId": 1,
                         "name": "테스트 임차인",
                         "phone": "010-1234-5678",
                         "rent": 500000,
@@ -94,7 +94,7 @@ class ContractControllerTest : IntegrationTestSupport() {
                         "deposit": 5000000,
                         "type": "단기",
                         "due": "3/1",
-                        "move_in": "2026-04-01",
+                        "moveIn": "2026-04-01",
                         "expiry": "2026-10-01"
                     }
                     """.trimIndent()
@@ -135,9 +135,9 @@ class ContractControllerTest : IntegrationTestSupport() {
                 .content(
                     """
                     {
-                        "move_out_date": "2026-03-26",
+                        "moveOutDate": "2026-03-26",
                         "reason": "만기퇴실",
-                        "clean_fee": 100000
+                        "cleanFee": 100000
                     }
                     """.trimIndent()
                 )

@@ -33,7 +33,7 @@ class TransactionControllerTest : IntegrationTestSupport() {
         // building_id=8 (스타빌) — recentTx에서 스타빌 거래 확인
         mockMvc.perform(
             get("/api/transactions")
-                .param("building_id", "8")
+                .param("buildingId", "8")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)
@@ -54,7 +54,7 @@ class TransactionControllerTest : IntegrationTestSupport() {
                     """
                     {
                         "date": "2026-03-26",
-                        "building_id": 1,
+                        "buildingId": 1,
                         "type": "입금",
                         "category": "월세",
                         "amount": 500000,

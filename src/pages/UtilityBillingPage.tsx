@@ -13,6 +13,7 @@ import MeterUpload from '@/components/MeterUpload';
 import RoomBillingSettingsPanel from '@/components/RoomBillingSettingsPanel';
 import BillingInvoiceTemplate from '@/components/BillingInvoiceTemplate';
 import { autoGenerateBillingRecords, bulkSendBilling } from '@/lib/billingEngine';
+import { toast } from 'sonner';
 import type { Tenant, BillingConfigItem, Staff } from '@/types';
 
 interface UtilityBillingPageProps {
@@ -816,6 +817,24 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
     <div>
       <SectionTitle sub={`${billingMonth.slice(5)}월 · ${typeTab} ${myTenants.length}건`}>{billingMode === "unified" ? "⚡ 청구 관리" : billingMode === "variable" ? "📊 청구(변동관리비)" : "⚡ 청구(단기/고정관리비)"}</SectionTitle>
 
+      {/* 도구 버튼 행 */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+        <button onClick={() => setShowSetupWizard(true)}
+          style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #C4B5FD", background: "#F5F3FF", fontSize: 11, fontWeight: 700, color: "#7C3AED", cursor: "pointer", fontFamily: "inherit" }}>
+          ⚙️ 청구 설정
+        </button>
+        <button onClick={() => setShowMeterUpload("elec")}
+          style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #BFDBFE", background: "#EFF6FF", fontSize: 11, fontWeight: 700, color: "#2563EB", cursor: "pointer", fontFamily: "inherit" }}>
+          📊 검침 업로드
+        </button>
+        {typeTab === "변동관리비" && filterBuilding !== "전체" && (
+          <button onClick={() => setShowVariableView(filterBuilding)}
+            style={{ padding: "6px 12px", borderRadius: 8, border: "1.5px solid #BBF7D0", background: "#F0FDF4", fontSize: 11, fontWeight: 700, color: "#059669", cursor: "pointer", fontFamily: "inherit" }}>
+            📈 변동비 안분
+          </button>
+        )}
+      </div>
+
       {/* 유형 탭 */}
       <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
         {availableTypes.map(t => {
@@ -1157,6 +1176,12 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                     ) : !r.sent ? (
                       <button onClick={() => sendItem(r)} style={{ padding: "4px 10px", borderRadius: 5, border: "1px solid #BFDBFE", background: "#EFF6FF", color: "#2563EB", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>📱발송</button>
                     ) : null}
+                    <button onClick={() => setShowRoomSettings({ roomId: r.roomId, buildingId: r.buildingId, tenantName: r.name, roomNumber: r.room, buildingName: r.building })}
+                      style={{ padding: "4px 8px", borderRadius: 5, border: "1px solid #C4B5FD", background: "#F5F3FF", color: "#7C3AED", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }} title="호실 청구 설정">⚙️</button>
+                    {r.confirmed && (
+                      <button onClick={() => setShowInvoice({ ...r, tenantName: r.name, buildingName: r.building, roomNumber: r.room })}
+                        style={{ padding: "4px 8px", borderRadius: 5, border: "1px solid #FDE68A", background: "#FFFBEB", color: "#92400E", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }} title="청구서 보기">🧾</button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1241,6 +1266,97 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       <div style={{ marginTop: 4, fontSize: 9, color: "#B0B5C1", textAlign: "center" }}>
         ※ {typeTab === "단기" ? "임대료+관리비+공과금 통합 · 전기=엑셀 · 가스=파일 · 수도/인터넷=고정 · 월세일 기준 청구" : typeTab === "고정관리비" ? "고정관리비 건물 · 임대료+고정관리비 · 담당자 확인 후 발송" : "변동관리비 건물 · 공과금 기반 변동 청구 · 검침 후 발송"}
       </div>
+
+      {/* ── 청구 설정 마법사 모달 ── */}
+      {showSetupWizard && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowSetupWizard(false)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 600, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <BillingSetupWizard
+              buildingId={null}
+              buildingName={filterBuilding !== "전체" ? filterBuilding : ""}
+              buildingType={typeTab === "단기" ? "short" : typeTab === "고정관리비" ? "fixed" : "variable"}
+              onComplete={() => { setShowSetupWizard(false); toast.success("청구 설정이 저장되었습니다."); }}
+              onCancel={() => setShowSetupWizard(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── 검침 업로드 모달 ── */}
+      {showMeterUpload && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowMeterUpload(null)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 600, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>📊 검침 엑셀 업로드</span>
+              <button onClick={() => setShowMeterUpload(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: "#94A3B8" }}>✕</button>
+            </div>
+            <MeterUpload
+              billingMonth={billingMonth}
+              onComplete={(result) => { setShowMeterUpload(null); toast.success(`검침 매칭 완료: ${result.matched.length}건 성공, ${result.unmatched.length}건 미매칭`); }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── 변동관리비 뷰 모달 ── */}
+      {showVariableView && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowVariableView(null)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 900, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <VariableBillingView
+              buildingName={showVariableView}
+              tenants={myTenants.filter((t: any) => t.building === showVariableView)}
+              onBack={() => setShowVariableView(null)}
+              billingMonth={billingMonth}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── 호실별 청구 설정 패널 ── */}
+      {showRoomSettings && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowRoomSettings(null)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 500, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <RoomBillingSettingsPanel
+              roomId={showRoomSettings?.roomId}
+              buildingId={showRoomSettings?.buildingId}
+              tenantName={showRoomSettings?.tenantName}
+              roomNumber={showRoomSettings?.roomNumber}
+              buildingName={showRoomSettings?.buildingName}
+              onClose={() => setShowRoomSettings(null)}
+              onSaved={() => { setShowRoomSettings(null); toast.success("호실 청구 설정이 저장되었습니다."); }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── 청구서 미리보기 모달 ── */}
+      {showInvoice && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowInvoice(null)}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 500, width: "95vw", maxHeight: "90vh", overflow: "auto" }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>🧾 청구서 미리보기</span>
+              <button onClick={() => setShowInvoice(null)} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: "#94A3B8" }}>✕</button>
+            </div>
+            <BillingInvoiceTemplate
+              record={showInvoice}
+              tenantName={showInvoice?.tenantName}
+              buildingName={showInvoice?.buildingName}
+              roomNumber={showInvoice?.roomNumber}
+              billingMonth={billingMonth}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

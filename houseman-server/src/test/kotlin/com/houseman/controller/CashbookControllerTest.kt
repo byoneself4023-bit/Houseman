@@ -38,14 +38,14 @@ class CashbookControllerTest : IntegrationTestSupport() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """{
-                        "building_id": 1,
+                        "buildingId": 1,
                         "date": "2026-03-27",
                         "type": "manual",
                         "direction": "출금",
                         "description": "월급 송금",
                         "amount": 2000000,
                         "account": "신한은행 987-654-321",
-                        "account_holder": "김철수"
+                        "accountHolder": "김철수"
                     }"""
                 )
         )
@@ -66,7 +66,7 @@ class CashbookControllerTest : IntegrationTestSupport() {
             post("/api/cashbook")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "date": "2026-03-27", "description": "테스트", "amount": 100000}""")
+                .content("""{"buildingId": 1, "date": "2026-03-27", "description": "테스트", "amount": 100000}""")
         )
             .andExpect(status().isCreated)
 
@@ -87,7 +87,7 @@ class CashbookControllerTest : IntegrationTestSupport() {
             post("/api/cashbook")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "date": "2026-03-27", "description": "정산", "amount": 500000}""")
+                .content("""{"buildingId": 1, "date": "2026-03-27", "description": "정산", "amount": 500000}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -114,7 +114,7 @@ class CashbookControllerTest : IntegrationTestSupport() {
             post("/api/cashbook")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "date": "2026-03-27", "description": "삭제 테스트", "amount": 10000}""")
+                .content("""{"buildingId": 1, "date": "2026-03-27", "description": "삭제 테스트", "amount": 10000}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -139,7 +139,7 @@ class CashbookControllerTest : IntegrationTestSupport() {
             post("/api/cashbook")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "date": "2026-03-27", "description": "건물1", "amount": 100000}""")
+                .content("""{"buildingId": 1, "date": "2026-03-27", "description": "건물1", "amount": 100000}""")
         )
             .andExpect(status().isCreated)
 
@@ -147,13 +147,13 @@ class CashbookControllerTest : IntegrationTestSupport() {
             post("/api/cashbook")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "date": "2026-03-27", "description": "건물2", "amount": 200000}""")
+                .content("""{"buildingId": 2, "date": "2026-03-27", "description": "건물2", "amount": 200000}""")
         )
             .andExpect(status().isCreated)
 
         mockMvc.perform(
             get("/api/cashbook")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)

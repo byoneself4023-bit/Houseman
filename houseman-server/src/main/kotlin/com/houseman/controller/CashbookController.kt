@@ -23,7 +23,7 @@ class CashbookController(
 
     @GetMapping("/api/cashbook")
     fun getAll(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
     ): ResponseEntity<ApiResponse<List<CashbookEntryResponse>>> =
         ResponseEntity.ok(ApiResponse.success(cashbookService.findAll(buildingId)))
 

@@ -24,8 +24,8 @@ class ContractFlowTest : IntegrationTestSupport() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """{
-                        "building_id": 2,
-                        "room_id": 2,
+                        "buildingId": 2,
+                        "roomId": 2,
                         "name": "E2E 테스트 임차인",
                         "phone": "010-9999-8888",
                         "rent": 600000,
@@ -33,7 +33,7 @@ class ContractFlowTest : IntegrationTestSupport() {
                         "deposit": 6000000,
                         "type": "단기",
                         "due": "5/1",
-                        "move_in": "2026-05-01",
+                        "moveIn": "2026-05-01",
                         "expiry": "2026-11-01"
                     }"""
                 )

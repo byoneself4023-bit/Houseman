@@ -37,8 +37,8 @@ class RoomControllerTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.room_number").isNotEmpty)
-            .andExpect(jsonPath("$.data.building_name").isNotEmpty)
+            .andExpect(jsonPath("$.data.roomNumber").isNotEmpty)
+            .andExpect(jsonPath("$.data.buildingName").isNotEmpty)
     }
 
     @Test
@@ -50,10 +50,10 @@ class RoomControllerTest : IntegrationTestSupport() {
             put("/api/rooms/1")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"base_rent":500000}""")
+                .content("""{"baseRent":500000}""")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.base_rent").value(500000))
+            .andExpect(jsonPath("$.data.baseRent").value(500000))
     }
 }

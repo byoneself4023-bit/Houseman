@@ -24,8 +24,8 @@ class MoveOutFlowTest : IntegrationTestSupport() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """{
-                        "building_id": 2,
-                        "room_id": 3,
+                        "buildingId": 2,
+                        "roomId": 3,
                         "name": "퇴실테스트 임차인",
                         "phone": "010-7777-6666",
                         "rent": 400000,
@@ -33,7 +33,7 @@ class MoveOutFlowTest : IntegrationTestSupport() {
                         "deposit": 4000000,
                         "type": "단기",
                         "due": "1/1",
-                        "move_in": "2026-01-01",
+                        "moveIn": "2026-01-01",
                         "expiry": "2026-06-30"
                     }"""
                 )
@@ -51,9 +51,9 @@ class MoveOutFlowTest : IntegrationTestSupport() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """{
-                        "move_out_date": "2026-03-27",
+                        "moveOutDate": "2026-03-27",
                         "reason": "만기퇴실",
-                        "clean_fee": 100000
+                        "cleanFee": 100000
                     }"""
                 )
         )
@@ -82,7 +82,7 @@ class MoveOutFlowTest : IntegrationTestSupport() {
             post("/api/vacancies")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "room_id": 3, "type": "단기", "status": "점검/청소중"}""")
+                .content("""{"buildingId": 2, "roomId": 3, "type": "단기", "status": "점검/청소중"}""")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.data.status").value("점검/청소중"))

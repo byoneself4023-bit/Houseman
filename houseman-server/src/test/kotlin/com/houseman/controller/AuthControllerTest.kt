@@ -21,8 +21,8 @@ class AuthControllerTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.access_token").isNotEmpty)
-            .andExpect(jsonPath("$.data.refresh_token").isNotEmpty)
+            .andExpect(jsonPath("$.data.accessToken").isNotEmpty)
+            .andExpect(jsonPath("$.data.refreshToken").isNotEmpty)
             .andExpect(jsonPath("$.data.staff.name").value("박종호 대표"))
             .andExpect(jsonPath("$.data.staff.phone").value("010-5560-8245"))
     }
@@ -48,12 +48,12 @@ class AuthControllerTest : IntegrationTestSupport() {
         mockMvc.perform(
             post("/api/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"refresh_token":"$refreshToken"}""")
+                .content("""{"refreshToken":"$refreshToken"}""")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.access_token").isNotEmpty)
-            .andExpect(jsonPath("$.data.refresh_token").isNotEmpty)
+            .andExpect(jsonPath("$.data.accessToken").isNotEmpty)
+            .andExpect(jsonPath("$.data.refreshToken").isNotEmpty)
     }
 
     @Test

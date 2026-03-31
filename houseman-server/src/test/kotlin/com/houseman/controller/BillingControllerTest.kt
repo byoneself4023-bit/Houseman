@@ -38,9 +38,9 @@ class BillingControllerTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.building_name").value("제이앤제이"))
+            .andExpect(jsonPath("$.data.buildingName").value("제이앤제이"))
             .andExpect(jsonPath("$.data.type").value("A"))
-            .andExpect(jsonPath("$.data.fee_type").value("pct"))
+            .andExpect(jsonPath("$.data.feeType").value("pct"))
     }
 
     @Test
@@ -64,7 +64,7 @@ class BillingControllerTest : IntegrationTestSupport() {
 
         mockMvc.perform(
             get("/api/billing/configs")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)
@@ -84,9 +84,9 @@ class BillingControllerTest : IntegrationTestSupport() {
                 .content(
                     """
                     {
-                        "building_id": 1,
-                        "period_year": 2026,
-                        "period_month": 3
+                        "buildingId": 1,
+                        "periodYear": 2026,
+                        "periodMonth": 3
                     }
                     """.trimIndent()
                 )
@@ -107,7 +107,7 @@ class BillingControllerTest : IntegrationTestSupport() {
             post("/api/billing/generate")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "period_year": 2026, "period_month": 4}""")
+                .content("""{"buildingId": 1, "periodYear": 2026, "periodMonth": 4}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -122,7 +122,7 @@ class BillingControllerTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.status").value("CONFIRMED"))
-            .andExpect(jsonPath("$.data.confirmed_at").isNotEmpty)
+            .andExpect(jsonPath("$.data.confirmedAt").isNotEmpty)
     }
 
     @Test
@@ -135,7 +135,7 @@ class BillingControllerTest : IntegrationTestSupport() {
             post("/api/billing/generate")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "period_year": 2026, "period_month": 5}""")
+                .content("""{"buildingId": 1, "periodYear": 2026, "periodMonth": 5}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -154,7 +154,7 @@ class BillingControllerTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.status").value("SENT"))
-            .andExpect(jsonPath("$.data.sent_at").isNotEmpty)
+            .andExpect(jsonPath("$.data.sentAt").isNotEmpty)
     }
 
     @Test

@@ -33,7 +33,7 @@ class SettlementController(
 
     @GetMapping("/api/settlements/expenses")
     fun getExpenses(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
         @RequestParam("month", required = false) month: String?,
     ): ResponseEntity<ApiResponse<List<SettlementExpenseResponse>>> =
         ResponseEntity.ok(ApiResponse.success(settlementExpenseService.findAll(buildingId, month)))

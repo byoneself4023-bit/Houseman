@@ -20,7 +20,7 @@ class PaymentFlowTest : IntegrationTestSupport() {
         // 기존 건물1(제이앤제이) 거래 수 확인
         val beforeResult = mockMvc.perform(
             get("/api/transactions")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)
@@ -36,7 +36,7 @@ class PaymentFlowTest : IntegrationTestSupport() {
                 .content(
                     """{
                         "date": "2026-03-27",
-                        "building_id": 1,
+                        "buildingId": 1,
                         "type": "입금",
                         "category": "월세",
                         "amount": 500000,
@@ -56,7 +56,7 @@ class PaymentFlowTest : IntegrationTestSupport() {
                 .content(
                     """{
                         "date": "2026-03-27",
-                        "building_id": 1,
+                        "buildingId": 1,
                         "type": "지출",
                         "category": "수리비",
                         "amount": 200000,
@@ -71,7 +71,7 @@ class PaymentFlowTest : IntegrationTestSupport() {
         // Step 3: 건물별 거래 목록 — 2건 추가됨
         mockMvc.perform(
             get("/api/transactions")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .header("Authorization", "Bearer $token")
         )
             .andExpect(status().isOk)

@@ -795,6 +795,14 @@ houseman/
 - 매 수정마다 npx tsc --noEmit + npm run build 확인.
 - BuildingsWrapper TS 에러는 기존 허용. 그 외 새 에러 발생 시 즉시 수정.
 
+## E2E 테스트 (Playwright)
+- 데이터 주입은 반드시 addInitScript 사용. page.evaluate로 주입하면 useAppData 초기화에 덮어씌워짐.
+- localStorage는 개별 hm_* 키가 아닌 'appData' 키 하나에 blob으로 저장. 앱은 이 키에서만 읽음.
+- 셀렉터는 .first() 필수. 사이드바와 콘텐츠에 동일 텍스트 존재 → strict mode 위반.
+- 페이지 이동 후 waitForLoadState('networkidle') 또는 특정 요소 toBeVisible({ timeout: 10_000 }) 대기.
+- 모달은 page 레벨에서 검색 (fixed position이라 콘텐츠 영역 밖).
+- 테스트 간 localStorage 격리: 각 테스트에서 독립적으로 시드 주입.
+
 ---
 
 # 프롬프트 설계 체크리스트 — 모든 작업 전 참고

@@ -25,7 +25,7 @@ class BillingController(
 
     @GetMapping("/api/billing")
     fun getAll(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
         @RequestParam("year", required = false) year: Int?,
         @RequestParam("month", required = false) month: Int?,
     ): ResponseEntity<ApiResponse<List<BillingRecordResponse>>> =
@@ -48,7 +48,7 @@ class BillingController(
 
     @GetMapping("/api/billing/status")
     fun getStatus(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
         @RequestParam("year", required = false) year: Int?,
         @RequestParam("month", required = false) month: Int?,
     ): ResponseEntity<ApiResponse<BillingStatusResponse>> =
@@ -56,7 +56,7 @@ class BillingController(
 
     @GetMapping("/api/billing/configs")
     fun getConfigs(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
     ): ResponseEntity<ApiResponse<List<BillingConfigResponse>>> =
         ResponseEntity.ok(ApiResponse.success(billingService.findAllConfigs(buildingId)))
 

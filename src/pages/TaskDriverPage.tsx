@@ -44,6 +44,7 @@ const TYPE_LABELS: Record<string, string> = {
   movein: '입주',
   moveout: '퇴실',
   billing: '청구',
+  custom: '직접등록',
 };
 
 const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
@@ -55,6 +56,7 @@ const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   movein: { bg: '#CCFBF1', color: '#134E4A' },
   moveout: { bg: '#FFF7ED', color: '#9A3412' },
   billing: { bg: '#FEF2F2', color: '#DC2626' },
+  custom: { bg: '#EDE9FE', color: '#7C3AED' },
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -748,6 +750,73 @@ export function TaskDriverPage({
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* 커스텀 태스크 추가 */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px' }}>
+        {showAddTask ? (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, padding: '10px 16px', background: '#fff', borderRadius: '12px', border: '2px solid #3B82F6' }}>
+            <input
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') addCustomTask(); if (e.key === 'Escape') { setShowAddTask(false); setNewTaskTitle(''); } }}
+              placeholder="할 일을 입력하세요..."
+              autoFocus
+              style={{ flex: 1, border: 'none', outline: 'none', fontSize: '14px', fontFamily: 'inherit', background: 'transparent' }}
+            />
+            <button onClick={addCustomTask}
+              style={{ padding: '6px 16px', borderRadius: '8px', border: 'none', background: '#3B82F6', color: '#fff', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              추가
+            </button>
+            <button onClick={() => { setShowAddTask(false); setNewTaskTitle(''); }}
+              style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#fff', color: '#64748B', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' }}>
+              취소
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowAddTask(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '10px', border: '1.5px dashed #CBD5E1', background: '#fff', color: '#3B82F6', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> 직접 할 일 추가
+          </button>
+        )}
+      </div>
+
+      {/* 커스텀 태스크 목록 (직접등록) */}
+      {customTasks.length > 0 && (
+        <div style={{ ...s.section, marginBottom: '16px' }}>
+          <div style={{ ...s.sectionHeader('#F0F9FF'), borderLeft: '4px solid #8B5CF6' }}>
+            <span style={{ fontSize: '16px' }}>📌</span>
+            <p style={{ ...s.sectionTitle, flex: 1 }}>직접 등록한 할 일</p>
+            <span style={s.sectionBadge('#8B5CF6', '#fff')}>{customTasks.length}</span>
+          </div>
+          <div style={s.sectionBody}>
+            {customTasks.map(ct => {
+              const isCompleted = !!completedTasks[ct.id];
+              return (
+                <div key={ct.id} style={{ ...s.taskItem(isCompleted), justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                    <div style={s.checkbox(isCompleted)} onClick={() => toggleTask(ct.id)}>
+                      {isCompleted && '\u2713'}
+                    </div>
+                    <div style={s.taskContent}>
+                      <div style={s.taskTopRow}>
+                        <span style={s.typeBadge('custom')}>직접등록</span>
+                        <span style={s.taskTitle}>{ct.title}</span>
+                      </div>
+                      <div style={s.taskBottomRow}>
+                        <span>{new Date(ct.createdAt).toLocaleDateString('ko-KR')} 등록</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => removeCustomTask(ct.id)}
+                    style={{ border: 'none', background: 'none', fontSize: '16px', cursor: 'pointer', color: '#94A3B8', padding: '4px 8px' }}
+                    title="삭제">✕</button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

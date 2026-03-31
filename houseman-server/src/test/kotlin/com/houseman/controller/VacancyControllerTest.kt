@@ -26,7 +26,7 @@ class VacancyControllerTest : IntegrationTestSupport() {
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.data.length()").value(1))
             .andExpect(jsonPath("$.data[0].status").value("점검/청소중"))
-            .andExpect(jsonPath("$.data[0].building_name").value("제이앤제이"))
+            .andExpect(jsonPath("$.data[0].buildingName").value("제이앤제이"))
     }
 
     @Test
@@ -39,7 +39,7 @@ class VacancyControllerTest : IntegrationTestSupport() {
             post("/api/vacancies")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "room_id": 2, "type": "단기", "deposit": 500, "rent": 80, "status": "홍보중"}""")
+                .content("""{"buildingId": 2, "roomId": 2, "type": "단기", "deposit": 500, "rent": 80, "status": "홍보중"}""")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.success").value(true))
@@ -56,7 +56,7 @@ class VacancyControllerTest : IntegrationTestSupport() {
             post("/api/vacancies")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "room_id": 3, "status": "점검/청소중"}""")
+                .content("""{"buildingId": 2, "roomId": 3, "status": "점검/청소중"}""")
         )
             .andExpect(status().isCreated)
             .andReturn()
@@ -83,7 +83,7 @@ class VacancyControllerTest : IntegrationTestSupport() {
             post("/api/vacancies")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 2, "room_id": 4, "status": "점검/청소중"}""")
+                .content("""{"buildingId": 2, "roomId": 4, "status": "점검/청소중"}""")
         )
             .andExpect(status().isCreated)
             .andReturn()

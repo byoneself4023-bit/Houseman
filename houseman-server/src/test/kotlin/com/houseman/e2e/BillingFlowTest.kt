@@ -23,7 +23,7 @@ class BillingFlowTest : IntegrationTestSupport() {
             post("/api/billing/generate")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"building_id": 1, "period_year": 2026, "period_month": 6}""")
+                .content("""{"buildingId": 1, "periodYear": 2026, "periodMonth": 6}""")
         )
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.data").isArray)
@@ -37,7 +37,7 @@ class BillingFlowTest : IntegrationTestSupport() {
         // Step 2: 목록 조회 — DRAFT 상태 확인
         mockMvc.perform(
             get("/api/billing")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .param("year", "2026")
                 .param("month", "6")
                 .header("Authorization", "Bearer $token")
@@ -53,7 +53,7 @@ class BillingFlowTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.status").value("CONFIRMED"))
-            .andExpect(jsonPath("$.data.confirmed_at").isNotEmpty)
+            .andExpect(jsonPath("$.data.confirmedAt").isNotEmpty)
 
         // Step 4: 확정된 레코드 발송
         mockMvc.perform(
@@ -62,7 +62,7 @@ class BillingFlowTest : IntegrationTestSupport() {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.status").value("SENT"))
-            .andExpect(jsonPath("$.data.sent_at").isNotEmpty)
+            .andExpect(jsonPath("$.data.sentAt").isNotEmpty)
 
         // Step 5: 두 번째 레코드도 확정
         mockMvc.perform(
@@ -75,7 +75,7 @@ class BillingFlowTest : IntegrationTestSupport() {
         // Step 6: 현황 요약 — draft 2, confirmed 1, sent 1
         mockMvc.perform(
             get("/api/billing/status")
-                .param("building_id", "1")
+                .param("buildingId", "1")
                 .param("year", "2026")
                 .param("month", "6")
                 .header("Authorization", "Bearer $token")

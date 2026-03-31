@@ -28,7 +28,7 @@ class ContractController(
 
     @GetMapping
     fun getAll(
-        @RequestParam("building_id", required = false) buildingId: Long?,
+        @RequestParam("buildingId", required = false) buildingId: Long?,
     ): ResponseEntity<ApiResponse<List<ContractResponse>>> =
         ResponseEntity.ok(ApiResponse.success(contractService.findAll(buildingId)))
 

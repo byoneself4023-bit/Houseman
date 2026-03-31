@@ -51,10 +51,10 @@ class BuildingControllerTest : IntegrationTestSupport() {
             put("/api/buildings/1")
                 .header("Authorization", "Bearer $token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"parking_total":10}""")
+                .content("""{"parkingTotal":10}""")
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.data.parking_total").value(10))
+            .andExpect(jsonPath("$.data.parkingTotal").value(10))
     }
 }
