@@ -114,6 +114,10 @@ const HomepagePublic = React.lazy(() =>
 const MoveOutLinkPublic = React.lazy(() =>
   import('./pages/MoveOutLinkPage').then((m) => ({ default: m.MoveOutLinkPage as React.ComponentType<any> })),
 );
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ContractLinkPublic = React.lazy(() =>
+  import('./pages/ContractLinkPage').then((m) => ({ default: m.ContractLinkPage as React.ComponentType<any> })),
+);
 
 export const router = createBrowserRouter([
   // Standalone homepage — accessed via ?mode=homepage redirect
@@ -131,6 +135,15 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={null}>
         <MoveOutLinkPublic />
+      </Suspense>
+    ),
+  },
+  // Public contract link — brokers/tenants access without auth
+  {
+    path: '/contract/:contractId',
+    element: (
+      <Suspense fallback={null}>
+        <ContractLinkPublic />
       </Suspense>
     ),
   },
