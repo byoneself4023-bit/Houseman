@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
+    container_name: houseman-db
     environment:
       POSTGRES_DB: houseman
       POSTGRES_USER: houseman
@@ -11,13 +12,14 @@ services:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U houseman"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
   server:
     build:
       context: ./houseman-server
+    container_name: houseman-server
     depends_on:
       db:
         condition: service_healthy
@@ -33,10 +35,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: houseman-client
     depends_on:
       - server
     ports:
-      - "80:80"
+      - "3000:80"
 
 volumes:
   pgdata:
