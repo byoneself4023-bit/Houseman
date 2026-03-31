@@ -15,7 +15,7 @@ export default defineConfig({
     { name: 'chromium', use: { browserName: 'chromium' } },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'VITE_USE_API=false npm run dev',
     port: 5173,
     reuseExistingServer: true,
     timeout: 30_000,

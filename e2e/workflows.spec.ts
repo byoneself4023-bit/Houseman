@@ -149,22 +149,28 @@ test('5. 퇴실확정 시 임차인 이동 검증', async ({ page }) => {
 
     // 확인 다이얼로그
     await expect(page.getByText('정말 퇴실처리 하시겠습니까?')).toBeVisible({ timeout: 3_000 });
-    await page.getByRole('button', { name: '확인' }).click();
-    await page.waitForTimeout(2_000);
+    const modalConfirm = page.locator('button').filter({ hasText: /^확인$/ }).last();
+    await modalConfirm.click();
 
-    // localStorage 검증
-    const result = await page.evaluate(() => {
+    // localStorage 반영 대기 (React state → useEffect → saveLS 비동기)
+    await expect(async () => {
+      const result = await page.evaluate(() => {
+        const raw = localStorage.getItem('appData');
+        const p = raw ? JSON.parse(raw) : {};
+        const tenants = p.hm_activeTenants || [];
+        return tenants.some((t: any) => t.id === 9001);
+      });
+      expect(result).toBe(false);
+    }).toPass({ timeout: 5_000 });
+
+    // pastTenantsData 검증
+    const pastResult = await page.evaluate(() => {
       const raw = localStorage.getItem('appData');
       const p = raw ? JSON.parse(raw) : {};
-      const tenants = p.hm_activeTenants || [];
       const past = p.hm_pastTenantsData || {};
-      return {
-        hasTestTenant: tenants.some((t: any) => t.id === 9001),
-        hasPastRecord: Object.keys(past).some((k: string) => k.includes('스타빌') && k.includes('101')),
-      };
+      return Object.keys(past).some((k: string) => k.includes('스타빌') && k.includes('101'));
     });
-    expect(result.hasTestTenant).toBe(false);
-    expect(result.hasPastRecord).toBe(true);
+    expect(pastResult).toBe(true);
   } else {
     await expect(disabledBtn).toBeVisible();
   }
