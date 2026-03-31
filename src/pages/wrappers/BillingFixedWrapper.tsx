@@ -15,7 +15,7 @@ export function BillingFixedWrapper() {
       billingMode="fixed"
       myBuildings={ctx.myBuildings}
       activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
-      addBilling={ctx.addBilling}
+      addBilling={ctx.addBilling} /* TODO Phase 6: useGenerateBilling mutation — API shape differs (buildingId/year/month vs building/room/items) */
       billingConfirmed={ctx.billingConfirmed}
       setBillingConfirmed={ctx.setBillingConfirmed}
       billingSent={ctx.billingSent}

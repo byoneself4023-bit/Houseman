@@ -83,7 +83,7 @@ export function useAppData(): Omit<AppData, 'navigateTo'> {
   };
 
   const [roomBalances, setRoomBalances] = useState<Record<string, number>>(() =>
-    loadLS('hm_roomBalances', defaultBalances()),
+    USE_API ? {} : loadLS('hm_roomBalances', defaultBalances()),
   );
   const [billingHistory, setBillingHistory] = useState<any[]>(() =>
     loadLS('hm_billingHistory', [
@@ -314,10 +314,10 @@ export function useAppData(): Omit<AppData, 'navigateTo'> {
     ]),
   );
   const [billingConfirmed, setBillingConfirmed] = useState<Record<string, any>>(() =>
-    loadLS('hm_billingConfirmed', {}),
+    USE_API ? {} : loadLS('hm_billingConfirmed', {}),
   );
   const [billingSent, setBillingSent] = useState<Record<string, any>>(() =>
-    loadLS('hm_billingSent', {}),
+    USE_API ? {} : loadLS('hm_billingSent', {}),
   );
   const [parkingInfo, setParkingInfo] = useState<Record<string, any>>(() =>
     loadLS('hm_parkingInfo', {}),
