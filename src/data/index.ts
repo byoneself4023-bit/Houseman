@@ -18,6 +18,7 @@ export {
   buildingAbbr,
   truncate10,
   calcLateFee,
+  calcDueAmounts,
   settlementMaster,
   getSettlementPeriod,
   calcFee,

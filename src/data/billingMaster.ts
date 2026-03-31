@@ -439,14 +439,79 @@ export const buildingAbbr: Record<string, string> = {
 // 10원 단위 절사
 export const truncate10 = (amount: number): number => Math.floor(amount / 10) * 10;
 
-// 연체수수료 계산 (납부기한 5일 초과 시 5%)
-export const calcLateFee = (amount: number, dueDay: number): number => {
-  const today = new Date().getDate();
-  const overdueDays = today - dueDay;
-  if (overdueDays > 5) {
-    return truncate10(Math.round(amount * 0.05));
+// ── 연체수수료 설정 인터페이스 ──
+interface LateFeeSettings {
+  late_fee_rate?: number | null;
+  late_fee_apply_type?: 'days' | 'months' | null;
+  late_fee_apply_value?: number | null;
+}
+
+// ── 연체수수료 계산 (건물/임차인 레벨 설정 기반) ──
+// 기존 호환: calcLateFee(amount, dueDay) → 고정 5%, 5일 초과 시 → number 반환
+// 확장: calcLateFee(amount, dueDate, buildingSettings, tenantOverride) → 건물별/임차인별 커스텀 → { fee, applyDate } 반환
+export function calcLateFee(amount: number, dueDay: number): number;
+export function calcLateFee(amount: number, dueDate: string | Date, buildingSettings?: LateFeeSettings, tenantOverride?: LateFeeSettings): { fee: number; applyDate: Date | null };
+export function calcLateFee(
+  amount: number,
+  dueDayOrDate: number | string | Date,
+  buildingSettings: LateFeeSettings = {},
+  tenantOverride: LateFeeSettings = {},
+): number | { fee: number; applyDate: Date | null } {
+  // 기존 호환: dueDay(숫자)만 넘기면 기존 5%/5일 로직
+  if (typeof dueDayOrDate === 'number' && !buildingSettings.late_fee_rate && !tenantOverride.late_fee_rate) {
+    const today = new Date().getDate();
+    const overdueDays = today - dueDayOrDate;
+    if (overdueDays > 5) {
+      return truncate10(Math.round(amount * 0.05));
+    }
+    return 0;
   }
-  return 0;
+
+  // 확장: 건물/임차인별 커스텀 연체율
+  const rate = tenantOverride?.late_fee_rate ?? buildingSettings?.late_fee_rate;
+  if (!rate || rate === 0) return { fee: 0, applyDate: null };
+
+  const applyType = tenantOverride?.late_fee_apply_type ?? buildingSettings?.late_fee_apply_type ?? 'days';
+  const applyValue = tenantOverride?.late_fee_apply_value ?? buildingSettings?.late_fee_apply_value ?? 5;
+
+  const due = typeof dueDayOrDate === 'string' ? new Date(dueDayOrDate)
+    : typeof dueDayOrDate === 'number' ? new Date(new Date().getFullYear(), new Date().getMonth(), dueDayOrDate)
+    : dueDayOrDate;
+
+  let applyDate: Date;
+  if (applyType === 'months') {
+    applyDate = new Date(due);
+    applyDate.setMonth(applyDate.getMonth() + applyValue);
+  } else {
+    applyDate = new Date(due);
+    applyDate.setDate(applyDate.getDate() + applyValue);
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (today < applyDate) return { fee: 0, applyDate };
+
+  const fee = truncate10(Math.round(amount * rate / 100));
+  return { fee, applyDate };
+}
+
+// ── 납기내/납기후 금액 계산 ──
+export const calcDueAmounts = (
+  totalBeforeLateFee: number,
+  dueDate: string | Date,
+  buildingSettings: LateFeeSettings = {},
+  tenantOverride: LateFeeSettings = {},
+): { totalWithinDue: number; totalAfterDue: number; lateFee: number; applyDate: Date | null } => {
+  const result = calcLateFee(totalBeforeLateFee, dueDate, buildingSettings, tenantOverride);
+  if (typeof result === 'number') {
+    return { totalWithinDue: totalBeforeLateFee, totalAfterDue: totalBeforeLateFee + result, lateFee: result, applyDate: null };
+  }
+  return {
+    totalWithinDue: totalBeforeLateFee,
+    totalAfterDue: totalBeforeLateFee + result.fee,
+    lateFee: result.fee,
+    applyDate: result.applyDate,
+  };
 };
 
 // ========== 건물주 정산서 마스터 ==========
