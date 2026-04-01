@@ -112,7 +112,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
       )}
 
       {/* Bottom tab bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-hm-border flex items-center justify-around z-[999]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="fixed bottom-0 left-0 right-0 h-14 bg-white/80 backdrop-blur-lg shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-around z-[999]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {mobileTabs.map((t) => {
           const active = page === t.id;
           const Icon = iconMap[t.id];
@@ -122,9 +122,9 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
               onClick={() => navigateTo(t.id)}
               className="flex-1 flex flex-col items-center gap-0.5 py-1.5 cursor-pointer active:scale-95 transition-transform duration-100"
             >
-              {Icon ? <Icon size={22} className={active ? 'text-hm-blue-dark' : 'text-hm-text-muted'} /> : <span className="text-xl">{t.id}</span>}
-              <span className={cn('text-xs', active ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-muted')}>{t.label}</span>
-              {active && <div className="w-1 h-1 rounded-full bg-hm-blue-dark -mt-0.5" />}
+              {Icon ? <Icon size={22} className={active ? 'text-hm-primary' : 'text-hm-text-muted'} /> : <span className="text-xl">{t.id}</span>}
+              <span className={cn('text-xs', active ? 'font-bold text-hm-primary' : 'font-medium text-hm-text-muted')}>{t.label}</span>
+              {active && <div className="w-5 h-0.5 rounded-full bg-hm-primary mt-0.5" />}
             </div>
           );
         })}

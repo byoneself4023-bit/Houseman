@@ -97,7 +97,7 @@ export function AuthGate() {
           onChange={(e) => { setLoginPhone(e.target.value); setLoginError(''); }}
           placeholder="010-0000-0000"
           onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleLogin()}
-          className="h-11"
+          className="h-11 bg-hm-gray-50"
           disabled={isLoading}
         />
       </div>
@@ -111,7 +111,7 @@ export function AuthGate() {
           onChange={(e) => { setLoginPw(e.target.value); setLoginError(''); }}
           placeholder="비밀번호 입력"
           onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleLogin()}
-          className="h-11"
+          className="h-11 bg-hm-gray-50"
           disabled={isLoading}
         />
       </div>
@@ -130,7 +130,7 @@ export function AuthGate() {
         className={cn(
           'w-full h-12 text-base font-bold rounded-lg transition-all duration-200',
           loginPhone && loginPw && !isLoading
-            ? 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-lg hover:brightness-110'
+            ? 'bg-gradient-to-r from-hm-primary to-[#5B7FFF] hover:shadow-lg hover:brightness-110'
             : '',
         )}
       >
@@ -159,7 +159,7 @@ export function AuthGate() {
   // Mobile: single column layout
   if (isMobile) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#1B1F2E] to-[#2A3352]">
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] to-[#1E293B]">
         <div className="w-[380px] p-9 rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
           {formContent}
         </div>
@@ -171,7 +171,7 @@ export function AuthGate() {
   return (
     <div className="h-screen flex">
       {/* Left brand panel */}
-      <div className="w-[480px] shrink-0 bg-gradient-to-br from-[#1B1F2E] to-[#2A3352] flex flex-col items-center justify-center relative">
+      <div className="w-[480px] shrink-0 bg-gradient-to-br from-[#0F172A] to-[#1E293B] flex flex-col items-center justify-center relative">
         <div className="text-center">
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-hm-blue to-hm-blue-dark inline-flex items-center justify-center mb-6 shadow-[0_8px_32px_rgba(59,130,246,0.3)]">
             <Building2 size={40} className="text-white" />
