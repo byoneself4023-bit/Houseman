@@ -34,10 +34,10 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
       )}>
         {/* Left: page title */}
         <div className={cn('flex items-center', isMobile ? 'gap-2' : 'gap-3')}>
-          <span className={isMobile ? 'text-[15px]' : 'text-[17px]'}>
+          <span className={isMobile ? 'text-base' : 'text-lg'}>
             {role === 'owner' ? '🏠' : role === 'homepage' ? '🌐' : menuItems.find((m) => m.id === page)?.icon}
           </span>
-          <span className={cn('font-bold text-hm-text', isMobile ? 'text-sm' : 'text-[15px]')}>
+          <span className={cn('font-bold text-hm-text', isMobile ? 'text-sm' : 'text-base')}>
             {role === 'owner' ? '내 건물 현황' : role === 'homepage' ? '공실 매물' : menuItems.find((m) => m.id === page)?.label}
             {!isMobile && role !== 'owner' && selectedBuilding && (
               <span className="text-hm-text-muted font-medium"> › {selectedBuilding}</span>
@@ -54,16 +54,16 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
             )}>
               <Avatar className="w-7 h-7">
                 <AvatarFallback className={cn(
-                  'text-[11px] font-bold',
+                  'text-xs font-bold',
                   isGeneral ? 'bg-hm-blue text-white' : 'bg-[#F59E0B] text-white',
                 )}>
                   {currentStaff.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <span className={cn('text-[11px] font-bold', isGeneral ? 'text-hm-blue-dark' : 'text-[#92400E]')}>
+              <span className={cn('text-xs font-bold', isGeneral ? 'text-hm-blue-dark' : 'text-[#92400E]')}>
                 {currentStaff.name}
               </span>
-              {!isGeneral && <span className="text-[10px] text-[#B45309]">({myBuildings.length}건물)</span>}
+              {!isGeneral && <span className="text-xs text-[#B45309]">({myBuildings.length}건물)</span>}
             </div>
           )}
           <span className="text-xs text-hm-text-muted">
@@ -75,7 +75,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
           </span>
           <div className="relative cursor-pointer hover:animate-bell-ring">
             <Bell size={isMobile ? 16 : 18} className="text-[#6B7280]" />
-            <div className="absolute -top-0.5 -right-1 w-3.5 h-3.5 rounded-full bg-[#EF4444] text-white text-[8px] font-extrabold flex items-center justify-center">3</div>
+            <div className="absolute -top-0.5 -right-1 w-3.5 h-3.5 rounded-full bg-[#EF4444] text-white text-[8px] font-bold flex items-center justify-center">3</div>
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
           <span className="text-xs font-bold text-[#92400E]">📌 {currentStaff.name} · {myBuildings.length}개 건물</span>
           <div className="flex gap-[3px] flex-wrap">
             {myBuildings.map((b) => (
-              <span key={b} className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-[#92400E] border border-[#FDE68A]">{b}</span>
+              <span key={b} className="px-2 py-0.5 rounded text-xs font-semibold bg-white text-[#92400E] border border-[#FDE68A]">{b}</span>
             ))}
           </div>
         </div>

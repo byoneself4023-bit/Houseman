@@ -167,16 +167,16 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
   const renderSummaryCards = () => (
     <div className="flex gap-4 mb-6 flex-wrap">
       <div className="flex-[1_1_200px] bg-white border border-hm-border rounded-xl p-4 md:p-5 border-t-[3px] border-t-blue-500">
-        <div className="text-[13px] text-slate-500 font-semibold mb-2">총 매출</div>
-        <div className={`${isMobile ? 'text-xl' : 'text-[26px]'} font-extrabold text-blue-500`}>{fmt(totals.totalRevenue)}원</div>
+        <div className="text-sm text-slate-500 font-semibold mb-2">총 매출</div>
+        <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-blue-500`}>{fmt(totals.totalRevenue)}원</div>
       </div>
       <div className="flex-[1_1_200px] bg-white border border-hm-border rounded-xl p-4 md:p-5 border-t-[3px] border-t-amber-500">
-        <div className="text-[13px] text-slate-500 font-semibold mb-2">총 비용</div>
-        <div className={`${isMobile ? 'text-xl' : 'text-[26px]'} font-extrabold text-amber-500`}>{fmt(totals.totalCost)}원</div>
+        <div className="text-sm text-slate-500 font-semibold mb-2">총 비용</div>
+        <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-amber-500`}>{fmt(totals.totalCost)}원</div>
       </div>
       <div className={`flex-[1_1_200px] bg-white border border-hm-border rounded-xl p-4 md:p-5 border-t-[3px] ${totals.netProfit >= 0 ? 'border-t-emerald-500' : 'border-t-red-500'}`}>
-        <div className="text-[13px] text-slate-500 font-semibold mb-2">순이익</div>
-        <div className={`${isMobile ? 'text-xl' : 'text-[26px]'} font-extrabold ${totals.netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{fmt(totals.netProfit)}원</div>
+        <div className="text-sm text-slate-500 font-semibold mb-2">순이익</div>
+        <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold ${totals.netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{fmt(totals.netProfit)}원</div>
         <div className="text-xs text-slate-400 mt-1">마진율 {totals.marginRate.toFixed(1)}%</div>
       </div>
     </div>
@@ -199,7 +199,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
       ].map(tab => (
         <button
           key={tab.key}
-          className={`px-[18px] py-2 rounded-lg border-none font-bold text-[13px] cursor-pointer transition-colors ${viewMode === tab.key ? 'bg-blue-500 text-white' : 'bg-hm-border text-slate-500 hover:bg-slate-200'}`}
+          className={`px-[18px] py-2 rounded-lg border-none font-bold text-sm cursor-pointer transition-colors ${viewMode === tab.key ? 'bg-blue-500 text-white' : 'bg-hm-border text-slate-500 hover:bg-slate-200'}`}
           onClick={() => { setViewMode(tab.key); setSelectedBuilding(null); }}
         >
           {tab.label}
@@ -216,7 +216,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
 
     return (
       <div className={`bg-white border border-hm-border rounded-xl ${isMobile ? 'p-4' : 'p-6'} mb-6`}>
-        <div className="text-lg font-extrabold text-slate-800 mb-4 flex justify-between items-center">
+        <div className="text-lg font-bold text-slate-800 mb-4 flex justify-between items-center">
           <span>{d.name} 수익 상세</span>
           <button className="bg-transparent border-none text-xl cursor-pointer text-slate-400 font-bold hover:text-slate-600 transition-colors" onClick={() => setSelectedBuilding(null)}>x</button>
         </div>
@@ -225,28 +225,28 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
             <div className="text-sm font-bold text-blue-500 mb-2 pb-1 border-b-2 border-blue-500">매출 항목</div>
             <div className="mb-4">
               {d.revenue.mgmtFeePct > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>관리수수료 ({(d.feeRate * 100).toFixed(1)}%)</span>
                   <span className="font-bold">{fmt(d.revenue.mgmtFeePct)}원</span>
                 </div>
               )}
               {d.revenue.mgmtFeeFixed > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>관리수수료 (정액)</span>
                   <span className="font-bold">{fmt(d.revenue.mgmtFeeFixed)}원</span>
                 </div>
               )}
-              <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+              <div className="flex justify-between py-1.5 text-sm text-slate-700">
                 <span>전기/가스 마진 ({d.tenantCount}세대 x 5,000)</span>
                 <span className="font-bold">{fmt(d.revenue.utilityMargin)}원</span>
               </div>
               {d.revenue.repairMargin > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>수리/공사 마진 (30%)</span>
                   <span className="font-bold">{fmt(d.revenue.repairMargin)}원</span>
                 </div>
               )}
-              <div className="flex justify-between py-1.5 text-[13px] font-extrabold border-t border-hm-border pt-2 mt-1 text-blue-500">
+              <div className="flex justify-between py-1.5 text-sm font-bold border-t border-hm-border pt-2 mt-1 text-blue-500">
                 <span>매출 소계</span>
                 <span>{fmt(d.revenue.total)}원</span>
               </div>
@@ -255,29 +255,29 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
           <div className="flex-[1_1_280px]">
             <div className="text-sm font-bold text-amber-500 mb-2 pb-1 border-b-2 border-amber-500">비용 항목</div>
             <div className="mb-4">
-              <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+              <div className="flex justify-between py-1.5 text-sm text-slate-700">
                 <span>인건비 배분</span>
                 <span className="font-bold">{fmt(d.cost.payroll)}원</span>
               </div>
               {d.cost.repair > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>수선비 (70%)</span>
                   <span className="font-bold">{fmt(d.cost.repair)}원</span>
                 </div>
               )}
               {d.cost.utility > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>공과금 (공용)</span>
                   <span className="font-bold">{fmt(d.cost.utility)}원</span>
                 </div>
               )}
               {d.cost.cleaning > 0 && (
-                <div className="flex justify-between py-1.5 text-[13px] text-slate-700">
+                <div className="flex justify-between py-1.5 text-sm text-slate-700">
                   <span>청소비</span>
                   <span className="font-bold">{fmt(d.cost.cleaning)}원</span>
                 </div>
               )}
-              <div className="flex justify-between py-1.5 text-[13px] font-extrabold border-t border-hm-border pt-2 mt-1 text-amber-500">
+              <div className="flex justify-between py-1.5 text-sm font-bold border-t border-hm-border pt-2 mt-1 text-amber-500">
                 <span>비용 소계</span>
                 <span>{fmt(d.cost.total)}원</span>
               </div>
@@ -288,7 +288,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
         <div className="mt-4 pt-4 border-t border-hm-border">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-bold text-slate-800">순이익</span>
-            <span className={`text-lg font-extrabold ${profitColor}`}>{fmt(d.netProfit)}원</span>
+            <span className={`text-lg font-bold ${profitColor}`}>{fmt(d.netProfit)}원</span>
           </div>
           <div className="bg-slate-100 rounded-md h-6 overflow-hidden relative">
             {d.revenue.total > 0 && (
@@ -338,19 +338,19 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
                   }}
                   onClick={() => setSelectedBuilding(b.name === selectedBuilding ? null : b.name)}
                 >
-                  <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100">{i + 1}</td>
-                  <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100 font-bold">
+                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">{i + 1}</td>
+                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 font-bold">
                     {b.name}
-                    {isBottom20 && <span className="inline-block bg-amber-100 text-amber-600 text-[11px] font-bold px-2 py-0.5 rounded-md ml-1.5">하위</span>}
+                    {isBottom20 && <span className="inline-block bg-amber-100 text-amber-600 text-xs font-bold px-2 py-0.5 rounded-md ml-1.5">하위</span>}
                   </td>
-                  <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.revenue.total)}</td>
-                  <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
-                  <td className={`px-3.5 py-3 text-[13px] border-b border-slate-100 text-right tabular-nums font-bold ${profitColor}`}>{fmt(b.netProfit)}</td>
-                  <td className={`px-3.5 py-3 text-[13px] border-b border-slate-100 text-right tabular-nums ${profitColor}`}>
+                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.revenue.total)}</td>
+                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
+                  <td className={`px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums font-bold ${profitColor}`}>{fmt(b.netProfit)}</td>
+                  <td className={`px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums ${profitColor}`}>
                     {b.profitRate.toFixed(1)}%
                   </td>
                   {!isMobile && (
-                    <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100">
+                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">
                       <div className={`h-[18px] rounded ${b.netProfit >= 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all duration-300 ease-in-out`} style={{ width: `${barW}%`, minWidth: barW > 0 ? 4 : 0 }} />
                     </td>
                   )}
@@ -366,13 +366,13 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
                 </tr>
                 {reviewItems.map(b => (
                   <tr key={b.name} className="bg-amber-50">
-                    <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100">-</td>
-                    <td className="px-3.5 py-3 text-[13px] border-b border-slate-100 font-bold text-amber-600">{b.name}</td>
-                    <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100 text-right tabular-nums">0</td>
-                    <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
-                    <td className="px-3.5 py-3 text-[13px] border-b border-slate-100 text-right tabular-nums text-red-500 font-bold">{fmt(b.netProfit)}</td>
-                    <td className="px-3.5 py-3 text-[13px] border-b border-slate-100 text-right tabular-nums text-amber-600">재검토 필요</td>
-                    {!isMobile && <td className="px-3.5 py-3 text-[13px] text-slate-800 border-b border-slate-100" />}
+                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">-</td>
+                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 font-bold text-amber-600">{b.name}</td>
+                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">0</td>
+                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
+                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-red-500 font-bold">{fmt(b.netProfit)}</td>
+                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-amber-600">재검토 필요</td>
+                    {!isMobile && <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100" />}
                   </tr>
                 ))}
               </>
@@ -456,7 +456,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
         </div>
         <div className={`flex ${isMobile ? 'gap-1.5' : 'gap-4'}`}>
           {trendData.map(d => (
-            <div key={d.month} className="flex-1 text-center text-[11px] text-slate-500">
+            <div key={d.month} className="flex-1 text-center text-xs text-slate-500">
               {d.month.split('-')[1]}월
             </div>
           ))}
@@ -480,7 +480,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
 
   return (
     <div className={`${isMobile ? 'p-4' : 'p-6'} bg-slate-50 min-h-screen`}>
-      <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-extrabold text-slate-800 mb-5`}>수익 대시보드</div>
+      <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-slate-800 mb-5`}>수익 대시보드</div>
       {renderMonthSelector()}
       {renderSummaryCards()}
       {renderViewTabs()}

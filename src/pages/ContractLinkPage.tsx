@@ -35,7 +35,7 @@ export const ContractLinkPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-hm-bg-hover font-['Pretendard',-apple-system,sans-serif]">
         <div className="text-center p-8">
           <div className="text-5xl mb-4">📋</div>
-          <div className="text-lg font-extrabold text-gray-900 mb-2">계약서를 찾을 수 없습니다</div>
+          <div className="text-lg font-bold text-gray-900 mb-2">계약서를 찾을 수 없습니다</div>
           <div className="text-sm text-gray-500">링크가 만료되었거나 잘못된 주소입니다.</div>
         </div>
       </div>
@@ -49,14 +49,14 @@ export const ContractLinkPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-green-50 font-['Pretendard',-apple-system,sans-serif]">
         <div className="text-center p-8 max-w-[400px]">
           <div className="text-6xl mb-4">✅</div>
-          <div className="text-[22px] font-black text-hm-success mb-2">계약서 전송 완료</div>
+          <div className="text-xl font-bold text-hm-success mb-2">계약서 전송 완료</div>
           <div className="text-sm text-gray-500 leading-relaxed mb-6">
             {contract.building} {contract.room}호 계약 정보가 전송되었습니다.<br />
             HOUSEMAN에서 확인 후 안내드리겠습니다.
           </div>
           <div className="p-4 bg-white rounded-xl border border-hm-success-border text-left">
             <div className="text-xs font-bold text-hm-success mb-2">전송된 정보</div>
-            <div className="text-[13px] text-gray-700 leading-[1.8]">
+            <div className="text-sm text-gray-700 leading-[1.8]">
               <div>임차인: {tenantForm.name}</div>
               <div>연락처: {tenantForm.phone}</div>
               <div>입주일: {contract.moveIn}</div>
@@ -73,7 +73,7 @@ export const ContractLinkPage = () => {
       <div className="bg-gray-900 text-white px-5 py-4">
         <div className="max-w-[520px] mx-auto">
           <div className="text-xs font-semibold text-white/50 mb-1">HOUSEMAN</div>
-          <div className="text-lg font-extrabold">{contract.building} {contract.room}호 계약서</div>
+          <div className="text-lg font-bold">{contract.building} {contract.room}호 계약서</div>
           <div className="text-xs text-white/60 mt-1">{contract.type} · 입주일 {contract.moveIn}</div>
         </div>
       </div>
@@ -81,8 +81,8 @@ export const ContractLinkPage = () => {
       <div className={`max-w-[520px] mx-auto ${isMobile ? 'px-4 py-5' : 'px-4 py-8'}`}>
         {/* 계약 정보 요약 */}
         <div className="p-4 bg-white rounded-xl border border-gray-200 mb-5">
-          <div className="text-[13px] font-extrabold text-gray-900 mb-3">계약 정보</div>
-          <div className="grid grid-cols-2 gap-2 text-[13px]">
+          <div className="text-sm font-bold text-gray-900 mb-3">계약 정보</div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="text-gray-500">{depositLabel}</div><div className="font-bold">{fmt(contract.deposit)}만원</div>
             <div className="text-gray-500">월세</div><div className="font-bold text-[#c41230]">{fmt(contract.rent)}만원</div>
             {contract.mgmt > 0 && <><div className="text-gray-500">관리비</div><div className="font-bold">{fmt(contract.mgmt)}만원</div></>}
@@ -94,7 +94,7 @@ export const ContractLinkPage = () => {
         {/* 특약사항 */}
         {contract.specialTerms && (
           <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 mb-5">
-            <div className="text-[13px] font-extrabold text-amber-800 mb-2">계약 특약사항</div>
+            <div className="text-sm font-bold text-amber-800 mb-2">계약 특약사항</div>
             <div className="text-xs text-amber-900 leading-[1.8] whitespace-pre-wrap">{contract.specialTerms}</div>
           </div>
         )}
@@ -103,8 +103,8 @@ export const ContractLinkPage = () => {
         {step === 'broker' && (
           <div className="p-5 bg-white rounded-xl border-2 border-hm-blue">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-bold text-white bg-hm-blue px-2.5 py-[3px] rounded-full">STEP 1</span>
-              <span className="text-base font-extrabold">부동산 정보 입력</span>
+              <span className="text-xs font-bold text-white bg-hm-blue px-2.5 py-[3px] rounded-full">STEP 1</span>
+              <span className="text-base font-bold">부동산 정보 입력</span>
             </div>
             <div className="text-xs text-gray-500 mb-4">부동산에서 작성할 부분입니다. 완료 후 임차인에게 링크를 전달해주세요.</div>
 
@@ -141,10 +141,10 @@ export const ContractLinkPage = () => {
               } catch { /* ignore */ }
               setStep('tenant');
             }}
-              className="w-full py-3.5 bg-hm-blue text-white border-none rounded-[10px] text-[15px] font-extrabold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
+              className="w-full py-3.5 bg-hm-blue text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
               완료 → 임차인에게 전달하기
             </button>
-            <div className="text-[11px] text-gray-400 text-center mt-2">완료 후 이 화면을 임차인에게 보여주시면 됩니다</div>
+            <div className="text-xs text-gray-400 text-center mt-2">완료 후 이 화면을 임차인에게 보여주시면 됩니다</div>
           </div>
         )}
 
@@ -152,8 +152,8 @@ export const ContractLinkPage = () => {
         {step === 'tenant' && (
           <div className="p-5 bg-white rounded-xl border-2 border-hm-success">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-bold text-white bg-hm-success px-2.5 py-[3px] rounded-full">STEP 2</span>
-              <span className="text-base font-extrabold">임차인 정보 입력</span>
+              <span className="text-xs font-bold text-white bg-hm-success px-2.5 py-[3px] rounded-full">STEP 2</span>
+              <span className="text-base font-bold">임차인 정보 입력</span>
             </div>
             <div className="text-xs mb-4 px-3 py-2 bg-hm-success-bg rounded-md font-semibold text-hm-success">
               임차인분께서 직접 입력해주세요
@@ -161,52 +161,52 @@ export const ContractLinkPage = () => {
 
             <div className="grid grid-cols-2 gap-2.5 mb-3">
               <div>
-                <div className="text-[11px] font-semibold text-hm-danger mb-[3px]">이름 *</div>
+                <div className="text-xs font-semibold text-hm-danger mb-[3px]">이름 *</div>
                 <input value={tenantForm.name} onChange={e => setTenantForm(p => ({ ...p, name: e.target.value }))} placeholder="이름" className={inputCls} />
               </div>
               <div>
-                <div className="text-[11px] font-semibold text-hm-danger mb-[3px]">연락처 *</div>
+                <div className="text-xs font-semibold text-hm-danger mb-[3px]">연락처 *</div>
                 <input value={tenantForm.phone} onChange={e => setTenantForm(p => ({ ...p, phone: e.target.value }))} placeholder="010-0000-0000" className={inputCls} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2.5 mb-3">
               <div>
-                <div className="text-[11px] font-semibold text-hm-danger mb-[3px]">주민등록번호 *</div>
+                <div className="text-xs font-semibold text-hm-danger mb-[3px]">주민등록번호 *</div>
                 <input value={tenantForm.ssn} onChange={e => setTenantForm(p => ({ ...p, ssn: e.target.value }))} placeholder="000000-0000000" className={`${inputCls} font-mono`} />
               </div>
               <div>
-                <div className="text-[11px] font-semibold text-gray-700 mb-[3px]">이메일</div>
+                <div className="text-xs font-semibold text-gray-700 mb-[3px]">이메일</div>
                 <input value={tenantForm.email} onChange={e => setTenantForm(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className={inputCls} />
               </div>
             </div>
             <div className="mb-3">
-              <div className="text-[11px] font-semibold text-gray-700 mb-[3px]">주소</div>
+              <div className="text-xs font-semibold text-gray-700 mb-[3px]">주소</div>
               <input value={tenantForm.address} onChange={e => setTenantForm(p => ({ ...p, address: e.target.value }))} placeholder="현재 거주지 주소" className={inputCls} />
             </div>
 
-            <div className="text-xs font-extrabold text-gray-700 mb-2 mt-4 pt-3 border-t border-gray-200">비상연락처</div>
+            <div className="text-xs font-bold text-gray-700 mb-2 mt-4 pt-3 border-t border-gray-200">비상연락처</div>
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div>
-                <div className="text-[10px] text-gray-500 mb-0.5">이름</div>
-                <input value={tenantForm.emergencyName} onChange={e => setTenantForm(p => ({ ...p, emergencyName: e.target.value }))} placeholder="이름" className={`${inputCls} py-2 text-[13px]`} />
+                <div className="text-xs text-gray-500 mb-0.5">이름</div>
+                <input value={tenantForm.emergencyName} onChange={e => setTenantForm(p => ({ ...p, emergencyName: e.target.value }))} placeholder="이름" className={`${inputCls} py-2 text-sm`} />
               </div>
               <div>
-                <div className="text-[10px] text-gray-500 mb-0.5">연락처</div>
-                <input value={tenantForm.emergencyPhone} onChange={e => setTenantForm(p => ({ ...p, emergencyPhone: e.target.value }))} placeholder="010-0000-0000" className={`${inputCls} py-2 text-[13px]`} />
+                <div className="text-xs text-gray-500 mb-0.5">연락처</div>
+                <input value={tenantForm.emergencyPhone} onChange={e => setTenantForm(p => ({ ...p, emergencyPhone: e.target.value }))} placeholder="010-0000-0000" className={`${inputCls} py-2 text-sm`} />
               </div>
               <div>
-                <div className="text-[10px] text-gray-500 mb-0.5">관계</div>
-                <input value={tenantForm.emergencyRelation} onChange={e => setTenantForm(p => ({ ...p, emergencyRelation: e.target.value }))} placeholder="부모/배우자" className={`${inputCls} py-2 text-[13px]`} />
+                <div className="text-xs text-gray-500 mb-0.5">관계</div>
+                <input value={tenantForm.emergencyRelation} onChange={e => setTenantForm(p => ({ ...p, emergencyRelation: e.target.value }))} placeholder="부모/배우자" className={`${inputCls} py-2 text-sm`} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 mb-4">
               <div>
-                <div className="text-[11px] font-semibold text-gray-700 mb-[3px]">차량번호</div>
+                <div className="text-xs font-semibold text-gray-700 mb-[3px]">차량번호</div>
                 <input value={tenantForm.carNumber} onChange={e => setTenantForm(p => ({ ...p, carNumber: e.target.value }))} placeholder="12가 3456" className={inputCls} />
               </div>
               <div>
-                <div className="text-[11px] font-semibold text-gray-700 mb-[3px]">입금자명</div>
+                <div className="text-xs font-semibold text-gray-700 mb-[3px]">입금자명</div>
                 <input value={tenantForm.paymentAlias} onChange={e => setTenantForm(p => ({ ...p, paymentAlias: e.target.value }))} placeholder="계약금 입금자명" className={inputCls} />
               </div>
             </div>
@@ -216,7 +216,7 @@ export const ContractLinkPage = () => {
               setVerifyPhone(tenantForm.phone);
               setStep('verify');
             }}
-              className="w-full py-3.5 bg-hm-success text-white border-none rounded-[10px] text-[15px] font-extrabold cursor-pointer font-[inherit] hover:bg-emerald-700 transition-colors">
+              className="w-full py-3.5 bg-hm-success text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] hover:bg-emerald-700 transition-colors">
               다음 → 본인인증
             </button>
           </div>
@@ -226,10 +226,10 @@ export const ContractLinkPage = () => {
         {step === 'verify' && (
           <div className="p-5 bg-white rounded-xl border-2 border-amber-400">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-bold text-white bg-amber-400 px-2.5 py-[3px] rounded-full">인증</span>
-              <span className="text-base font-extrabold">본인 인증</span>
+              <span className="text-xs font-bold text-white bg-amber-400 px-2.5 py-[3px] rounded-full">인증</span>
+              <span className="text-base font-bold">본인 인증</span>
             </div>
-            <div className="text-[13px] text-gray-500 mb-4">
+            <div className="text-sm text-gray-500 mb-4">
               {verifyPhone}으로 인증번호를 발송합니다.
             </div>
 
@@ -239,7 +239,7 @@ export const ContractLinkPage = () => {
                 setSentCode(code);
                 toast.info(`[테스트] 인증번호: ${code} — 실제 운영 시 SMS로 발송됩니다.`);
               }}
-                className="w-full py-3.5 bg-amber-400 text-white border-none rounded-[10px] text-[15px] font-extrabold cursor-pointer font-[inherit] mb-3 hover:bg-amber-500 transition-colors">
+                className="w-full py-3.5 bg-amber-400 text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] mb-3 hover:bg-amber-500 transition-colors">
                 📩 인증번호 발송
               </button>
             ) : (
@@ -248,7 +248,7 @@ export const ContractLinkPage = () => {
                   <div className="text-xs font-semibold text-gray-700 mb-1">인증번호 6자리</div>
                   <input value={verifyCode} onChange={e => setVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     placeholder="000000" maxLength={6}
-                    className={`${inputCls} text-2xl font-extrabold text-center tracking-[0.3em] font-mono`} />
+                    className={`${inputCls} text-2xl font-bold text-center tracking-[0.3em] font-mono`} />
                 </div>
                 <button onClick={() => {
                   if (verifyCode === sentCode) {
@@ -268,7 +268,7 @@ export const ContractLinkPage = () => {
                     toast.error('인증번호가 일치하지 않습니다.');
                   }
                 }}
-                  className={`w-full py-3.5 text-white border-none rounded-[10px] text-[15px] font-extrabold font-[inherit] mb-2 transition-colors ${verifyCode.length === 6 ? 'bg-hm-success cursor-pointer hover:bg-emerald-700' : 'bg-gray-300 cursor-default'}`}>
+                  className={`w-full py-3.5 text-white border-none rounded-[10px] text-base font-bold font-[inherit] mb-2 transition-colors ${verifyCode.length === 6 ? 'bg-hm-success cursor-pointer hover:bg-emerald-700' : 'bg-gray-300 cursor-default'}`}>
                   계약서 전송
                 </button>
                 <button onClick={() => { setSentCode(''); setVerifyCode(''); }}
@@ -286,7 +286,7 @@ export const ContractLinkPage = () => {
         )}
 
         {/* 하단 */}
-        <div className="mt-8 p-4 text-[11px] text-gray-400 text-center leading-relaxed">
+        <div className="mt-8 p-4 text-xs text-gray-400 text-center leading-relaxed">
           HOUSEMAN 하우스맨<br />
           문의: 010-5560-8245
         </div>

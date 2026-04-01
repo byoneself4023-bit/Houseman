@@ -52,15 +52,15 @@ const standardParkingTypeLabels = { remote: "주차리모컨", free: "선착순�
 /* ── Read-only display cell ── */
 const RoCell = ({ label, value, color = "#8B95A1", style: extraStyle = {} }) => (
   <div className="py-1.5 px-2.5 bg-hm-bg-hover rounded-md border border-hm-border" style={extraStyle}>
-    <div className="text-[11px] mb-[3px]" style={{ color }}>{label}</div>
-    <div className="text-[13px] font-semibold text-hm-text">{value || "-"}</div>
+    <div className="text-xs mb-[3px]" style={{ color }}>{label}</div>
+    <div className="text-sm font-semibold text-hm-text">{value || "-"}</div>
   </div>
 );
 
 /* ── Edit input cell ── */
 const EditCell = ({ label, color = "var(--color-hm-text-muted)", children }) => (
   <div>
-    <div className="text-[11px] mb-[3px]" style={{ color }}>{label}</div>
+    <div className="text-xs mb-[3px]" style={{ color }}>{label}</div>
     {children}
   </div>
 );
@@ -140,11 +140,11 @@ export function RoomFormSection({
           <span className={`text-xs font-bold cursor-pointer ${d.isManaged === false ? 'text-hm-danger' : 'text-hm-success'}`}>
             하우스맨 관리 호실
           </span>
-          <span className="text-[9px] text-[#8B95A1]">변경 시 확인 필요</span>
+          <span className="text-xs text-[#8B95A1]">변경 시 확인 필요</span>
         </div>
 
         {/* ── Row 1: 기본 정보 ── */}
-        <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">📋 기본 정보</div>
+        <div className="text-xs font-bold text-hm-blue-dark mb-2">📋 기본 정보</div>
         <div className="grid grid-cols-4 gap-3 mb-3">
           <EditCell label="호실형태">
             {(isShort || isLong) ? (
@@ -177,7 +177,7 @@ export function RoomFormSection({
         {/* ── Row 2: 금액 ── */}
         {isAgency ? null : (
           <>
-            <div className="text-[11px] font-[800] text-hm-success mb-2">💰 금액</div>
+            <div className="text-xs font-bold text-hm-success mb-2">💰 금액</div>
             <div className="grid grid-cols-5 gap-1.5 mb-1.5">
               <EditCell label="예치금" color="var(--color-hm-success)">
                 <input value={d.standardDeposit || ""} onChange={e => set("standardDeposit", e.target.value)} placeholder="0" className={sInputRightCn} />
@@ -296,7 +296,7 @@ export function RoomFormSection({
           <div className="col-span-full mt-2">
             <div className={`p-2.5 px-3 rounded-lg border ${hasOverride ? 'bg-hm-warning-bg border-orange-200' : 'bg-[#F0F4FF] border-blue-200'}`}>
               <div className="flex justify-between items-center mb-2">
-                <div className={`text-[10px] font-bold ${hasOverride ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
+                <div className={`text-xs font-bold ${hasOverride ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
                   📦 입금 계좌 ({roomType}) {hasOverride ? "— 호실별 변경됨" : "— 건물 기본값"}
                 </div>
               </div>
@@ -306,7 +306,7 @@ export function RoomFormSection({
                   const roomVal = roomOverrides[item.field];
                   return (
                     <div key={item.field} className={`p-2 px-2.5 rounded-lg border ${roomVal ? 'bg-hm-warning-bg border-orange-200' : 'bg-hm-bg-hover border-[#E5E8EB]'}`}>
-                      <div className="text-[10px] font-bold mb-1" style={{ color: item.color }}>{item.label}</div>
+                      <div className="text-xs font-bold mb-1" style={{ color: item.color }}>{item.label}</div>
                       <select value={roomVal} onChange={e => set(item.field, e.target.value)} className={sSelectCn}>
                         <option value="">건물 따름 ({acctLabel(bldgVal)})</option>
                         <option value="no_billing">🚫 청구안함</option>
@@ -325,7 +325,7 @@ export function RoomFormSection({
             <div className="col-span-full">
               <div className="text-[8px] text-amber-600 mb-0.5">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
               <textarea value={d.variableManagementFeeMemo || ""} onChange={e => set("variableManagementFeeMemo", e.target.value)} placeholder="근생 전용 - 변동관리비 메모"
-                rows={2} className={`${inputClassName} py-[5px] px-2 text-[11px] w-full resize-y min-h-[36px]`} />
+                rows={2} className={`${inputClassName} py-[5px] px-2 text-xs w-full resize-y min-h-[36px]`} />
             </div>
           )}
         </div>
@@ -355,7 +355,7 @@ export function RoomFormSection({
       </div>
 
       {/* ── Row 1: 기본 정보 ── */}
-      <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">📋 기본 정보</div>
+      <div className="text-xs font-bold text-hm-blue-dark mb-2">📋 기본 정보</div>
       <div className="grid grid-cols-4 gap-3 mb-3">
         <RoCell label="호실형태" value={(isShort || isLong) ? "주택" : d.roomLayout} />
         {(isShort || isLong) && <RoCell label="방구조" value={d.roomType} />}
@@ -366,7 +366,7 @@ export function RoomFormSection({
       {/* ── Row 2: 금액 ── */}
       {isAgency ? null : (
         <>
-          <div className="text-[11px] font-[800] text-hm-success mb-2">💰 금액</div>
+          <div className="text-xs font-bold text-hm-success mb-2">💰 금액</div>
           <div className="grid grid-cols-5 gap-1.5 mb-1.5">
             <RoCell label="예치금" value={d.standardDeposit} color="var(--color-hm-success)" />
             <RoCell label="임대료" value={d.standardRent} color="var(--color-hm-success)" />
@@ -425,7 +425,7 @@ export function RoomFormSection({
         <div className="col-span-full mt-2">
           <div className={`p-2.5 px-3 rounded-lg border ${hasOverride ? 'bg-hm-warning-bg border-orange-200' : 'bg-[#F0F4FF] border-blue-200'}`}>
             <div className="flex justify-between items-center mb-2">
-              <div className={`text-[10px] font-bold ${hasOverride ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
+              <div className={`text-xs font-bold ${hasOverride ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
                 📦 입금 계좌 ({roomType}) {hasOverride ? "— 호실별 변경됨" : "— 건물 기본값"}
               </div>
             </div>
@@ -437,8 +437,8 @@ export function RoomFormSection({
                 const isOverridden = !!roomVal;
                 return (
                   <div key={item.field} className={`p-2 px-2.5 rounded-lg border ${isOverridden ? 'bg-hm-warning-bg border-orange-200' : 'bg-hm-bg-hover border-[#E5E8EB]'}`}>
-                    <div className="text-[10px] font-bold mb-1" style={{ color: item.color }}>{item.label}</div>
-                    <div className={`text-[11px] font-semibold ${displayVal ? 'text-[#191F28]' : 'text-[#8B95A1]'}`}>
+                    <div className="text-xs font-bold mb-1" style={{ color: item.color }}>{item.label}</div>
+                    <div className={`text-xs font-semibold ${displayVal ? 'text-[#191F28]' : 'text-[#8B95A1]'}`}>
                       {acctLabel(displayVal)}
                       {isOverridden && <span className="text-[8px] text-hm-warning ml-1">개별</span>}
                       {!isOverridden && <span className="text-[8px] text-[#8B95A1] ml-1">(건물)</span>}
@@ -454,7 +454,7 @@ export function RoomFormSection({
           <div className="col-span-full">
             <div className="py-1.5 px-2 bg-hm-warning-bg rounded-md border border-orange-200">
               <div className="text-[8px] text-amber-600 mb-0.5">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
-              <div className="text-[10px] text-amber-800 whitespace-pre-wrap">{d.variableManagementFeeMemo || "-"}</div>
+              <div className="text-xs text-amber-800 whitespace-pre-wrap">{d.variableManagementFeeMemo || "-"}</div>
             </div>
           </div>
         )}
@@ -482,24 +482,24 @@ export function RoomFormSection({
 function AccountSettingsDisplay({ saved }) {
   return (
     <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border mt-2 mb-3">
-      <div className="text-[11px] font-bold text-hm-blue-dark mb-1.5">
-        💳 계좌 설정 <span className="text-[9px] text-[#8B95A1] font-medium">(건물 설정 기준)</span>
+      <div className="text-xs font-bold text-hm-blue-dark mb-1.5">
+        💳 계좌 설정 <span className="text-xs text-[#8B95A1] font-medium">(건물 설정 기준)</span>
       </div>
-      <div className="text-[10px] text-[#4E5968] mb-1">
+      <div className="text-xs text-[#4E5968] mb-1">
         입금방식: {saved.tenantAccountType ? (tenantAccountTypeLabels[saved.tenantAccountType] || saved.tenantAccountType) : "미설정"}
       </div>
       {saved.housemanBillingAccount && (
-        <div className="text-[10px] text-[#4E5968] mb-1">
+        <div className="text-xs text-[#4E5968] mb-1">
           하우스맨 계좌: {saved.housemanBillingAccount}
         </div>
       )}
       {[1,2,3].map(n => saved[`billingAccount${n}`] && (
-        <div key={n} className="text-[10px] text-[#4E5968] mb-0.5">
+        <div key={n} className="text-xs text-[#4E5968] mb-0.5">
           건물주 청구계좌 {n}: {saved[`billingAccount${n}Bank`] || ""} {saved[`billingAccount${n}`]} ({saved[`billingAccount${n}Holder`] || ""})
         </div>
       ))}
       {saved.rentAccountTarget && (
-        <div className="text-[9px] text-gray-500 mt-1 py-1 px-2 bg-[#F0F4FF] rounded">
+        <div className="text-xs text-gray-500 mt-1 py-1 px-2 bg-[#F0F4FF] rounded">
           월세→{saved.rentAccountTarget === "houseman" ? "HM" : saved.rentAccountTarget} · 관리비→{saved.managementFeeAccountTarget === "houseman" ? "HM" : saved.managementFeeAccountTarget || "-"} · 공과금→{saved.utilityAccountTarget === "houseman" ? "HM" : saved.utilityAccountTarget || "-"}
           {saved.electricGasAccountTarget && ` · 전기가스→${saved.electricGasAccountTarget === "houseman" ? "HM" : saved.electricGasAccountTarget}`}
         </div>

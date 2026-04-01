@@ -17,7 +17,7 @@ class BuildingDetailErrorBoundary extends React.Component<
       return (
         <div className="p-6">
           <div className="p-5 bg-hm-danger-bg border-2 border-red-300 rounded-xl">
-            <div className="text-base font-extrabold text-hm-danger mb-2">
+            <div className="text-base font-bold text-hm-danger mb-2">
               페이지 렌더링 오류
             </div>
             <pre className="text-xs text-red-800 whitespace-pre-wrap break-all">

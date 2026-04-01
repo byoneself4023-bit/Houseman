@@ -558,7 +558,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
             <div className="bg-white rounded-2xl w-full max-w-[600px] max-h-[90vh] overflow-auto p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div className="text-lg font-extrabold text-hm-text">📷 퇴실사진 등록</div>
+                  <div className="text-lg font-bold text-hm-text">📷 퇴실사진 등록</div>
                   <div className="text-xs text-hm-text-muted mt-1">{pm.building} {pm.room}호 · {pm.name}</div>
                 </div>
                 <button onClick={() => setPhotoModalTenant(null)}
@@ -603,8 +603,8 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               className={`bg-white rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${isMobile ? "w-[95%]" : "w-[600px]"}`}>
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div className="text-lg font-extrabold text-hm-warning">📋 입주체크사진</div>
-                  <div className="text-[11px] text-hm-text-muted mt-0.5">{checkPhotoView.building} {checkPhotoView.room}호 · {checkPhotoView.name} · {cpPhotos.length}장</div>
+                  <div className="text-lg font-bold text-hm-warning">📋 입주체크사진</div>
+                  <div className="text-xs text-hm-text-muted mt-0.5">{checkPhotoView.building} {checkPhotoView.room}호 · {checkPhotoView.name} · {cpPhotos.length}장</div>
                 </div>
                 <button onClick={() => setCheckPhotoView(null)}
                   className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
@@ -642,8 +642,8 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               className={`bg-white rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${isMobile ? "w-[95%]" : "w-[600px]"}`}>
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <div className="text-lg font-extrabold text-hm-warning">📋 입주체크사진 등록</div>
-                  <div className="text-[11px] text-hm-text-muted mt-0.5">{cpe.building} {cpe.room}호 · {cpe.name}</div>
+                  <div className="text-lg font-bold text-hm-warning">📋 입주체크사진 등록</div>
+                  <div className="text-xs text-hm-text-muted mt-0.5">{cpe.building} {cpe.room}호 · {cpe.name}</div>
                 </div>
                 <button onClick={() => setCheckPhotoEdit(null)}
                   className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
@@ -683,7 +683,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
             className="bg-white rounded-2xl py-6 px-7 max-w-[540px] w-[90%] max-h-[80vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <div className="text-base font-extrabold text-hm-text">⚡ 공과금 청구 이력</div>
+                <div className="text-base font-bold text-hm-text">⚡ 공과금 청구 이력</div>
                 <div className="text-xs text-hm-text-muted">{billingPopup.tenant.building} {billingPopup.tenant.room}호 {billingPopup.tenant.name} · 입주일 {billingPopup.tenant.moveIn}</div>
               </div>
               <button onClick={() => setBillingPopup(null)}
@@ -695,24 +695,24 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                   <div className="flex justify-between items-center mb-1.5">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-hm-text">{bill.date}</span>
-                      {i === 0 && <span className="text-[9px] py-0.5 px-1.5 rounded bg-amber-100 text-amber-800 font-bold">최근</span>}
+                      {i === 0 && <span className="text-xs py-0.5 px-1.5 rounded bg-amber-100 text-amber-800 font-bold">최근</span>}
                     </div>
-                    <span className="text-[15px] font-extrabold text-amber-800">{fmt(bill.total)}원</span>
+                    <span className="text-base font-bold text-amber-800">{fmt(bill.total)}원</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {bill.items.rent > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">월세 {fmt(bill.items.rent)}</span>}
-                    {bill.items.mgmt > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">관리비 {fmt(bill.items.mgmt)}</span>}
-                    {bill.items.elec > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-amber-100 text-amber-800">전기 {fmt(bill.items.elec)}</span>}
-                    {bill.items.gas > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-red-100 text-red-800">가스 {fmt(bill.items.gas)}</span>}
-                    {bill.items.water > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-hm-blue-bg text-hm-blue-dark">수도 {fmt(bill.items.water)}</span>}
-                    {bill.items.cable > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-green-50 text-hm-success">인터넷 {fmt(bill.items.cable)}</span>}
-                    {bill.items.prevUnpaid > 0 && <span className="text-[10px] py-[3px] px-2 rounded bg-hm-danger-bg text-hm-danger">미납 {fmt(bill.items.prevUnpaid)}</span>}
+                    {bill.items.rent > 0 && <span className="text-xs py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">월세 {fmt(bill.items.rent)}</span>}
+                    {bill.items.mgmt > 0 && <span className="text-xs py-[3px] px-2 rounded bg-white border border-hm-border text-hm-text-sub">관리비 {fmt(bill.items.mgmt)}</span>}
+                    {bill.items.elec > 0 && <span className="text-xs py-[3px] px-2 rounded bg-amber-100 text-amber-800">전기 {fmt(bill.items.elec)}</span>}
+                    {bill.items.gas > 0 && <span className="text-xs py-[3px] px-2 rounded bg-red-100 text-red-800">가스 {fmt(bill.items.gas)}</span>}
+                    {bill.items.water > 0 && <span className="text-xs py-[3px] px-2 rounded bg-hm-blue-bg text-hm-blue-dark">수도 {fmt(bill.items.water)}</span>}
+                    {bill.items.cable > 0 && <span className="text-xs py-[3px] px-2 rounded bg-green-50 text-hm-success">인터넷 {fmt(bill.items.cable)}</span>}
+                    {bill.items.prevUnpaid > 0 && <span className="text-xs py-[3px] px-2 rounded bg-hm-danger-bg text-hm-danger">미납 {fmt(bill.items.prevUnpaid)}</span>}
                   </div>
                 </div>
               ))}
             </div>
             {billingPopup.bills.length === 0 && (
-              <div className="text-center py-[30px] text-hm-text-muted text-[13px]">청구 이력이 없습니다</div>
+              <div className="text-center py-[30px] text-hm-text-muted text-sm">청구 이력이 없습니다</div>
             )}
           </div>
         </div>
@@ -756,7 +756,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               ) : (
                 <div className="w-80 h-80 bg-[#222] rounded-xl flex items-center justify-center flex-col gap-3">
                   <span className="text-7xl">🏠</span>
-                  <span className="text-gray-400 text-[13px]">사진 {index + 1}</span>
+                  <span className="text-gray-400 text-sm">사진 {index + 1}</span>
                 </div>
               )}
             </div>
@@ -771,7 +771,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                 className="bg-white/20 border-none text-white text-xl w-9 h-9 rounded-full cursor-pointer flex items-center justify-center backdrop-blur-[4px] hover:bg-white/30 transition-colors">
                 &minus;
               </button>
-              <div className="text-white text-[13px] font-bold bg-black/50 py-1.5 px-4 rounded-[20px] min-w-[100px] text-center">
+              <div className="text-white text-sm font-bold bg-black/50 py-1.5 px-4 rounded-[20px] min-w-[100px] text-center">
                 {index + 1} / {photos.length}{zoom > 1 ? ` · ${Math.round(zoom * 100)}%` : ""}
               </div>
               <button onClick={(e: any) => { e.stopPropagation(); setZoomFn(zoom + 0.5); }}
@@ -784,7 +784,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               ✕
             </button>
             {zoom <= 1 && (
-              <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/50 text-[11px] z-[3]">
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/50 text-xs z-[3]">
                 더블클릭 또는 마우스휠로 확대 · 확대 시 드래그로 이동
               </div>
             )}
@@ -797,7 +797,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
         onMouseDown={() => setShowMoveoutDoneModal(false)}>
         <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,.3)]"
           onMouseDown={e => e.stopPropagation()}>
-          <div className="text-[15px] font-extrabold text-hm-text mb-3">퇴실 확정 완료</div>
+          <div className="text-base font-bold text-hm-text mb-3">퇴실 확정 완료</div>
           <div className="text-xs text-hm-text-sub leading-[1.6] mb-5">
             입퇴실일정에서 나머지 단계(청소/입주체크/공실전환)를 진행하시겠습니까?
           </div>

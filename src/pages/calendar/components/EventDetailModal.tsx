@@ -20,7 +20,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
   const edt = (k: string, v: any) => setEditEvent((prev: any) => ({ ...prev, edits: { ...prev.edits, [k]: v } }));
   const fld = (label: string, key: string, type = "text") => (
     <div>
-      <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">{label}</div>
+      <div className="text-xs font-bold text-hm-text-sub mb-[3px]">{label}</div>
       <input value={edits[key] || ""} onChange={e => edt(key, type === "number" ? Number(e.target.value) || 0 : e.target.value)}
         type={type} className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
     </div>
@@ -32,14 +32,14 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
       <div className="bg-white rounded-2xl p-6 w-[420px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <div className="text-base font-extrabold text-hm-text">✏️ {edits.type} 수정</div>
+          <div className="text-base font-bold text-hm-text">✏️ {edits.type} 수정</div>
           <button onClick={() => setEditEvent(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
 
         <div className="flex flex-col gap-2.5">
           {/* 공통: 날짜 */}
           <div>
-            <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">날짜</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">날짜</div>
             <input type="date" value={edits.date || ""} onChange={e => {
               edt("date", e.target.value);
               if (edits.type === "계약" && edits.moveIn === editEvent.evt.date) edt("moveIn", e.target.value);
@@ -63,24 +63,24 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">입주일</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-[3px]">입주일</div>
                   <input type="date" value={edits.moveIn || ""} onChange={e => edt("moveIn", e.target.value)}
                     className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">만기일</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-[3px]">만기일</div>
                   <input type="date" value={edits.expiry || ""} onChange={e => edt("expiry", e.target.value)}
                     className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">계약일</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-[3px]">계약일</div>
                   <input type="date" value={edits.contractDate || ""} onChange={e => edt("contractDate", e.target.value)}
                     className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold text-hm-text-sub mb-[3px]">등록자</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-[3px]">등록자</div>
                   <input value={edits.registeredBy || ""} readOnly
                     className={`${inputClassName} !px-2.5 !py-2 !text-xs !bg-gray-100 !text-hm-text-muted`} />
                 </div>
@@ -91,7 +91,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
               </div>
               {(edits.waterFee != null || edits.cable != null || edits.exitFee != null || edits.commBroker != null) && (
                 <>
-                  <div className="text-[10px] font-bold text-hm-blue mt-1">단기 전용</div>
+                  <div className="text-xs font-bold text-hm-blue mt-1">단기 전용</div>
                   <div className="grid grid-cols-2 gap-2">
                     {fld("수도", "waterFee")}
                     {fld("인터넷/케이블", "cable")}

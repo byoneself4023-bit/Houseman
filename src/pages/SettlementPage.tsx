@@ -32,7 +32,7 @@ class SettlementErrorBoundary extends React.Component<{ children: React.ReactNod
   render() {
     if (this.state.hasError) {
       return <div className="p-10 text-center">
-        <div className="text-base font-[800] text-hm-danger mb-3">건물주 정산 로딩 오류</div>
+        <div className="text-base font-bold text-hm-danger mb-3">건물주 정산 로딩 오류</div>
         <div className="text-xs text-hm-text-sub mb-4 whitespace-pre-wrap">{String(this.state.error)}{this.state.error?.stack ? "\n\n" + this.state.error.stack : ""}</div>
         <button onClick={() => this.setState({ hasError: false, error: null })} className="px-5 py-2 rounded-lg border-none bg-hm-blue text-white font-bold cursor-pointer hover:opacity-90 transition-opacity">다시 시도</button>
       </div>;
@@ -394,7 +394,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           <div className="flex gap-2">
             <button
               onClick={() => setPrintMode(true)}
-              className="px-5 py-2 rounded-lg border-none bg-[#1e40af] text-white text-[13px] font-bold cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-[#1e3a8a] transition-colors">
+              className="px-5 py-2 rounded-lg border-none bg-[#1e40af] text-white text-sm font-bold cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-[#1e3a8a] transition-colors">
               정산서 출력
             </button>
             {addCashbookEntry && (
@@ -416,7 +416,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   });
                   alert(`${bs.building} 정산 내역이 출납관리에 등록되었습니다.`);
                 }}
-                className="px-5 py-2 rounded-lg border-none text-white text-[13px] font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
+                className="px-5 py-2 rounded-lg border-none text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
                 style={{ background: "linear-gradient(135deg, #10B981, var(--color-hm-success))" }}>
                 출납 등록
               </button>
@@ -428,17 +428,17 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         <Card className="mb-4 border-2 border-hm-blue">
           <div className="flex justify-between items-start mb-5">
             <div>
-              <div className="text-xl font-[800] text-hm-text">{bs.building} 정산서</div>
-              <div className="text-[11px] text-hm-text-muted mt-1">{monthLabel} · {typeLabel} · {dirLabel}</div>
+              <div className="text-xl font-bold text-hm-text">{bs.building} 정산서</div>
+              <div className="text-xs text-hm-text-muted mt-1">{monthLabel} · {typeLabel} · {dirLabel}</div>
             </div>
             <div className="flex gap-1.5">
               {cfg.feeRate > 0 && (
-                <span className="text-[10px] px-3 py-1 rounded-md bg-hm-blue-bg text-hm-blue-dark font-bold">
+                <span className="text-xs px-3 py-1 rounded-md bg-hm-blue-bg text-hm-blue-dark font-bold">
                   수수료 {(cfg.feeRate * 100).toFixed(1)}%
                 </span>
               )}
               {cfg.feeAmount > 0 && (
-                <span className="text-[10px] px-3 py-1 rounded-md bg-[#F5F3FF] text-[#7C3AED] font-bold">
+                <span className="text-xs px-3 py-1 rounded-md bg-[#F5F3FF] text-[#7C3AED] font-bold">
                   월정액 {fmt(cfg.feeAmount)}원
                 </span>
               )}
@@ -448,7 +448,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
             {/* 좌: 건물 정보 */}
             <div>
-              {cfg.notes && <div className="px-3 py-2 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] text-[11px] text-[#92400E] mb-2.5">* {cfg.notes}</div>}
+              {cfg.notes && <div className="px-3 py-2 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#92400E] mb-2.5">* {cfg.notes}</div>}
               <div className="flex flex-col gap-1.5 text-xs">
                 <div className="flex justify-between"><span className="text-hm-text-muted">주소</span><span className="font-semibold">{cfg.address || "—"}</span></div>
                 <div className="flex justify-between"><span className="text-hm-text-muted">정산계좌</span><span className="font-semibold">{acctInfo.owner ? `${acctInfo.owner.bank} ${acctInfo.owner.account}` : "하우스맨 통합"}</span></div>
@@ -460,19 +460,19 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
 
             {/* 우: 정산 계산 */}
             <div>
-              <div className="text-xs font-[800] text-hm-text mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">정산 계산</div>
+              <div className="text-xs font-bold text-hm-text mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">정산 계산</div>
               <div className="flex flex-col gap-2">
                 {!isSalary && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">1. 월세 정산금(a)</span>
-                    <span className="text-[13px] font-bold text-hm-success">{fmt(bs.totalRentSettlement)}원</span>
+                    <span className="text-sm font-bold text-hm-success">{fmt(bs.totalRentSettlement)}원</span>
                   </div>
                 )}
                 {isSalary && (
                   <>
                     <div className="flex justify-between">
                       <span className="text-xs text-gray-700">1. 관리 수수료</span>
-                      <span className="text-[13px] font-bold text-[#7C3AED]">{fmt(cfg.feeAmount)}원</span>
+                      <span className="text-sm font-bold text-[#7C3AED]">{fmt(cfg.feeAmount)}원</span>
                     </div>
                     {cfg.subItems && cfg.subItems.map((si: any, i: number) => (
                       <div key={i} className="flex justify-between">
@@ -485,37 +485,37 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {!isSalary && bs.totalMgmtSettlement > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">   관리비 정산</span>
-                    <span className="text-[13px] font-bold text-hm-success">{fmt(bs.totalMgmtSettlement)}원</span>
+                    <span className="text-sm font-bold text-hm-success">{fmt(bs.totalMgmtSettlement)}원</span>
                   </div>
                 )}
                 {bs.moveOutSettlements.length > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">2. 퇴실 일할 정산</span>
-                    <span className="text-[13px] font-bold text-hm-blue-dark">{fmt(bs.totalMoveOutRent)}원</span>
+                    <span className="text-sm font-bold text-hm-blue-dark">{fmt(bs.totalMoveOutRent)}원</span>
                   </div>
                 )}
                 {bs.totalBrokerage > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">3. 입주시 중개수수료</span>
-                    <span className="text-[13px] font-bold text-hm-danger">-{fmt(bs.totalBrokerage)}원</span>
+                    <span className="text-sm font-bold text-hm-danger">-{fmt(bs.totalBrokerage)}원</span>
                   </div>
                 )}
                 {bs.totalPenalty > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">4. 퇴실시 위약금</span>
-                    <span className="text-[13px] font-bold text-[#F59E0B]">{fmt(bs.totalPenalty)}원</span>
+                    <span className="text-sm font-bold text-[#F59E0B]">{fmt(bs.totalPenalty)}원</span>
                   </div>
                 )}
                 {bs.totalDepositReturn > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">5. 예치금(b)</span>
-                    <span className="text-[13px] font-bold text-hm-danger">-{fmt(bs.totalDepositReturn)}원</span>
+                    <span className="text-sm font-bold text-hm-danger">-{fmt(bs.totalDepositReturn)}원</span>
                   </div>
                 )}
                 {bs.totalDeduction > 0 && (
                   <div className="flex justify-between">
                     <span className="text-xs text-gray-700">6. 공제 내역(d)</span>
-                    <span className="text-[13px] font-bold text-hm-danger">{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
+                    <span className="text-sm font-bold text-hm-danger">{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
                   </div>
                 )}
                 {cfg.vat && bs.vatInfo.tax > 0 && (
@@ -531,10 +531,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   </>
                 )}
                 <div className="border-t-2 border-hm-text pt-2 flex justify-between">
-                  <span className="text-sm font-[800] text-hm-text">최종 정산금</span>
-                  <span className={`text-xl font-[800] ${isSalary ? 'text-[#7C3AED]' : 'text-hm-blue'}`}>{fmt(bs.finalAmount)}원</span>
+                  <span className="text-sm font-bold text-hm-text">최종 정산금</span>
+                  <span className={`text-xl font-bold ${isSalary ? 'text-[#7C3AED]' : 'text-hm-blue'}`}>{fmt(bs.finalAmount)}원</span>
                 </div>
-                <div className="text-[10px] text-hm-text-muted text-right">{dirLabel}</div>
+                <div className="text-xs text-hm-text-muted text-right">{dirLabel}</div>
               </div>
             </div>
           </div>
@@ -543,7 +543,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         {/* The rest of the detail view is very long - continuing with the same pattern */}
         {/* ===== 상세내역: 호실 정산 ===== */}
         <Card className="mb-4">
-          <div className="text-[13px] font-[800] text-hm-text mb-3 pb-2 border-b-2 border-hm-border">
+          <div className="text-sm font-bold text-hm-text mb-3 pb-2 border-b-2 border-hm-border">
             {isSalary ? "호실 현황" : "월세 정산 상세"} ({bs.roomSettlements.length}호실)
           </div>
           <div className="overflow-x-auto">
@@ -554,7 +554,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     ? ["호실", "상태", "임차인", "입주일", "만기일", "보증금", "임대료", "관리비"]
                     : ["호실", "상태", "세입자", "입주일", "예치금", "월세", "월세일", `수수료(${(cfg.feeRate*100).toFixed(1)}%)`, "정산금", ...(cfg.includeMgmt ? ["관리비"] : [])]
                   ).map((h: string, i: number) => (
-                    <th key={i} className={`px-2.5 py-2 text-[11px] font-bold text-hm-text-muted whitespace-nowrap ${i >= (isSalary ? 5 : 4) ? 'text-right' : 'text-left'}`}>{h}</th>
+                    <th key={i} className={`px-2.5 py-2 text-xs font-bold text-hm-text-muted whitespace-nowrap ${i >= (isSalary ? 5 : 4) ? 'text-right' : 'text-left'}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -562,10 +562,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 {bs.roomSettlements.map((r: any, i: number) => (
                   <tr key={i} className="border-b border-[#F0F2F5]">
                     <td className="px-2.5 py-2 font-bold">{r.room}</td>
-                    <td className="px-2.5 py-2"><span className="text-[10px] px-1.5 py-0.5 rounded bg-hm-success-bg text-hm-success font-semibold">{r.status}</span></td>
+                    <td className="px-2.5 py-2"><span className="text-xs px-1.5 py-0.5 rounded bg-hm-success-bg text-hm-success font-semibold">{r.status}</span></td>
                     <td className="px-2.5 py-2 font-semibold">{r.name}</td>
-                    <td className="px-2.5 py-2 text-[11px] text-hm-text-sub">{r.moveIn?.slice(2)}</td>
-                    {isSalary && <td className="px-2.5 py-2 text-[11px] text-hm-text-sub">{r.expiry?.slice(2) || "—"}</td>}
+                    <td className="px-2.5 py-2 text-xs text-hm-text-sub">{r.moveIn?.slice(2)}</td>
+                    {isSalary && <td className="px-2.5 py-2 text-xs text-hm-text-sub">{r.expiry?.slice(2) || "—"}</td>}
                     <td className="px-2.5 py-2 text-right">{fmt(r.deposit)}</td>
                     <td className="px-2.5 py-2 text-right font-bold">{fmt(r.rent)}</td>
                     {isSalary ? (
@@ -574,7 +574,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                       <>
                         <td className="px-2.5 py-2 text-right">{r.rentDay}일</td>
                         <td className={`px-2.5 py-2 text-right ${r.fee > 0 ? 'text-hm-danger' : 'text-[#B0B5C1]'}`}>{r.fee > 0 ? `-${fmt(r.fee)}` : "—"}</td>
-                        <td className="px-2.5 py-2 text-right font-[800] text-hm-success">{fmt(r.settlementAmt)}</td>
+                        <td className="px-2.5 py-2 text-right font-bold text-hm-success">{fmt(r.settlementAmt)}</td>
                         {cfg.includeMgmt && <td className="px-2.5 py-2 text-right">{fmt(r.mgmt)}</td>}
                       </>
                     )}
@@ -582,17 +582,17 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 ))}
                 {bs.roomSettlements.length > 0 && (
                   <tr className="border-t-2 border-hm-text bg-hm-bg-hover">
-                    <td colSpan={isSalary ? 5 : 5} className="p-2.5 font-[800] text-[13px]">합계</td>
-                    <td className="p-2.5 text-right font-[800]">{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + r.deposit, 0))}</td>
-                    <td className="p-2.5 text-right font-[800]">{fmt(bs.totalRent)}</td>
+                    <td colSpan={isSalary ? 5 : 5} className="p-2.5 font-bold text-sm">합계</td>
+                    <td className="p-2.5 text-right font-bold">{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + r.deposit, 0))}</td>
+                    <td className="p-2.5 text-right font-bold">{fmt(bs.totalRent)}</td>
                     {isSalary ? (
-                      <td className="p-2.5 text-right font-[800]">{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + (r.mgmt || 0), 0))}</td>
+                      <td className="p-2.5 text-right font-bold">{fmt(bs.roomSettlements.reduce((s: number,r: any) => s + (r.mgmt || 0), 0))}</td>
                     ) : (
                       <>
                         <td></td>
-                        <td className="p-2.5 text-right font-[800] text-hm-danger">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
-                        <td className="p-2.5 text-right font-[800] text-hm-success text-sm">{fmt(bs.totalRentSettlement)}</td>
-                        {cfg.includeMgmt && <td className="p-2.5 text-right font-[800]">{fmt(bs.totalMgmtSettlement)}</td>}
+                        <td className="p-2.5 text-right font-bold text-hm-danger">{bs.totalFee > 0 ? `-${fmt(bs.totalFee)}` : "—"}</td>
+                        <td className="p-2.5 text-right font-bold text-hm-success text-sm">{fmt(bs.totalRentSettlement)}</td>
+                        {cfg.includeMgmt && <td className="p-2.5 text-right font-bold">{fmt(bs.totalMgmtSettlement)}</td>}
                       </>
                     )}
                   </tr>
@@ -608,7 +608,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         {/* ===== 월급형: 부가항목 ===== */}
         {isSalary && cfg.subItems && cfg.subItems.length > 0 && (
           <Card className="mb-4">
-            <div className="text-[13px] font-[800] text-[#7C3AED] mb-3 pb-2 border-b-2 border-[#DDD6FE]">
+            <div className="text-sm font-bold text-[#7C3AED] mb-3 pb-2 border-b-2 border-[#DDD6FE]">
               관리 부가항목
             </div>
             <div className="flex flex-col gap-1.5">
@@ -616,14 +616,14 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 <div key={i} className="flex justify-between items-center px-2.5 py-2 rounded-md bg-[#F5F3FF] border border-[#DDD6FE]">
                   <div>
                     <span className="font-semibold">{si.name}</span>
-                    {si.vendor && <span className="ml-2 text-[11px] text-hm-text-muted">{si.vendor}</span>}
+                    {si.vendor && <span className="ml-2 text-xs text-hm-text-muted">{si.vendor}</span>}
                   </div>
                   <span className="font-bold text-[#7C3AED]">{fmt(si.amount)}원</span>
                 </div>
               ))}
               <div className="flex justify-between px-2.5 py-2 border-t-2 border-[#7C3AED]">
-                <span className="font-[800]">부가항목 합계</span>
-                <span className="font-[800] text-[#7C3AED] text-sm">{fmt(cfg.subItems.reduce((s: number, si: any) => s + si.amount, 0))}원</span>
+                <span className="font-bold">부가항목 합계</span>
+                <span className="font-bold text-[#7C3AED] text-sm">{fmt(cfg.subItems.reduce((s: number, si: any) => s + si.amount, 0))}원</span>
               </div>
             </div>
           </Card>
@@ -632,7 +632,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         {/* ===== 입주 정산 ===== */}
         {bs.moveInSettlements && bs.moveInSettlements.length > 0 && (
           <Card className="mb-4">
-            <div className="text-[13px] font-[800] text-hm-success mb-3 pb-2 border-b-2 border-hm-success-border">
+            <div className="text-sm font-bold text-hm-success mb-3 pb-2 border-b-2 border-hm-success-border">
               입주 정산 ({bs.moveInSettlements.length}건)
             </div>
             <div className="overflow-x-auto">
@@ -640,7 +640,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 <thead>
                   <tr className="border-b-2 border-hm-border">
                     {["호실", "세입자", "입주일", "예치금(b)", "중개수수료(c)"].map((h, i) => (
-                      <th key={i} className={`px-2.5 py-2 text-[11px] font-bold text-hm-text-muted ${i >= 3 ? 'text-right' : 'text-left'}`}>{h}</th>
+                      <th key={i} className={`px-2.5 py-2 text-xs font-bold text-hm-text-muted ${i >= 3 ? 'text-right' : 'text-left'}`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -649,7 +649,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     <tr key={i} className="border-b border-[#F0F2F5]">
                       <td className="px-2.5 py-2 font-bold">{mi.room}</td>
                       <td className="px-2.5 py-2">{mi.name}</td>
-                      <td className="px-2.5 py-2 text-[11px] text-hm-text-sub">{mi.moveIn}</td>
+                      <td className="px-2.5 py-2 text-xs text-hm-text-sub">{mi.moveIn}</td>
                       <td className="px-2.5 py-2 text-right font-semibold">{fmt(mi.deposit)}</td>
                       <td className={`px-2.5 py-2 text-right ${mi.brokerageFee ? 'text-hm-danger' : 'text-[#B0B5C1]'}`}>
                         {mi.brokerageFee ? `-${fmt(mi.brokerageFee)}` : "—"}
@@ -665,7 +665,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         {/* ===== 퇴실 정산 ===== */}
         {bs.moveOutSettlements.length > 0 && (
           <Card className="mb-4">
-            <div className="text-[13px] font-[800] text-hm-blue-dark mb-3 pb-2 border-b-2 border-[#BFDBFE]">
+            <div className="text-sm font-bold text-hm-blue-dark mb-3 pb-2 border-b-2 border-[#BFDBFE]">
               퇴실 정산 ({bs.moveOutSettlements.length}건)
             </div>
             <div className="flex flex-col gap-3">
@@ -673,21 +673,21 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                 <div key={i} className="p-3.5 px-4 rounded-[10px] bg-hm-blue-bg border border-[#BFDBFE]">
                   <div className="flex justify-between items-center mb-2.5 pb-2 border-b border-[#BFDBFE]">
                     <div>
-                      <span className="font-[800] text-sm">{mt.room}호</span>
+                      <span className="font-bold text-sm">{mt.room}호</span>
                       <span className="ml-2 text-hm-text-sub font-semibold">{mt.name}</span>
-                      <span className={`ml-2 text-[10px] px-2 py-0.5 rounded ${mt.reason === "조기퇴실" ? 'bg-[#FEF3C7] text-[#92400E]' : 'bg-hm-success-bg text-hm-success'} font-semibold`}>
+                      <span className={`ml-2 text-xs px-2 py-0.5 rounded ${mt.reason === "조기퇴실" ? 'bg-[#FEF3C7] text-[#92400E]' : 'bg-hm-success-bg text-hm-success'} font-semibold`}>
                         {mt.reason || "퇴실"}
                       </span>
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-1.5 text-[11px] mb-2">
+                  <div className="grid grid-cols-3 gap-1.5 text-xs mb-2">
                     <div><span className="text-hm-text-muted">퇴실일</span> <strong>{mt.moveOutDate}</strong></div>
                     <div><span className="text-hm-text-muted">입주일</span> <strong>{mt.moveIn?.slice(5)}</strong></div>
                     <div><span className="text-hm-text-muted">만기일</span> <strong>{mt.expiry?.slice(5) || "—"}</strong></div>
                   </div>
                   <div className="bg-white rounded-md px-2.5 py-2 mb-1.5">
-                    <div className="text-[11px] font-bold text-gray-700 mb-1">일할계산 ({mt.usedDays}일 / {mt.totalDays}일)</div>
-                    <div className="flex gap-4 text-[11px]">
+                    <div className="text-xs font-bold text-gray-700 mb-1">일할계산 ({mt.usedDays}일 / {mt.totalDays}일)</div>
+                    <div className="flex gap-4 text-xs">
                       <span>월세 일할: <strong>{fmt(mt.rentProRata)}</strong></span>
                       <span>관리비 일할: <strong>{fmt(mt.mgmtProRata)}</strong></span>
                       <span>수수료({(cfg.feeRate*100).toFixed(1)}%): <strong className="text-hm-danger">-{fmt(mt.fee)}</strong></span>
@@ -695,22 +695,22 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     </div>
                   </div>
                   <div className="bg-white rounded-md px-2.5 py-2 mb-1.5">
-                    <div className="text-[11px] font-bold text-hm-danger mb-1">퇴실 공제</div>
-                    <div className="grid grid-cols-3 gap-1 text-[11px]">
+                    <div className="text-xs font-bold text-hm-danger mb-1">퇴실 공제</div>
+                    <div className="grid grid-cols-3 gap-1 text-xs">
                       {mt.cleanFee > 0 && <span>퇴실청소비: <strong>{fmt(mt.cleanFee)}</strong></span>}
                       {mt.elecReading > 0 && <span>전기검침: <strong>{fmt(mt.elecReading)}</strong></span>}
                       {mt.gasReading > 0 && <span>가스검침: <strong>{fmt(mt.gasReading)}</strong></span>}
                       {mt.waterReading > 0 && <span>수도검침: <strong>{fmt(mt.waterReading)}</strong></span>}
-                      {mt.damageFee > 0 && <span>훼손/파손: <strong>{fmt(mt.damageFee)}</strong> <span className="text-[9px] text-hm-text-muted">({mt.damageDesc})</span></span>}
+                      {mt.damageFee > 0 && <span>훼손/파손: <strong>{fmt(mt.damageFee)}</strong> <span className="text-xs text-hm-text-muted">({mt.damageDesc})</span></span>}
                       {mt.penalty7 > 0 && <span className="text-hm-danger">위약금(7일): <strong>{fmt(mt.penalty7)}</strong></span>}
                     </div>
-                    <div className="mt-1 text-[11px] font-semibold">공제합계: <strong className="text-hm-danger">{fmt(mt.totalDeductItems)}</strong></div>
+                    <div className="mt-1 text-xs font-semibold">공제합계: <strong className="text-hm-danger">{fmt(mt.totalDeductItems)}</strong></div>
                   </div>
                   <div className="bg-white rounded-md px-2.5 py-2">
                     <div className="flex justify-between text-xs">
                       <span>예치금: <strong>{fmt(mt.depositReturn)}</strong></span>
                       <span>공제: <strong className="text-hm-danger">-{fmt(mt.totalDeductItems)}</strong></span>
-                      <span className={`font-[800] text-sm ${mt.finalRefund >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>
+                      <span className={`font-bold text-sm ${mt.finalRefund >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>
                         환불: {fmt(mt.finalRefund)}원
                       </span>
                     </div>
@@ -724,19 +724,19 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         {/* ===== 공제내역 ===== */}
         <Card className="mb-4">
           <div className="flex justify-between items-center mb-3 pb-2 border-b-2 border-hm-danger-border">
-            <div className="text-[13px] font-[800] text-hm-danger">{isSalary ? "지출(A/S) / 기타 비용" : "공제내역"}</div>
-            <span className="text-xs font-[800] text-hm-danger">{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
+            <div className="text-sm font-bold text-hm-danger">{isSalary ? "지출(A/S) / 기타 비용" : "공제내역"}</div>
+            <span className="text-xs font-bold text-hm-danger">{isSalary ? "" : "-"}{fmt(bs.totalDeduction)}원</span>
           </div>
           {bs.deductions.length > 0 ? (
             <div className="flex flex-col gap-1.5">
               {bs.deductions.map((d: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 px-2.5 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border">
-                  <span className="text-[11px] text-hm-text-sub min-w-[70px]">{d.date}</span>
-                  {d.room && <span className="text-[11px] font-semibold">{d.room}호</span>}
+                  <span className="text-xs text-hm-text-sub min-w-[70px]">{d.date}</span>
+                  {d.room && <span className="text-xs font-semibold">{d.room}호</span>}
                   <span className="flex-1 text-xs text-gray-700">{d.desc}</span>
                   <span className="text-xs font-bold text-hm-danger">{fmt(d.amount)}원</span>
                   <button onClick={() => setSettlementExpenses((prev: SettlementExpense[]) => prev.filter((e: SettlementExpense) => e.id !== d.id))}
-                    className="border-none bg-white text-hm-danger rounded px-2 py-0.5 text-[10px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">삭제</button>
+                    className="border-none bg-white text-hm-danger rounded px-2 py-0.5 text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">삭제</button>
                 </div>
               ))}
             </div>
@@ -746,15 +746,15 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
           {/* 공제 추가 폼 */}
           <div className="mt-2.5 flex gap-1.5 items-center flex-wrap">
             <input value={formDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormDate(e.target.value)} type="date"
-              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-[11px] font-[inherit] w-[130px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] w-[130px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             <input value={formRoom} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormRoom(e.target.value)} placeholder="호실"
-              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-[11px] font-[inherit] w-[60px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] w-[60px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             <input value={formDesc} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormDesc(e.target.value)} placeholder="내역 (수리비, 청소비 등)"
-              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-[11px] font-[inherit] flex-1 min-w-[120px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] flex-1 min-w-[120px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             <input value={formAmount} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormAmount(e.target.value)} type="number" placeholder="금액"
-              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-[11px] font-[inherit] w-[90px] text-right outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+              className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] w-[90px] text-right outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             <button onClick={() => { setFormBuilding(bs.building); handleAddExpense(); }}
-              className="px-3.5 py-1.5 rounded-md border-none bg-hm-danger text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">추가</button>
+              className="px-3.5 py-1.5 rounded-md border-none bg-hm-danger text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">추가</button>
           </div>
         </Card>
       </div>
@@ -772,7 +772,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       <div className="flex flex-wrap gap-3 mb-5 items-center">
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-none text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
-          <span className="text-[15px] font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
+          <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-none text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
         </div>
         <div className="flex gap-1 flex-wrap">
@@ -788,21 +788,21 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
       {/* 전체 요약 */}
       <div className={`grid gap-3 mb-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-4'}`}>
         <Card className="border-l-4 border-l-[#10B981]">
-          <div className="text-[11px] font-semibold text-[#6B7280] mb-1">총 월세/임대료 정산</div>
-          <div className="text-xl font-[800] text-[#10B981]">{fmt(totalSummary.rent)}원</div>
+          <div className="text-xs font-semibold text-[#6B7280] mb-1">총 월세/임대료 정산</div>
+          <div className="text-xl font-bold text-[#10B981]">{fmt(totalSummary.rent)}원</div>
         </Card>
         <Card className="border-l-4 border-l-[#EF4444]">
-          <div className="text-[11px] font-semibold text-[#6B7280] mb-1">총 공제/지출</div>
-          <div className="text-xl font-[800] text-[#EF4444]">{fmt(totalSummary.deduction)}원</div>
+          <div className="text-xs font-semibold text-[#6B7280] mb-1">총 공제/지출</div>
+          <div className="text-xl font-bold text-[#EF4444]">{fmt(totalSummary.deduction)}원</div>
         </Card>
         <Card className="border-l-4 border-l-hm-blue">
-          <div className="text-[11px] font-semibold text-[#6B7280] mb-1">정산 합계</div>
-          <div className="text-xl font-[800] text-hm-blue">{fmt(totalSummary.final)}원</div>
+          <div className="text-xs font-semibold text-[#6B7280] mb-1">정산 합계</div>
+          <div className="text-xl font-bold text-hm-blue">{fmt(totalSummary.final)}원</div>
         </Card>
         <Card className="border-l-4 border-l-[#F59E0B]">
-          <div className="text-[11px] font-semibold text-[#6B7280] mb-1">이번 달 정산 건수</div>
-          <div className="text-xl font-[800] text-[#F59E0B]">{timelineItems.length}건</div>
-          <div className="text-[10px] text-hm-text-muted mt-0.5">
+          <div className="text-xs font-semibold text-[#6B7280] mb-1">이번 달 정산 건수</div>
+          <div className="text-xl font-bold text-[#F59E0B]">{timelineItems.length}건</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">
             {timelineItems.filter((i: any) => i.isPast).length}건 완료 · {timelineItems.filter((i: any) => !i.isPast && i.daysUntil <= 7).length}건 오픈 · {timelineItems.filter((i: any) => i.daysUntil > 7).length}건 예정
           </div>
         </Card>
@@ -829,17 +829,17 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     background: isToday ? "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" : isPast ? "#D1D5DB" : isUrgent ? "linear-gradient(135deg, #F59E0B, #EF4444)" : "linear-gradient(135deg, #8B5CF6, #6366F1)",
                     boxShadow: isToday ? "0 0 0 4px rgba(59,130,246,0.2)" : isUrgent && !isPast ? "0 0 0 4px rgba(245,158,11,0.2)" : "none",
                   }}>
-                  <span className="text-[13px] font-[800] text-white">{dayNum}</span>
+                  <span className="text-sm font-bold text-white">{dayNum}</span>
                 </div>
 
                 <div className="flex items-center gap-2 mb-1.5 pt-1">
-                  <span className={`text-sm font-[800] ${isToday ? 'text-hm-blue-dark' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>
+                  <span className={`text-sm font-bold ${isToday ? 'text-hm-blue-dark' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>
                     {m}월 {dayNum}일 ({weekday})
                   </span>
-                  {isToday && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>TODAY</span>}
-                  {!isPast && !isToday && isUrgent && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, #F59E0B, #EF4444)" }}>D-{items[0].daysUntil}</span>}
-                  {!isPast && !isToday && !isUrgent && items[0].isSoon && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-hm-blue-bg text-hm-blue-dark font-bold">D-{items[0].daysUntil}</span>}
-                  {isPast && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-[#F3F4F6] text-[#9CA3AF] font-semibold">완료</span>}
+                  {isToday && <span className="text-xs px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>TODAY</span>}
+                  {!isPast && !isToday && isUrgent && <span className="text-xs px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, #F59E0B, #EF4444)" }}>D-{items[0].daysUntil}</span>}
+                  {!isPast && !isToday && !isUrgent && items[0].isSoon && <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-hm-blue-bg text-hm-blue-dark font-bold">D-{items[0].daysUntil}</span>}
+                  {isPast && <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-[#F3F4F6] text-[#9CA3AF] font-semibold">완료</span>}
                   <span className={`ml-auto text-xs font-bold ${isPast ? 'text-[#9CA3AF]' : 'text-gray-700'}`}>{items.length}건</span>
                 </div>
 
@@ -864,18 +864,18 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2">
                             {totalRounds > 1 && (
-                              <span className="text-[10px] px-2.5 py-[3px] rounded-md text-white font-[800] tracking-wider" style={{ background: !isOpen ? "#D1D5DB" : (roundColors[round] || "var(--color-hm-blue)") }}>{roundLabel}</span>
+                              <span className="text-xs px-2.5 py-[3px] rounded-md text-white font-bold tracking-wider" style={{ background: !isOpen ? "#D1D5DB" : (roundColors[round] || "var(--color-hm-blue)") }}>{roundLabel}</span>
                             )}
-                            <span className={`text-[15px] font-[800] ${!isOpen ? 'text-[#9CA3AF]' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>{item.building}</span>
-                            {ibs.tenantCount > 0 && <span className="text-[10px] px-2 py-0.5 rounded bg-[#F3F4F6] text-hm-text-sub font-semibold">{ibs.tenantCount}세대</span>}
-                            <span className={`text-[10px] px-2 py-0.5 rounded ${isSal ? 'bg-[#F5F3FF] text-[#7C3AED]' : 'bg-hm-blue-bg text-hm-blue-dark'} font-semibold`}>{typeLabel}</span>
-                            {icfg.vat && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#92400E] font-semibold">VAT</span>}
+                            <span className={`text-base font-bold ${!isOpen ? 'text-[#9CA3AF]' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>{item.building}</span>
+                            {ibs.tenantCount > 0 && <span className="text-xs px-2 py-0.5 rounded bg-[#F3F4F6] text-hm-text-sub font-semibold">{ibs.tenantCount}세대</span>}
+                            <span className={`text-xs px-2 py-0.5 rounded ${isSal ? 'bg-[#F5F3FF] text-[#7C3AED]' : 'bg-hm-blue-bg text-hm-blue-dark'} font-semibold`}>{typeLabel}</span>
+                            {icfg.vat && <span className="text-xs px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#92400E] font-semibold">VAT</span>}
                           </div>
                           <div className="text-right">
                             {isOpen ? (
                               <>
-                                <div className="text-[17px] font-[800]" style={{ color: isPast ? "#9CA3AF" : dirColor }}>{fmt(Math.round(ibs.finalAmount / totalRounds))}원</div>
-                                {totalRounds > 1 && <div className="text-[9px] text-hm-text-muted">총 {fmt(ibs.finalAmount)}원 중 {round}차분</div>}
+                                <div className="text-lg font-bold" style={{ color: isPast ? "#9CA3AF" : dirColor }}>{fmt(Math.round(ibs.finalAmount / totalRounds))}원</div>
+                                {totalRounds > 1 && <div className="text-xs text-hm-text-muted">총 {fmt(ibs.finalAmount)}원 중 {round}차분</div>}
                               </>
                             ) : (
                               <span className="text-xs font-bold text-[#B0B5C1] italic">D-{item.daysUntil} 준비중</span>
@@ -883,13 +883,13 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                           </div>
                         </div>
                         {isOpen && (
-                          <div className={`flex gap-3 text-[11px] mt-1.5 ${isPast ? 'text-[#B0B5C1]' : 'text-hm-text-sub'}`}>
+                          <div className={`flex gap-3 text-xs mt-1.5 ${isPast ? 'text-[#B0B5C1]' : 'text-hm-text-sub'}`}>
                             {!isSal && ibs.totalRent > 0 && <span>월세 <strong>{fmt(ibs.totalRent)}</strong></span>}
                             {!isSal && ibs.totalFee > 0 && <span>수수료 <strong className={isPast ? 'text-[#D1D5DB]' : 'text-hm-danger'}>-{fmt(ibs.totalFee)}</strong></span>}
                             {isSal && <span>관리수수료 <strong className="text-[#7C3AED]">{fmt(icfg.feeAmount)}</strong></span>}
                             {ibs.totalDeduction > 0 && <span>공제 <strong className={isPast ? 'text-[#D1D5DB]' : 'text-hm-danger'}>{fmt(ibs.totalDeduction)}</strong></span>}
                             {ibs.moveOutCount > 0 && <span>퇴실 <strong>{ibs.moveOutCount}건</strong></span>}
-                            <span className="ml-auto text-hm-text-muted text-[10px]">
+                            <span className="ml-auto text-hm-text-muted text-xs">
                               {ibs.period.start.slice(5)} ~ {ibs.period.end.slice(5)}
                               {wasAdjusted && <span className="ml-1 text-[#F59E0B] font-semibold">(영업일 조정)</span>}
                             </span>
@@ -897,10 +897,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         )}
                         {isOpen && !isPast && (
                           <div className="flex gap-2 mt-2 flex-wrap">
-                            <span className="text-[10px] px-2.5 py-[3px] rounded-md bg-[#FEF3C7] text-[#92400E] font-semibold">정산서 작성</span>
-                            {icfg.vat && <span className="text-[10px] px-2.5 py-[3px] rounded-md bg-[#FDE8E8] text-hm-danger font-semibold">세금계산서 발행</span>}
-                            <span className="text-[10px] px-2.5 py-[3px] rounded-md bg-hm-blue-bg text-hm-blue-dark font-semibold">{isSal ? "청구서 발송" : "송금 처리"}</span>
-                            <span className="text-[10px] px-2.5 py-[3px] rounded-md bg-[#F0FDF4] text-hm-success font-semibold">건물주 발송</span>
+                            <span className="text-xs px-2.5 py-[3px] rounded-md bg-[#FEF3C7] text-[#92400E] font-semibold">정산서 작성</span>
+                            {icfg.vat && <span className="text-xs px-2.5 py-[3px] rounded-md bg-[#FDE8E8] text-hm-danger font-semibold">세금계산서 발행</span>}
+                            <span className="text-xs px-2.5 py-[3px] rounded-md bg-hm-blue-bg text-hm-blue-dark font-semibold">{isSal ? "청구서 발송" : "송금 처리"}</span>
+                            <span className="text-xs px-2.5 py-[3px] rounded-md bg-[#F0FDF4] text-hm-success font-semibold">건물주 발송</span>
                           </div>
                         )}
                       </div>

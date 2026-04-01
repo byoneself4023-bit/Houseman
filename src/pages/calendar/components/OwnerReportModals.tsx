@@ -23,12 +23,12 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
       <div onClick={e => e.stopPropagation()}
         className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         style={{ width: isMobile ? "92%" : 480 }}>
-        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
+        <div className="text-base font-bold text-hm-text mb-4 flex items-center justify-between">
           <span>📩 건물주 보고 — {ev.building} {ev.room}호</span>
           <button onClick={() => setContractReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
         <div className="mb-3">
-          <div className="text-[11px] font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
+          <div className="text-xs font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
           {owners.map((o: any, oi: number) => (
             <div key={oi} className="flex gap-2 mb-1 text-xs">
               <span className="font-bold">{o.name || `건물주${oi + 1}`}</span>
@@ -37,7 +37,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
           ))}
         </div>
         <div className="mb-4">
-          <div className="text-[11px] font-bold text-hm-success mb-1.5">💬 전송 내용</div>
+          <div className="text-xs font-bold text-hm-success mb-1.5">💬 전송 내용</div>
           <textarea id="contract-report-msg" defaultValue={msgText} rows={14}
             className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
@@ -49,7 +49,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
+            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -59,7 +59,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             setContractReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -68,7 +68,7 @@ export const ContractReportModal: React.FC<ContractReportModalProps> = ({
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, reported: true } : e));
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -98,12 +98,12 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
       <div onClick={e => e.stopPropagation()}
         className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         style={{ width: isMobile ? "92%" : 480 }}>
-        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
+        <div className="text-base font-bold text-hm-text mb-4 flex items-center justify-between">
           <span>📞 퇴실 건물주연락 — {ev.building} {ev.room}호</span>
           <button onClick={() => setMoveOutOwnerReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
         <div className="mb-3">
-          <div className="text-[11px] font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
+          <div className="text-xs font-bold text-purple-600 mb-1.5">👤 건물주 정보</div>
           {owners.map((o: any, oi: number) => (
             <div key={oi} className="flex gap-2 mb-1 text-xs">
               <span className="font-bold">{o.name || `건물주${oi + 1}`}</span>
@@ -112,7 +112,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
           ))}
         </div>
         <div className="mb-4">
-          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💬 퇴실정산 내용</div>
+          <div className="text-xs font-bold text-hm-danger mb-1.5">💬 퇴실정산 내용</div>
           <textarea id="moveout-owner-msg" defaultValue={msgText} rows={14}
             className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
@@ -124,7 +124,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-purple-600 text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-purple-700 transition-colors">
+            className="flex-1 py-3 rounded-lg border-none bg-purple-600 text-white font-bold text-sm cursor-pointer font-[inherit] hover:bg-purple-700 transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -134,7 +134,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             setMoveOutOwnerReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -143,7 +143,7 @@ export const MoveOutOwnerReportModal: React.FC<MoveOutOwnerReportModalProps> = (
             setEvents?.((prev: any[]) => prev.map((e: any) => (e.type === "퇴실" && e.building === ev.building && String(e.room) === String(ev.room)) ? { ...e, ownerReported: true, ownerReportMsg: msg } : e));
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -172,12 +172,12 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
       <div onClick={e => e.stopPropagation()}
         className="bg-white rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         style={{ width: isMobile ? "92%" : 480 }}>
-        <div className="text-base font-extrabold text-hm-text mb-4 flex items-center justify-between">
+        <div className="text-base font-bold text-hm-text mb-4 flex items-center justify-between">
           <span>📩 계약파기 {breakReport.targetBroker ? "부동산 안내" : "건물주 보고"} — {ev.building} {ev.room}호</span>
           <button onClick={() => setBreakReport(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
         </div>
         <div className="mb-3">
-          <div className="text-[11px] font-bold text-purple-600 mb-1.5">{breakReport.targetBroker ? "🏠 부동산 정보" : "👤 건물주 정보"}</div>
+          <div className="text-xs font-bold text-purple-600 mb-1.5">{breakReport.targetBroker ? "🏠 부동산 정보" : "👤 건물주 정보"}</div>
           {owners.map((o: any, oi: number) => (
             <div key={oi} className="flex gap-2 mb-1 text-xs">
               <span className="font-bold">{o.name || (breakReport.targetBroker ? "부동산" : `건물주${oi + 1}`)}</span>
@@ -186,7 +186,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
           ))}
         </div>
         {!breakReport.targetBroker && <div className="mb-3">
-          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💰 계약금 (만원)</div>
+          <div className="text-xs font-bold text-hm-danger mb-1.5">💰 계약금 (만원)</div>
           <input id="break-deposit-amt" type="number" placeholder="계약금 입력"
             onChange={e => {
               const amt = e.target.value;
@@ -198,7 +198,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             className="w-full px-3 py-2 rounded-lg border-[1.5px] border-red-200 text-xs font-[inherit] bg-hm-danger-bg box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>}
         <div className="mb-4">
-          <div className="text-[11px] font-bold text-hm-danger mb-1.5">💬 전송 내용</div>
+          <div className="text-xs font-bold text-hm-danger mb-1.5">💬 전송 내용</div>
           <textarea id="break-report-msg" defaultValue={msgText} rows={14}
             className="w-full p-3 rounded-lg border-[1.5px] border-hm-input-border text-xs font-[inherit] resize-y leading-relaxed box-border outline-none focus:ring-2 focus:ring-ring transition-colors" />
         </div>
@@ -209,7 +209,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             window.open(`sms:${ownerPhone}?body=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-extrabold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
+            className="flex-1 py-3 rounded-lg border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             📱 문자 보내기
           </button>
           <button onClick={() => {
@@ -218,7 +218,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             window.open(`https://story.kakao.com/share?url=&text=${encodeURIComponent(msg)}`, "_blank");
             setBreakReport(null);
           }}
-            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-extrabold text-[13px] cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+            className="flex-1 py-3 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
             💬 카카오톡
           </button>
           <button onClick={() => {
@@ -226,7 +226,7 @@ export const BreakReportModal: React.FC<BreakReportModalProps> = ({
             navigator.clipboard.writeText(msg);
             toast.success("메시지가 클립보드에 복사되었습니다.");
           }}
-            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+            className="px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             📋 복사
           </button>
         </div>
@@ -252,7 +252,7 @@ export const MoveOutMsgModal: React.FC<MoveOutMsgModalProps> = ({
       onClick={() => setMoveOutMsgModal(null)}>
       <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl p-6 w-[480px] max-w-[90vw] max-h-[80vh] overflow-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]">
         <div className="flex justify-between items-center mb-4">
-          <div className="text-[15px] font-extrabold text-hm-text">📩 퇴실문자 — {moveOutMsgModal.ev.building} {moveOutMsgModal.ev.room}호</div>
+          <div className="text-base font-bold text-hm-text">📩 퇴실문자 — {moveOutMsgModal.ev.building} {moveOutMsgModal.ev.room}호</div>
           <button onClick={() => setMoveOutMsgModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <textarea

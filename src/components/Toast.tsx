@@ -41,7 +41,7 @@ export function Toast() {
       {toasts.map(t => (
         <div
           key={t.id}
-          className={`px-[18px] py-2.5 rounded-lg text-[13px] font-semibold font-inherit border shadow-[0_4px_12px_rgba(0,0,0,0.1)] animate-[fadeIn_0.2s_ease] ${bgClasses[t.type]}`}
+          className={`px-[18px] py-2.5 rounded-lg text-sm font-semibold font-inherit border shadow-[0_4px_12px_rgba(0,0,0,0.1)] animate-[fadeIn_0.2s_ease] ${bgClasses[t.type]}`}
         >
           {icons[t.type]}{t.message}
         </div>

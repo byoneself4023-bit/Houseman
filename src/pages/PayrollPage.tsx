@@ -100,7 +100,7 @@ export const PayrollPage = () => {
       <div className="flex flex-wrap gap-3 mb-5 items-center">
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
-          <span className="text-[15px] font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
+          <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
         </div>
         <button onClick={copyFromPrevMonth}
@@ -116,43 +116,43 @@ export const PayrollPage = () => {
       {/* 요약 */}
       <div className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-4"} gap-3 mb-6`}>
         <Card style={{ borderLeft: "4px solid #6366F1" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">총 기본급</div>
-          <div className="text-lg font-extrabold text-[#6366F1]">{fmt(totalBase)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">총 기본급</div>
+          <div className="text-lg font-bold text-[#6366F1]">{fmt(totalBase)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #10B981" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">총 수당/보너스</div>
-          <div className="text-lg font-extrabold text-[#10B981]">{fmt(totalBonus)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">총 수당/보너스</div>
+          <div className="text-lg font-bold text-[#10B981]">{fmt(totalBonus)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #EF4444" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">총 공제</div>
-          <div className="text-lg font-extrabold text-[#EF4444]">{fmt(totalDeduction)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">총 공제</div>
+          <div className="text-lg font-bold text-[#EF4444]">{fmt(totalDeduction)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #F59E0B" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">지급 현황</div>
-          <div className="text-lg font-extrabold text-[#F59E0B]">{paidCount}/{staffList.length}명</div>
-          <div className="text-[10px] text-hm-text-muted mt-0.5">실지급 {fmt(totalBase + totalBonus - totalDeduction)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">지급 현황</div>
+          <div className="text-lg font-bold text-[#F59E0B]">{paidCount}/{staffList.length}명</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">실지급 {fmt(totalBase + totalBonus - totalDeduction)}원</div>
         </Card>
       </div>
 
       {/* 직원 추가 폼 */}
       {showAddStaff && (
         <Card style={{ border: "2px solid #6366F1" }} className="mb-4">
-          <div className="text-[13px] font-extrabold text-[#6366F1] mb-3">직원 추가</div>
+          <div className="text-sm font-bold text-[#6366F1] mb-3">직원 추가</div>
           <div className="flex gap-2 items-end flex-wrap">
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">이름</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">이름</div>
               <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="직원명"
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] w-[120px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">직급</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">직급</div>
               <select value={newRole} onChange={e => setNewRole(e.target.value)}
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] cursor-pointer outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
                 {ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">기본급</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">기본급</div>
               <input value={newBasePay} onChange={e => setNewBasePay(e.target.value)} type="number" placeholder="3,000,000"
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] w-[140px] text-right outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             </div>
@@ -184,16 +184,16 @@ export const PayrollPage = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-[15px] font-extrabold ${isPaid ? "text-gray-500" : "text-hm-text"}`}>{staff.name}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-hm-text-sub font-semibold">{staff.role}</span>
-                      {isPaid && <span className="text-[10px] px-2 py-0.5 rounded-[10px] bg-hm-success-bg text-hm-success font-bold">지급완료</span>}
+                      <span className={`text-base font-bold ${isPaid ? "text-gray-500" : "text-hm-text"}`}>{staff.name}</span>
+                      <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-hm-text-sub font-semibold">{staff.role}</span>
+                      {isPaid && <span className="text-xs px-2 py-0.5 rounded-[10px] bg-hm-success-bg text-hm-success font-bold">지급완료</span>}
                     </div>
-                    {isPaid && rec.paidAt && <div className="text-[10px] text-hm-success mt-0.5">{rec.paidAt}</div>}
+                    {isPaid && rec.paidAt && <div className="text-xs text-hm-success mt-0.5">{rec.paidAt}</div>}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-lg font-extrabold ${isPaid ? "text-gray-400" : "text-hm-blue-dark"}`}>{fmt(net)}원</div>
-                  <div className="text-[10px] text-hm-text-muted">기본 {fmt(basePay)}{bonus > 0 ? ` + ${fmt(bonus)}` : ""}{deduction > 0 ? ` - ${fmt(deduction)}` : ""}</div>
+                  <div className={`text-lg font-bold ${isPaid ? "text-gray-400" : "text-hm-blue-dark"}`}>{fmt(net)}원</div>
+                  <div className="text-xs text-hm-text-muted">기본 {fmt(basePay)}{bonus > 0 ? ` + ${fmt(bonus)}` : ""}{deduction > 0 ? ` - ${fmt(deduction)}` : ""}</div>
                 </div>
               </div>
 
@@ -201,50 +201,50 @@ export const PayrollPage = () => {
               {isEditing && (
                 <div className={`mt-3 pt-3 border-t border-hm-border grid ${isMobile ? "grid-cols-2" : "grid-cols-[1fr_1fr_1fr_1fr_auto]"} gap-2 items-end`}>
                   <div>
-                    <div className="text-[10px] text-hm-text-muted mb-0.5">기본급</div>
+                    <div className="text-xs text-hm-text-muted mb-0.5">기본급</div>
                     <input value={basePay} onChange={e => upsertRecord(staff.id, { basePay: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-[10px] text-hm-text-muted mb-0.5">수당/보너스</div>
+                    <div className="text-xs text-hm-text-muted mb-0.5">수당/보너스</div>
                     <input value={bonus} onChange={e => upsertRecord(staff.id, { bonus: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-[10px] text-hm-text-muted mb-0.5">공제</div>
+                    <div className="text-xs text-hm-text-muted mb-0.5">공제</div>
                     <input value={deduction} onChange={e => upsertRecord(staff.id, { deduction: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-[10px] text-hm-text-muted mb-0.5">비고</div>
+                    <div className="text-xs text-hm-text-muted mb-0.5">비고</div>
                     <input value={rec?.note || ""} onChange={e => upsertRecord(staff.id, { note: e.target.value })} placeholder="비고"
                       className="w-full px-2 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
                   </div>
                   <button onClick={() => setEditingId(null)}
-                    className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">닫기</button>
+                    className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">닫기</button>
                 </div>
               )}
 
               {/* 액션 버튼 */}
               <div className="mt-2.5 flex gap-1.5 justify-end">
                 <button onClick={() => setEditingId(isEditing ? null : staff.id)}
-                  className="px-3 py-[5px] rounded-md border border-hm-input-border bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">
+                  className="px-3 py-[5px] rounded-md border border-hm-input-border bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">
                   {isEditing ? "닫기" : "수정"}
                 </button>
                 {!isPaid && (
                   <button onClick={() => markPaid(staff.id)}
-                    className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
+                    className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
                     지급 완료
                   </button>
                 )}
                 {isPaid && (
                   <button onClick={() => upsertRecord(staff.id, { status: "대기", paidAt: null })}
-                    className="px-3 py-[5px] rounded-md border border-red-200 bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-danger hover:bg-hm-danger-bg transition-colors">
+                    className="px-3 py-[5px] rounded-md border border-red-200 bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-danger hover:bg-hm-danger-bg transition-colors">
                     되돌리기
                   </button>
                 )}
                 <button onClick={() => { if (confirm(`${staff.name} 직원을 삭제하시겠습니까?`)) removeStaff(staff.id); }}
-                  className="px-2.5 py-[5px] rounded-md border border-red-200 bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-danger hover:bg-hm-danger-bg transition-colors">
+                  className="px-2.5 py-[5px] rounded-md border border-red-200 bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-danger hover:bg-hm-danger-bg transition-colors">
                   삭제
                 </button>
               </div>

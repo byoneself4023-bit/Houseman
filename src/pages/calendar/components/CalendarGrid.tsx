@@ -31,7 +31,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       {/* Day Headers */}
       <div className={`grid grid-cols-7 mb-1 ${isMobile ? 'gap-px' : 'gap-0.5'}`}>
         {["일", "월", "화", "수", "목", "금", "토"].map((d, i) => (
-          <div key={i} className={`text-center font-bold ${isMobile ? 'text-[10px] py-1' : 'text-[11.5px] py-2'} ${i === 0 ? 'text-red-500' : i === 6 ? 'text-hm-blue' : 'text-hm-text-muted'}`}>
+          <div key={i} className={`text-center font-bold ${isMobile ? 'text-xs py-1' : 'text-[11.5px] py-2'} ${i === 0 ? 'text-red-500' : i === 6 ? 'text-hm-blue' : 'text-hm-text-muted'}`}>
             {d}
           </div>
         ))}
@@ -84,7 +84,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
               }`}
               onMouseEnter={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.add('bg-hm-bg-hover')}
               onMouseLeave={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.remove('bg-hm-bg-hover')}>
-              <div className={`text-xs mb-[3px] ${isToday(day) ? 'font-[800]' : 'font-semibold'} ${dayOfWeek === 0 ? 'text-red-500' : dayOfWeek === 6 ? 'text-hm-blue' : 'text-hm-text'}`}>
+              <div className={`text-xs mb-[3px] ${isToday(day) ? 'font-bold' : 'font-semibold'} ${dayOfWeek === 0 ? 'text-red-500' : dayOfWeek === 6 ? 'text-hm-blue' : 'text-hm-text'}`}>
                 {day}
                 {isToday(day) && <span className="text-[8px] bg-amber-500 text-white px-1 py-px rounded-[3px] ml-[3px] font-bold">오늘</span>}
               </div>
@@ -106,7 +106,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                     {TYPE_ICON[evt.type]} {evt.type === "휴무" ? evt.name : `${evt.building} ${evt.room}`}
                   </div>
                 ))}
-                {evts.length > 3 && <div className="text-[9px] text-hm-text-muted text-center">+{evts.length - 3}건</div>}
+                {evts.length > 3 && <div className="text-xs text-hm-text-muted text-center">+{evts.length - 3}건</div>}
               </div>
             </div>
           );

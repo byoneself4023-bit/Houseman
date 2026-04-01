@@ -42,7 +42,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, wi
         {(title || onClose) && (
           <div className="flex items-center justify-between mb-3.5">
             {title && (
-              <div className="text-[15px] font-extrabold text-hm-text">
+              <div className="text-base font-bold text-hm-text">
                 {title}
               </div>
             )}

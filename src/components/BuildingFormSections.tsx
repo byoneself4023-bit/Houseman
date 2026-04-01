@@ -12,7 +12,7 @@ import { FIELD_VALIDATORS } from '../utils/validation';
 
 /* ── Shared field helpers ── */
 const FLabel = ({ label }) => (
-  <div className="text-[11px] text-[#8B95A1] mb-[3px]">{label}</div>
+  <div className="text-xs text-[#8B95A1] mb-[3px]">{label}</div>
 );
 
 const FInput = ({ data, field, onChange, placeholder, type, style: extraStyle, readOnly, required: isRequired, className: extraClassName, ...rest }) => {
@@ -37,7 +37,7 @@ const FInput = ({ data, field, onChange, placeholder, type, style: extraStyle, r
         onBlur={handleBlur} readOnly={readOnly} placeholder={placeholder}
         className={`${inputClassName} px-3 py-2 text-xs ${readOnly ? 'bg-hm-bg-slate cursor-default' : 'bg-white cursor-text'} ${hasError ? 'border-red-500' : ''} ${extraClassName || ''}`}
         style={extraStyle} {...rest} />
-      {hasError && <div className="text-[9px] text-red-500 mt-0.5">{error}</div>}
+      {hasError && <div className="text-xs text-red-500 mt-0.5">{error}</div>}
     </div>
   );
 };
@@ -68,8 +68,8 @@ const FTextarea = ({ data, field, onChange, placeholder, rows, readOnly }) => (
 const SectionHeader = ({ title, subtitle, icon, isOpen, onToggle }) => (
   <div onClick={onToggle} className={`cursor-pointer flex justify-between items-center ${isOpen ? 'mb-3' : 'mb-0'}`}>
     <div>
-      <div className="text-[15px] font-[800] text-hm-text">{icon} {title}</div>
-      {subtitle && <div className="text-[11px] text-hm-text-muted mt-0.5">{subtitle}</div>}
+      <div className="text-base font-bold text-hm-text">{icon} {title}</div>
+      {subtitle && <div className="text-xs text-hm-text-muted mt-0.5">{subtitle}</div>}
     </div>
     <span className="text-sm text-hm-text-muted transition-transform duration-200" style={{ transform: isOpen ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
   </div>
@@ -107,7 +107,7 @@ const FFileUpload = ({ data, field, label, onChange, setFullScreenFile, readOnly
       <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={handleUpload} className="hidden" />
       {!value ? (
         readOnly ? (
-          <div className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-hm-bg-slate text-gray-400 text-[11px] font-[inherit] text-center">
+          <div className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-hm-bg-slate text-gray-400 text-xs font-[inherit] text-center">
             첨부된 파일 없음
           </div>
         ) : (
@@ -116,7 +116,7 @@ const FFileUpload = ({ data, field, label, onChange, setFullScreenFile, readOnly
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed text-[11px] cursor-pointer font-[inherit] text-center transition-all duration-150 ${isDragging ? 'border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark' : 'border-gray-300 bg-hm-bg-hover text-gray-500'}`}>
+          className={`w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed text-xs cursor-pointer font-[inherit] text-center transition-all duration-150 ${isDragging ? 'border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark' : 'border-gray-300 bg-hm-bg-hover text-gray-500'}`}>
           {isDragging ? '여기에 놓으세요' : '파일 첨부 (클릭 또는 드래그)'}
         </div>
         )
@@ -126,15 +126,15 @@ const FFileUpload = ({ data, field, label, onChange, setFullScreenFile, readOnly
             className={`w-full h-20 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center bg-hm-bg-hover ${setFullScreenFile ? 'cursor-pointer' : 'cursor-default'}`}>
             {isPdf ? (
               <div className="text-center">
-                <div className="text-[28px]">PDF</div>
-                <div className="text-[9px] text-gray-500 mt-0.5">{fileName}</div>
+                <div className="text-2xl">PDF</div>
+                <div className="text-xs text-gray-500 mt-0.5">{fileName}</div>
               </div>
             ) : (
               <img src={value} alt={label} className="max-w-full max-h-full object-contain" />
             )}
           </div>
           {!readOnly && <button onClick={(e) => { e.stopPropagation(); onChange({ [field]: null, [field + 'Name']: null, [field + 'Type']: null }); }}
-            className="absolute top-1 right-1 w-5 h-5 rounded-full border-none bg-red-500 text-white text-[11px] cursor-pointer flex items-center justify-center p-0 hover:bg-red-600 transition-colors">X</button>}
+            className="absolute top-1 right-1 w-5 h-5 rounded-full border-none bg-red-500 text-white text-xs cursor-pointer flex items-center justify-center p-0 hover:bg-red-600 transition-colors">X</button>}
         </div>
       )}
     </div>
@@ -172,19 +172,19 @@ export function BuildingTypeCards({ data, onChange, locked, onUnlock, onLock, ed
       {/* Lock/unlock controls */}
       {locked !== undefined && anyTypeChecked && locked && editMode && (
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-[#8B95A1]">🔒 건물 유형이 설정되어 있습니다. 변경이 필요하면 잠금을 해제하세요.</div>
+          <div className="text-xs text-[#8B95A1]">🔒 건물 유형이 설정되어 있습니다. 변경이 필요하면 잠금을 해제하세요.</div>
           <button onClick={() => {
             if (window.confirm("건물 유형을 변경하면 청구/정산 설정에 영향을 줄 수 있습니다.\n정말 잠금을 해제하시겠습니까?")) onUnlock && onUnlock();
-          }} className="px-3 py-1 rounded-md border border-red-200 bg-hm-danger-bg text-hm-danger text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-red-100 transition-colors">🔓 잠금 해제</button>
+          }} className="px-3 py-1 rounded-md border border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-red-100 transition-colors">🔓 잠금 해제</button>
         </div>
       )}
       {locked !== undefined && anyTypeChecked && !editMode && (
-        <div className="text-[10px] text-[#8B95A1] mb-2">🔒 건물 유형 (수정 모드에서 변경 가능)</div>
+        <div className="text-xs text-[#8B95A1] mb-2">🔒 건물 유형 (수정 모드에서 변경 가능)</div>
       )}
       {locked !== undefined && !locked && anyTypeChecked && (
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-hm-danger font-semibold">⚠️ 건물 유형 변경 모드. 변경 후 아래 잠금 버튼을 눌러주세요.</div>
-          <button onClick={() => onLock && onLock()} className="px-3 py-1 rounded-md border border-emerald-200 bg-hm-success-bg text-hm-success text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">🔒 잠금</button>
+          <div className="text-xs text-hm-danger font-semibold">⚠️ 건물 유형 변경 모드. 변경 후 아래 잠금 버튼을 눌러주세요.</div>
+          <button onClick={() => onLock && onLock()} className="px-3 py-1 rounded-md border border-emerald-200 bg-hm-success-bg text-hm-success text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">🔒 잠금</button>
         </div>
       )}
       <div className="flex gap-2.5 flex-wrap">
@@ -222,14 +222,14 @@ export function BuildingTypeCards({ data, onChange, locked, onUnlock, onLock, ed
               }}>
               {active && (
                 <div className="absolute -top-2 -right-2 w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md" style={{ background: t.color }}>
-                  <span className="text-white text-[13px] font-black">✓</span>
+                  <span className="text-white text-sm font-bold">✓</span>
                 </div>
               )}
               {isLocked && active && (
                 <div className="absolute -top-1.5 -left-1.5 text-xs">🔒</div>
               )}
               <div className="text-2xl mb-1">{t.icon}</div>
-              <div className="text-[13px] font-[800]" style={{ color: active ? t.color : "#9CA3AF" }}>{t.label}</div>
+              <div className="text-sm font-bold" style={{ color: active ? t.color : "#9CA3AF" }}>{t.label}</div>
             </div>
           );
         })}
@@ -261,14 +261,14 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
             <div>
               <FLabel label="도로명 주소" />
               <div className="flex gap-1.5 items-center">
-                <input value={data.addressRoad || ""} onChange={e => !ro && onChange({ addressRoad: e.target.value })} readOnly={ro} placeholder="주소 검색 또는 직접 입력" className={`${inputClassName} py-1.5 px-2 text-[11px] flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
+                <input value={data.addressRoad || ""} onChange={e => !ro && onChange({ addressRoad: e.target.value })} readOnly={ro} placeholder="주소 검색 또는 직접 입력" className={`${inputClassName} py-1.5 px-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                 {!ro && <button onClick={() => {
                   new window.daum.Postcode({
                     oncomplete: (d) => {
                       onChange({ addressOld: d.jibunAddress || d.autoJibunAddress || "", addressRoad: d.roadAddress || "" });
                     }
                   }).open();
-                }} className="px-3.5 py-1.5 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                }} className="px-3.5 py-1.5 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
               </div>
             </div>
             <div>
@@ -294,11 +294,11 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
                 <div className="flex gap-1.5 items-center">
                   <FInput readOnly={ro} data={data} field="septicTankCleaningMonth1" onChange={onChange} type="number" min="1" max="12" placeholder="6" style={{ width: 70 }} />
                   {!data.septicTankCleaningMonth2 ? (
-                    !ro && <button onClick={() => onChange({ septicTankCleaningMonth2: "12" })} className="px-2.5 py-1 rounded-md border border-dashed border-emerald-200 bg-green-50 text-hm-success text-[10px] font-semibold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">+ 연2회</button>
+                    !ro && <button onClick={() => onChange({ septicTankCleaningMonth2: "12" })} className="px-2.5 py-1 rounded-md border border-dashed border-emerald-200 bg-green-50 text-hm-success text-xs font-semibold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">+ 연2회</button>
                   ) : (
                     <>
                       <FInput readOnly={ro} data={data} field="septicTankCleaningMonth2" onChange={onChange} type="number" min="1" max="12" placeholder="12" style={{ width: 70 }} />
-                      {!ro && <button onClick={() => onChange({ septicTankCleaningMonth2: "" })} className="px-1.5 py-0.5 rounded border border-red-200 bg-hm-danger-bg text-hm-danger text-[9px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕</button>}
+                      {!ro && <button onClick={() => onChange({ septicTankCleaningMonth2: "" })} className="px-1.5 py-0.5 rounded border border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕</button>}
                     </>
                   )}
                 </div>
@@ -309,7 +309,7 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
             {/* 단기임대 전용 설정 */}
             {data.isShortTermRental && (
               <div className="col-span-full p-2.5 px-3 bg-hm-blue-bg rounded-lg border border-blue-200">
-                <div className="text-[10px] font-[800] text-hm-blue-dark mb-2">🏠 단기임대 전용 설정</div>
+                <div className="text-xs font-bold text-hm-blue-dark mb-2">🏠 단기임대 전용 설정</div>
                 <div className="flex gap-4 mb-2">
                   <FCheck readOnly={ro} data={data} field="isResidentRegistrationAllowed" onChange={onChange} label="전입신고 가능" />
                   <FCheck readOnly={ro} data={data} field="isStandardContract" onChange={onChange} label="표준계약서 사용" />
@@ -397,7 +397,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                       onChange({ ownerHomeAddress: d.roadAddress || d.jibunAddress || "" });
                     }
                   }).open();
-                }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                 <input value={data.ownerHomeAddressDetail || ""} onChange={e => !ro && onChange({ ownerHomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
               </div>
             </div>}
@@ -410,7 +410,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
             <div className="grid grid-cols-2 gap-2.5">
               {/* 정산 계좌 1 */}
               <div className="p-2.5 px-3 bg-hm-success-bg rounded-lg border border-emerald-200">
-                <div className="text-[11px] font-[800] text-hm-success mb-2">정산 계좌 ①</div>
+                <div className="text-xs font-bold text-hm-success mb-2">정산 계좌 ①</div>
                 <div className="grid grid-cols-[1fr_2fr_1fr] gap-1.5">
                   <div><FLabel label="은행" /><FInput readOnly={ro} data={data} field="settlementAccount1Bank" onChange={onChange} placeholder="국민은행" /></div>
                   <div><FLabel label="계좌번호" /><FInput readOnly={ro} data={data} field="settlementAccount1" onChange={onChange} placeholder="110-234-567890" /></div>
@@ -419,7 +419,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
               </div>
               {/* 정산 계좌 2 */}
               <div className="p-2.5 px-3 rounded-lg" style={{ background: data.settlementAccount2 ? "var(--color-hm-success-bg)" : "var(--color-hm-bg-muted)", border: `1px solid ${data.settlementAccount2 ? "var(--color-hm-success-border)" : "#E5E8EB"}` }}>
-                <div className="text-[11px] font-[800] mb-2" style={{ color: data.settlementAccount2 ? "var(--color-hm-success)" : "#8B95A1" }}>정산 계좌 ②</div>
+                <div className="text-xs font-bold mb-2" style={{ color: data.settlementAccount2 ? "var(--color-hm-success)" : "#8B95A1" }}>정산 계좌 ②</div>
                 <div className="grid grid-cols-[1fr_2fr_1fr] gap-1.5">
                   <div><FLabel label="은행" /><FInput readOnly={ro} data={data} field="settlementAccount2Bank" onChange={onChange} placeholder="은행" /></div>
                   <div><FLabel label="계좌번호" /><FInput readOnly={ro} data={data} field="settlementAccount2" onChange={onChange} placeholder="계좌번호" /></div>
@@ -441,7 +441,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                   <div>
                     <FLabel label="계좌① 비율 (%)" />
                     <FInput readOnly={ro} data={data} field="settlementSplitValue" onChange={onChange} type="number" placeholder="60" />
-                    {data.settlementSplitValue && <div className="text-[9px] text-[#8B95A1] mt-0.5">계좌①: {data.settlementSplitValue}% / 계좌②: {100 - (parseInt(data.settlementSplitValue) || 0)}%</div>}
+                    {data.settlementSplitValue && <div className="text-xs text-[#8B95A1] mt-0.5">계좌①: {data.settlementSplitValue}% / 계좌②: {100 - (parseInt(data.settlementSplitValue) || 0)}%</div>}
                   </div>
                 )}
               </div>
@@ -474,7 +474,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
           {/* 건물주 추가 버튼 */}
           {!ro && !corporateOnly && !showOwner2 && !data.owner2Name && (
             <button onClick={() => setShowOwner2(true)}
-              className="px-4 py-1.5 rounded-md border-[1.5px] border-dashed border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
+              className="px-4 py-1.5 rounded-md border-[1.5px] border-dashed border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
               {`＋ ${ownerLabel} 추가 (공동소유)`}
             </button>
           )}
@@ -483,9 +483,9 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
           {(showOwner2 || data.owner2Name) && (
             <div className="p-2.5 px-3 bg-amber-50 rounded-lg border border-amber-200 mb-2.5">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[11px] font-bold text-amber-800">👤 {ownerLabel} 2 (공동소유)</span>
+                <span className="text-xs font-bold text-amber-800">👤 {ownerLabel} 2 (공동소유)</span>
                 {!ro && <button onClick={() => { setShowOwner2(false); setShowOwner3(false); onChange({ owner2Name: "", owner2ResidentNumber: "", owner2Phone: "", owner2Email: "", owner2HomeAddress: "", owner2HomeAddressDetail: "", owner3Name: "", owner3ResidentNumber: "", owner3Phone: "", owner3Email: "", owner3HomeAddress: "", owner3HomeAddressDetail: "", coOwnerMemo: "" }); }}
-                  className="px-2.5 py-0.5 rounded-[5px] border border-red-200 bg-hm-danger-bg text-hm-danger text-[10px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕ 삭제</button>}
+                  className="px-2.5 py-0.5 rounded-[5px] border border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕ 삭제</button>}
               </div>
               <div className="grid grid-cols-3 gap-3 mb-1.5 hm-form-grid-3">
                 <div><FLabel label="이름" /><FInput readOnly={ro} data={data} field="owner2Name" onChange={onChange} placeholder="이름" /></div>
@@ -504,7 +504,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                           onChange({ owner2HomeAddress: d.roadAddress || d.jibunAddress || "" });
                         }
                       }).open();
-                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                     <input value={data.owner2HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner2HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
@@ -512,7 +512,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
               {/* 건물주 3 추가 버튼 */}
               {!ro && !showOwner3 && !data.owner3Name && (
                 <button onClick={() => setShowOwner3(true)}
-                  className="mt-2 px-4 py-1.5 rounded-md border-[1.5px] border-dashed border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
+                  className="mt-2 px-4 py-1.5 rounded-md border-[1.5px] border-dashed border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
                   {`＋ ${ownerLabel} 3 추가`}
                 </button>
               )}
@@ -523,9 +523,9 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
           {(showOwner3 || data.owner3Name) && (showOwner2 || data.owner2Name) && (
             <div className="p-2.5 px-3 bg-green-50 rounded-lg border border-green-200 mb-2.5">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[11px] font-bold text-green-800">👤 {ownerLabel} 3 (공동소유)</span>
+                <span className="text-xs font-bold text-green-800">👤 {ownerLabel} 3 (공동소유)</span>
                 {!ro && <button onClick={() => { setShowOwner3(false); onChange({ owner3Name: "", owner3ResidentNumber: "", owner3Phone: "", owner3Email: "", owner3HomeAddress: "", owner3HomeAddressDetail: "" }); }}
-                  className="px-2.5 py-0.5 rounded-[5px] border border-red-200 bg-hm-danger-bg text-hm-danger text-[10px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕ 삭제</button>}
+                  className="px-2.5 py-0.5 rounded-[5px] border border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">✕ 삭제</button>}
               </div>
               <div className="grid grid-cols-3 gap-3 mb-1.5 hm-form-grid-3">
                 <div><FLabel label="이름" /><FInput readOnly={ro} data={data} field="owner3Name" onChange={onChange} placeholder="이름" /></div>
@@ -544,7 +544,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                           onChange({ owner3HomeAddress: d.roadAddress || d.jibunAddress || "" });
                         }
                       }).open();
-                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                     <input value={data.owner3HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner3HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
@@ -562,7 +562,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
 
           {/* 연락 담당자 */}
           <div className="border-t border-hm-border pt-3.5 mt-4">
-            <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">연락 담당자</div>
+            <div className="text-xs font-bold text-hm-blue-dark mb-2">연락 담당자</div>
             <div className="grid grid-cols-3 gap-3 mb-1.5 hm-form-grid-3">
               <div><FLabel label="담당자 이름" /><FInput readOnly={ro} data={data} field="contactPersonName" onChange={onChange} /></div>
               <div><FLabel label="담당자 전화" /><FInput readOnly={ro} data={data} field="contactPersonPhone" onChange={onChange} /></div>
@@ -572,7 +572,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
               <FCheck readOnly={ro} data={data} field="isContactPersonPrimary" onChange={onChange} label={`1차 연락대상 여부 (${ownerLabel}보다 먼저 연락)`} />
             </div>
             <div className="border-t border-hm-border pt-2.5">
-              <div className="text-[11px] font-[800] text-hm-success mb-2">현장소장</div>
+              <div className="text-xs font-bold text-hm-success mb-2">현장소장</div>
               <div className="grid grid-cols-3 gap-2.5 hm-form-grid-3">
                 <div><FLabel label="소장 이름" /><FInput readOnly={ro} data={data} field="siteManagerName" onChange={onChange} /></div>
                 <div><FLabel label="소장 전화" /><FInput readOnly={ro} data={data} field="siteManagerPhone" onChange={onChange} /></div>
@@ -621,7 +621,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
         <div>
           {/* 관리수수료 (purple card) */}
           <div className="p-3 px-3.5 bg-violet-50 rounded-[10px] border border-violet-200 mb-3.5">
-            <div className="text-xs font-[800] text-violet-600 mb-2.5">관리수수료</div>
+            <div className="text-xs font-bold text-violet-600 mb-2.5">관리수수료</div>
             {corporateOnly ? (
               <div className="max-w-[300px]">
                 <FLabel label="고정금액 (원)" /><FInput readOnly={ro} data={data} field="managementFeeFixedAmount" onChange={onChange} type="number" placeholder="1,500,000" />
@@ -648,7 +648,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 정산 일정 (green card) */}
           <div className="p-3 px-3.5 bg-hm-success-bg rounded-[10px] border border-emerald-200 mb-3.5">
-            <div className="text-xs font-[800] text-hm-success mb-2.5">{corporateOnly ? "청구서 발송일" : "정산 일정"}</div>
+            <div className="text-xs font-bold text-hm-success mb-2.5">{corporateOnly ? "청구서 발송일" : "정산 일정"}</div>
             {(() => {
               const d1 = parseInt(data.settlementDay1);
               const d2 = data.settlementCount === "2" ? parseInt(data.settlementDay2) : null;
@@ -682,7 +682,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                   )}
                   {!data.isShortTermRental && period1 && (
                     <div className="flex items-center">
-                      <div className="px-3 py-2 bg-emerald-100 rounded-md text-[11px] text-emerald-800 font-semibold w-full">
+                      <div className="px-3 py-2 bg-emerald-100 rounded-md text-xs text-emerald-800 font-semibold w-full">
                         📅 정산 기간: {period1}
                       </div>
                     </div>
@@ -690,17 +690,17 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                 </div>
                 {data.isShortTermRental && hasPeriod1 && (
                   <div style={{ display: "grid", gridTemplateColumns: period2 ? "1fr 1fr" : "1fr", gap: 8 }} className="mt-2">
-                    <div className="px-2.5 py-1.5 bg-emerald-100 rounded-md text-[11px] text-emerald-800 font-semibold">
+                    <div className="px-2.5 py-1.5 bg-emerald-100 rounded-md text-xs text-emerald-800 font-semibold">
                       📅 {dl(d1)} 정산 → {period1}
                     </div>
                     {period2 && (
-                      <div className="px-2.5 py-1.5 bg-emerald-100 rounded-md text-[11px] text-emerald-800 font-semibold">
+                      <div className="px-2.5 py-1.5 bg-emerald-100 rounded-md text-xs text-emerald-800 font-semibold">
                         📅 {dl(d2)} 정산 → {period2}
                       </div>
                     )}
                   </div>
                 )}
-                <div className="text-[9px] text-gray-500 mt-1.5">※ 정산일이 토/일/공휴일이면 다음 평일에 정산합니다.</div>
+                <div className="text-xs text-gray-500 mt-1.5">※ 정산일이 토/일/공휴일이면 다음 평일에 정산합니다.</div>
               </>);
             })()}
           </div>
@@ -708,21 +708,21 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           {/* 검침 설정 (orange card) — 근생만 */}
           {data.isCommercial && (
             <div className="p-3 px-3.5 bg-hm-warning-bg rounded-[10px] border border-orange-200 mb-3.5">
-              <div className="text-xs font-[800] text-hm-warning mb-2.5">검침 설정 (사설계량기)</div>
+              <div className="text-xs font-bold text-hm-warning mb-2.5">검침 설정 (사설계량기)</div>
               <div className="grid grid-cols-2 gap-2.5">
                 {/* 전기 검침일 */}
                 <div>
                   <FLabel label="전기 검침일 (매월)" />
                   {data.electricReadingDay == null ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-gray-400">검침 안 함</span>
-                      {!ro && <button onClick={() => onChange({ electricReadingDay: 1 })} className="text-[10px] text-hm-warning bg-transparent border border-orange-200 rounded px-2 py-0.5 cursor-pointer font-[inherit] hover:bg-orange-50 transition-colors">+ 설정</button>}
+                      <span className="text-xs text-gray-400">검침 안 함</span>
+                      {!ro && <button onClick={() => onChange({ electricReadingDay: 1 })} className="text-xs text-hm-warning bg-transparent border border-orange-200 rounded px-2 py-0.5 cursor-pointer font-[inherit] hover:bg-orange-50 transition-colors">+ 설정</button>}
                     </div>
                   ) : (
                     <div className="flex items-center gap-1.5">
                       <FInput readOnly={ro} data={data} field="electricReadingDay" onChange={onChange} type="number" min="1" max="31" placeholder="15" />
-                      <span className="text-[10px] text-gray-400 whitespace-nowrap">일</span>
-                      {!ro && <button onClick={() => onChange({ electricReadingDay: null })} className="text-[10px] text-hm-danger bg-transparent border-none cursor-pointer whitespace-nowrap hover:text-red-700 transition-colors">해제</button>}
+                      <span className="text-xs text-gray-400 whitespace-nowrap">일</span>
+                      {!ro && <button onClick={() => onChange({ electricReadingDay: null })} className="text-xs text-hm-danger bg-transparent border-none cursor-pointer whitespace-nowrap hover:text-red-700 transition-colors">해제</button>}
                     </div>
                   )}
                 </div>
@@ -731,19 +731,19 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                   <FLabel label="수도 검침일" />
                   {data.waterReadingDay == null ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-gray-400">검침 안 함</span>
-                      {!ro && <button onClick={() => onChange({ waterReadingDay: 1, waterReadingCycle: 'every' })} className="text-[10px] text-hm-warning bg-transparent border border-orange-200 rounded px-2 py-0.5 cursor-pointer font-[inherit] hover:bg-orange-50 transition-colors">+ 설정</button>}
+                      <span className="text-xs text-gray-400">검침 안 함</span>
+                      {!ro && <button onClick={() => onChange({ waterReadingDay: 1, waterReadingCycle: 'every' })} className="text-xs text-hm-warning bg-transparent border border-orange-200 rounded px-2 py-0.5 cursor-pointer font-[inherit] hover:bg-orange-50 transition-colors">+ 설정</button>}
                     </div>
                   ) : (
                     <>
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <FInput readOnly={ro} data={data} field="waterReadingDay" onChange={onChange} type="number" min="1" max="31" placeholder="20" />
-                        <span className="text-[10px] text-gray-400 whitespace-nowrap">일</span>
-                        {!ro && <button onClick={() => onChange({ waterReadingDay: null, waterReadingCycle: null })} className="text-[10px] text-hm-danger bg-transparent border-none cursor-pointer whitespace-nowrap hover:text-red-700 transition-colors">해제</button>}
+                        <span className="text-xs text-gray-400 whitespace-nowrap">일</span>
+                        {!ro && <button onClick={() => onChange({ waterReadingDay: null, waterReadingCycle: null })} className="text-xs text-hm-danger bg-transparent border-none cursor-pointer whitespace-nowrap hover:text-red-700 transition-colors">해제</button>}
                       </div>
                       <div className="flex gap-1.5">
                         {[{ v: "every", l: "매달" }, { v: "even", l: "짝수달" }, { v: "odd", l: "홀수달" }].map(o => (
-                          <label key={o.v} className={`flex items-center gap-[3px] text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                          <label key={o.v} className={`flex items-center gap-[3px] text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                             <input type="radio" name="waterCycle" checked={data.waterReadingCycle === o.v} onChange={() => !ro && onChange({ waterReadingCycle: o.v })} disabled={ro} />
                             {o.l}
                           </label>
@@ -753,31 +753,31 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                   )}
                 </div>
               </div>
-              <div className="text-[9px] text-gray-500 mt-2">※ 검침일이 공휴일이면 가장 가까운 평일로 자동 이동됩니다.</div>
+              <div className="text-xs text-gray-500 mt-2">※ 검침일이 공휴일이면 가장 가까운 평일로 자동 이동됩니다.</div>
             </div>
           )}
 
           {/* 납부일·청구서 (amber card) — 근생/일반임대 */}
           {(data.isCommercial || data.isLongTermRental) && (
             <div className="p-3 px-3.5 bg-amber-50 rounded-[10px] border border-amber-200 mb-3.5">
-              <div className="text-xs font-[800] text-amber-600 mb-2.5">납부일·청구서</div>
+              <div className="text-xs font-bold text-amber-600 mb-2.5">납부일·청구서</div>
               <div className="grid grid-cols-2 gap-2.5">
                 {/* 임대료 납부일 */}
                 <div>
                   <FLabel label="임대료 납부일" />
                   <div className="flex flex-col gap-1">
-                    <label className={`flex items-center gap-1 text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                    <label className={`flex items-center gap-1 text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                       <input type="radio" checked={data.rentDueDay == null} onChange={() => !ro && onChange({ rentDueDay: null })} disabled={ro} />
                       입주일 기준
                     </label>
-                    <label className={`flex items-center gap-1 text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                    <label className={`flex items-center gap-1 text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                       <input type="radio" checked={data.rentDueDay != null} onChange={() => !ro && onChange({ rentDueDay: data.rentDueDay || 25 })} disabled={ro} />
                       건물 지정일
                     </label>
                     {data.rentDueDay != null && (
                       <div className="flex items-center gap-1.5 ml-[18px]">
                         <FInput readOnly={ro} data={data} field="rentDueDay" onChange={onChange} type="number" min="1" max="31" placeholder="25" />
-                        <span className="text-[10px] text-gray-400">일</span>
+                        <span className="text-xs text-gray-400">일</span>
                       </div>
                     )}
                   </div>
@@ -786,18 +786,18 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                 <div>
                   <FLabel label="관리비 납부일" />
                   <div className="flex flex-col gap-1">
-                    <label className={`flex items-center gap-1 text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                    <label className={`flex items-center gap-1 text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                       <input type="radio" checked={data.mgmtDueDay == null} onChange={() => !ro && onChange({ mgmtDueDay: null })} disabled={ro} />
                       {data.rentDueDay != null ? "임대료와 동일" : "입주일 기준"}
                     </label>
-                    <label className={`flex items-center gap-1 text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                    <label className={`flex items-center gap-1 text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                       <input type="radio" checked={data.mgmtDueDay != null} onChange={() => !ro && onChange({ mgmtDueDay: data.mgmtDueDay || 25 })} disabled={ro} />
                       건물 지정일
                     </label>
                     {data.mgmtDueDay != null && (
                       <div className="flex items-center gap-1.5 ml-[18px]">
                         <FInput readOnly={ro} data={data} field="mgmtDueDay" onChange={onChange} type="number" min="1" max="31" placeholder="25" />
-                        <span className="text-[10px] text-gray-400">일</span>
+                        <span className="text-xs text-gray-400">일</span>
                       </div>
                     )}
                   </div>
@@ -806,14 +806,14 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
               {/* 관리비 청구서 발행일 */}
               <div className="mt-2.5 pt-2.5 border-t border-amber-200">
                 <div className="flex items-center gap-2">
-                  <label className={`flex items-center gap-1 text-[11px] text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
+                  <label className={`flex items-center gap-1 text-xs text-gray-700 ${ro ? 'cursor-default' : 'cursor-pointer'}`}>
                     <input type="checkbox" checked={data.mgmtBillIssueDay != null} onChange={e => !ro && onChange({ mgmtBillIssueDay: e.target.checked ? (data.mgmtBillIssueDay || 10) : null })} disabled={ro} />
                     관리비 청구서 발행일 별도 지정
                   </label>
                   {data.mgmtBillIssueDay != null && (
                     <div className="flex items-center gap-1.5">
                       <FInput readOnly={ro} data={data} field="mgmtBillIssueDay" onChange={onChange} type="number" min="1" max="31" placeholder="10" />
-                      <span className="text-[10px] text-gray-400">일</span>
+                      <span className="text-xs text-gray-400">일</span>
                     </div>
                   )}
                 </div>
@@ -823,7 +823,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 청구 설정 (blue card) */}
           <div className="p-3 px-3.5 bg-hm-blue-bg rounded-[10px] border border-blue-200 mb-3.5">
-            <div className="text-xs font-[800] text-hm-blue-dark mb-2.5">청구 설정</div>
+            <div className="text-xs font-bold text-hm-blue-dark mb-2.5">청구 설정</div>
             <div className="flex flex-wrap gap-2.5">
               {isRentalOrCommercial && !isMeteredCommercial && !(data.isShortTermRental && !data.isLongTermRental && !data.isCommercial) && (
                 <div className="flex-[1_1_140px]">
@@ -860,7 +860,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           {/* 기업시설관리: 결제받을 하우스맨 계좌 */}
           {corporateOnly && (
             <div className="p-2.5 px-3 bg-hm-blue-bg rounded-lg border border-blue-200 mt-3.5">
-              <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">결제받을 하우스맨 계좌</div>
+              <div className="text-xs font-bold text-hm-blue-dark mb-2">결제받을 하우스맨 계좌</div>
               <FInput readOnly={ro} data={data} field="housemanBillingAccount" onChange={onChange} placeholder="하나은행 225-910048-15704 박종호(하우스맨)" />
             </div>
           )}
@@ -872,7 +872,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
             {/* 하우스맨 계좌 */}
             <div className="p-2.5 px-3 bg-hm-blue-bg rounded-lg border border-blue-200 mb-2.5">
-              <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">하우스맨 계좌</div>
+              <div className="text-xs font-bold text-hm-blue-dark mb-2">하우스맨 계좌</div>
               <div className="grid grid-cols-1 gap-1.5">
                 <FInput readOnly={ro} data={data} field="housemanBillingAccount" onChange={onChange} placeholder="하나은행 225-910048-15704 박종호(하우스맨)" />
               </div>
@@ -886,7 +886,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                   if (n > 1 && !hasValue) return null;
                   return (
                     <div key={n} className="p-2.5 px-3 bg-[#F0F4FF] rounded-lg border border-blue-200">
-                      <div className="text-[11px] font-[800] text-hm-blue-dark mb-2">{ownerLabel} 청구계좌 {n}</div>
+                      <div className="text-xs font-bold text-hm-blue-dark mb-2">{ownerLabel} 청구계좌 {n}</div>
                       <div className="grid grid-cols-[1fr_2fr_1fr] gap-1.5">
                         <div><FLabel label="은행" /><FInput readOnly={ro} data={data} field={`billingAccount${n}Bank`} onChange={onChange} placeholder="국민은행" /></div>
                         <div><FLabel label="계좌번호" /><FInput readOnly={ro} data={data} field={`billingAccount${n}`} onChange={onChange} placeholder="110-234-567890" /></div>
@@ -896,12 +896,12 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                   );
                 })}
                 {!ro && !data.billingAccount2 && (
-                  <button onClick={() => onChange({ billingAccount2: " " })} className="p-2.5 rounded-lg border-[1.5px] border-dashed border-blue-200 bg-hm-bg-hover text-hm-blue-dark text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors">
+                  <button onClick={() => onChange({ billingAccount2: " " })} className="p-2.5 rounded-lg border-[1.5px] border-dashed border-blue-200 bg-hm-bg-hover text-hm-blue-dark text-xs font-semibold cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors">
                     {`+ ${ownerLabel} 계좌 2 추가`}
                   </button>
                 )}
                 {!ro && data.billingAccount2 && !data.billingAccount3 && (
-                  <button onClick={() => onChange({ billingAccount3: " " })} className="p-2.5 rounded-lg border-[1.5px] border-dashed border-blue-200 bg-hm-bg-hover text-hm-blue-dark text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors">
+                  <button onClick={() => onChange({ billingAccount3: " " })} className="p-2.5 rounded-lg border-[1.5px] border-dashed border-blue-200 bg-hm-bg-hover text-hm-blue-dark text-xs font-semibold cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors">
                     {`+ ${ownerLabel} 계좌 3 추가`}
                   </button>
                 )}
@@ -945,10 +945,10 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
                 return (
                   <div key={bType} className={isMultiType ? "mb-4 p-3.5 rounded-[10px]" : "mb-4"} style={{ background: isMultiType ? typeBgs[bType] : "transparent", border: isMultiType ? `1.5px solid ${typeColors[bType]}30` : "none" }}>
-                    <div className="text-[11px] font-[800] mb-2 pb-1.5" style={{ color: isMultiType ? typeColors[bType] : "#191F28", borderBottom: `1.5px solid ${isMultiType ? typeColors[bType] + "40" : "var(--color-hm-border)"}` }}>
+                    <div className="text-xs font-bold mb-2 pb-1.5" style={{ color: isMultiType ? typeColors[bType] : "#191F28", borderBottom: `1.5px solid ${isMultiType ? typeColors[bType] + "40" : "var(--color-hm-border)"}` }}>
                       📦 {isMultiType ? `${bType} 호실` : ""} 항목별 입금 계좌 지정
                     </div>
-                    {!isMultiType && <div className="text-[9px] text-[#8B95A1] mb-2.5">각 항목이 어느 계좌로 입금되는지 지정하세요. 레고 블럭처럼 자유롭게 조합.</div>}
+                    {!isMultiType && <div className="text-xs text-[#8B95A1] mb-2.5">각 항목이 어느 계좌로 입금되는지 지정하세요. 레고 블럭처럼 자유롭게 조합.</div>}
                     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : `repeat(${items.length <= 4 ? items.length : 3}, 1fr)`, gap: 10 }} className={isMultiType ? "" : "mb-3.5"}>
                       {items.map(item => {
                         const val = data[item.field] || "";
@@ -956,7 +956,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                           <div key={item.field} className="p-3 px-3.5 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-xs font-bold" style={{ color: item.color }}>{item.label}</span>
-                              {val && <span className="text-[9px] font-semibold" style={{ color: item.color }}>✓</span>}
+                              {val && <span className="text-xs font-semibold" style={{ color: item.color }}>✓</span>}
                             </div>
                             <select value={val} onChange={e => onChange({ [item.field]: e.target.value || (editMode ? "" : null) })} disabled={ro}
                               className={`${inputClassName} py-[7px] px-2.5 text-xs ${editMode ? 'cursor-pointer bg-white' : 'cursor-default bg-hm-bg-slate'} ${val ? 'font-semibold' : 'font-normal'}`}>
@@ -964,7 +964,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                               <option value="no_billing">🚫 청구안함</option>
                               {acctOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                             </select>
-                            <div className="text-[9px] text-[#8B95A1] mt-[3px]">{item.desc}</div>
+                            <div className="text-xs text-[#8B95A1] mt-[3px]">{item.desc}</div>
                           </div>
                         );
                       })}
@@ -977,8 +977,8 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
             {/* 예치금 관리 예치금액 */}
             {data.depositAccountTarget === "houseman" && (
               <div className="p-2.5 px-3 bg-violet-50 rounded-lg border border-violet-200">
-                <div className="text-[11px] font-[800] text-violet-600 mb-2">🔑 예치금 관리 설정</div>
-                <div className="text-[9px] text-[#8B95A1] mb-2">예치금을 하우스맨 계좌로 받는 경우, {ownerLabel}에게 관리 보증금을 예치합니다.</div>
+                <div className="text-xs font-bold text-violet-600 mb-2">🔑 예치금 관리 설정</div>
+                <div className="text-xs text-[#8B95A1] mb-2">예치금을 하우스맨 계좌로 받는 경우, {ownerLabel}에게 관리 보증금을 예치합니다.</div>
                 <div>
                   <FLabel label="예치금 관리 예치금액 (원)" />
                   <FInput readOnly={ro} data={data} field="depositManagementAmount" onChange={onChange} type="number" placeholder="5000000" />
@@ -1046,7 +1046,7 @@ export function ContractSpecialTermsSection({ data, onChange, editMode = true, d
       <SectionHeader title="계약서 특약사항" subtitle="건물유형별 특약 — 호실 계약서에 자동 삽입" icon="📝" isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
       {isOpen && (
         <div>
-          <div className="text-[10px] text-[#8B95A1] mb-3">건물유형별로 특약사항을 작성하면 해당 유형 호실의 계약서에 자동으로 삽입됩니다. 호실에서는 수정할 수 없습니다.</div>
+          <div className="text-xs text-[#8B95A1] mb-3">건물유형별로 특약사항을 작성하면 해당 유형 호실의 계약서에 자동으로 삽입됩니다. 호실에서는 수정할 수 없습니다.</div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${types.length}, 1fr)`, gap: 12 }}>
             {types.map(t => (
               <div key={t.field} className="p-3 px-3.5 rounded-[10px] flex flex-col" style={{ background: t.bg, border: `1.5px solid ${t.border}` }}>

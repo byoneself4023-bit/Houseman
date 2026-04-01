@@ -631,7 +631,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
     }
 
     const detailInputCls = (isMissing: boolean) =>
-      `w-[110px] px-2.5 py-1.5 rounded-md text-[13px] text-right font-[inherit] font-bold ${isMissing ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white'}`;
+      `w-[110px] px-2.5 py-1.5 rounded-md text-sm text-right font-[inherit] font-bold ${isMissing ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white'}`;
 
     return (
       <div>
@@ -641,29 +641,29 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
         <Card>
           <div className="flex justify-between items-start mb-4">
             <div>
-              <div className="text-lg font-extrabold flex items-center gap-2">
+              <div className="text-lg font-bold flex items-center gap-2">
                 ⚡ {t.building} {t.room}호
                 <RoomTypeBadge building={t.building} room={t.room} />
               </div>
-              <div className="text-[13px] text-hm-text-muted mt-1">{t.name} · 납부일 매월 {t.dueDay}일</div>
+              <div className="text-sm text-hm-text-muted mt-1">{t.name} · 납부일 매월 {t.dueDay}일</div>
             </div>
             <div className="flex gap-1.5">
-              <span className={`px-2.5 py-[5px] rounded-md text-[10px] font-bold ${bType === "B" ? 'bg-[#FDF4FF] text-[#7C3AED]' : 'bg-[#F0F4FF] text-hm-blue-dark'}`}>
+              <span className={`px-2.5 py-[5px] rounded-md text-xs font-bold ${bType === "B" ? 'bg-[#FDF4FF] text-[#7C3AED]' : 'bg-[#F0F4FF] text-hm-blue-dark'}`}>
                 {bType === "B" ? "이중계좌" : "단일계좌"}
               </span>
-              {lateFee > 0 && <span className="px-2.5 py-[5px] rounded-md bg-hm-danger-bg text-hm-danger text-[10px] font-bold">연체 +{lateFee.toLocaleString()}</span>}
-              {t.confirmed && <span className="px-2.5 py-[5px] rounded-md bg-hm-success-bg text-hm-success text-[11px] font-bold">✓ 확인됨</span>}
-              {t.sent && <span className="px-2.5 py-[5px] rounded-md bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold">✓ 발송됨</span>}
+              {lateFee > 0 && <span className="px-2.5 py-[5px] rounded-md bg-hm-danger-bg text-hm-danger text-xs font-bold">연체 +{lateFee.toLocaleString()}</span>}
+              {t.confirmed && <span className="px-2.5 py-[5px] rounded-md bg-hm-success-bg text-hm-success text-xs font-bold">✓ 확인됨</span>}
+              {t.sent && <span className="px-2.5 py-[5px] rounded-md bg-hm-blue-bg text-hm-blue-dark text-xs font-bold">✓ 발송됨</span>}
             </div>
           </div>
           <div className="grid gap-4 grid-cols-[2fr_3fr]">
             {/* 좌: 청구내역 */}
             <div>
-              <div className="text-[11px] font-extrabold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📋 청구 내역</div>
+              <div className="text-xs font-bold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📋 청구 내역</div>
               {t.prevUnpaid > 0 && (
                 <div className="flex justify-between px-3 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border mb-1">
                   <span className="text-xs text-hm-danger font-bold">🔴 미납금</span>
-                  <span className="text-[13px] font-extrabold text-hm-danger">{t.prevUnpaid.toLocaleString()}원</span>
+                  <span className="text-sm font-bold text-hm-danger">{t.prevUnpaid.toLocaleString()}원</span>
                 </div>
               )}
               {[
@@ -674,7 +674,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               ].filter(Boolean).map((item: any, i: number) => (
                 <div key={i} className="flex justify-between px-3 py-2 rounded-md bg-hm-bg-slate mb-1">
                   <span className="text-xs text-hm-text-sub">{item.label}</span>
-                  <span className="text-[13px] font-bold">{item.value.toLocaleString()}원</span>
+                  <span className="text-sm font-bold">{item.value.toLocaleString()}원</span>
                 </div>
               ))}
 
@@ -686,7 +686,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       <span className="text-xs text-[#92400E] font-bold">⚡ 전기요금</span>
                       <input value={getEditVal(t.key, "elec", e)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "elec", ev.target.value)} className={detailInputCls(t.noElec)} />
                     </div>
-                    <div className={`text-[10px] ${t.noElec ? 'text-hm-danger' : 'text-[#92400E]'}`}>
+                    <div className={`text-xs ${t.noElec ? 'text-hm-danger' : 'text-[#92400E]'}`}>
                       {t.noElec ? (t.carryOverElec ? "📌 이어 청구 — 이전 검침값에서 이어서 청구됩니다" : "⚠ 한전 데이터 미매칭 — 엑셀 업로드 또는 수기 입력") : `기간: ${elecPeriodStr} · 검침: ${t.elecPrev}→${t.elecCur} · ${t.elecUsage}kWh`}
                     </div>
                   </div>
@@ -695,7 +695,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       <span className="text-xs text-[#991B1B] font-bold">🔥 가스요금</span>
                       <input value={getEditVal(t.key, "gas", g)} onChange={(ev: React.ChangeEvent<HTMLInputElement>) => setEditVal(t.key, "gas", ev.target.value)} className={detailInputCls(t.noGas)} />
                     </div>
-                    <div className={`text-[10px] ${t.noGas ? 'text-hm-danger' : 'text-[#991B1B]'}`}>
+                    <div className={`text-xs ${t.noGas ? 'text-hm-danger' : 'text-[#991B1B]'}`}>
                       {t.noGas ? (t.carryOverGas ? "📌 이어 청구 — 이전 검침값에서 이어서 청구됩니다" : "⚠ 가스 데이터 미매칭 — 파일 업로드 또는 수기 입력") : `기간: ${gasPeriodStr} · 검침: ${t.gasPrev}→${t.gasCur} (${t.gasUsage})`}
                     </div>
                   </div>
@@ -705,7 +705,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               {lateFee > 0 && (
                 <div className="flex justify-between px-3 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border mt-2">
                   <span className="text-xs text-hm-danger font-bold">⚠ 연체수수료 (5%)</span>
-                  <span className="text-[13px] font-extrabold text-hm-danger">{lateFee.toLocaleString()}원</span>
+                  <span className="text-sm font-bold text-hm-danger">{lateFee.toLocaleString()}원</span>
                 </div>
               )}
 
@@ -714,10 +714,10 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 <div className="mt-2">
                   <div className="flex justify-between px-3 py-2 rounded-md bg-[#FDF4FF] border border-[#E9D5FF] mb-1">
                     <span className="text-xs text-[#7C3AED] font-bold">🔧 AS 유상수리</span>
-                    <span className="text-[13px] font-extrabold text-[#7C3AED]">{asRepairCost.toLocaleString()}원</span>
+                    <span className="text-sm font-bold text-[#7C3AED]">{asRepairCost.toLocaleString()}원</span>
                   </div>
                   {(t.asRepairItems || []).map((a: any, ai: number) => (
-                    <div key={ai} className="flex justify-between py-1 px-3 pl-6 text-[10px] text-hm-text-muted">
+                    <div key={ai} className="flex justify-between py-1 px-3 pl-6 text-xs text-hm-text-muted">
                       <span>{a.content || a.title} ({a.date})</span>
                       <span className="font-bold">{(a.cost || 0).toLocaleString()}원</span>
                     </div>
@@ -729,53 +729,53 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 <div className="mt-2.5 flex flex-col gap-1.5">
                   <div className="p-3 rounded-lg bg-hm-warning-bg border-[1.5px] border-[#FDBA74]">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[13px] font-extrabold text-hm-warning">① {rentLabel}</span>
-                      <span className="text-lg font-extrabold text-hm-warning">{t.rent.toLocaleString()}원</span>
+                      <span className="text-sm font-bold text-hm-warning">① {rentLabel}</span>
+                      <span className="text-lg font-bold text-hm-warning">{t.rent.toLocaleString()}원</span>
                     </div>
-                    <div className="text-[10px] text-[#92400E]">{acctInfo.owner.bank} {acctInfo.owner.account} {acctInfo.owner.holder}</div>
+                    <div className="text-xs text-[#92400E]">{acctInfo.owner.bank} {acctInfo.owner.account} {acctInfo.owner.holder}</div>
                   </div>
                   <div className="p-3 rounded-lg bg-[#FEF3C7] border-[1.5px] border-[#F59E0B]">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[13px] font-extrabold text-[#92400E]">② 관리비&공과금</span>
-                      <span className="text-lg font-extrabold text-[#92400E]">{(grandTotal - t.rent).toLocaleString()}원</span>
+                      <span className="text-sm font-bold text-[#92400E]">② 관리비&공과금</span>
+                      <span className="text-lg font-bold text-[#92400E]">{(grandTotal - t.rent).toLocaleString()}원</span>
                     </div>
-                    <div className="text-[10px] text-[#92400E]">{(acctInfo.manager || hmAcct).bank} {(acctInfo.manager || hmAcct).account} {(acctInfo.manager || hmAcct).holder}</div>
+                    <div className="text-xs text-[#92400E]">{(acctInfo.manager || hmAcct).bank} {(acctInfo.manager || hmAcct).account} {(acctInfo.manager || hmAcct).holder}</div>
                   </div>
                   <div className="px-3 py-2 rounded-md bg-gray-100 text-center">
-                    <span className="text-[11px] text-hm-text-sub">합계 </span>
-                    <span className="text-base font-extrabold text-hm-text">{grandTotal.toLocaleString()}원</span>
+                    <span className="text-xs text-hm-text-sub">합계 </span>
+                    <span className="text-base font-bold text-hm-text">{grandTotal.toLocaleString()}원</span>
                   </div>
                 </div>
               ) : (
                 <div className="flex justify-between p-3 rounded-lg bg-[#FEF3C7] border-[1.5px] border-[#F59E0B] mt-2.5">
                   <div>
-                    <span className="text-sm font-extrabold text-[#92400E]">총 청구액</span>
-                    <div className="text-[10px] text-[#92400E] mt-0.5">{hmAcct.bank} {hmAcct.account} {hmAcct.holder}</div>
+                    <span className="text-sm font-bold text-[#92400E]">총 청구액</span>
+                    <div className="text-xs text-[#92400E] mt-0.5">{hmAcct.bank} {hmAcct.account} {hmAcct.holder}</div>
                   </div>
-                  <span className="text-xl font-extrabold text-[#92400E]">{grandTotal.toLocaleString()}원</span>
+                  <span className="text-xl font-bold text-[#92400E]">{grandTotal.toLocaleString()}원</span>
                 </div>
               )}
             </div>
 
             {/* 우: 메시지 & 버튼 */}
             <div>
-              <div className="text-[11px] font-extrabold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📱 발송 메시지 미리보기</div>
+              <div className="text-xs font-bold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📱 발송 메시지 미리보기</div>
               <div className="bg-hm-bg-slate rounded-[10px] p-4 border border-hm-border whitespace-pre-line text-[11.5px] text-gray-700 leading-[1.8] mb-4 max-h-[360px] overflow-auto">{msg}</div>
               <div className="flex gap-2">
                 {!t.confirmed ? (
                   <button onClick={() => { confirmItem(t); setSelectedItem({ ...t, confirmed: true }); }}
-                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-success text-white text-sm font-extrabold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-success text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     ✅ 금액 확인
                   </button>
                 ) : !t.sent ? (
                   <button onClick={() => { sendItem(t); setSelectedItem({ ...t, sent: true }); }}
-                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-blue text-white text-sm font-extrabold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     📱 문자 발송
                   </button>
                 ) : (
-                  <button className="flex-1 p-3 rounded-[10px] border-none bg-gray-300 text-white text-sm font-extrabold font-[inherit]">✓ 발송 완료</button>
+                  <button className="flex-1 p-3 rounded-[10px] border-none bg-gray-300 text-white text-sm font-bold font-[inherit]">✓ 발송 완료</button>
                 )}
-                <button onClick={() => navigator.clipboard?.writeText(msg)} className="px-5 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-[13px] font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">📋 복사</button>
+                <button onClick={() => navigator.clipboard?.writeText(msg)} className="px-5 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-sm font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">📋 복사</button>
               </div>
             </div>
           </div>
@@ -796,16 +796,16 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       {/* 도구 버튼 행 */}
       <div className="flex gap-1.5 mb-2 flex-wrap">
         <button onClick={() => setShowSetupWizard(true)}
-          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#C4B5FD] bg-[#F5F3FF] text-[11px] font-bold text-[#7C3AED] cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
+          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#C4B5FD] bg-[#F5F3FF] text-xs font-bold text-[#7C3AED] cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
           ⚙️ 청구 설정
         </button>
         <button onClick={() => setShowMeterUpload("elec")}
-          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BFDBFE] bg-hm-blue-bg text-[11px] font-bold text-hm-blue-dark cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
+          className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BFDBFE] bg-hm-blue-bg text-xs font-bold text-hm-blue-dark cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
           📊 검침 업로드
         </button>
         {typeTab === "변동관리비" && filterBuilding !== "전체" && (
           <button onClick={() => setShowVariableView(filterBuilding)}
-            className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BBF7D0] bg-[#F0FDF4] text-[11px] font-bold text-hm-success cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
+            className="px-3 py-1.5 rounded-lg border-[1.5px] border-[#BBF7D0] bg-[#F0FDF4] text-xs font-bold text-hm-success cursor-pointer font-[inherit] hover:shadow-sm transition-shadow">
             📈 변동비 안분
           </button>
         )}
@@ -820,7 +820,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             <button key={t} onClick={() => { setTypeTab(t); setFilterTab("전체"); setFilterBuilding("전체"); }}
               className="flex-1 px-1 py-1.5 rounded-lg cursor-pointer font-[inherit] transition-all"
               style={{ border: active ? `2px solid ${cfg.c}` : "1.5px solid var(--color-hm-input-border)", background: active ? cfg.bg : "#fff" }}>
-              <div className="text-xs font-extrabold" style={{ color: active ? cfg.c : "var(--color-hm-text-sub)" }}>{cfg.icon} {t} <span className="text-base font-black">{typeCounts[t]}</span></div>
+              <div className="text-xs font-bold" style={{ color: active ? cfg.c : "var(--color-hm-text-sub)" }}>{cfg.icon} {t} <span className="text-base font-bold">{typeCounts[t]}</span></div>
               <div className="text-[8px] text-hm-text-muted mt-[1px]">{cfg.desc}</div>
             </button>
           );
@@ -840,7 +840,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                   <div className="flex items-center gap-2">
                     <span className="text-sm">📆</span>
                     <div>
-                      <div className={`text-[11px] font-extrabold ${billingPeriod.confirmed ? 'text-hm-success' : 'text-[#92400E]'}`}>
+                      <div className={`text-xs font-bold ${billingPeriod.confirmed ? 'text-hm-success' : 'text-[#92400E]'}`}>
                         {billingPeriod.confirmed ? "청구 기간 확정" : "청구 기간 설정 (월세일 범위)"}
                       </div>
                       {billingPeriod.confirmed && (
@@ -852,7 +852,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                   </div>
                   {billingPeriod.confirmed && (
                     <button onClick={() => setBillingPeriod({ ...billingPeriod, confirmed: false })}
-                      className="px-3 py-1 rounded-md border border-gray-300 bg-white text-[10px] font-bold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+                      className="px-3 py-1 rounded-md border border-gray-300 bg-white text-xs font-bold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                       변경
                     </button>
                   )}
@@ -860,27 +860,27 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 {!billingPeriod.confirmed && (
                   <>
                     {hist.length > 0 && (
-                      <div className="text-[10px] text-hm-success font-semibold mb-1.5 px-2 py-1 bg-hm-success-bg rounded-md">
+                      <div className="text-xs text-hm-success font-semibold mb-1.5 px-2 py-1 bg-hm-success-bg rounded-md">
                         이전 청구: {hist.map((h: any) => `${h.startDay}~${h.endDay}일`).join(" → ")}
                       </div>
                     )}
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 flex-1">
-                        <span className="text-[11px] text-hm-text-sub font-semibold">매월</span>
-                        <span className="px-2.5 py-1.5 rounded-md bg-gray-100 border-[1.5px] border-hm-input-border text-[13px] font-bold text-hm-text min-w-[36px] text-center">
+                        <span className="text-xs text-hm-text-sub font-semibold">매월</span>
+                        <span className="px-2.5 py-1.5 rounded-md bg-gray-100 border-[1.5px] border-hm-input-border text-sm font-bold text-hm-text min-w-[36px] text-center">
                           {autoStart}
                         </span>
-                        <span className="text-[11px] text-hm-text-sub font-semibold">일 ~</span>
+                        <span className="text-xs text-hm-text-sub font-semibold">일 ~</span>
                         <input type="number" min="1" max="31" value={billingPeriod.endDay}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBillingPeriod({ ...billingPeriod, startDay: autoStart, endDay: Math.max(1, Math.min(31, parseInt(e.target.value) || 1)) })}
-                          className="w-[52px] px-2 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-[13px] font-[inherit] text-center font-bold focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
-                        <span className="text-[11px] text-hm-text-sub font-semibold">일</span>
+                          className="w-[52px] px-2 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-sm font-[inherit] text-center font-bold focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+                        <span className="text-xs text-hm-text-sub font-semibold">일</span>
                       </div>
                       <button onClick={() => {
                         const newHistory = [...hist, { startDay: autoStart, endDay: billingPeriod.endDay, confirmedAt: new Date().toISOString() }];
                         setBillingPeriod({ startDay: autoStart, endDay: billingPeriod.endDay, confirmed: true, history: newHistory });
                       }}
-                        className="px-4 py-1.5 rounded-md border-none bg-hm-success text-white text-[11px] font-extrabold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 transition-opacity">
+                        className="px-4 py-1.5 rounded-md border-none bg-hm-success text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 transition-opacity">
                         확정
                       </button>
                     </div>
@@ -893,11 +893,11 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           {/* 업로드 버튼 (기간 확정 후만 활성화) */}
           <div className={`flex gap-1 mb-1.5 ${billingPeriod.confirmed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
             <button onClick={() => setShowUpload(showUpload === "elec" ? null : "elec")}
-              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-[11px] font-bold text-[#92400E] transition-all ${showUpload === "elec" ? 'border-2 border-[#F59E0B] bg-[#FFFBEB]' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
+              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-xs font-bold text-[#92400E] transition-all ${showUpload === "elec" ? 'border-2 border-[#F59E0B] bg-[#FFFBEB]' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
               ⚡ 전기 엑셀 업로드
             </button>
             <button onClick={() => setShowUpload(showUpload === "gas" ? null : "gas")}
-              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-[11px] font-bold text-[#991B1B] transition-all ${showUpload === "gas" ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
+              className={`flex-1 px-2.5 py-[5px] rounded-md cursor-pointer font-[inherit] text-xs font-bold text-[#991B1B] transition-all ${showUpload === "gas" ? 'border-2 border-red-500 bg-hm-danger-bg' : 'border-[1.5px] border-hm-input-border bg-white hover:bg-hm-bg-hover'}`}>
               🔥 가스 업로드
             </button>
             <button onClick={() => {
@@ -948,7 +948,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               const now = new Date();
               XLSX.writeFile(wb, `가스양식_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}.xlsx`);
             }}
-              className="flex-[0_0_15%] px-2.5 py-[5px] rounded-md border-[1.5px] border-[#6366F1] bg-[#EEF2FF] cursor-pointer font-[inherit] text-[11px] font-bold text-[#4338CA] hover:shadow-sm transition-shadow">
+              className="flex-[0_0_15%] px-2.5 py-[5px] rounded-md border-[1.5px] border-[#6366F1] bg-[#EEF2FF] cursor-pointer font-[inherit] text-xs font-bold text-[#4338CA] hover:shadow-sm transition-shadow">
               📥 가스양식
             </button>
           </div>
@@ -959,17 +959,17 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       {showUpload && (
         <Card className={`mb-3 ${showUpload === "elec" ? 'border-2 border-[#F59E0B]' : 'border-2 border-red-500'}`}>
           <div className="flex justify-between items-center mb-3">
-            <div className={`text-sm font-extrabold ${showUpload === "elec" ? 'text-[#92400E]' : 'text-[#991B1B]'}`}>
+            <div className={`text-sm font-bold ${showUpload === "elec" ? 'text-[#92400E]' : 'text-[#991B1B]'}`}>
               {showUpload === "elec" ? "⚡ 전기 빌링사 엑셀 업로드" : "🔥 가스 데이터 업로드"}
             </div>
             <button onClick={() => { setShowUpload(null); setUploadResult(null); }} className="w-6 h-6 rounded border border-hm-input-border bg-white cursor-pointer text-xs font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
           </div>
           <div className="p-4 rounded-[10px] border-2 border-dashed border-gray-300 bg-hm-bg-hover text-center mb-3">
-            <div className="text-[28px] mb-2">{showUpload === "elec" ? "📊" : "📄"}</div>
+            <div className="text-2xl mb-2">{showUpload === "elec" ? "📊" : "📄"}</div>
             <div className="text-xs text-hm-text-sub mb-2">
               {showUpload === "elec" ? "한전 빌링사에서 다운받은 엑셀(.xlsx)을 업로드하세요" : "가스 양식 엑셀(.xlsx)을 업로드하세요"}
             </div>
-            <label className={`inline-block px-6 py-2.5 rounded-lg text-white text-[13px] font-bold cursor-pointer hover:opacity-90 transition-opacity ${showUpload === "elec" ? 'bg-[#F59E0B]' : 'bg-red-500'}`}>
+            <label className={`inline-block px-6 py-2.5 rounded-lg text-white text-sm font-bold cursor-pointer hover:opacity-90 transition-opacity ${showUpload === "elec" ? 'bg-[#F59E0B]' : 'bg-red-500'}`}>
               📤 파일 업로드
               <input type="file" accept=".xlsx,.xls,.csv" className="hidden"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files?.[0]) handleFileUpload(showUpload, e.target.files[0]); }} />
@@ -982,7 +982,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               </div>
               {uploadResult.details && uploadResult.details.length > 0 && (
                 <div className="max-h-[360px] overflow-y-auto mt-2">
-                  <table className="w-full border-collapse text-[10px]">
+                  <table className="w-full border-collapse text-xs">
                     <thead>
                       <tr className="bg-hm-bg-slate border-b-2 border-hm-border">
                         {["건물/호실","고객번호","이전 기간","이전 당월","→","이번 전월","이번 기간","당월","사용량","금액"].map((h, hi) => (
@@ -994,9 +994,9 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       {uploadResult.details.map((d: any, i: number) => (
                         <tr key={i} className="border-b border-[#F0F2F5]" style={{ background: !d.matched ? "var(--color-hm-danger-bg)" : d.chainMatch ? "#fff" : (d.lastCur > 0 ? "#FFFBEB" : "#fff") }}>
                           <td className="px-1 py-[5px] font-bold">{d.matched ? `${d.building} ${d.room}` : d.code}</td>
-                          <td className="px-1 py-[5px] text-hm-text-sub text-[9px]">{d.custNo || "-"}</td>
+                          <td className="px-1 py-[5px] text-hm-text-sub text-xs">{d.custNo || "-"}</td>
                           {d.matched ? (<>
-                            <td className="px-1 py-[5px] text-right text-[#8B5CF6] text-[9px]">{d.lastPeriod}</td>
+                            <td className="px-1 py-[5px] text-right text-[#8B5CF6] text-xs">{d.lastPeriod}</td>
                             <td className="px-1 py-[5px] text-center text-[#8B5CF6] font-bold">{d.lastCur || "-"}</td>
                             <td className="px-1 py-[5px] text-center text-xs">
                               {d.chainMatch ? <span className="text-hm-success">→</span>
@@ -1004,12 +1004,12 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                                 : <span className="text-gray-300">→</span>}
                             </td>
                             <td className={`px-1 py-[5px] text-center font-bold ${d.chainMatch ? 'text-hm-success' : d.lastCur > 0 && d.prev !== d.lastCur ? 'text-hm-danger' : 'text-hm-success'}`}>{d.prev}</td>
-                            <td className="px-1 py-[5px] text-right text-hm-success text-[9px]">{d.period}</td>
+                            <td className="px-1 py-[5px] text-right text-hm-success text-xs">{d.period}</td>
                             <td className="px-1 py-[5px] text-right text-hm-success font-semibold">{d.cur}</td>
                             <td className="px-1 py-[5px] text-right text-hm-success">{d.usage}</td>
                             <td className="px-1 py-[5px] text-right text-hm-text font-bold">{fmt(d.amount)}</td>
                           </>) : (
-                            <td colSpan={8} className="px-1 py-[5px] text-hm-danger text-[9px]">미매칭 — 호실정보에 가스고객번호를 등록하세요</td>
+                            <td colSpan={8} className="px-1 py-[5px] text-hm-danger text-xs">미매칭 — 호실정보에 가스고객번호를 등록하세요</td>
                           )}
                         </tr>
                       ))}
@@ -1023,7 +1023,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       )}
 
       {/* Status info bar */}
-      <div className="px-2.5 py-1 rounded-md mb-2 text-[10px]" style={{ background: typeTabCfg[typeTab].bg, border: `1px solid ${typeTabCfg[typeTab].c}30`, color: typeTabCfg[typeTab].c }}>
+      <div className="px-2.5 py-1 rounded-md mb-2 text-xs" style={{ background: typeTabCfg[typeTab].bg, border: `1px solid ${typeTabCfg[typeTab].c}30`, color: typeTabCfg[typeTab].c }}>
         {typeTab === "단기" && <>💡 임대료+관리비+공과금 통합청구 · 월세일 기준 청구 · <strong className="text-hm-danger">적색=미매칭</strong></>}
         {typeTab === "고정관리비" && <>💡 일반임대/근생 · 고정관리비 건물 · 임대료+고정관리비 청구 · 담당자 확인 후 발송</>}
         {typeTab === "변동관리비" && <>💡 일반임대/근생 · 변동관리비 건물 · 공과금 기반 변동 청구 · 검침 후 발송</>}
@@ -1042,7 +1042,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           ].map((s, i) => (
             <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
               <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
-              <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
+              <div className="text-lg font-bold" style={{ color: s.color }}>{s.count}</div>
             </Card>
           ))}
         </div>
@@ -1055,7 +1055,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           ].map((s, i) => (
             <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
               <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
-              <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
+              <div className="text-lg font-bold" style={{ color: s.color }}>{s.count}</div>
             </Card>
           ))}
         </div>
@@ -1064,11 +1064,11 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       {/* Filters */}
       <div className="flex gap-1 mb-1.5 items-center flex-wrap">
         <select value={filterBuilding} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterBuilding(e.target.value)}
-          className="px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-[11px] font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
+          className="px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-xs font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
           {buildingNames.map(b => <option key={b}>{b}</option>)}
         </select>
         <div className="flex items-center gap-1">
-          <span className="text-[10px] text-hm-text-muted font-semibold">담당:</span>
+          <span className="text-xs text-hm-text-muted font-semibold">담당:</span>
           <select
             value={filterBuilding !== "전체" ? getBillingAssignee(filterBuilding) : ""}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -1077,7 +1077,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               }
             }}
             disabled={filterBuilding === "전체"}
-            className={`px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-[11px] font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors ${filterBuilding === "전체" ? 'bg-hm-bg' : 'bg-white'}`}>
+            className={`px-2.5 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-xs font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors ${filterBuilding === "전체" ? 'bg-hm-bg' : 'bg-white'}`}>
             {filterBuilding === "전체"
               ? <option>건물 선택 후 지정</option>
               : internalStaff.map((s: Staff) => <option key={s.id} value={s.name}>{s.name}</option>)
@@ -1096,7 +1096,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 sendItem({ ...i, confirmed: true });
               });
             }}
-              className={`ml-auto px-4 py-[7px] rounded-lg border-none text-white text-[11px] font-bold font-[inherit] transition-opacity ${cnt > 0 ? 'bg-hm-success cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default opacity-60'}`}>
+              className={`ml-auto px-4 py-[7px] rounded-lg border-none text-white text-xs font-bold font-[inherit] transition-opacity ${cnt > 0 ? 'bg-hm-success cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default opacity-60'}`}>
               📱 매칭 일괄발송 ({cnt}건)
             </button>
           );
@@ -1105,7 +1105,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
 
       {/* 청구 리스트 */}
       <div className="flex flex-col gap-1.5">
-        {filtered.length === 0 && <div className="text-center py-10 text-[#B0B5C1] text-[13px]">해당 조건 없음</div>}
+        {filtered.length === 0 && <div className="text-center py-10 text-[#B0B5C1] text-sm">해당 조건 없음</div>}
         {filtered.map((r: any, i: number) => {
           const noData = r.noElec || r.noGas;
           const urgent = r.roomType === "단기" && !r.sent && r.daysUntilDue >= 0 && r.daysUntilDue <= 7;
@@ -1119,34 +1119,34 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               <div className="flex items-center justify-between mb-1.5"
                 onClick={() => setSelectedItem(r)}>
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="text-xs font-extrabold text-hm-text whitespace-nowrap">{r.building}</span>
+                  <span className="text-xs font-bold text-hm-text whitespace-nowrap">{r.building}</span>
                   <span className="text-xs font-bold text-hm-blue whitespace-nowrap">{r.room}호</span>
-                  <span className="text-[11px] font-semibold text-hm-text-sub whitespace-nowrap overflow-hidden text-ellipsis">{r.name}</span>
-                  <span className="text-[10px] font-bold text-[#92400E] px-1.5 py-0.5 rounded bg-[#FFFBEB] whitespace-nowrap">{r.dueDay}일</span>
+                  <span className="text-xs font-semibold text-hm-text-sub whitespace-nowrap overflow-hidden text-ellipsis">{r.name}</span>
+                  <span className="text-xs font-bold text-[#92400E] px-1.5 py-0.5 rounded bg-[#FFFBEB] whitespace-nowrap">{r.dueDay}일</span>
                   {r.daysUntilDue >= 0 ? (
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-[5px] whitespace-nowrap text-white"
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-[5px] whitespace-nowrap text-white"
                       style={{ background: r.daysUntilDue <= 3 ? "var(--color-hm-danger)" : r.daysUntilDue <= 7 ? "#F59E0B" : "#E5E7EB", color: r.daysUntilDue <= 7 ? "#fff" : "var(--color-hm-text-sub)" }}>D-{r.daysUntilDue}</span>
                   ) : (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-[5px] bg-hm-bg text-hm-text-muted whitespace-nowrap">D+{Math.abs(r.daysUntilDue)}</span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-[5px] bg-hm-bg text-hm-text-muted whitespace-nowrap">D+{Math.abs(r.daysUntilDue)}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-[9px] font-bold px-2 py-[3px] rounded-[5px] whitespace-nowrap"
+                  <span className="text-xs font-bold px-2 py-[3px] rounded-[5px] whitespace-nowrap"
                     style={{
                       background: r.confirmed ? "var(--color-hm-success-bg)" : r.matchStatus === "none" ? "var(--color-hm-danger-bg)" : r.matchStatus === "manual" ? "var(--color-hm-blue-bg)" : "var(--color-hm-success-bg)",
                       color: r.confirmed ? "var(--color-hm-success)" : r.matchStatus === "none" ? "var(--color-hm-danger)" : r.matchStatus === "manual" ? "var(--color-hm-blue-dark)" : "var(--color-hm-success)",
                     }}>{r.confirmed ? "확인완료" : r.matchStatus === "none" ? "미매칭" : r.matchStatus === "manual" ? "수동매칭" : "자동매칭"}</span>
                   <div className="flex gap-[3px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     {!r.confirmed ? (
-                      <button onClick={() => confirmItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BBF7D0] bg-hm-success-bg text-hm-success text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">✅확인</button>
+                      <button onClick={() => confirmItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BBF7D0] bg-hm-success-bg text-hm-success text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">✅확인</button>
                     ) : !r.sent ? (
-                      <button onClick={() => sendItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BFDBFE] bg-hm-blue-bg text-hm-blue-dark text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">📱발송</button>
+                      <button onClick={() => sendItem(r)} className="px-2.5 py-1 rounded-[5px] border border-[#BFDBFE] bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow">📱발송</button>
                     ) : null}
                     <button onClick={() => setShowRoomSettings({ roomId: r.roomId, buildingId: r.buildingId, tenantName: r.name, roomNumber: r.room, buildingName: r.building })}
-                      className="px-2 py-1 rounded-[5px] border border-[#C4B5FD] bg-[#F5F3FF] text-[#7C3AED] text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="호실 청구 설정">⚙️</button>
+                      className="px-2 py-1 rounded-[5px] border border-[#C4B5FD] bg-[#F5F3FF] text-[#7C3AED] text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="호실 청구 설정">⚙️</button>
                     {r.confirmed && (
                       <button onClick={() => setShowInvoice({ ...r, tenantName: r.name, buildingName: r.building, roomNumber: r.room })}
-                        className="px-2 py-1 rounded-[5px] border border-[#FDE68A] bg-[#FFFBEB] text-[#92400E] text-[10px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="청구서 보기">🧾</button>
+                        className="px-2 py-1 rounded-[5px] border border-[#FDE68A] bg-[#FFFBEB] text-[#92400E] text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:shadow-sm transition-shadow" title="청구서 보기">🧾</button>
                     )}
                   </div>
                 </div>
@@ -1155,39 +1155,39 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
               <div className="flex items-center gap-2 flex-wrap" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                 {r.roomType === "단기" && <>
                   <div className={`flex items-center gap-1.5 w-full rounded-lg relative ${r.noElec && !elecVal ? 'py-2 px-3 bg-hm-danger-bg border-[2.5px] border-red-500' : 'py-1 px-2 bg-[#FFFBEB] border border-[#FDE68A]'}`}>
-                    {r.noElec && !elecVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-[9px] font-extrabold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
-                    <span className={`text-[13px] font-extrabold whitespace-nowrap min-w-[44px] ${r.noElec && !elecVal ? 'text-hm-danger' : 'text-[#D97706]'}`}>⚡전기</span>
+                    {r.noElec && !elecVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-xs font-bold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
+                    <span className={`text-sm font-bold whitespace-nowrap min-w-[44px] ${r.noElec && !elecVal ? 'text-hm-danger' : 'text-[#D97706]'}`}>⚡전기</span>
                     {r.noElec && !r.carryOverElec && !elecVal ? (
-                      <span className="text-[11px] text-hm-danger font-extrabold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
+                      <span className="text-xs text-hm-danger font-bold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
                     ) : null}
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">기간</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">기간</span>
                     <input type="text" value={((ev.es ?? r.elecStart) || "").replace(/^\d{4}\//, "")} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], es: e.target.value } }))}
                       className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
-                    <span className="text-sm font-extrabold text-gray-400">~</span>
+                    <span className="text-sm font-bold text-gray-400">~</span>
                     <input type="text" value={((ev.ee ?? r.elecEnd) || "").replace(/^\d{4}\//, "")} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ee: e.target.value } }))}
                       className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
                     <div className="w-px h-5 bg-gray-200 mx-0.5" />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">검침</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">검침</span>
                     <input type="number" value={ev.ep ?? r.elecPrev} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ep: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-20`} placeholder="시작" />
-                    <span className="text-base font-extrabold text-gray-400">-</span>
+                    <span className="text-base font-bold text-gray-400">-</span>
                     <input type="number" value={ev.ec ?? r.elecCur} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], ec: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-20`} placeholder="끝" />
                     <div className="w-px h-5 bg-gray-200 mx-0.5" />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">사용</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">사용</span>
                     <input type="number" value={ev.eu ?? r.elecUsage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], eu: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-[66px]`} />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={elecVal ? fmt(elecVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], elec: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: elecVal ? "var(--color-hm-warning-bg)" : "var(--color-hm-danger-bg)", borderColor: elecVal ? "#FDBA74" : "var(--color-hm-danger-border)" }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-bold`} style={{ background: elecVal ? "var(--color-hm-warning-bg)" : "var(--color-hm-danger-bg)", borderColor: elecVal ? "#FDBA74" : "var(--color-hm-danger-border)" }} placeholder="0" />
                   </div>
                   <div className={`flex items-center gap-1.5 w-full rounded-lg relative ${r.noGas && !gasVal ? 'py-2 px-3 bg-hm-danger-bg border-[2.5px] border-red-500' : 'py-1 px-2 bg-[#FFF1F2] border border-[#FECDD3]'}`}>
-                    {r.noGas && !gasVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-[9px] font-extrabold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
-                    <span className={`text-[13px] font-extrabold whitespace-nowrap min-w-[44px] ${r.noGas && !gasVal ? 'text-hm-danger' : 'text-hm-danger'}`}>🔥가스</span>
+                    {r.noGas && !gasVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-xs font-bold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
+                    <span className={`text-sm font-bold whitespace-nowrap min-w-[44px] ${r.noGas && !gasVal ? 'text-hm-danger' : 'text-hm-danger'}`}>🔥가스</span>
                     {r.noGas && !r.carryOverGas && !gasVal ? (
-                      <span className="text-[11px] text-hm-danger font-extrabold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
+                      <span className="text-xs text-hm-danger font-bold bg-white px-2.5 py-[3px] rounded-md border-[1.5px] border-hm-danger-border">데이터 없음 — 이번 청구 제외, 다음달 이어청구</span>
                     ) : null}
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">기간</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">기간</span>
                     {(() => {
                       const gp = ev.gp ?? r.gasPeriod ?? "";
                       const parts = gp.split("~");
@@ -1198,7 +1198,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                           const newGp = `${e.target.value.replace(/\//g, ".")}~${ge.replace(/\//g, ".")}`;
                           setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gp: newGp } }));
                         }} className={`${inpCls} w-[66px] !text-center`} placeholder="M/D" />
-                        <span className="text-sm font-extrabold text-gray-400">~</span>
+                        <span className="text-sm font-bold text-gray-400">~</span>
                         <input type="text" value={ge} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newGp = `${gs.replace(/\//g, ".")}~${e.target.value.replace(/\//g, ".")}`;
                           setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gp: newGp } }));
@@ -1206,22 +1206,22 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       </>;
                     })()}
                     <div className="w-px h-5 bg-gray-200 mx-0.5" />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">검침</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">검침</span>
                     <input type="number" value={ev.gpr ?? r.gasPrev} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gpr: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-20`} placeholder="시작" />
-                    <span className="text-base font-extrabold text-gray-400">-</span>
+                    <span className="text-base font-bold text-gray-400">-</span>
                     <input type="number" value={ev.gcr ?? r.gasCur} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gcr: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-20`} placeholder="끝" />
                     <div className="w-px h-5 bg-gray-200 mx-0.5" />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">사용</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">사용</span>
                     <input type="number" value={ev.gu ?? r.gasUsage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gu: parseInt(e.target.value) || 0 } }))}
                       className={`${inpCls} w-[66px]`} />
-                    <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
+                    <span className="text-xs text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={gasVal ? fmt(gasVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gas: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: gasVal ? "#FFF1F2" : "var(--color-hm-danger-bg)", borderColor: gasVal ? "#FDA4AF" : "var(--color-hm-danger-border)" }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-bold`} style={{ background: gasVal ? "#FFF1F2" : "var(--color-hm-danger-bg)", borderColor: gasVal ? "#FDA4AF" : "var(--color-hm-danger-border)" }} placeholder="0" />
                   </div>
                 </>}
-                <div className="ml-auto text-xs font-extrabold text-hm-text whitespace-nowrap">
+                <div className="ml-auto text-xs font-bold text-hm-text whitespace-nowrap">
                   {fmt((ev.rent ?? r.rent) + (ev.mgmt ?? r.mgmt) + (r.roomType === "단기" ? elecVal + gasVal + (ev.water ?? r.water) + (ev.cable ?? r.cable) : 0))}원
                 </div>
               </div>
@@ -1229,7 +1229,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           );
         })}
       </div>
-      <div className="mt-1 text-[9px] text-[#B0B5C1] text-center">
+      <div className="mt-1 text-xs text-[#B0B5C1] text-center">
         ※ {typeTab === "단기" ? "임대료+관리비+공과금 통합 · 전기=엑셀 · 가스=파일 · 수도/인터넷=고정 · 월세일 기준 청구" : typeTab === "고정관리비" ? "고정관리비 건물 · 임대료+고정관리비 · 담당자 확인 후 발송" : "변동관리비 건물 · 공과금 기반 변동 청구 · 검침 후 발송"}
       </div>
 
@@ -1257,7 +1257,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           <div className="bg-white rounded-2xl p-6 max-w-[600px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <span className="text-base font-extrabold">📊 검침 엑셀 업로드</span>
+              <span className="text-base font-bold">📊 검침 엑셀 업로드</span>
               <button onClick={() => setShowMeterUpload(null)} className="border-none bg-transparent text-xl cursor-pointer text-[#94A3B8] hover:text-hm-text transition-colors">✕</button>
             </div>
             <MeterUpload
@@ -1310,7 +1310,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           <div className="bg-white rounded-2xl p-6 max-w-[500px] w-[95vw] max-h-[90vh] overflow-auto"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <span className="text-base font-extrabold">🧾 청구서 미리보기</span>
+              <span className="text-base font-bold">🧾 청구서 미리보기</span>
               <button onClick={() => setShowInvoice(null)} className="border-none bg-transparent text-xl cursor-pointer text-[#94A3B8] hover:text-hm-text transition-colors">✕</button>
             </div>
             <BillingInvoiceTemplate

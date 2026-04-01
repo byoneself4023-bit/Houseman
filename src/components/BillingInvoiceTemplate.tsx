@@ -71,7 +71,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
           <div style={{ fontSize: 18, fontWeight: 800, color: '#1d1d1f', letterSpacing: '-0.02em' }}>
             월간 청구서
           </div>
-          <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
             {y}년 {Number(m)}월
           </div>
         </div>
@@ -160,7 +160,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
       {/* 납기내/납기후 합계 */}
       <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
         <div style={{ background: '#346aff', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
             납기내 합계
           </span>
           <span style={{ fontSize: 22, fontWeight: 800, color: '#fff', fontVariantNumeric: 'tabular-nums' }}>
@@ -169,7 +169,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
         </div>
         {record.total_after_due > record.total_within_due && (
           <div style={{ background: 'var(--color-hm-danger-bg)', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#991B1B' }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#991B1B' }}>
               납기후 ({fmtDate(record.late_fee_apply_date)} 이후)
             </span>
             <span style={{ fontSize: 14, fontWeight: 800, color: '#E52528', fontVariantNumeric: 'tabular-nums' }}>
@@ -182,11 +182,11 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
       {/* 입금 계좌 */}
       {accountInfo?.account && (
         <div style={{ background: 'var(--color-hm-bg-muted)', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 6 }}>입금 계좌</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#888', marginBottom: 6 }}>입금 계좌</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>
             {accountInfo.bank} {accountInfo.account}
           </div>
-          <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
             예금주: {accountInfo.holder}
           </div>
         </div>
@@ -197,7 +197,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
         <div>
           <img src="/logo-icon.svg" alt="" style={{ height: 16, opacity: 0.4 }} />
         </div>
-        <div style={{ textAlign: 'right', fontSize: 9, color: '#888', lineHeight: 1.6 }}>
+        <div style={{ textAlign: 'right', fontSize: 12, color: '#888', lineHeight: 1.6 }}>
           HOUSEMAN | 대표 박종호 | 사업자 206-16-25497<br />
           서울시 강남구 학동로8길 9, 5층 | 1544-4150
         </div>

@@ -237,7 +237,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
   return (
     <div className="bg-white rounded-xl border border-[#E5E5E5] p-5 mb-5">
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-sm font-extrabold text-hm-text">검침 데이터 업로드</span>
+        <span className="text-sm font-bold text-hm-text">검침 데이터 업로드</span>
         <div className="flex gap-1.5">
           {(['elec', 'gas'] as const).map(type => (
             <button
@@ -253,7 +253,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
             </button>
           ))}
         </div>
-        <span className="text-[11px] text-hm-text-muted ml-auto">{billingMonth}</span>
+        <span className="text-xs text-hm-text-muted ml-auto">{billingMonth}</span>
       </div>
 
       {/* 드래그 영역 */}
@@ -273,13 +273,13 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
           className="hidden"
         />
         {uploading ? (
-          <span className="text-[13px] text-[#346aff] font-semibold">업로드 중...</span>
+          <span className="text-sm text-[#346aff] font-semibold">업로드 중...</span>
         ) : (
           <div>
-            <div className="text-[13px] text-[#666] mb-1">
+            <div className="text-sm text-[#666] mb-1">
               {uploadType === 'elec' ? '한전 청구서' : '가스 청구서'} 엑셀 파일을 드래그하거나 클릭
             </div>
-            <div className="text-[11px] text-hm-text-muted">
+            <div className="text-xs text-hm-text-muted">
               고객번호로 호실을 자동 매칭하여 meter_readings에 저장합니다
             </div>
           </div>
@@ -294,7 +294,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
               ✓ 매칭 성공: {result.matched.length}건
               <div className="font-normal mt-1 max-h-[120px] overflow-y-auto">
                 {result.matched.map((m: any, i: number) => (
-                  <div key={i} className="text-[11px] text-[#333] py-0.5">
+                  <div key={i} className="text-xs text-[#333] py-0.5">
                     {m.buildingName} {m.roomNumber} — {m.amount.toLocaleString()}원 ({m.usage}{uploadType === 'elec' ? 'kWh' : '㎥'})
                   </div>
                 ))}
@@ -306,7 +306,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
               ✗ 미매칭: {result.unmatched.length}건
               <div className="font-normal mt-1">
                 {result.unmatched.map((u: any, i: number) => (
-                  <div key={i} className="text-[11px] text-hm-text-muted py-0.5">
+                  <div key={i} className="text-xs text-hm-text-muted py-0.5">
                     고객번호 {u.customerNumber} — {u.amount.toLocaleString()}원
                   </div>
                 ))}

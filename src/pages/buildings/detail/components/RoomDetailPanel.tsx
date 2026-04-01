@@ -65,9 +65,9 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2.5">
-          <span className="text-xl font-black text-hm-text">🚪 {selectedRoom}호</span>
+          <span className="text-xl font-bold text-hm-text">🚪 {selectedRoom}호</span>
           <select value={getRoomType(buildingName, selectedRoom)} onChange={e => { changeRoomType(buildingName, selectedRoom, e.target.value); setRoomTab(roomTab); /* force re-render */ }}
-            className="text-[11px] font-bold px-2 py-[3px] rounded-md border-[1.5px] border-hm-input-border cursor-pointer font-[inherit]"
+            className="text-xs font-bold px-2 py-[3px] rounded-md border-[1.5px] border-hm-input-border cursor-pointer font-[inherit]"
             style={{
               background: rtCfg(getRoomType(buildingName, selectedRoom)).bg,
               color: rtCfg(getRoomType(buildingName, selectedRoom)).c }}>
@@ -79,55 +79,55 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
               color: tenant ? (tenant.overdue > 0 ? "#991B1B" : "#065F46") : vacancy ? "#92400E" : "#92400E" }}>
             {tenant ? (tenant.overdue > 0 ? "연체" : "입주중") : "공실"}
           </span>
-          {master.roomType && <span className="text-[11px] text-hm-text-muted">{master.roomType} · {master.area}㎡</span>}
+          {master.roomType && <span className="text-xs text-hm-text-muted">{master.roomType} · {master.area}㎡</span>}
         </div>
         <button onClick={() => setSelectedRoom(null)} className="w-7 h-7 rounded-md border border-hm-input-border bg-white cursor-pointer text-sm font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
       </div>
 
       {/* Room Info */}
       <div>
-        <div className="text-xs font-extrabold text-hm-blue-dark mb-2.5 pb-1.5 border-b-2 border-[#BFDBFE] flex items-center gap-1.5">
-          📋 호실 기본정보 <span className="text-[10px] font-medium text-hm-text-muted">이 정보가 공실관리 · 홈페이지의 기준값이 됩니다</span>
+        <div className="text-xs font-bold text-hm-blue-dark mb-2.5 pb-1.5 border-b-2 border-[#BFDBFE] flex items-center gap-1.5">
+          📋 호실 기본정보 <span className="text-xs font-medium text-hm-text-muted">이 정보가 공실관리 · 홈페이지의 기준값이 됩니다</span>
         </div>
         {roomEditMode ? (
           <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 items-stretch">
             <div>
               <div className="grid grid-cols-3 gap-2 mb-2.5">
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">방형태</div>
-                  <select id="re-roomType" defaultValue={master.roomType || ""} className={`${inputClassName} !px-2 !py-1.5 !text-[11px]`}><option value="">선택</option>{["원룸","투룸","쓰리룸","복층","상가","사무실"].map(t => <option key={t}>{t}</option>)}</select></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">면적 (㎡)</div>
-                  <input id="re-area" defaultValue={master.area || ""} placeholder="26.4" className={`${inputClassName} !px-2 !py-1.5 !text-[11px]`} /></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">부동산수수료</div>
-                  <input id="re-commFee" defaultValue={master.commFee || ""} placeholder="100,000" className={`${inputClassName} !px-2 !py-1.5 !text-[11px] text-right`} /></div>
+                <div><div className="text-xs text-hm-text-muted mb-0.5">방형태</div>
+                  <select id="re-roomType" defaultValue={master.roomType || ""} className={`${inputClassName} !px-2 !py-1.5 !text-xs`}><option value="">선택</option>{["원룸","투룸","쓰리룸","복층","상가","사무실"].map(t => <option key={t}>{t}</option>)}</select></div>
+                <div><div className="text-xs text-hm-text-muted mb-0.5">면적 (㎡)</div>
+                  <input id="re-area" defaultValue={master.area || ""} placeholder="26.4" className={`${inputClassName} !px-2 !py-1.5 !text-xs`} /></div>
+                <div><div className="text-xs text-hm-text-muted mb-0.5">부동산수수료</div>
+                  <input id="re-commFee" defaultValue={master.commFee || ""} placeholder="100,000" className={`${inputClassName} !px-2 !py-1.5 !text-xs text-right`} /></div>
               </div>
-              <div className="text-[10px] font-bold text-hm-success mb-1.5">💰 기준 금액</div>
+              <div className="text-xs font-bold text-hm-success mb-1.5">💰 기준 금액</div>
               <div className="grid grid-cols-3 gap-1.5 mb-2.5">
                 {[
                   { label: "예치금", key: "deposit", value: master.deposit }, { label: "임대료", key: "rent", value: master.rent }, { label: "관리비", key: "mgmt", value: master.mgmt },
                   { label: "수도", key: "water", value: master.water }, { label: "인터넷", key: "internet", value: master.internet }, { label: "퇴실청소비", key: "cleanFee", value: master.cleanFee },
                 ].map((f, i) => (
                   <div key={i}><div className="text-[8px] text-hm-success mb-0.5">{f.label}</div>
-                    <input id={`re-${f.key}`} defaultValue={f.value || ""} placeholder="0" className={`${inputClassName} !px-2 !py-[5px] !text-[11px] text-right`} /></div>
+                    <input id={`re-${f.key}`} defaultValue={f.value || ""} placeholder="0" className={`${inputClassName} !px-2 !py-[5px] !text-xs text-right`} /></div>
                 ))}
               </div>
-              <div className="text-[10px] font-bold text-[#6366F1] mb-1.5">🔌 고객번호</div>
+              <div className="text-xs font-bold text-[#6366F1] mb-1.5">🔌 고객번호</div>
               <div className="grid grid-cols-2 gap-1.5">
                 <div><div className="text-[8px] text-[#6366F1] mb-0.5">전기</div>
-                  <input id="re-elecNo" defaultValue={master.elecNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-[11px] font-mono`} /></div>
+                  <input id="re-elecNo" defaultValue={master.elecNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-xs font-mono`} /></div>
                 <div><div className="text-[8px] text-[#6366F1] mb-0.5">가스</div>
-                  <input id="re-gasNo" defaultValue={master.gasNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-[11px] font-mono`} /></div>
+                  <input id="re-gasNo" defaultValue={master.gasNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-xs font-mono`} /></div>
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col flex-1">
-                <div className="text-[10px] font-bold text-hm-warning mb-1">📝 계약시 특약사항상단</div>
+                <div className="text-xs font-bold text-hm-warning mb-1">📝 계약시 특약사항상단</div>
                 <textarea id="re-specialTerms" defaultValue={master.specialTerms || ""} placeholder="특약사항 상단 입력..."
-                  className={`${inputClassName} !px-2.5 !py-2 !text-[11px] resize-none leading-relaxed w-full flex-1`} />
+                  className={`${inputClassName} !px-2.5 !py-2 !text-xs resize-none leading-relaxed w-full flex-1`} />
               </div>
               <div className="flex flex-col flex-1">
-                <div className="text-[10px] font-bold text-hm-warning mb-1">📝 계약시 특약사항하단</div>
+                <div className="text-xs font-bold text-hm-warning mb-1">📝 계약시 특약사항하단</div>
                 <textarea id="re-specialTermsBottom" defaultValue={master.specialTermsBottom || ""} placeholder="특약사항 하단 입력..."
-                  className={`${inputClassName} !px-2.5 !py-2 !text-[11px] resize-none leading-relaxed w-full flex-1`} />
+                  className={`${inputClassName} !px-2.5 !py-2 !text-xs resize-none leading-relaxed w-full flex-1`} />
               </div>
             </div>
             <div className="flex flex-col">
@@ -144,12 +144,12 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   { label: "부동산수수료", value: master.commFee || "-" },
                 ].map((f, i) => (
                   <div key={i} className="px-2.5 py-2 bg-hm-bg-slate rounded-lg border border-hm-border">
-                    <div className="text-[9px] text-hm-text-muted mb-[3px]">{f.label}</div>
+                    <div className="text-xs text-hm-text-muted mb-[3px]">{f.label}</div>
                     <div className="text-xs font-bold text-hm-text">{f.value}</div>
                   </div>
                 ))}
               </div>
-              <div className="text-[10px] font-bold text-hm-success mb-1.5">💰 기준 금액</div>
+              <div className="text-xs font-bold text-hm-success mb-1.5">💰 기준 금액</div>
               <div className="grid grid-cols-3 gap-1.5 mb-2.5">
                 {[
                   { label: "예치금", value: master.deposit }, { label: "임대료", value: master.rent }, { label: "관리비", value: master.mgmt },
@@ -157,30 +157,30 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                 ].map((f, i) => (
                   <div key={i} className="px-2 py-1.5 bg-[#F0FDF4] rounded-md border border-[#BBF7D0]">
                     <div className="text-[8px] text-hm-success mb-0.5">{f.label}</div>
-                    <div className="text-[11px] font-bold text-[#065F46]">{f.value || "-"}</div>
+                    <div className="text-xs font-bold text-[#065F46]">{f.value || "-"}</div>
                   </div>
                 ))}
               </div>
-              <div className="text-[10px] font-bold text-[#6366F1] mb-1.5">🔌 고객번호</div>
+              <div className="text-xs font-bold text-[#6366F1] mb-1.5">🔌 고객번호</div>
               <div className="grid grid-cols-2 gap-1.5">
                 {[{ label: "전기", value: master.elecNo }, { label: "가스", value: master.gasNo }].map((f, i) => (
                   <div key={i} className="px-2 py-1.5 bg-[#F5F3FF] rounded-md border border-[#DDD6FE]">
                     <div className="text-[8px] text-[#6366F1] mb-0.5">{f.label}</div>
-                    <div className="text-[11px] font-semibold text-[#4338CA] font-mono">{f.value || "-"}</div>
+                    <div className="text-xs font-semibold text-[#4338CA] font-mono">{f.value || "-"}</div>
                   </div>
                 ))}
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col flex-1">
-                <div className="text-[10px] font-bold text-hm-warning mb-1">📝 계약시 특약사항상단</div>
-                <div className="px-3 py-2.5 bg-hm-warning-bg rounded-lg border border-hm-warning-border text-[11px] text-[#9A3412] leading-relaxed whitespace-pre-wrap flex-1">
+                <div className="text-xs font-bold text-hm-warning mb-1">📝 계약시 특약사항상단</div>
+                <div className="px-3 py-2.5 bg-hm-warning-bg rounded-lg border border-hm-warning-border text-xs text-[#9A3412] leading-relaxed whitespace-pre-wrap flex-1">
                   {master.specialTerms || <span className="text-gray-300">등록된 내용이 없습니다</span>}
                 </div>
               </div>
               <div className="flex flex-col flex-1">
-                <div className="text-[10px] font-bold text-hm-warning mb-1">📝 계약시 특약사항하단</div>
-                <div className="px-3 py-2.5 bg-hm-warning-bg rounded-lg border border-hm-warning-border text-[11px] text-[#9A3412] leading-relaxed whitespace-pre-wrap flex-1">
+                <div className="text-xs font-bold text-hm-warning mb-1">📝 계약시 특약사항하단</div>
+                <div className="px-3 py-2.5 bg-hm-warning-bg rounded-lg border border-hm-warning-border text-xs text-[#9A3412] leading-relaxed whitespace-pre-wrap flex-1">
                   {master.specialTermsBottom || <span className="text-gray-300">등록된 내용이 없습니다</span>}
                 </div>
               </div>
@@ -279,38 +279,38 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
             {/* Left: Account info */}
             <div className="px-3.5 py-2.5 bg-[#FFFBF0] rounded-[10px] border border-[#FDE68A]">
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] font-extrabold text-[#92400E]">🏦 계좌 정보</span>
-                <span className="text-[9px] px-2 py-0.5 rounded font-bold" style={{ background: acctTypeBg[roomAcctType], color: acctTypeColor[roomAcctType] }}>{acctTypeLabel[roomAcctType]}</span>
+                <span className="text-xs font-bold text-[#92400E]">🏦 계좌 정보</span>
+                <span className="text-xs px-2 py-0.5 rounded font-bold" style={{ background: acctTypeBg[roomAcctType], color: acctTypeColor[roomAcctType] }}>{acctTypeLabel[roomAcctType]}</span>
               </div>
               {/* Building follow / room custom toggle */}
               <div className="flex gap-1 mb-2.5">
                 <button onClick={() => { if (isRoomCustom) disableRoomCustom(); }}
-                  className={`px-3 py-[5px] rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${!isRoomCustom ? 'border-[1.5px] border-[#10B981] bg-[#D1FAE5] text-[#065F46]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}>
+                  className={`px-3 py-[5px] rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${!isRoomCustom ? 'border-[1.5px] border-[#10B981] bg-[#D1FAE5] text-[#065F46]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}>
                   🏢 건물 설정 따름
                 </button>
                 <button onClick={() => { if (!isRoomCustom) enableRoomCustom(); }}
-                  className={`px-3 py-[5px] rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${isRoomCustom ? 'border-[1.5px] border-[#F59E0B] bg-[#FEF3C7] text-[#92400E]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}>
+                  className={`px-3 py-[5px] rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${isRoomCustom ? 'border-[1.5px] border-[#F59E0B] bg-[#FEF3C7] text-[#92400E]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}>
                   🚪 호실 개별 설정
                 </button>
               </div>
               {/* Building follow: read-only display */}
               {!isRoomCustom && (
                 <div className="opacity-70">
-                  {!validMode && <div className="text-[11px] text-hm-text-muted py-2">건물 계좌가 아직 설정되지 않았습니다. 건물정보에서 먼저 설정해주세요.</div>}
+                  {!validMode && <div className="text-xs text-hm-text-muted py-2">건물 계좌가 아직 설정되지 않았습니다. 건물정보에서 먼저 설정해주세요.</div>}
                   {validMode && (() => {
                     const roHm = hmUsage && (
                       <div key="hm" className="px-2.5 py-2 bg-[#F0F4FF] rounded-md border border-[#BFDBFE]">
-                        <div className="text-[9px] font-bold text-hm-blue-dark mb-1">🏗️ 하우스맨 계좌 <span className="text-hm-text-muted font-medium">({hmUsage})</span></div>
-                        <div className="text-[11px] font-semibold text-hm-blue-dark font-mono">{effectiveAcct.housemanAccount}</div>
+                        <div className="text-xs font-bold text-hm-blue-dark mb-1">🏗️ 하우스맨 계좌 <span className="text-hm-text-muted font-medium">({hmUsage})</span></div>
+                        <div className="text-xs font-semibold text-hm-blue-dark font-mono">{effectiveAcct.housemanAccount}</div>
                       </div>
                     );
                     const roOwner = ownerFields.length > 0 && (
                       <div key="owner" className="px-2.5 py-2 bg-hm-warning-bg rounded-md border border-hm-warning-border">
-                        <div className="text-[9px] font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
+                        <div className="text-xs font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
                         {ownerFields.map((f: any) => (
                           <div key={f.key} className="mb-1">
                             <div className="text-[8px] font-bold text-hm-warning mb-0.5">{f.label}</div>
-                            <div className="text-[11px] font-semibold text-hm-warning font-mono">
+                            <div className="text-xs font-semibold text-hm-warning font-mono">
                               {effectiveAcct.ownerAccounts[f.key + "_bank"] || ""} {effectiveAcct.ownerAccounts[f.key] || ""}{effectiveAcct.ownerAccounts[f.key + "_holder"] ? ` (${effectiveAcct.ownerAccounts[f.key + "_holder"]})` : ""}
                               {!effectiveAcct.ownerAccounts[f.key + "_bank"] && !effectiveAcct.ownerAccounts[f.key] && <span className="text-[#B0B5C1] font-sans">미입력</span>}
                             </div>
@@ -320,9 +320,9 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                     );
                     return (
                       <div className="flex flex-col gap-1.5">
-                        <div className="text-[9px] text-[#065F46] font-semibold px-2 py-1 bg-hm-success-bg rounded">건물 기본 설정을 따르고 있습니다 (읽기전용)</div>
+                        <div className="text-xs text-[#065F46] font-semibold px-2 py-1 bg-hm-success-bg rounded">건물 기본 설정을 따르고 있습니다 (읽기전용)</div>
                         {ownerFirstModes[validMode] ? <>{roOwner}{roHm}</> : <>{roHm}{roOwner}</>}
-                        <div className="text-[10px] text-hm-text-sub py-1">💡 {flowMap[validMode]}</div>
+                        <div className="text-xs text-hm-text-sub py-1">💡 {flowMap[validMode]}</div>
                       </div>
                     );
                   })()}
@@ -333,7 +333,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                 <div className={`flex gap-1 flex-wrap ${validMode ? 'mb-2' : ''}`}>
                   {currentOptions.map((opt: any) => (
                     <button key={opt.id} onClick={() => setRoomAcctMode(opt.id)}
-                      className={`px-2.5 py-[5px] rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${validMode === opt.id ? 'border-[1.5px] border-[#F59E0B] bg-[#FEF3C7] text-[#92400E]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}
+                      className={`px-2.5 py-[5px] rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${validMode === opt.id ? 'border-[1.5px] border-[#F59E0B] bg-[#FEF3C7] text-[#92400E]' : 'border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub'}`}
                       title={opt.desc}>
                       {opt.label}
                     </button>
@@ -342,35 +342,35 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                 {validMode && (() => {
                   const editHm = hmUsage && (
                     <div key="hm" className="px-2.5 py-2 bg-[#F0F4FF] rounded-md border border-[#BFDBFE]">
-                      <div className="text-[9px] font-bold text-hm-blue-dark mb-1">🏗️ 하우스맨 계좌 <span className="text-hm-text-muted font-medium">({hmUsage})</span></div>
+                      <div className="text-xs font-bold text-hm-blue-dark mb-1">🏗️ 하우스맨 계좌 <span className="text-hm-text-muted font-medium">({hmUsage})</span></div>
                       {roomEditMode ? (
                         <input value={effectiveAcct.housemanAccount} onChange={e => setRoomHousemanAcct(e.target.value)}
-                          className={`${inputClassName} !px-2.5 !py-1.5 !text-[11px] w-full font-mono`} />
+                          className={`${inputClassName} !px-2.5 !py-1.5 !text-xs w-full font-mono`} />
                       ) : (
-                        <div className="text-[11px] font-semibold text-hm-blue-dark font-mono">{effectiveAcct.housemanAccount}</div>
+                        <div className="text-xs font-semibold text-hm-blue-dark font-mono">{effectiveAcct.housemanAccount}</div>
                       )}
                     </div>
                   );
                   const editOwner = ownerFields.length > 0 && (
                     <div key="owner" className="px-2.5 py-2 bg-hm-warning-bg rounded-md border border-hm-warning-border">
-                      <div className="text-[9px] font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
+                      <div className="text-xs font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
                       {ownerFields.map((f: any) => (
                         <div key={f.key} className="mb-1">
                           <div className="text-[8px] font-bold text-hm-warning mb-0.5">{f.label}</div>
                           {roomEditMode ? (
                             <div className="grid grid-cols-[90px_1fr_70px] gap-1">
                               <select value={effectiveAcct.ownerAccounts[f.key + "_bank"] || ""} onChange={e => setRoomOwnerAccts((prev: any) => ({ ...prev, [f.key + "_bank"]: e.target.value }))}
-                                className={`${inputClassName} !px-1.5 !py-[5px] !text-[10px] cursor-pointer`}>
+                                className={`${inputClassName} !px-1.5 !py-[5px] !text-xs cursor-pointer`}>
                                 <option value="">은행</option>
                                 {banks.map((b: string) => <option key={b} value={b}>{b}</option>)}
                               </select>
                               <input value={effectiveAcct.ownerAccounts[f.key] || ""} onChange={e => setRoomOwnerAccts((prev: any) => ({ ...prev, [f.key]: e.target.value }))}
-                                placeholder="계좌번호" className={`${inputClassName} !px-2 !py-[5px] !text-[11px] font-mono`} />
+                                placeholder="계좌번호" className={`${inputClassName} !px-2 !py-[5px] !text-xs font-mono`} />
                               <input value={effectiveAcct.ownerAccounts[f.key + "_holder"] || ""} onChange={e => setRoomOwnerAccts((prev: any) => ({ ...prev, [f.key + "_holder"]: e.target.value }))}
-                                placeholder="예금주" className={`${inputClassName} !px-2 !py-[5px] !text-[10px]`} />
+                                placeholder="예금주" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} />
                             </div>
                           ) : (
-                            <div className="text-[11px] font-semibold text-hm-warning font-mono">
+                            <div className="text-xs font-semibold text-hm-warning font-mono">
                               {effectiveAcct.ownerAccounts[f.key + "_bank"] || ""} {effectiveAcct.ownerAccounts[f.key] || ""}{effectiveAcct.ownerAccounts[f.key + "_holder"] ? ` (${effectiveAcct.ownerAccounts[f.key + "_holder"]})` : ""}
                               {!effectiveAcct.ownerAccounts[f.key + "_bank"] && !effectiveAcct.ownerAccounts[f.key] && <span className="text-[#B0B5C1] font-sans">미입력</span>}
                             </div>
@@ -382,7 +382,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   return (
                     <div className="flex flex-col gap-1.5">
                       {ownerFirstModes[validMode] ? <>{editOwner}{editHm}</> : <>{editHm}{editOwner}</>}
-                      <div className="text-[10px] text-hm-text-sub py-1">💡 {flowMap[validMode]}</div>
+                      <div className="text-xs text-hm-text-sub py-1">💡 {flowMap[validMode]}</div>
                     </div>
                   );
                 })()}
@@ -392,8 +392,8 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
             {/* Right: Move-in calculation (단기 only) */}
             {isDangiRoom && moveInCalc && (
               <div className="px-3.5 py-2.5 bg-[#F0FDF4] rounded-[10px] border border-[#BBF7D0]">
-                <div className="text-[10px] font-extrabold text-[#065F46] mb-1">💰 입주금 계산</div>
-                <div className="text-[10px] text-gray-500 mb-2.5 leading-relaxed">
+                <div className="text-xs font-bold text-[#065F46] mb-1">💰 입주금 계산</div>
+                <div className="text-xs text-gray-500 mb-2.5 leading-relaxed">
                   {moveInCalc.type === "single" && ((moveInCalc as any).acctName === "건물주계좌"
                     ? "이 건물은 전체 입주금을 건물주 계좌로 입금합니다."
                     : "이 건물은 전체 입주금을 하우스맨 계좌로 입금합니다."
@@ -404,14 +404,14 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                 </div>
                 {moveInCalc.type === "single" && (
                   <div>
-                    <div className="text-[9px] font-bold text-[#065F46] mb-1.5 px-2 py-[3px] bg-[#DCFCE7] rounded">{(moveInCalc as any).acctName}</div>
+                    <div className="text-xs font-bold text-[#065F46] mb-1.5 px-2 py-[3px] bg-[#DCFCE7] rounded">{(moveInCalc as any).acctName}</div>
                     {(moveInCalc as any).items.filter((x: any) => x.v > 0).map((x: any, i: number) => (
-                      <div key={i} className="flex justify-between text-[11px] py-[3px] text-gray-700">
+                      <div key={i} className="flex justify-between text-xs py-[3px] text-gray-700">
                         <span>{x.l}</span>
                         <span className="font-semibold font-mono">{x.v.toLocaleString()}원</span>
                       </div>
                     ))}
-                    <div className="flex justify-between text-[13px] font-extrabold text-[#065F46] border-t-2 border-[#065F46] mt-1.5 pt-1.5">
+                    <div className="flex justify-between text-sm font-bold text-[#065F46] border-t-2 border-[#065F46] mt-1.5 pt-1.5">
                       <span>합계</span>
                       <span className="font-mono">{moveInCalc.total.toLocaleString()}원</span>
                     </div>
@@ -421,14 +421,14 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   <div>
                     {(moveInCalc as any).accounts.map((acct: any, ai: number) => (
                       <div key={ai} className="mb-2">
-                        <div className={`text-[9px] font-bold mb-1 px-2 py-[3px] rounded ${ai === 0 ? 'text-hm-warning bg-hm-warning-bg' : 'text-hm-blue-dark bg-hm-blue-bg'}`}>{acct.name}</div>
+                        <div className={`text-xs font-bold mb-1 px-2 py-[3px] rounded ${ai === 0 ? 'text-hm-warning bg-hm-warning-bg' : 'text-hm-blue-dark bg-hm-blue-bg'}`}>{acct.name}</div>
                         {acct.items.filter((x: any) => x.v > 0).map((x: any, i: number) => (
-                          <div key={i} className="flex justify-between text-[11px] py-0.5 text-gray-700">
+                          <div key={i} className="flex justify-between text-xs py-0.5 text-gray-700">
                             <span>{x.l}</span>
                             <span className="font-semibold font-mono">{x.v.toLocaleString()}원</span>
                           </div>
                         ))}
-                        <div className={`flex justify-between text-[11px] font-bold border-t border-gray-200 mt-[3px] pt-[3px] ${ai === 0 ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
+                        <div className={`flex justify-between text-xs font-bold border-t border-gray-200 mt-[3px] pt-[3px] ${ai === 0 ? 'text-hm-warning' : 'text-hm-blue-dark'}`}>
                           <span>소계</span>
                           <span className="font-mono">{acct.sub.toLocaleString()}원</span>
                         </div>
@@ -436,20 +436,20 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                     ))}
                     {moveInCalc.type === "dual_deferred" && (moveInCalc as any).deferredSub > 0 && (
                       <div className="px-2 py-1.5 bg-[#FEF3C7] rounded mb-2">
-                        <div className="text-[9px] font-bold text-[#92400E] mb-[3px]">후불 항목</div>
+                        <div className="text-xs font-bold text-[#92400E] mb-[3px]">후불 항목</div>
                         {(moveInCalc as any).deferred.filter((x: any) => x.v > 0).map((x: any, i: number) => (
-                          <div key={i} className="flex justify-between text-[11px] py-[1px] text-[#92400E]">
+                          <div key={i} className="flex justify-between text-xs py-[1px] text-[#92400E]">
                             <span>{x.l}</span>
                             <span className="font-semibold font-mono">{x.v.toLocaleString()}원</span>
                           </div>
                         ))}
                       </div>
                     )}
-                    <div className="flex justify-between text-[13px] font-extrabold text-[#065F46] border-t-2 border-[#065F46] pt-1.5">
+                    <div className="flex justify-between text-sm font-bold text-[#065F46] border-t-2 border-[#065F46] pt-1.5">
                       <span>입주금 합계</span>
                       <span className="font-mono">{moveInCalc.total.toLocaleString()}원</span>
                     </div>
-                    {moveInCalc.type === "dual_deferred" && <div className="text-[10px] text-[#92400E] mt-1">※ 수도/인터넷은 후불 정산</div>}
+                    {moveInCalc.type === "dual_deferred" && <div className="text-xs text-[#92400E] mt-1">※ 수도/인터넷은 후불 정산</div>}
                   </div>
                 )}
               </div>
@@ -464,13 +464,13 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           const currentDepName = depositNames[depKey] || "";
           return (
             <div className="mt-3.5 px-3.5 py-2.5 bg-[#FDF4FF] rounded-[10px] border border-[#E9D5FF]">
-              <div className="text-[10px] font-extrabold text-[#7C3AED] mb-1.5">🏦 입금확인 이름 <span className="text-[9px] font-medium text-hm-text-muted">이 이름으로 입금 시 자동 100% 매칭</span></div>
+              <div className="text-xs font-bold text-[#7C3AED] mb-1.5">🏦 입금확인 이름 <span className="text-xs font-medium text-hm-text-muted">이 이름으로 입금 시 자동 100% 매칭</span></div>
               {roomEditMode ? (
                 <input value={currentDepName} onChange={e => setDepositNames((prev: Record<string, string>) => ({ ...prev, [depKey]: e.target.value }))}
                   placeholder="입금자명 입력 (예: 건물호실조합, 회사명 등)"
-                  className={`${inputClassName} !px-2.5 !py-1.5 !text-[11px] w-full`} />
+                  className={`${inputClassName} !px-2.5 !py-1.5 !text-xs w-full`} />
               ) : (
-                <div className={`text-[11px] font-semibold px-1.5 py-1 bg-white rounded-[5px] border border-[#E9D5FF] ${currentDepName ? 'text-[#7C3AED]' : 'text-[#B0B5C1]'}`}>
+                <div className={`text-xs font-semibold px-1.5 py-1 bg-white rounded-[5px] border border-[#E9D5FF] ${currentDepName ? 'text-[#7C3AED]' : 'text-[#B0B5C1]'}`}>
                   {currentDepName || "미설정"}
                 </div>
               )}
@@ -483,7 +483,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           return (
             <div className="mt-3.5 px-3.5 py-2.5 bg-[#F0F4FF] rounded-[10px] border border-[#BFDBFE]">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-[10px] font-extrabold text-hm-blue-dark">👤 호실 담당자 <span className="text-[9px] font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
+                <div className="text-xs font-bold text-hm-blue-dark">👤 호실 담당자 <span className="text-xs font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
               </div>
               <div className={`grid gap-1.5 ${isMobile ? 'grid-cols-2' : 'grid-cols-5'}`}>
                 {staffRoles.map((sr: any) => {
@@ -494,13 +494,13 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                     <div key={sr.id}>
                       <div className="text-[8px] font-bold mb-0.5" style={{ color: sr.color }}>{sr.icon} {sr.label}</div>
                       {roomEditMode ? (
-                        <select defaultValue={roomMgr || ""} className={`${inputClassName} !px-1.5 !py-[5px] !text-[10px] cursor-pointer`}
+                        <select defaultValue={roomMgr || ""} className={`${inputClassName} !px-1.5 !py-[5px] !text-xs cursor-pointer`}
                           style={{ border: isOverridden ? `1.5px solid ${sr.color}` : undefined, background: isOverridden ? sr.color + "10" : undefined }}>
                           <option value="">{bMgr ? `${bMgr} (건물)` : "미배정"}</option>
                           {staffList.filter((s: any) => s.roles.includes(sr.id)).map((s: any) => <option key={s.id} value={s.name}>{s.name}</option>)}
                         </select>
                       ) : (
-                        <div className={`px-1.5 py-1 bg-white rounded-[5px] text-[10px] ${isOverridden ? 'font-semibold' : 'font-normal'}`}
+                        <div className={`px-1.5 py-1 bg-white rounded-[5px] text-xs ${isOverridden ? 'font-semibold' : 'font-normal'}`}
                           style={{
                             border: isOverridden ? `1.5px solid ${sr.color}` : "1px solid var(--color-hm-input-border)",
                             color: isOverridden ? sr.color : "var(--color-hm-text-sub)"
@@ -561,28 +561,28 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
         if (history.length === 0) return null;
         return (
           <div className="mt-4">
-            <div className="text-[11px] font-extrabold text-[#6366F1] mb-2 pb-1.5 border-b-[1.5px] border-[#C7D2FE] flex items-center gap-1.5">
-              📜 지난 임차인 이력 <span className="text-[10px] font-medium text-hm-text-muted">{history.length}명</span>
+            <div className="text-xs font-bold text-[#6366F1] mb-2 pb-1.5 border-b-[1.5px] border-[#C7D2FE] flex items-center gap-1.5">
+              📜 지난 임차인 이력 <span className="text-xs font-medium text-hm-text-muted">{history.length}명</span>
             </div>
             <div className="flex flex-col gap-1">
               {history.map((h: any, i: number) => (
                 <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg bg-hm-bg-hover border border-hm-border">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[10px] font-extrabold text-[#6366F1]">{i + 1}</div>
+                    <div className="w-6 h-6 rounded-full bg-[#EDE9FE] flex items-center justify-center text-xs font-bold text-[#6366F1]">{i + 1}</div>
                     <div>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-bold text-hm-text">{h.name}</span>
-                        <span className="text-[10px] text-hm-text-sub">{h.phone || ""}</span>
-                        <span className={`text-[9px] px-[5px] py-[1px] rounded font-semibold ${h.reason === "만기퇴실" ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'}`}>{h.reason}</span>
-                        <span className={`text-[9px] px-[5px] py-[1px] rounded font-semibold ${h.settlement === "정산완료" ? 'bg-hm-blue-bg text-hm-blue-dark' : 'bg-hm-danger-bg text-hm-danger'}`}>{h.settlement}</span>
+                        <span className="text-xs text-hm-text-sub">{h.phone || ""}</span>
+                        <span className={`text-xs px-[5px] py-[1px] rounded font-semibold ${h.reason === "만기퇴실" ? 'bg-[#D1FAE5] text-[#065F46]' : 'bg-[#FEF3C7] text-[#92400E]'}`}>{h.reason}</span>
+                        <span className={`text-xs px-[5px] py-[1px] rounded font-semibold ${h.settlement === "정산완료" ? 'bg-hm-blue-bg text-hm-blue-dark' : 'bg-hm-danger-bg text-hm-danger'}`}>{h.settlement}</span>
                       </div>
-                      <div className="text-[9px] text-hm-text-muted mt-[1px]">
+                      <div className="text-xs text-hm-text-muted mt-[1px]">
                         {h.moveIn} ~ {h.moveOut} · 보증금 {fmt(h.deposit)} · 월세 {fmt(h.rent)}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-hm-text-muted">{h.phone}</span>
+                    <span className="text-xs text-hm-text-muted">{h.phone}</span>
                     <button onClick={() => {
                       const lines = [
                         `퇴실정산서`,
@@ -609,7 +609,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                       a.click();
                       URL.revokeObjectURL(url);
                     }}
-                      className="px-2 py-[3px] rounded-[5px] border border-[#C7D2FE] bg-[#EDE9FE] text-[#6366F1] text-[9px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-80 transition-opacity">
+                      className="px-2 py-[3px] rounded-[5px] border border-[#C7D2FE] bg-[#EDE9FE] text-[#6366F1] text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-80 transition-opacity">
                       📄 퇴실정산서
                     </button>
                     <button onClick={() => {
@@ -635,7 +635,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                       a.click();
                       URL.revokeObjectURL(url);
                     }}
-                      className="px-2 py-[3px] rounded-[5px] border border-[#BFDBFE] bg-hm-blue-bg text-hm-blue-dark text-[9px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-80 transition-opacity">
+                      className="px-2 py-[3px] rounded-[5px] border border-[#BFDBFE] bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-80 transition-opacity">
                       📋 계약서
                     </button>
                   </div>
@@ -653,17 +653,17 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
         if (records.length === 0) return null;
         return (
           <div className="mt-4">
-            <div className="text-[11px] font-extrabold text-hm-blue-dark mb-2 pb-1.5 border-b-[1.5px] border-[#BFDBFE] flex items-center gap-1.5">
-              📋 재계약 이력 <span className="text-[10px] font-medium text-hm-text-muted">{records.length}건</span>
+            <div className="text-xs font-bold text-hm-blue-dark mb-2 pb-1.5 border-b-[1.5px] border-[#BFDBFE] flex items-center gap-1.5">
+              📋 재계약 이력 <span className="text-xs font-medium text-hm-text-muted">{records.length}건</span>
             </div>
             <div className="flex flex-col gap-1">
               {records.map((rec: any, i: number) => (
                 <div key={i} className="px-3 py-2 rounded-lg bg-[#F0F9FF] border border-[#BFDBFE]">
                   <div className="flex justify-between mb-1">
-                    <span className="text-[11px] font-bold">{rec.name}</span>
-                    <span className="text-[10px] text-hm-text-muted">재계약일: {rec.renewedAt || "\u2014"}</span>
+                    <span className="text-xs font-bold">{rec.name}</span>
+                    <span className="text-xs text-hm-text-muted">재계약일: {rec.renewedAt || "\u2014"}</span>
                   </div>
-                  <div className="flex gap-3 text-[10px] text-hm-text-sub flex-wrap">
+                  <div className="flex gap-3 text-xs text-hm-text-sub flex-wrap">
                     <span>입주: {rec.moveIn || "\u2014"}</span>
                     <span>만기: {rec.expiry || rec.moveOut || "\u2014"}</span>
                     <span>보증금: {(rec.deposit || 0).toLocaleString()}원</span>
@@ -682,7 +682,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
         <div className="mt-4 px-5 py-4 rounded-xl border-2 border-hm-danger-border bg-hm-danger-bg">
           {roomDeleteStep === 1 && (
             <>
-              <div className="text-sm font-extrabold text-[#991B1B] mb-2">⚠️ {selectedRoom}호를 삭제하시겠습니까?</div>
+              <div className="text-sm font-bold text-[#991B1B] mb-2">⚠️ {selectedRoom}호를 삭제하시겠습니까?</div>
               <div className="text-xs text-[#B91C1C] mb-3 leading-relaxed">
                 호실의 기본정보, 사진, 기준금액, 고객번호가 모두 삭제됩니다.
                 {tenant && <><br /><strong>현재 입주자 ({tenant.name})가 있습니다. 입주자 정보도 함께 삭제됩니다.</strong></>}
@@ -695,11 +695,11 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           )}
           {roomDeleteStep === 2 && (
             <>
-              <div className="text-sm font-extrabold text-[#7F1D1D] mb-2">🚨 되돌릴 수 없습니다!</div>
+              <div className="text-sm font-bold text-[#7F1D1D] mb-2">🚨 되돌릴 수 없습니다!</div>
               <div className="text-xs text-[#991B1B] mb-1.5">
                 {buildingName} {selectedRoom}호의 모든 데이터가 영구 삭제됩니다.
               </div>
-              <div className="px-3 py-2 bg-white rounded-lg border border-hm-danger-border mb-3 text-[11px] text-[#991B1B]">
+              <div className="px-3 py-2 bg-white rounded-lg border border-hm-danger-border mb-3 text-xs text-[#991B1B]">
                 삭제 항목: 호실정보 · 사진 {photoCount}장 · 기준금액 · 전기/가스 고객번호{tenant ? ` · 입주자 (${tenant.name})` : ""}
               </div>
               <div className="flex gap-2 justify-end">

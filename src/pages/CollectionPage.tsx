@@ -210,42 +210,42 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           <div onClick={e => e.stopPropagation()} className="bg-white rounded-2xl p-6 max-w-[520px] w-full max-h-[80vh] flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <div className="text-base font-[800]">{historyTarget.building} {historyTarget.room}호</div>
-                <div className="text-[13px] text-hm-text-sub mt-0.5">{historyTarget.name} · {historyTarget.phone}</div>
+                <div className="text-base font-bold">{historyTarget.building} {historyTarget.room}호</div>
+                <div className="text-sm text-hm-text-sub mt-0.5">{historyTarget.name} · {historyTarget.phone}</div>
               </div>
               <div onClick={() => setHistoryTarget(null)} className="cursor-pointer text-lg text-hm-text-muted px-2 py-1 hover:opacity-70 transition-opacity">✕</div>
             </div>
             <div className="flex gap-3 mb-4 px-4 py-3 bg-hm-bg-slate rounded-[10px]">
               <div className="text-center flex-1">
-                <div className="text-[10px] text-hm-text-muted">보증금</div>
-                <div className="text-sm font-[800]">{fmt(historyTarget.deposit)}</div>
+                <div className="text-xs text-hm-text-muted">보증금</div>
+                <div className="text-sm font-bold">{fmt(historyTarget.deposit)}</div>
               </div>
               <div className="text-center flex-1">
-                <div className="text-[10px] text-hm-text-muted">월세</div>
-                <div className="text-sm font-[800] text-hm-blue-dark">{fmt(historyTarget.rent)}</div>
+                <div className="text-xs text-hm-text-muted">월세</div>
+                <div className="text-sm font-bold text-hm-blue-dark">{fmt(historyTarget.rent)}</div>
               </div>
               <div className="text-center flex-1">
-                <div className="text-[10px] text-hm-text-muted">관리비</div>
-                <div className="text-sm font-[800]">{fmt(historyTarget.mgmt)}</div>
+                <div className="text-xs text-hm-text-muted">관리비</div>
+                <div className="text-sm font-bold">{fmt(historyTarget.mgmt)}</div>
               </div>
               <div className="text-center flex-1">
-                <div className="text-[10px] text-hm-text-muted">잔액</div>
-                <div className="text-sm font-[800]" style={{ color: roomBalances[rk(historyTarget)] > 0 ? "var(--color-hm-danger)" : "var(--color-hm-success)" }}>{fmt(roomBalances[rk(historyTarget)] || 0)}</div>
+                <div className="text-xs text-hm-text-muted">잔액</div>
+                <div className="text-sm font-bold" style={{ color: roomBalances[rk(historyTarget)] > 0 ? "var(--color-hm-danger)" : "var(--color-hm-success)" }}>{fmt(roomBalances[rk(historyTarget)] || 0)}</div>
               </div>
             </div>
-            <div className="text-[13px] font-bold mb-2">청구 이력</div>
+            <div className="text-sm font-bold mb-2">청구 이력</div>
             <div className="flex-1 overflow-y-auto">
               {historyData.length === 0 ? (
-                <div className="py-8 text-center text-[#B0B5C1] text-[13px]">청구 이력이 없습니다</div>
+                <div className="py-8 text-center text-[#B0B5C1] text-sm">청구 이력이 없습니다</div>
               ) : historyData.map((h, i) => (
                 <div key={i} className={`flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 ${i % 2 === 0 ? 'bg-hm-bg-hover' : 'bg-white'}`}>
                   <div>
                     <div className="text-xs font-semibold">{h.date}</div>
-                    <div className="text-[10px] text-hm-text-muted mt-0.5">{h.type || "청구"} {h.cat || ""}</div>
+                    <div className="text-xs text-hm-text-muted mt-0.5">{h.type || "청구"} {h.cat || ""}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[13px] font-[800]" style={{ color: h.amount >= 0 ? "var(--color-hm-danger)" : "var(--color-hm-success)" }}>{h.amount >= 0 ? "+" : ""}{fmt(h.amount)}원</div>
-                    {h.paid !== undefined && <div className="text-[10px] font-semibold" style={{ color: h.paid ? "var(--color-hm-success)" : "var(--color-hm-danger)" }}>{h.paid ? "납부완료" : "미납"}</div>}
+                    <div className="text-sm font-bold" style={{ color: h.amount >= 0 ? "var(--color-hm-danger)" : "var(--color-hm-success)" }}>{h.amount >= 0 ? "+" : ""}{fmt(h.amount)}원</div>
+                    {h.paid !== undefined && <div className="text-xs font-semibold" style={{ color: h.paid ? "var(--color-hm-success)" : "var(--color-hm-danger)" }}>{h.paid ? "납부완료" : "미납"}</div>}
                   </div>
                 </div>
               ))}
@@ -264,9 +264,9 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           { key: "settings", label: "⚙ 독촉 설정" },
         ].map(tab => (
           <button key={tab.key} onClick={() => setViewMode(tab.key)}
-            className={`px-5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] text-[13px] transition-all
+            className={`px-5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] text-sm transition-all
               ${viewMode === tab.key
-                ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-[800]'
+                ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold'
                 : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-semibold hover:bg-hm-bg-hover'}`}>
             {tab.label}
           </button>
@@ -284,7 +284,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                   ${filterCollector === c
                     ? `border-2 border-amber-400 text-white ${c === "\uC804\uCCB4" ? 'bg-hm-text' : 'bg-amber-400'}`
                     : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
-                {c} {c !== "\uC804\uCCB4" && <span className="text-[10px] opacity-70">({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
+                {c} {c !== "\uC804\uCCB4" && <span className="text-xs opacity-70">({allMyTenants.filter(t => collectionAssigneeMap[t.building] === c).length})</span>}
               </button>
             ))}
           </div>
@@ -293,23 +293,23 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           <div className="mb-3">
             <input value={buildingSearch} onChange={e => setBuildingSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
-              className="px-3.5 py-[9px] rounded-[10px] border border-hm-input-border text-[13px] outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-3.5 py-[9px] rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               style={{ width: isMobile ? "100%" : 280 }} />
           </div>
 
           {/* 정렬 & 상태 필터 */}
           <div className="flex gap-1.5 mb-4 items-center flex-wrap">
-            <span className="text-[11px] text-hm-text-muted font-semibold mr-1">정렬:</span>
+            <span className="text-xs text-hm-text-muted font-semibold mr-1">정렬:</span>
             {["\uC5F0\uCCB4\uC77C\uC21C", "\uC704\uD5D8\uB3C4\uC21C"].map(m => (
               <button key={m} onClick={() => setSortMode(m)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-all
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all
                   ${sortMode === m
                     ? 'bg-[#1E40AF] text-white border-[1.5px] border-[#1E40AF]'
                     : 'bg-hm-blue-bg text-hm-blue-dark border-[1.5px] border-[#BFDBFE] hover:bg-blue-100'}`}>
                 {m === "\uC5F0\uCCB4\uC77C\uC21C" ? "📅 연체일순" : "⚡ 위험도순"}
               </button>
             ))}
-            <span className="text-[11px] text-hm-text-muted font-semibold ml-2 mr-1">조치 필터:</span>
+            <span className="text-xs text-hm-text-muted font-semibold ml-2 mr-1">조치 필터:</span>
             {(() => {
               const danCount = filteredFinal.filter(t => electricCut[rk(t)] === "\uB2E8\uC804").length;
               const warnCount = filteredFinal.filter(t => electricCut[rk(t)] === "\uC704\uD5D8").length;
@@ -321,7 +321,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 { id: "\uC5F0\uCCB4", label: `🚨 연체 (${overdueCount})`, bg: "var(--color-hm-danger-bg)", activeBg: "var(--color-hm-warning)", activeColor: "#fff", color: "var(--color-hm-warning)", border: "var(--color-hm-warning-border)", activeBorder: "var(--color-hm-warning)" },
               ].map(f => (
                 <button key={f.id} onClick={() => setStatusFilter(f.id)}
-                  className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-all"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all"
                   style={{
                     background: statusFilter === f.id ? f.activeBg : f.bg,
                     color: statusFilter === f.id ? f.activeColor : f.color,
@@ -343,13 +343,13 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 <span className="text-xs font-bold" style={{ color: statusFilter === "\uB2E8\uC804" ? "var(--color-hm-danger)" : statusFilter === "\uC704\uD5D8" ? "#B45309" : "var(--color-hm-warning)" }}>
                   {statusFilter === "\uB2E8\uC804" ? "⚡" : statusFilter === "\uC704\uD5D8" ? "⚠" : "🚨"} {statusFilter} 필터 적용 중 · {filteredFinal.length}건
                 </span>
-                <button onClick={() => setStatusFilter("\uC804\uCCB4")} className="px-2.5 py-[3px] rounded-md border border-hm-input-border bg-white text-[10px] font-bold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">필터 해제</button>
+                <button onClick={() => setStatusFilter("\uC804\uCCB4")} className="px-2.5 py-[3px] rounded-md border border-hm-input-border bg-white text-xs font-bold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">필터 해제</button>
               </div>
             )}
             {isMobile ? (
               <div className="flex flex-col gap-1.5">
                 {filteredFinal.length === 0 ? (
-                  <div className="py-10 text-center text-hm-text-muted text-[13px]">해당 조건의 임차인이 없습니다</div>
+                  <div className="py-10 text-center text-hm-text-muted text-sm">해당 조건의 임차인이 없습니다</div>
                 ) : visibleFinal.map((t, i) => {
                   const key = rk(t);
                   const lateFee = calcLateFee(t);
@@ -361,7 +361,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                       style={{ background: electricCut[key] === "\uB2E8\uC804" ? "#FFF1F2" : electricCut[key] === "\uC704\uD5D8" ? "#FFFBEB" : getBalance(t) > 0 ? "var(--color-hm-danger-bg)" : (days >= -6 && days < 0) ? "#FFF5F5" : "transparent" }}>
                       <div className="flex justify-between items-start mb-1">
                         <div>
-                          <span className="text-[13px] font-bold">{t.building} {t.room}호</span>
+                          <span className="text-sm font-bold">{t.building} {t.room}호</span>
                           <span className="text-xs font-bold text-hm-text ml-1.5">{t.name}</span>
                         </div>
                         {(() => {
@@ -370,33 +370,33 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                           return slots.length > 1 ? (
                             <div className="text-right">
                               {slots.map((s, si) => (
-                                <div key={si} className="text-[11px] font-bold" style={{ color: colors[si] }}>{s.label}{fmt(s.amount)}</div>
+                                <div key={si} className="text-xs font-bold" style={{ color: colors[si] }}>{s.label}{fmt(s.amount)}</div>
                               ))}
                             </div>
                           ) : (
-                            <span className="text-sm font-[800]" style={{ color: lateFee > 0 ? "var(--color-hm-danger)" : "var(--color-hm-text)" }}>{fmt(bill)}원</span>
+                            <span className="text-sm font-bold" style={{ color: lateFee > 0 ? "var(--color-hm-danger)" : "var(--color-hm-text)" }}>{fmt(bill)}원</span>
                           );
                         })()}
                       </div>
-                      <div className="text-[11px] text-hm-text-sub mb-1">
+                      <div className="text-xs text-hm-text-sub mb-1">
                         월세 {fmt(t.rent)} · 관리비 {fmt(t.mgmt)} · 보증금 {fmt(t.deposit)}
                       </div>
                       <div className="flex gap-1.5 items-center flex-wrap">
-                        {getBalance(t) > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-hm-danger-bg text-hm-danger">미납 {fmt(getBalance(t))}</span>}
-                        {lateFee > 0 && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-hm-danger-bg text-hm-danger">연체료 {fmt(lateFee)}</span>}
-                        {lateFeeOverrides[key]?.type === "exclude" && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-hm-success-bg text-hm-success">연체료 제외</span>}
-                        {lateFeeOverrides[key]?.type === "discount" && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-hm-blue-bg text-hm-blue">할인 {fmt(lateFeeOverrides[key].amount)}</span>}
-                        <span className="text-[10px]" style={{ fontWeight: days > 5 ? 700 : 500, color: days > 5 ? "var(--color-hm-danger)" : days > 0 ? "var(--color-hm-warning)" : "var(--color-hm-text-muted)" }}>{days > 0 ? `+${days}일` : days < 0 ? `D${days}` : "오늘"}</span>
-                        {electricCut[key] && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white" style={{ background: electricCut[key] === "\uB2E8\uC804" ? "var(--color-hm-danger)" : "#F59E0B" }}>{electricCut[key]}</span>}
-                        <a href={`tel:${t.phone}`} className="text-[10px] text-hm-blue ml-auto hover:underline">📞 {t.phone}</a>
+                        {getBalance(t) > 0 && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-hm-danger-bg text-hm-danger">미납 {fmt(getBalance(t))}</span>}
+                        {lateFee > 0 && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-hm-danger-bg text-hm-danger">연체료 {fmt(lateFee)}</span>}
+                        {lateFeeOverrides[key]?.type === "exclude" && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-hm-success-bg text-hm-success">연체료 제외</span>}
+                        {lateFeeOverrides[key]?.type === "discount" && <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-hm-blue-bg text-hm-blue">할인 {fmt(lateFeeOverrides[key].amount)}</span>}
+                        <span className="text-xs" style={{ fontWeight: days > 5 ? 700 : 500, color: days > 5 ? "var(--color-hm-danger)" : days > 0 ? "var(--color-hm-warning)" : "var(--color-hm-text-muted)" }}>{days > 0 ? `+${days}일` : days < 0 ? `D${days}` : "오늘"}</span>
+                        {electricCut[key] && <span className="text-xs font-bold px-1.5 py-0.5 rounded text-white" style={{ background: electricCut[key] === "\uB2E8\uC804" ? "var(--color-hm-danger)" : "#F59E0B" }}>{electricCut[key]}</span>}
+                        <a href={`tel:${t.phone}`} className="text-xs text-hm-blue ml-auto hover:underline">📞 {t.phone}</a>
                       </div>
                       <div className="flex gap-1.5 mt-1.5">
                         <button onClick={() => { setCommentTarget(commentTarget === key ? null : key); setCommentText(""); }}
-                          className={`flex-1 py-1.5 rounded-md border border-hm-input-border text-[11px] font-semibold text-hm-blue cursor-pointer font-[inherit] transition-colors hover:bg-blue-50 ${roomComments.length > 0 ? 'bg-hm-blue-bg' : 'bg-white'}`}>
+                          className={`flex-1 py-1.5 rounded-md border border-hm-input-border text-xs font-semibold text-hm-blue cursor-pointer font-[inherit] transition-colors hover:bg-blue-50 ${roomComments.length > 0 ? 'bg-hm-blue-bg' : 'bg-white'}`}>
                           💬 코멘트{roomComments.length > 0 ? ` (${roomComments.length})` : ""}
                         </button>
                         <button onClick={() => setElectricCut(prev => { const cur = prev[key]; return { ...prev, [key]: !cur ? "\uC704\uD5D8" : cur === "\uC704\uD5D8" ? "\uB2E8\uC804" : undefined }; })}
-                          className="px-2.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+                          className="px-2.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold text-hm-text-sub cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                           ⚡ 조치
                         </button>
                         {days >= 5 && getRoomType(t.building, t.room) === "\uB2E8\uAE30" && (
@@ -406,7 +406,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                             else if (cur === "exclude") setFeeOverride(key, "discount", Math.round((t.rent || 0) * 0.025));
                             else setFeeOverride(key, null);
                           }}
-                            className="px-2.5 py-1.5 rounded-md text-[11px] font-semibold cursor-pointer font-[inherit] transition-colors"
+                            className="px-2.5 py-1.5 rounded-md text-xs font-semibold cursor-pointer font-[inherit] transition-colors"
                             style={{
                               border: `1px solid ${lateFeeOverrides[key]?.type === "exclude" ? "var(--color-hm-success)" : lateFeeOverrides[key]?.type === "discount" ? "var(--color-hm-blue-dark)" : "var(--color-hm-input-border)"}`,
                               background: lateFeeOverrides[key]?.type === "exclude" ? "var(--color-hm-success-bg)" : lateFeeOverrides[key]?.type === "discount" ? "var(--color-hm-blue-bg)" : "#fff",
@@ -421,11 +421,11 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                           <div className={`flex gap-1.5 ${roomComments.length > 0 ? 'mb-2' : ''}`}>
                             <input value={commentText} onChange={e => setCommentText(e.target.value)}
                               onKeyDown={e => e.key === "Enter" && addComment(key, t.name)}
-                              placeholder="코멘트 입력..." className="flex-1 px-2.5 py-1.5 rounded-md border border-gray-300 text-[11px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
-                            <button onClick={() => addComment(key, t.name)} className="px-3 py-1.5 rounded-md bg-hm-blue border-none text-white font-bold text-[11px] cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">저장</button>
+                              placeholder="코멘트 입력..." className="flex-1 px-2.5 py-1.5 rounded-md border border-gray-300 text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+                            <button onClick={() => addComment(key, t.name)} className="px-3 py-1.5 rounded-md bg-hm-blue border-none text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">저장</button>
                           </div>
                           {roomComments.map((c, ci) => (
-                            <div key={ci} className="px-2 py-1.5 bg-white rounded border border-hm-border mb-1 text-[11px]">
+                            <div key={ci} className="px-2 py-1.5 bg-white rounded border border-hm-border mb-1 text-xs">
                               <span className="font-bold text-hm-text">{c.date}</span> <span className="text-hm-text-muted">{c.tenant}</span> — {c.text}
                             </div>
                           ))}
@@ -436,17 +436,17 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 })}
               </div>
             ) : (
-              <table className="w-full border-collapse text-[11px]">
+              <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr className="border-b-2 border-hm-border">
                     {["조치","건물","호수","이름","연락처","만기일","예치금","월세","관리비","미납","납부일","청구①","청구②","청구③","연체료",""].map((h, i) => (
-                      <th key={i} className={`${i >= 11 && i <= 13 ? 'px-2.5 py-2' : 'px-1 py-2'} text-center text-[10px] font-bold text-hm-text-muted whitespace-nowrap`}>{h}</th>
+                      <th key={i} className={`${i >= 11 && i <= 13 ? 'px-2.5 py-2' : 'px-1 py-2'} text-center text-xs font-bold text-hm-text-muted whitespace-nowrap`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredFinal.length === 0 ? (
-                    <tr><td colSpan={16} className="px-5 py-10 text-center text-hm-text-muted text-[13px]">
+                    <tr><td colSpan={16} className="px-5 py-10 text-center text-hm-text-muted text-sm">
                       {statusFilter === "\uB2E8\uC804" ? "⚡ 단전 처리된 임차인이 없습니다" : statusFilter === "\uC704\uD5D8" ? "⚠ 위험 처리된 임차인이 없습니다" : "해당 조건의 임차인이 없습니다"}
                     </td></tr>
                   ) : visibleFinal.map((t, i) => {
@@ -464,7 +464,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                               const next = !cur ? "\uC704\uD5D8" : cur === "\uC704\uD5D8" ? "\uB2E8\uC804" : undefined;
                               return { ...prev, [key]: next };
                             })}
-                              className="w-11 h-6 rounded-md mx-auto cursor-pointer flex items-center justify-center text-[10px] font-[800] transition-all"
+                              className="w-11 h-6 rounded-md mx-auto cursor-pointer flex items-center justify-center text-xs font-bold transition-all"
                               style={{
                                 background: electricCut[key] === "\uB2E8\uC804" ? "var(--color-hm-danger)" : electricCut[key] === "\uC704\uD5D8" ? "#F59E0B" : "#F3F4F6",
                                 color: electricCut[key] ? "#fff" : "#B0B5C1",
@@ -473,24 +473,24 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                               {electricCut[key] === "\uB2E8\uC804" ? "단전" : electricCut[key] === "\uC704\uD5D8" ? "위험" : "—"}
                             </div>
                           </td>
-                          <td className="px-1 py-2 font-bold text-[11px]">{t.building}</td>
-                          <td className="px-1 py-2 text-[11px]">{t.room}</td>
-                          <td className="px-1 py-2 font-bold text-[11px] max-w-[50px] overflow-hidden text-ellipsis whitespace-nowrap" title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "\u2026" : t.name}</td>
-                          <td className="px-1 py-2 text-[10px]"><a href={`tel:${t.phone}`} className="text-hm-blue no-underline hover:underline">{t.phone}</a></td>
-                          <td className="px-1 py-2 text-[10px]">{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp.getTime() - new Date().getTime()) / 86400000); return <span className="font-semibold" style={{ color: diff > 0 ? "var(--color-hm-danger)" : "var(--color-hm-text)" }}>{t.expiry.slice(2)}</span>; })()}</td>
-                          <td className="px-1 py-2 text-right text-[11px]">{fmt(t.deposit)}</td>
-                          <td className="px-1 py-2 text-right text-[11px]">{fmt(t.rent)}</td>
-                          <td className={`px-1 py-2 text-right text-[11px] ${t.mgmt > 0 ? 'text-hm-text' : 'text-[#B0B5C1]'}`}>{t.mgmt > 0 ? fmt(t.mgmt) : "—"}</td>
-                          <td className="px-1 py-2 text-right text-[11px]">{getBalance(t) > 0 ? <span className="font-bold text-hm-danger">{fmt(getBalance(t))}</span> : <span className="text-[#B0B5C1]">—</span>}</td>
-                          <td className="px-1 py-2 text-right text-[11px]">
-                            {(() => { const dueDay = getDueDay(t); const elapsed = getDaysSinceDue(t); return <><span className="font-semibold text-hm-text-sub">{dueDay}일</span>{elapsed > 0 && <span className="text-[9px] text-hm-danger font-bold"> +{elapsed}</span>}{elapsed === 0 && <span className="text-[9px] text-amber-500 font-bold"> D</span>}</>; })()}
+                          <td className="px-1 py-2 font-bold text-xs">{t.building}</td>
+                          <td className="px-1 py-2 text-xs">{t.room}</td>
+                          <td className="px-1 py-2 font-bold text-xs max-w-[50px] overflow-hidden text-ellipsis whitespace-nowrap" title={t.name}>{t.name.length > 5 ? t.name.slice(0, 5) + "\u2026" : t.name}</td>
+                          <td className="px-1 py-2 text-xs"><a href={`tel:${t.phone}`} className="text-hm-blue no-underline hover:underline">{t.phone}</a></td>
+                          <td className="px-1 py-2 text-xs">{(() => { if (!t.expiry) return "-"; const exp = new Date(t.expiry); const diff = Math.ceil((exp.getTime() - new Date().getTime()) / 86400000); return <span className="font-semibold" style={{ color: diff > 0 ? "var(--color-hm-danger)" : "var(--color-hm-text)" }}>{t.expiry.slice(2)}</span>; })()}</td>
+                          <td className="px-1 py-2 text-right text-xs">{fmt(t.deposit)}</td>
+                          <td className="px-1 py-2 text-right text-xs">{fmt(t.rent)}</td>
+                          <td className={`px-1 py-2 text-right text-xs ${t.mgmt > 0 ? 'text-hm-text' : 'text-[#B0B5C1]'}`}>{t.mgmt > 0 ? fmt(t.mgmt) : "—"}</td>
+                          <td className="px-1 py-2 text-right text-xs">{getBalance(t) > 0 ? <span className="font-bold text-hm-danger">{fmt(getBalance(t))}</span> : <span className="text-[#B0B5C1]">—</span>}</td>
+                          <td className="px-1 py-2 text-right text-xs">
+                            {(() => { const dueDay = getDueDay(t); const elapsed = getDaysSinceDue(t); return <><span className="font-semibold text-hm-text-sub">{dueDay}일</span>{elapsed > 0 && <span className="text-xs text-hm-danger font-bold"> +{elapsed}</span>}{elapsed === 0 && <span className="text-xs text-amber-500 font-bold"> D</span>}</>; })()}
                           </td>
                           {(() => {
                             const slots = getBillingSlots(t, buildingAccounts, allBuildings);
                             const colors = ["var(--color-hm-warning)", "#92400E", "var(--color-hm-blue-dark)"];
                             return [0, 1, 2].map(si => (
-                              <td key={si} className="px-2.5 py-2 text-right text-[11px]">
-                                {slots[si] ? <><span className="font-bold" style={{ color: colors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee && slots[si].lateFee! > 0 && <div className="text-[9px] text-hm-danger font-semibold">연체료 {fmt(slots[si].lateFee!)}</div>}</> : <span className="text-gray-300">—</span>}
+                              <td key={si} className="px-2.5 py-2 text-right text-xs">
+                                {slots[si] ? <><span className="font-bold" style={{ color: colors[si] }}>{fmt(slots[si].amount)}</span>{slots[si].lateFee && slots[si].lateFee! > 0 && <div className="text-xs text-hm-danger font-semibold">연체료 {fmt(slots[si].lateFee!)}</div>}</> : <span className="text-gray-300">—</span>}
                               </td>
                             ));
                           })()}
@@ -499,16 +499,16 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                               const days = getDaysSinceDue(t);
                               const isShortTerm = getRoomType(t.building, t.room) === "\uB2E8\uAE30";
                               const override = lateFeeOverrides[key];
-                              if (days < 5 || !isShortTerm) return <span className="text-[#B0B5C1] text-[11px]">—</span>;
+                              if (days < 5 || !isShortTerm) return <span className="text-[#B0B5C1] text-xs">—</span>;
                               return (
                                 <div className="flex flex-col items-center gap-[3px]">
-                                  {lateFee > 0 && <span className="text-[11px] font-bold text-hm-danger">{fmt(lateFee)}</span>}
+                                  {lateFee > 0 && <span className="text-xs font-bold text-hm-danger">{fmt(lateFee)}</span>}
                                   <button onClick={() => {
                                     if (!override) setFeeOverride(key, "exclude");
                                     else if (override.type === "exclude") setFeeOverride(key, "discount", Math.round((t.rent || 0) * 0.025));
                                     else setFeeOverride(key, null);
                                   }}
-                                    className="px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer font-[inherit] transition-colors"
+                                    className="px-2 py-0.5 rounded text-xs font-bold cursor-pointer font-[inherit] transition-colors"
                                     style={{
                                       border: `1px solid ${override?.type === "exclude" ? "var(--color-hm-success)" : override?.type === "discount" ? "var(--color-hm-blue-dark)" : "#D1D5DB"}`,
                                       background: override?.type === "exclude" ? "var(--color-hm-success-bg)" : override?.type === "discount" ? "var(--color-hm-blue-bg)" : "var(--color-hm-bg-hover)",
@@ -522,7 +522,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                           </td>
                           <td className="px-2 py-2.5 text-center">
                             <button onClick={() => { setCommentTarget(isOpen ? null : key); setCommentText(""); }}
-                              className={`px-2 py-1 rounded-md border border-hm-input-border cursor-pointer font-[inherit] text-[11px] font-semibold text-hm-blue transition-colors hover:bg-blue-50 ${roomComments.length > 0 ? 'bg-hm-blue-bg' : 'bg-white'}`}>
+                              className={`px-2 py-1 rounded-md border border-hm-input-border cursor-pointer font-[inherit] text-xs font-semibold text-hm-blue transition-colors hover:bg-blue-50 ${roomComments.length > 0 ? 'bg-hm-blue-bg' : 'bg-white'}`}>
                               💬{roomComments.length > 0 ? ` ${roomComments.length}` : ""}
                             </button>
                           </td>
@@ -540,12 +540,12 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                               </div>
                               {roomComments.length > 0 && (
                                 <div className="flex flex-col gap-1.5">
-                                  <div className="text-[10px] font-bold text-hm-text-muted mb-0.5">📋 {t.building} {t.room} 호실 코멘트 이력</div>
+                                  <div className="text-xs font-bold text-hm-text-muted mb-0.5">📋 {t.building} {t.room} 호실 코멘트 이력</div>
                                   {roomComments.map((c, ci) => (
                                     <div key={ci} className="flex gap-2.5 px-2.5 py-2 bg-white rounded-md border border-hm-border">
                                       <div className="shrink-0 min-w-[80px]">
-                                        <div className="text-[11px] font-bold text-hm-text">{c.date}</div>
-                                        <div className="text-[10px] font-semibold" style={{ color: c.tenant === t.name ? "var(--color-hm-blue)" : "#9333EA" }}>
+                                        <div className="text-xs font-bold text-hm-text">{c.date}</div>
+                                        <div className="text-xs font-semibold" style={{ color: c.tenant === t.name ? "var(--color-hm-blue)" : "#9333EA" }}>
                                           {c.tenant}{c.tenant !== t.name && !c.tenant.includes("(전)") ? " (이전)" : ""}
                                         </div>
                                       </div>

@@ -38,13 +38,13 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
         {/* 헤더 */}
         <div className="px-6 py-[18px] text-white" style={{ background: "linear-gradient(135deg, #1E40AF, var(--color-hm-blue))" }}>
           <div className="flex justify-between items-center">
-            <div className="text-[17px] font-extrabold tracking-tight">📤 계약정보 전송</div>
+            <div className="text-lg font-bold tracking-tight">📤 계약정보 전송</div>
             <button onClick={() => setPendingSendEvt(null)} className="w-7 h-7 rounded-md border border-white/30 bg-white/10 text-white text-sm cursor-pointer flex items-center justify-center font-[inherit] hover:bg-white/20 transition-colors">✕</button>
           </div>
           <div className="text-xs text-white/80 mt-1">
             {evt.building} {evt.room}호 → {evt.broker || "부동산"} ({evt.brokerPhone || "-"})
           </div>
-          <div className="text-[11px] text-[#FDE68A] mt-1.5 font-semibold">
+          <div className="text-xs text-[#FDE68A] mt-1.5 font-semibold">
             부동산에 보내는 계약 메시지입니다.
           </div>
         </div>
@@ -59,8 +59,8 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
             ].map((s, i) => (
               <div key={i} className="py-2 px-2.5 rounded-lg text-center"
                 style={{ background: s.color + "08", border: `1px solid ${s.color}25` }}>
-                <div className="text-[9px] text-hm-text-muted font-semibold mb-0.5">{s.label}</div>
-                <div className="text-[15px] font-black" style={{ color: s.color }}>{s.value}</div>
+                <div className="text-xs text-hm-text-muted font-semibold mb-0.5">{s.label}</div>
+                <div className="text-base font-bold" style={{ color: s.color }}>{s.value}</div>
               </div>
             ))}
           </div>
@@ -69,7 +69,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
           <div className="flex gap-1.5 mb-2.5 flex-wrap">
             {tplKeys.map(tpl => (
               <button key={tpl} onClick={() => { setSelectedTemplate(tpl); setSendMsg(buildContractMsg(evt, tpl)); }}
-                className={`px-3.5 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-all ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all ${
                   selectedTemplate === tpl
                     ? 'border-2 border-hm-blue bg-hm-blue-bg text-[#1E40AF] shadow-[0_2px_8px_rgba(59,130,246,0.15)]'
                     : 'border border-hm-input-border bg-white text-hm-text-sub shadow-none hover:bg-hm-bg-hover'
@@ -82,7 +82,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
           {/* 메시지 편집 영역 */}
           <textarea value={sendMsg} onChange={e => setSendMsg(e.target.value)}
             className="w-full min-h-[260px] p-3.5 rounded-[10px] border-[1.5px] border-hm-input-border text-[12.5px] font-[inherit] leading-[1.8] text-hm-text resize-y box-border bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
-          <div className="text-[10px] text-hm-text-muted mt-1 text-right">
+          <div className="text-xs text-hm-text-muted mt-1 text-right">
             전송 전 내용을 자유롭게 수정할 수 있습니다
           </div>
         </div>
@@ -91,12 +91,12 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
         <div className="px-6 pt-3.5 pb-[18px] border-t border-[#F0F2F5] flex flex-col gap-2">
           <div className="flex gap-2">
             <button onClick={() => { handleSendSMS(evt, sendMsg); setPendingSendEvt(null); }}
-              className="flex-1 py-[13px] px-4 rounded-[10px] border-none text-white text-[13px] font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
+              className="flex-1 py-[13px] px-4 rounded-[10px] border-none text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
               style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>
               💬 문자(SMS) 전송
             </button>
             <button onClick={() => { handleSendKakao(evt, sendMsg); setPendingSendEvt(null); }}
-              className="flex-1 py-[13px] px-4 rounded-[10px] border-none bg-[#FEE500] text-[#3C1E1E] text-[13px] font-bold cursor-pointer font-[inherit] hover:bg-[#EDD600] transition-colors">
+              className="flex-1 py-[13px] px-4 rounded-[10px] border-none bg-[#FEE500] text-[#3C1E1E] text-sm font-bold cursor-pointer font-[inherit] hover:bg-[#EDD600] transition-colors">
               💛 카카오톡 복사
             </button>
           </div>

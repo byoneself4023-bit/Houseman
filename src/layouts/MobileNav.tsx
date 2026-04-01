@@ -55,15 +55,15 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
                   )}
                 >
                   <div className="text-xl mb-0.5">{m.icon}</div>
-                  <div className={cn('text-[10px]', page === m.id ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-sub')}>{m.label}</div>
+                  <div className={cn('text-xs', page === m.id ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-sub')}>{m.label}</div>
                 </div>
               ))}
             </div>
             <div className="border-t border-hm-border mt-2 pt-2 flex justify-between items-center">
-              <span className="text-[11px] text-hm-text-muted">👤 {currentStaff?.name || '—'}</span>
+              <span className="text-xs text-hm-text-muted">👤 {currentStaff?.name || '—'}</span>
               <button
                 onClick={() => { onLogout(); setShowMobileMore(false); }}
-                className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold text-hm-danger cursor-pointer hover:bg-hm-danger-bg transition-colors"
+                className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold text-hm-danger cursor-pointer hover:bg-hm-danger-bg transition-colors"
               >
                 로그아웃
               </button>
@@ -83,7 +83,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
               className="flex-1 flex flex-col items-center gap-0.5 py-1.5 cursor-pointer active:scale-95 transition-transform duration-100"
             >
               <span className="text-xl">{t.icon}</span>
-              <span className={cn('text-[9px]', active ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-muted')}>{t.label}</span>
+              <span className={cn('text-xs', active ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-muted')}>{t.label}</span>
               {active && <div className="w-1 h-1 rounded-full bg-hm-blue-dark -mt-0.5" />}
             </div>
           );
@@ -94,7 +94,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
             className="flex-1 flex flex-col items-center gap-0.5 py-1.5 cursor-pointer active:scale-95 transition-transform duration-100"
           >
             <span className="text-xl">⋯</span>
-            <span className="text-[9px] font-medium text-hm-text-muted">더보기</span>
+            <span className="text-xs font-medium text-hm-text-muted">더보기</span>
           </div>
         )}
       </div>

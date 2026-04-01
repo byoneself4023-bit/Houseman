@@ -719,7 +719,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
   return (
     <div>
       <div className="mb-5">
-        <h2 className="text-lg font-extrabold text-hm-text mb-1">데이터 업로드</h2>
+        <h2 className="text-lg font-bold text-hm-text mb-1">데이터 업로드</h2>
         <p className="text-xs text-hm-text-muted">엑셀 파일로 건물/호실/임차인 데이터를 일괄 등록합니다</p>
       </div>
 
@@ -727,7 +727,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       <div className="flex gap-1 mb-0">
         {tabs.map(t => (
           <button key={t.id} onClick={() => { setTab(t.id); setPreview(null); setUploadMsg(""); }}
-            className={`px-5 py-2.5 rounded-t-lg border-none font-inherit text-[13px] cursor-pointer transition-colors duration-150 ${
+            className={`px-5 py-2.5 rounded-t-lg border-none font-inherit text-sm cursor-pointer transition-colors duration-150 ${
               tab === t.id
                 ? 'bg-white text-hm-blue-dark font-bold border-b-2 border-hm-blue-dark'
                 : 'bg-hm-bg text-gray-500 font-medium hover:bg-gray-200'
@@ -741,8 +741,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       {tab === "ledger" && (
         <>
           <div className="bg-white rounded-xl border border-hm-border p-5 mb-4">
-            <h3 className="text-[15px] font-extrabold mb-2">📊 통합관리대장 일괄 업로드</h3>
-            <p className="text-[13px] text-hm-text-sub leading-[1.7] mb-4">
+            <h3 className="text-base font-bold mb-2">📊 통합관리대장 일괄 업로드</h3>
+            <p className="text-sm text-hm-text-sub leading-[1.7] mb-4">
               통합관리대장 엑셀 파일(.xlsx)을 그대로 올리면 모든 데이터가 자동으로 들어갑니다.
             </p>
             <div className="bg-hm-bg-slate rounded-[10px] p-4 mb-4">
@@ -755,7 +755,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
                   { name: "■퇴실정보", desc: "→ 퇴실 기록", color: "#F59E0B" },
                   { name: "◆관리정보", desc: "→ 호실 관리", color: "#EC4899" },
                 ].map(si => (
-                  <div key={si.name} className="px-3 py-1.5 rounded-lg bg-white text-[11px]" style={{ border: `1px solid ${si.color}30` }}>
+                  <div key={si.name} className="px-3 py-1.5 rounded-lg bg-white text-xs" style={{ border: `1px solid ${si.color}30` }}>
                     <span className="font-bold" style={{ color: si.color }}>{si.name}</span>
                     <span className="text-hm-text-muted ml-1">{si.desc}</span>
                   </div>
@@ -764,11 +764,11 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
             </div>
             <input type="file" ref={fileRef} accept=".xlsx,.xls" onChange={handleLedgerFile} className="hidden" />
             <button onClick={() => fileRef.current?.click()}
-              className="px-7 py-3 rounded-lg border-none text-[15px] font-bold cursor-pointer font-inherit bg-hm-blue-dark text-white hover:bg-blue-700 transition-colors duration-150">
+              className="px-7 py-3 rounded-lg border-none text-base font-bold cursor-pointer font-inherit bg-hm-blue-dark text-white hover:bg-blue-700 transition-colors duration-150">
               📂 통합관리대장 파일 선택
             </button>
             {uploadMsg && (
-              <div className={`mt-3 px-4 py-3 rounded-lg text-[13px] font-semibold ${
+              <div className={`mt-3 px-4 py-3 rounded-lg text-sm font-semibold ${
                 uploadMsg.includes("실패") ? 'bg-hm-danger-bg text-hm-danger' : 'bg-[#F0FDF4] text-[#16A34A]'
               }`}>
                 {uploadMsg}
@@ -788,8 +788,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
                 ].map(item => (
                   <div key={item.label} className="p-4 rounded-[10px] bg-hm-bg-slate text-center">
                     <div className="text-xl mb-1">{item.icon}</div>
-                    <div className="text-[22px] font-extrabold text-hm-text">{item.count}</div>
-                    <div className="text-[11px] text-hm-text-muted">{item.label}</div>
+                    <div className="text-xl font-bold text-hm-text">{item.count}</div>
+                    <div className="text-xs text-hm-text-muted">{item.label}</div>
                   </div>
                 ))}
               </div>
@@ -801,7 +801,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
             </div>
           )}
           <div className="bg-white rounded-xl p-5 mb-4 bg-[#FFFBEB] border border-[#FDE68A]">
-            <h3 className="text-[13px] font-bold text-[#92400E] mb-2">⚠ 주의사항</h3>
+            <h3 className="text-sm font-bold text-[#92400E] mb-2">⚠ 주의사항</h3>
             <ul className="text-xs text-[#78350F] leading-[1.8] pl-5 m-0">
               <li>업로드하면 <strong>기존 데이터가 모두 교체</strong>됩니다</li>
               <li>통합관리대장 엑셀 파일을 <strong>그대로</strong> 올려주세요 (수정 불필요)</li>
@@ -823,8 +823,8 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
           {columns.map(c => (
             <div key={c.key} className="px-3 py-2 rounded-lg bg-hm-bg-slate border border-hm-border">
               <span className="text-xs font-bold text-hm-text">{c.label}</span>
-              {c.required && <span className="text-red-500 ml-1 text-[10px]">필수</span>}
-              {c.note && <div className="text-[10px] text-hm-text-muted mt-0.5">{c.note}</div>}
+              {c.required && <span className="text-red-500 ml-1 text-xs">필수</span>}
+              {c.note && <div className="text-xs text-hm-text-muted mt-0.5">{c.note}</div>}
             </div>
           ))}
         </div>
@@ -834,15 +834,15 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       <div className="bg-white rounded-xl border border-hm-border p-5 mb-4 flex gap-3 items-center flex-wrap">
         <input type="file" ref={fileRef} accept=".xlsx,.xls,.csv" onChange={handleFileReal} className="hidden" />
         <button onClick={() => fileRef.current?.click()}
-          className="px-4 py-2 rounded-lg border-none text-[13px] font-bold cursor-pointer font-inherit bg-hm-blue-dark text-white hover:bg-blue-700 transition-colors duration-150">
+          className="px-4 py-2 rounded-lg border-none text-sm font-bold cursor-pointer font-inherit bg-hm-blue-dark text-white hover:bg-blue-700 transition-colors duration-150">
           📂 엑셀 파일 선택
         </button>
         <button onClick={downloadTemplate}
-          className="px-4 py-2 rounded-lg text-[13px] font-bold cursor-pointer font-inherit bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] hover:bg-green-100 transition-colors duration-150">
+          className="px-4 py-2 rounded-lg text-sm font-bold cursor-pointer font-inherit bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] hover:bg-green-100 transition-colors duration-150">
           📥 빈 템플릿 다운로드
         </button>
         <button onClick={exportCurrent}
-          className="px-4 py-2 rounded-lg text-[13px] font-bold cursor-pointer font-inherit bg-hm-blue-bg text-hm-blue-dark border border-[#BFDBFE] hover:bg-blue-100 transition-colors duration-150">
+          className="px-4 py-2 rounded-lg text-sm font-bold cursor-pointer font-inherit bg-hm-blue-bg text-hm-blue-dark border border-[#BFDBFE] hover:bg-blue-100 transition-colors duration-150">
           📤 현재 데이터 내보내기
         </button>
         {uploadMsg && (
@@ -861,17 +861,17 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
             <h3 className="text-sm font-bold">미리보기 (최대 10행)</h3>
             <div className="flex gap-2">
               <button onClick={() => { setPreview(null); fullDataRef.current = []; }}
-                className="px-4 py-2 rounded-lg border-none text-[13px] font-bold cursor-pointer font-inherit bg-hm-bg text-gray-500 hover:bg-gray-200 transition-colors duration-150">
+                className="px-4 py-2 rounded-lg border-none text-sm font-bold cursor-pointer font-inherit bg-hm-bg text-gray-500 hover:bg-gray-200 transition-colors duration-150">
                 취소
               </button>
               <button onClick={handleApply}
-                className="px-4 py-2 rounded-lg border-none text-[13px] font-bold cursor-pointer font-inherit bg-hm-danger text-white hover:bg-red-700 transition-colors duration-150">
+                className="px-4 py-2 rounded-lg border-none text-sm font-bold cursor-pointer font-inherit bg-hm-danger text-white hover:bg-red-700 transition-colors duration-150">
                 ⚠ 적용 ({fullDataRef.current.length}건 덮어쓰기)
               </button>
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-[11px]">
+            <table className="w-full border-collapse text-xs">
               <thead>
                 <tr>
                   {Object.keys(preview[0]).map(k => (
@@ -892,7 +892,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
               </tbody>
             </table>
           </div>
-          <div className="mt-2 text-[11px] text-hm-text-muted">
+          <div className="mt-2 text-xs text-hm-text-muted">
             전체 {fullDataRef.current.length}건 중 10건 표시
           </div>
         </div>
@@ -900,7 +900,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
       {/* 주의사항 */}
       <div className="bg-[#FFFBEB] rounded-xl border border-[#FDE68A] p-5 mb-4">
-        <h3 className="text-[13px] font-bold text-[#92400E] mb-2">⚠ 주의사항</h3>
+        <h3 className="text-sm font-bold text-[#92400E] mb-2">⚠ 주의사항</h3>
         <ul className="text-xs text-[#78350F] leading-[1.8] pl-5 m-0">
           <li>업로드하면 해당 카테고리의 <strong>기존 데이터가 모두 교체</strong>됩니다</li>
           <li>반드시 <strong>현재 데이터를 먼저 내보내기</strong>한 후 업로드하세요</li>
@@ -914,14 +914,14 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
 
       {/* 전체 초기화 */}
       <div className="bg-hm-danger-bg rounded-xl border border-hm-danger-border p-5 mb-4">
-        <h3 className="text-[13px] font-bold text-[#991B1B] mb-2">🗑️ 데이터 초기화</h3>
+        <h3 className="text-sm font-bold text-[#991B1B] mb-2">🗑️ 데이터 초기화</h3>
         <p className="text-xs text-[#7F1D1D] mb-3">localStorage의 모든 데이터를 삭제하고 기본 더미 데이터로 되돌립니다.</p>
         <button onClick={() => {
           if (window.confirm("정말 모든 데이터를 초기화하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) {
             localStorage.clear();
             window.location.reload();
           }
-        }} className="px-4 py-2 rounded-lg border-none text-[13px] font-bold cursor-pointer font-inherit bg-hm-danger text-white hover:bg-red-700 transition-colors duration-150">
+        }} className="px-4 py-2 rounded-lg border-none text-sm font-bold cursor-pointer font-inherit bg-hm-danger text-white hover:bg-red-700 transition-colors duration-150">
           전체 초기화 (localStorage 삭제)
         </button>
       </div>

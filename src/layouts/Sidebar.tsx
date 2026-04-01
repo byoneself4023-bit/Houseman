@@ -80,7 +80,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
         </span>
       )}
       {menuBadges[m.id] > 0 && (
-        <span className="ml-auto min-w-[18px] h-[18px] rounded-[9px] bg-[#EF4444] text-white text-[10px] font-extrabold flex items-center justify-center px-[5px] shrink-0">
+        <span className="ml-auto min-w-[18px] h-[18px] rounded-[9px] bg-[#EF4444] text-white text-xs font-bold flex items-center justify-center px-[5px] shrink-0">
           {menuBadges[m.id]}
         </span>
       )}
@@ -98,19 +98,19 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
         {sidebarOpen && (
           <div className="flex-1 flex items-center justify-between">
             <div>
-              <div className="text-[13px] font-extrabold text-white tracking-tight">HOUSEMAN</div>
-              <div className="text-[10px] text-[#6B7280]">{currentStaff ? currentStaff.name : '건물관리 시스템'} · {isGeneral ? '전체 건물' : `${myBuildings.length}개`}</div>
+              <div className="text-sm font-bold text-white tracking-tight">HOUSEMAN</div>
+              <div className="text-xs text-[#6B7280]">{currentStaff ? currentStaff.name : '건물관리 시스템'} · {isGeneral ? '전체 건물' : `${myBuildings.length}개`}</div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={onLogout}
-                className="px-2 py-0.5 rounded-[5px] border border-[#374151] bg-transparent text-[#9CA3B0] text-[9px] font-semibold cursor-pointer hover:bg-[#374151]/30 transition-colors"
+                className="px-2 py-0.5 rounded-[5px] border border-[#374151] bg-transparent text-[#9CA3B0] text-xs font-semibold cursor-pointer hover:bg-[#374151]/30 transition-colors"
               >
                 로그아웃
               </button>
               <button
                 onClick={() => { if (confirm('데이터를 초기화합니다. 계속?')) { localStorage.clear(); location.reload(); } }}
-                className="px-2 py-0.5 rounded-[5px] border border-hm-danger bg-transparent text-hm-danger text-[9px] font-semibold cursor-pointer hover:bg-hm-danger/10 transition-colors"
+                className="px-2 py-0.5 rounded-[5px] border border-hm-danger bg-transparent text-hm-danger text-xs font-semibold cursor-pointer hover:bg-hm-danger/10 transition-colors"
               >
                 리셋
               </button>
@@ -132,7 +132,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                   navigateTo(landingPages[r.id] ?? 'calendar');
                 }}
                 className={cn(
-                  'flex-1 py-[5px] px-0.5 rounded-md border-none text-[9px] cursor-pointer transition-colors',
+                  'flex-1 py-[5px] px-0.5 rounded-md border-none text-xs cursor-pointer transition-colors',
                   role === r.id
                     ? 'bg-[#2A3352] text-white font-bold border-b-2 border-b-hm-blue'
                     : 'bg-transparent text-[#6B7280] font-medium hover:bg-[#2A3352]/50',
@@ -160,8 +160,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                   : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
               )}
             >
-              <span className={cn('text-[17px] shrink-0', active ? 'text-white' : 'text-[#A0AEC0]')}>{iconMap[m.id] || m.icon}</span>
-              {sidebarOpen && <span className={cn('text-[13px]', active ? 'font-bold text-white' : 'font-medium text-[#A0AEC0]')}>{m.label}</span>}
+              <span className={cn('text-lg shrink-0', active ? 'text-white' : 'text-[#A0AEC0]')}>{iconMap[m.id] || m.icon}</span>
+              {sidebarOpen && <span className={cn('text-sm', active ? 'font-bold text-white' : 'font-medium text-[#A0AEC0]')}>{m.label}</span>}
             </div>
           );
         }) : role === 'homepage' ? [{ id: 'homepage', icon: '🌐', label: '공실 매물' }].map((m) => (
@@ -171,7 +171,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
             className="flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
           >
             <Globe size={17} className="text-white shrink-0" />
-            {sidebarOpen && <span className="text-[13px] font-bold text-white">{m.label}</span>}
+            {sidebarOpen && <span className="text-sm font-bold text-white">{m.label}</span>}
           </div>
         )) : menuSections.map((sec) => {
           if (sec.section === '설정') {
@@ -186,8 +186,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                 >
                   {sidebarOpen ? (
                     <>
-                      <span className="text-[9px] font-bold text-[#4B5563] tracking-[0.15em] uppercase">{sec.section}</span>
-                      <span className={cn('text-[10px] text-[#4B5563] transition-transform duration-200', settingsOpen && 'rotate-180')}>▼</span>
+                      <span className="text-xs font-bold text-[#4B5563] tracking-[0.15em] uppercase">{sec.section}</span>
+                      <span className={cn('text-xs text-[#4B5563] transition-transform duration-200', settingsOpen && 'rotate-180')}>▼</span>
                     </>
                   ) : (
                     <Settings size={16} className="text-[#4B5563]" />
@@ -202,7 +202,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           }
           return (
             <div key={sec.section}>
-              {sidebarOpen && <div className="text-[9px] font-bold text-[#4B5563] tracking-[0.15em] px-3 pt-3 pb-1 uppercase">{sec.section}</div>}
+              {sidebarOpen && <div className="text-xs font-bold text-[#4B5563] tracking-[0.15em] px-3 pt-3 pb-1 uppercase">{sec.section}</div>}
               {!sidebarOpen && <div className="border-b border-[#2A2F42] mx-2 my-1.5" />}
               {sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
                 const active = page === m.id;

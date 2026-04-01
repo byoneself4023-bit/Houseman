@@ -128,7 +128,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         <div className="mb-3">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-            className={`${inputClassName} w-full px-3.5 py-2.5 text-[13px] bg-hm-bg-hover`} />
+            className={`${inputClassName} w-full px-3.5 py-2.5 text-sm bg-hm-bg-hover`} />
         </div>
 
         {/* Stats — search matched buildings */}
@@ -140,18 +140,18 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
               const remain = total - used;
               return (
                 <Card key={bName} className="p-3.5">
-                  <div className="text-xs font-extrabold text-hm-text mb-1.5">{bName}</div>
+                  <div className="text-xs font-bold text-hm-text mb-1.5">{bName}</div>
                   <div className="flex justify-between items-end">
                     <div>
-                      <div className="text-[9px] text-hm-text-muted">등록 / 총 주차대수</div>
-                      <div className="text-lg font-black text-hm-blue">
-                        {used}<span className="text-[11px] text-hm-text-muted mx-0.5">/</span>{total}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
+                      <div className="text-xs text-hm-text-muted">등록 / 총 주차대수</div>
+                      <div className="text-lg font-bold text-hm-blue">
+                        {used}<span className="text-xs text-hm-text-muted mx-0.5">/</span>{total}<span className="text-xs text-hm-text-muted ml-0.5">대</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[9px] text-hm-text-muted">잔여</div>
-                      <div className="text-base font-black" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
-                        {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
+                      <div className="text-xs text-hm-text-muted">잔여</div>
+                      <div className="text-base font-bold" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
+                        {remain}<span className="text-xs text-hm-text-muted ml-0.5">대</span>
                       </div>
                     </div>
                   </div>
@@ -165,7 +165,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         {displayList.length === 0 ? (
           <Card className="text-center py-10 text-hm-text-muted">
             <div className="text-[32px] mb-2">🅿️</div>
-            <div className="text-[13px]">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
+            <div className="text-sm">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
           </Card>
         ) : (
           displayList.map(t => {
@@ -175,18 +175,18 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
               <Card key={t.id} className="mb-2 p-3.5">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="text-[11px] text-hm-text-muted mb-1">
+                    <div className="text-xs text-hm-text-muted mb-1">
                       {t.building} · {t.room}호 · {t.name} · {t.phone || "-"}
                     </div>
                     {isEditing ? (
                       <div className="flex flex-col gap-1.5 mt-1.5">
                         <div>
-                          <div className="text-[9px] text-hm-text-muted mb-0.5">차번호</div>
+                          <div className="text-xs text-hm-text-muted mb-0.5">차번호</div>
                           <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
                             placeholder="123가 4567" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
                         <div>
-                          <div className="text-[9px] text-hm-text-muted mb-0.5">차종</div>
+                          <div className="text-xs text-hm-text-muted mb-0.5">차종</div>
                           <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
                             placeholder="현대 아반떼" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
@@ -203,7 +203,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                       </div>
                     ) : (
                       <>
-                        <div className="text-[15px] font-extrabold text-hm-text tracking-wide">
+                        <div className="text-base font-bold text-hm-text tracking-wide">
                           {car.carNumber || <span className="text-gray-300">미등록</span>}
                         </div>
                         <div className="text-xs text-hm-text-sub mt-0.5">{car.carType}</div>
@@ -212,7 +212,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                   </div>
                   {editingId !== t.id && (
                     <button onClick={() => startEdit(t)}
-                      className={`px-3 py-1.5 rounded-lg border border-hm-input-border text-[11px] font-bold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${(car.carNumber || car.carType) ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
+                      className={`px-3 py-1.5 rounded-lg border border-hm-input-border text-xs font-bold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${(car.carNumber || car.carType) ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
                       {(car.carNumber || car.carType) ? "수정" : "등록"}
                     </button>
                   )}
@@ -254,11 +254,11 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         return (
           <div className="flex gap-1">
             <button onClick={(e) => { e.stopPropagation(); saveEdit(row.id); }}
-              className="px-2.5 py-1 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
+              className="px-2.5 py-1 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
               저장
             </button>
             <button onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-              className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-hm-text-sub text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+              className="px-2.5 py-1 rounded-md border border-hm-input-border bg-white text-hm-text-sub text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
           </div>
@@ -268,7 +268,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const hasCar = car.carNumber || car.carType;
       return (
         <button onClick={(e) => { e.stopPropagation(); startEdit(row); }}
-          className={`px-2.5 py-1 rounded-md border border-hm-input-border text-[11px] font-semibold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${hasCar ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
+          className={`px-2.5 py-1 rounded-md border border-hm-input-border text-xs font-semibold text-hm-blue cursor-pointer font-[inherit] hover:bg-blue-50 transition-colors ${hasCar ? "bg-hm-bg-hover" : "bg-hm-blue-bg"}`}>
           {hasCar ? "수정" : "등록"}
         </button>
       );
@@ -283,7 +283,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       <div className="mb-4">
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-          className="w-[300px] px-4 py-2.5 rounded-[10px] border border-hm-input-border text-[13px] outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+          className="w-[300px] px-4 py-2.5 rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
       </div>
 
       {/* Stats — search matched buildings */}
@@ -295,18 +295,18 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
             const remain = total - used;
             return (
               <Card key={bName} className="p-4">
-                <div className="text-xs font-extrabold text-hm-text mb-2">{bName}</div>
+                <div className="text-xs font-bold text-hm-text mb-2">{bName}</div>
                 <div className="flex justify-between items-end">
                   <div>
-                    <div className="text-[9px] text-hm-text-muted mb-0.5">등록 / 총 주차대수</div>
-                    <div className="text-xl font-black text-hm-blue">
-                      {used}<span className="text-xs text-hm-text-muted mx-[3px]">/</span><span className="text-base text-hm-text">{total}</span><span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
+                    <div className="text-xs text-hm-text-muted mb-0.5">등록 / 총 주차대수</div>
+                    <div className="text-xl font-bold text-hm-blue">
+                      {used}<span className="text-xs text-hm-text-muted mx-[3px]">/</span><span className="text-base text-hm-text">{total}</span><span className="text-xs text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[9px] text-hm-text-muted mb-0.5">잔여</div>
-                    <div className="text-lg font-black" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
-                      {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
+                    <div className="text-xs text-hm-text-muted mb-0.5">잔여</div>
+                    <div className="text-lg font-bold" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
+                      {remain}<span className="text-xs text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>
                 </div>

@@ -204,7 +204,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     const c = cfg[status];
     if (!c) return null;
     return (
-      <span className="text-[11px] font-bold px-2.5 py-[3px] rounded-md" style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+      <span className="text-xs font-bold px-2.5 py-[3px] rounded-md" style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
         {c.label}
       </span>
     );
@@ -222,7 +222,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h1 className="text-lg font-extrabold text-hm-text">AS #{as_.id}</h1>
+              <h1 className="text-lg font-bold text-hm-text">AS #{as_.id}</h1>
               <StatusBadge status={as_.status} />
               <ApprovalBadge status={as_.ownerApproval} />
             </div>
@@ -240,8 +240,8 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
             <div key={i} className="shrink-0 px-3.5 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
-              <div className="text-[10px] text-hm-text-muted font-semibold mb-[3px]">{chip.label}</div>
-              <div className="text-sm font-extrabold" style={{ color: chip.color }}>{chip.value}</div>
+              <div className="text-xs text-hm-text-muted font-semibold mb-[3px]">{chip.label}</div>
+              <div className="text-sm font-bold" style={{ color: chip.color }}>{chip.value}</div>
             </div>
           ))}
         </div>
@@ -249,13 +249,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         {/* Paid Alert Banner */}
         {as_.paid === "유상" && (
           <div className="mb-4 px-4 py-3.5 rounded-xl bg-hm-danger-bg border-[1.5px] border-hm-danger-border flex items-center gap-3">
-            <span className="text-[28px] shrink-0">💰</span>
+            <span className="text-2xl shrink-0">💰</span>
             <div className="flex-1">
               <div className="text-xs font-semibold text-[#991B1B]">유상 수리 · 세입자 부담</div>
-              <div className="text-xl font-extrabold text-hm-danger">{fmt(as_.cost)}<span className="text-xs font-medium">원</span></div>
+              <div className="text-xl font-bold text-hm-danger">{fmt(as_.cost)}<span className="text-xs font-medium">원</span></div>
             </div>
             <div className="px-3 py-1.5 bg-white rounded-lg border border-hm-danger-border text-center">
-              <div className="text-[9px] text-hm-text-muted">업체</div>
+              <div className="text-xs text-hm-text-muted">업체</div>
               <div className="text-xs font-bold">{as_.vendor}</div>
             </div>
           </div>
@@ -263,9 +263,9 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Content Card */}
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2">📋 접수 내용</div>
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-2">📋 접수 내용</div>
           <div className="text-base font-bold text-hm-text mb-2 leading-snug">{as_.content || as_.title}</div>
-          <div className="text-[13px] text-hm-text-sub leading-relaxed px-3.5 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
+          <div className="text-sm text-hm-text-sub leading-relaxed px-3.5 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
           <div className="flex gap-2 mt-3 flex-wrap">
             <div className="px-3.5 py-2 bg-hm-bg rounded-lg text-xs">
               🏷️ <span className="font-bold">{as_.category || "기타"}</span>
@@ -278,7 +278,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Before/After Photos */}
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-3">📸 현장 사진</div>
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-3">📸 현장 사진</div>
           <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5`}>
             <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="var(--color-hm-danger)"
               onAdd={(dataUrls: string[]) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
@@ -291,7 +291,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Timeline */}
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-3">🔄 처리 과정</div>
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-3">🔄 처리 과정</div>
           <div className="relative pl-6">
             <div className="absolute left-[9px] top-2 bottom-2 w-0.5 bg-gray-200" />
             {steps.map((step, i) => {
@@ -304,9 +304,9 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm">{ac.icon}</span>
-                        <span className="text-[13px] font-bold" style={{ color: ac.color }}>{step.action}</span>
+                        <span className="text-sm font-bold" style={{ color: ac.color }}>{step.action}</span>
                       </div>
-                      <span className="text-[11px] text-[#B0B5C1]">{step.date}</span>
+                      <span className="text-xs text-[#B0B5C1]">{step.date}</span>
                     </div>
                     <div className="text-[12.5px] text-[#3D4251] leading-relaxed">{step.note}</div>
                   </div>
@@ -332,13 +332,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                     steps: [...(prev.steps || []), { date: today, action: "진행시작", note: "AS 처리 진행 시작" }],
                   }) : null);
                 }}
-                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-warning bg-hm-warning-bg cursor-pointer text-[13px] font-bold text-hm-warning font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-warning bg-hm-warning-bg cursor-pointer text-sm font-bold text-hm-warning font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ▶️ 진행중으로 변경
                 </button>
               )}
               {(as_.status === "대기" || as_.status === "진행중") && (
                 <button onClick={() => setShowStatusModal("완료")}
-                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-success bg-hm-success-bg cursor-pointer text-[13px] font-bold text-hm-success font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-success bg-hm-success-bg cursor-pointer text-sm font-bold text-hm-success font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ✅ 완료 처리
                 </button>
               )}
@@ -347,7 +347,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Status change for static items - just shows button but no-op with note */}
           {as_.status !== "완료" && !canEdit && (
-            <button className="w-full mt-4 py-3.5 rounded-[10px] border-2 border-dashed border-hm-blue bg-hm-blue-bg cursor-pointer text-[13px] font-bold text-hm-blue-dark font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+            <button className="w-full mt-4 py-3.5 rounded-[10px] border-2 border-dashed border-hm-blue bg-hm-blue-bg cursor-pointer text-sm font-bold text-hm-blue-dark font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
               ⏭️ 다음 단계 기록하기
             </button>
           )}
@@ -360,20 +360,20 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             <div className="flex gap-2 mb-3">
               {["무상", "유상"].map(p => (
                 <button key={p} onClick={() => setCompletePaid(p)}
-                  className={`flex-1 py-2.5 rounded-lg font-bold text-[13px] cursor-pointer font-[inherit] transition-all ${completePaid === p ? (p === "유상" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-success bg-hm-success-bg text-hm-success') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+                  className={`flex-1 py-2.5 rounded-lg font-bold text-sm cursor-pointer font-[inherit] transition-all ${completePaid === p ? (p === "유상" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-success bg-hm-success-bg text-hm-success') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
                   {p}
                 </button>
               ))}
             </div>
             {completePaid === "유상" && (
               <div className="mb-3">
-                <div className="text-[11px] font-bold text-hm-text-sub mb-1">비용 (원)</div>
+                <div className="text-xs font-bold text-hm-text-sub mb-1">비용 (원)</div>
                 <input value={completeCost} onChange={e => setCompleteCost(e.target.value)} placeholder="85000" type="number"
                   className={inputClassName} />
               </div>
             )}
             <div className="mb-3">
-              <div className="text-[11px] font-bold text-hm-text-sub mb-1">처리업체</div>
+              <div className="text-xs font-bold text-hm-text-sub mb-1">처리업체</div>
               <select value={completeVendor} onChange={e => setCompleteVendor(e.target.value)}
                 className={inputClassName}>
                 <option value="">자체처리</option>
@@ -420,24 +420,24 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         {as_.status !== "완료" && canEdit && (
           <Card className="mb-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-[10px] font-bold text-[#D97706] tracking-wider">🏠 건물주 승인</div>
+              <div className="text-xs font-bold text-[#D97706] tracking-wider">🏠 건물주 승인</div>
               {as_.ownerApproval && <ApprovalBadge status={as_.ownerApproval} />}
             </div>
             {!as_.ownerApproval && !showApprovalForm && (
               <button onClick={() => setShowApprovalForm(true)}
-                className="w-full py-3 rounded-[10px] border-[1.5px] border-[#FDE68A] bg-[#FFFBEB] cursor-pointer text-[13px] font-bold text-[#D97706] font-[inherit] hover:shadow-md transition-all">
+                className="w-full py-3 rounded-[10px] border-[1.5px] border-[#FDE68A] bg-[#FFFBEB] cursor-pointer text-sm font-bold text-[#D97706] font-[inherit] hover:shadow-md transition-all">
                 📩 건물주 승인 요청
               </button>
             )}
             {showApprovalForm && !as_.ownerApproval && (
               <div>
                 <div className="mb-2.5">
-                  <div className="text-[11px] font-bold text-hm-text-sub mb-1">예상 비용 (원)</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-1">예상 비용 (원)</div>
                   <input value={approvalCost} onChange={e => setApprovalCost(e.target.value)} placeholder="예상 수리 비용" type="number"
                     className={inputClassName} />
                 </div>
                 <div className="mb-2.5">
-                  <div className="text-[11px] font-bold text-hm-text-sub mb-1">처리업체</div>
+                  <div className="text-xs font-bold text-hm-text-sub mb-1">처리업체</div>
                   <select value={approvalVendor} onChange={e => setApprovalVendor(e.target.value)}
                     className={inputClassName}>
                     <option value="">선택</option>
@@ -516,7 +516,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Summary Info */}
         <Card>
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">ℹ️ 요약 정보</div>
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-2.5">ℹ️ 요약 정보</div>
           <div className="grid grid-cols-2">
             {[
               { label: "접수일", value: as_.date },
@@ -529,8 +529,8 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
               { label: "처리업체", value: as_.vendor || "자체처리" },
             ].map((item, i) => (
               <div key={i} className={`px-3 py-2.5 border-b border-[#F0F2F5] ${i % 2 === 0 ? 'border-r border-r-[#F0F2F5]' : ''}`}>
-                <div className="text-[10px] text-hm-text-muted mb-0.5">{item.label}</div>
-                <div className={`text-[13px] ${item.highlight ? 'font-bold text-hm-danger' : 'font-semibold text-hm-text'}`}>{item.value}</div>
+                <div className="text-xs text-hm-text-muted mb-0.5">{item.label}</div>
+                <div className={`text-sm ${item.highlight ? 'font-bold text-hm-danger' : 'font-semibold text-hm-text'}`}>{item.value}</div>
               </div>
             ))}
           </div>
@@ -545,13 +545,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       <div>
         <div className="flex items-center gap-3 mb-5">
           <button onClick={() => setShowNewForm(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
-          <h1 className="text-lg font-extrabold text-hm-text">새 AS 접수</h1>
+          <h1 className="text-lg font-bold text-hm-text">새 AS 접수</h1>
         </div>
 
         <Card className="mb-4">
           {/* Building */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">건물 *</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">건물 *</div>
             <select value={newBuilding} onChange={e => setNewBuilding(e.target.value)}
               className={inputClassName}>
               <option value="">선택하세요</option>
@@ -561,21 +561,21 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Room */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">호실</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">호실</div>
             <input value={newRoom} onChange={e => setNewRoom(e.target.value)} placeholder="예: 301"
               className={inputClassName} />
           </div>
 
           {/* Description */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">설명 *</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">설명 *</div>
             <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="AS 내용을 입력하세요 (첫 줄이 제목으로 사용됩니다)" rows={4}
               className={`${inputClassName} resize-y min-h-[80px]`} />
           </div>
 
           {/* Photos */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">사진</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">사진</div>
             <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="var(--color-hm-blue)"
               onAdd={(dataUrls: string[]) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
               onRemove={(pi: number) => setNewPhotos(prev => prev.filter((_, i) => i !== pi))} />
@@ -583,11 +583,11 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Priority */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">긴급도</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">긴급도</div>
             <div className="flex gap-2">
               {["일반", "긴급"].map(p => (
                 <button key={p} onClick={() => setNewPriority(p)}
-                  className={`flex-1 py-2.5 rounded-lg font-bold text-[13px] cursor-pointer font-[inherit] transition-all ${newPriority === p ? (p === "긴급" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+                  className={`flex-1 py-2.5 rounded-lg font-bold text-sm cursor-pointer font-[inherit] transition-all ${newPriority === p ? (p === "긴급" ? 'border-2 border-hm-danger bg-hm-danger-bg text-hm-danger' : 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark') : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
                   {p === "긴급" ? "🚨 " : ""}{p}
                 </button>
               ))}
@@ -596,7 +596,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Source */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">접수 경로</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">접수 경로</div>
             <select value={newSource} onChange={e => setNewSource(e.target.value)}
               className={inputClassName}>
               <option value="사무실접수">사무실접수</option>
@@ -607,7 +607,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Assignee */}
           <div className="mb-3.5">
-            <div className="text-[11px] font-bold text-hm-text-sub mb-1">담당자</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-1">담당자</div>
             <select value={newAssignee} onChange={e => setNewAssignee(e.target.value)}
               className={inputClassName}>
               <option value="">선택하세요</option>
@@ -618,11 +618,11 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           {/* Submit */}
           <div className="flex gap-2">
             <button onClick={() => setShowNewForm(false)}
-              className="flex-1 py-3.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+              className="flex-1 py-3.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={handleSubmitAS} disabled={!newBuilding || !newDesc.trim()}
-              className={`flex-[2] py-3.5 rounded-[10px] border-none text-white font-bold text-[13px] font-[inherit] transition-opacity ${newBuilding && newDesc.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
+              className={`flex-[2] py-3.5 rounded-[10px] border-none text-white font-bold text-sm font-[inherit] transition-opacity ${newBuilding && newDesc.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
               접수하기
             </button>
           </div>
@@ -637,32 +637,32 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       <div>
         <div className="flex items-center gap-3 mb-5">
           <button onClick={() => setShowVendorMgmt(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
-          <h1 className="text-lg font-extrabold text-hm-text">🏪 협력업체 관리</h1>
+          <h1 className="text-lg font-bold text-hm-text">🏪 협력업체 관리</h1>
         </div>
 
         {/* Add/Edit Vendor Form */}
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-2.5">
             {editingVendorIdx !== null ? "✏️ 업체 수정" : "➕ 업체 추가"}
           </div>
           <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5 mb-3`}>
             <div>
-              <div className="text-[11px] font-bold text-hm-text-sub mb-1">업체명 *</div>
+              <div className="text-xs font-bold text-hm-text-sub mb-1">업체명 *</div>
               <input value={vendorForm.name} onChange={e => setVendorForm(p => ({ ...p, name: e.target.value }))} placeholder="업체명"
                 className={inputClassName} />
             </div>
             <div>
-              <div className="text-[11px] font-bold text-hm-text-sub mb-1">연락처</div>
+              <div className="text-xs font-bold text-hm-text-sub mb-1">연락처</div>
               <input value={vendorForm.phone} onChange={e => setVendorForm(p => ({ ...p, phone: e.target.value }))} placeholder="010-0000-0000"
                 className={inputClassName} />
             </div>
             <div>
-              <div className="text-[11px] font-bold text-hm-text-sub mb-1">전문분야</div>
+              <div className="text-xs font-bold text-hm-text-sub mb-1">전문분야</div>
               <input value={vendorForm.specialty} onChange={e => setVendorForm(p => ({ ...p, specialty: e.target.value }))} placeholder="예: 보일러, 전기, 배관"
                 className={inputClassName} />
             </div>
             <div>
-              <div className="text-[11px] font-bold text-hm-text-sub mb-1">비고</div>
+              <div className="text-xs font-bold text-hm-text-sub mb-1">비고</div>
               <input value={vendorForm.note} onChange={e => setVendorForm(p => ({ ...p, note: e.target.value }))} placeholder="메모"
                 className={inputClassName} />
             </div>
@@ -683,9 +683,9 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         {/* Vendor List */}
         <Card>
-          <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-2.5">📋 등록된 업체 ({vendors.length})</div>
+          <div className="text-xs font-bold text-hm-blue tracking-wider mb-2.5">📋 등록된 업체 ({vendors.length})</div>
           {vendors.length === 0 ? (
-            <div className="text-center py-[30px] text-[#B0B5C1] text-[13px]">등록된 협력업체가 없습니다</div>
+            <div className="text-center py-[30px] text-[#B0B5C1] text-sm">등록된 협력업체가 없습니다</div>
           ) : (
             <div className="flex flex-col gap-2">
               {vendors.map((v, i) => (
@@ -693,20 +693,20 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-bold text-hm-text">{v.name}</span>
-                      {v.specialty && <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-hm-blue-bg text-hm-blue-dark">{v.specialty}</span>}
+                      {v.specialty && <span className="text-xs font-semibold px-2 py-0.5 rounded bg-hm-blue-bg text-hm-blue-dark">{v.specialty}</span>}
                     </div>
-                    <div className="text-[11px] text-hm-text-muted">
+                    <div className="text-xs text-hm-text-muted">
                       {v.phone && <span>📞 {v.phone}</span>}
                       {v.note && <span className="ml-2">· {v.note}</span>}
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => { setEditingVendorIdx(i); setVendorForm({ ...v }); }}
-                      className="px-2.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-blue hover:bg-hm-bg-hover transition-colors">
+                      className="px-2.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-blue hover:bg-hm-bg-hover transition-colors">
                       수정
                     </button>
                     <button onClick={() => { if (confirm("삭제하시겠습니까?")) setVendors(prev => prev.filter((_, idx) => idx !== i)); }}
-                      className="px-2.5 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-[11px] font-semibold cursor-pointer font-[inherit] text-hm-danger hover:opacity-80 transition-opacity">
+                      className="px-2.5 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-xs font-semibold cursor-pointer font-[inherit] text-hm-danger hover:opacity-80 transition-opacity">
                       삭제
                     </button>
                   </div>
@@ -727,13 +727,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       {/* Top Action Bar */}
       <div className={`flex gap-2 ${isMobile ? 'mb-2.5' : 'mb-4'} flex-wrap`}>
         <button onClick={() => setShowNewForm(true)}
-          className="px-5 py-2.5 rounded-[10px] border-none bg-hm-blue text-white font-bold text-[13px] cursor-pointer font-[inherit] flex items-center gap-1.5 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] transition-shadow">
+          className="px-5 py-2.5 rounded-[10px] border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] transition-shadow">
           ➕ 새 AS 접수
         </button>
         <button onClick={() => setShowVendorMgmt(true)}
-          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-hm-bg-hover transition-colors">
+          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-hm-bg-hover transition-colors">
           🏪 협력업체 관리
-          {vendors.length > 0 && <span className="bg-hm-blue-bg text-hm-blue px-[7px] py-[1px] rounded-[10px] text-[11px] font-extrabold">{vendors.length}</span>}
+          {vendors.length > 0 && <span className="bg-hm-blue-bg text-hm-blue px-[7px] py-[1px] rounded-[10px] text-xs font-bold">{vendors.length}</span>}
         </button>
       </div>
 
@@ -748,9 +748,9 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           <Card key={i} onClick={() => setTab(s.label === "유상" ? "전체" : s.label)}
             className={`text-center flex flex-col justify-center items-center cursor-pointer transition-all hover:shadow-md ${isMobile ? 'px-2.5 py-2' : ''}`}
             style={{ background: tab === s.label ? s.bg : "#fff", border: tab === s.label ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
-            <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} text-hm-text-muted font-semibold mb-1`}>{s.label}</div>
-            <div className={`${isMobile ? 'text-[22px]' : 'text-[28px]'} font-extrabold`} style={{ color: s.color }}>{s.count}</div>
-            {s.sub && <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} font-semibold mt-0.5`} style={{ color: s.color }}>{s.sub}</div>}
+            <div className={`${isMobile ? 'text-xs' : 'text-xs'} text-hm-text-muted font-semibold mb-1`}>{s.label}</div>
+            <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`} style={{ color: s.color }}>{s.count}</div>
+            {s.sub && <div className={`${isMobile ? 'text-xs' : 'text-xs'} font-semibold mt-0.5`} style={{ color: s.color }}>{s.sub}</div>}
           </Card>
         ))}
       </div>
@@ -759,45 +759,45 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       <div className="flex gap-1 mb-2 overflow-x-auto pb-0.5" style={{ WebkitOverflowScrolling: "touch" }}>
         {assigneesAS.map(a => (
           <button key={a} onClick={() => setFilterAssigneeAS(a)}
-            className={`shrink-0 px-3 py-1.5 rounded-lg font-bold text-[11px] cursor-pointer font-[inherit] transition-all ${filterAssigneeAS === a ? 'border-2 border-[#10B981] bg-[#10B981] text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
-            {a} {a !== "전체" && <span className="text-[10px] opacity-70">({myAS.filter(item => item.assignee === a).length})</span>}
+            className={`shrink-0 px-3 py-1.5 rounded-lg font-bold text-xs cursor-pointer font-[inherit] transition-all ${filterAssigneeAS === a ? 'border-2 border-[#10B981] bg-[#10B981] text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+            {a} {a !== "전체" && <span className="text-xs opacity-70">({myAS.filter(item => item.assignee === a).length})</span>}
           </button>
         ))}
       </div>
       <div className={`flex gap-1 ${isMobile ? 'mb-2' : 'mb-3'} overflow-x-auto pb-0.5`} style={{ WebkitOverflowScrolling: "touch" }}>
         {statuses.map(s => (
           <button key={s} onClick={() => setTab(s)}
-            className={`shrink-0 px-3 py-1.5 rounded-[7px] font-semibold text-[11px] cursor-pointer font-[inherit] transition-all ${tab === s ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark' : 'border border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+            className={`shrink-0 px-3 py-1.5 rounded-[7px] font-semibold text-xs cursor-pointer font-[inherit] transition-all ${tab === s ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark' : 'border border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
             {s}
           </button>
         ))}
-        <span className="shrink-0 text-[11px] text-hm-text-muted px-2 py-1.5">비용 {fmt(totalCost)}원</span>
+        <span className="shrink-0 text-xs text-hm-text-muted px-2 py-1.5">비용 {fmt(totalCost)}원</span>
       </div>
 
       {/* Mobile: Card List / Desktop: Table */}
       {isMobile ? (
         <div className="flex flex-col gap-2">
           {filtered.length === 0 && (
-            <div className="text-center py-10 text-[#B0B5C1] text-[13px]">해당 조건의 AS 내역이 없습니다</div>
+            <div className="text-center py-10 text-[#B0B5C1] text-sm">해당 조건의 AS 내역이 없습니다</div>
           )}
           {filtered.map((a, i) => (
             <Card key={a.id || i} onClick={() => setSelectedAS(a)} className="cursor-pointer px-3.5 py-3 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-1.5">
                 <div className="flex items-center gap-1.5">
                   <StatusBadge status={a.status} />
-                  <span className="text-[13px] font-bold text-hm-text">{a.content || a.title}</span>
+                  <span className="text-sm font-bold text-hm-text">{a.content || a.title}</span>
                 </div>
-                <span className="text-[11px] text-[#B0B5C1] shrink-0">{a.date}</span>
+                <span className="text-xs text-[#B0B5C1] shrink-0">{a.date}</span>
               </div>
               <div className="text-xs text-hm-text-sub mb-2">
                 {a.building} {a.room}호 · {a.category || "기타"}
               </div>
               <div className="flex gap-1.5 flex-wrap items-center">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{a.paid}</span>
-                {a.cost > 0 && <span className="text-[11px] font-bold text-hm-danger">{fmt(a.cost)}원</span>}
-                {(a.priority === "높음" || a.priority === "긴급") && <span className="text-[10px] px-2 py-0.5 rounded bg-hm-danger-bg text-hm-danger font-semibold">{a.priority}</span>}
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{a.paid}</span>
+                {a.cost > 0 && <span className="text-xs font-bold text-hm-danger">{fmt(a.cost)}원</span>}
+                {(a.priority === "높음" || a.priority === "긴급") && <span className="text-xs px-2 py-0.5 rounded bg-hm-danger-bg text-hm-danger font-semibold">{a.priority}</span>}
                 {a.ownerApproval && <ApprovalBadge status={a.ownerApproval} />}
-                <span className="text-[10px] text-hm-text-muted ml-auto">{a.assignee} · {(a.steps || []).length}단계</span>
+                <span className="text-xs text-hm-text-muted ml-auto">{a.assignee} · {(a.steps || []).length}단계</span>
               </div>
             </Card>
           ))}
@@ -808,26 +808,26 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             columns={[
               { label: "접수일", key: "date" },
               { label: "건물", render: (r: ASItemRecord) => `${r.building} ${r.room}호` },
-              { label: "분류", render: (r: ASItemRecord) => <span className="text-[11px] px-2 py-0.5 rounded bg-hm-bg font-semibold">{r.category || "기타"}</span> },
+              { label: "분류", render: (r: ASItemRecord) => <span className="text-xs px-2 py-0.5 rounded bg-hm-bg font-semibold">{r.category || "기타"}</span> },
               { label: "내용", render: (r: ASItemRecord) => r.content || r.title },
-              { label: "유/무상", render: (r: ASItemRecord) => <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${r.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{r.paid}</span> },
+              { label: "유/무상", render: (r: ASItemRecord) => <span className={`text-xs font-bold px-2 py-0.5 rounded ${r.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>{r.paid}</span> },
               { label: "비용", align: "right" as const, render: (r: ASItemRecord) => r.cost > 0 ? <span className="font-bold">{fmt(r.cost)}원</span> : <span className="text-gray-300">—</span> },
               { label: "긴급도", render: (r: ASItemRecord) => (r.priority === "높음" || r.priority === "긴급") ? <StatusBadge status={r.priority} /> : null },
               { label: "담당", key: "assignee" },
               { label: "승인", render: (r: ASItemRecord) => <ApprovalBadge status={r.ownerApproval} /> },
-              { label: "진행", render: (r: ASItemRecord) => <span className="text-[11px] text-hm-text-muted">{(r.steps || []).length}단계</span> },
+              { label: "진행", render: (r: ASItemRecord) => <span className="text-xs text-hm-text-muted">{(r.steps || []).length}단계</span> },
               { label: "상태", render: (r: ASItemRecord) => <StatusBadge status={r.status} /> },
             ]}
             data={filtered}
             onRowClick={(row: ASItemRecord) => setSelectedAS(row)}
           />
-          <div className="mt-2.5 text-[11px] text-[#B0B5C1] text-center">행을 클릭하면 상세 화면으로 이동합니다</div>
+          <div className="mt-2.5 text-xs text-[#B0B5C1] text-center">행을 클릭하면 상세 화면으로 이동합니다</div>
         </Card>
       )}
 
       {/* Mobile FAB - New AS */}
       {isMobile && (
-        <button onClick={() => setShowNewForm(true)} className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-hm-blue text-white border-none text-[28px] font-bold cursor-pointer shadow-[0_4px_14px_rgba(59,130,246,0.4)] flex items-center justify-center z-[100] hover:shadow-[0_6px_20px_rgba(59,130,246,0.5)] transition-shadow">+</button>
+        <button onClick={() => setShowNewForm(true)} className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-hm-blue text-white border-none text-2xl font-bold cursor-pointer shadow-[0_4px_14px_rgba(59,130,246,0.4)] flex items-center justify-center z-[100] hover:shadow-[0_6px_20px_rgba(59,130,246,0.5)] transition-shadow">+</button>
       )}
     </div>
   );

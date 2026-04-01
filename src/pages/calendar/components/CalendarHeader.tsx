@@ -61,7 +61,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-2">
         <button onClick={prevMonth} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-hm-bg-hover transition-colors">&#8249;</button>
-        <h3 className="text-lg font-extrabold text-hm-text m-0">
+        <h3 className="text-lg font-bold text-hm-text m-0">
           {year}년 {month + 1}월
         </h3>
         <button onClick={nextMonth} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-hm-bg-hover transition-colors">&#8250;</button>
@@ -79,7 +79,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
                 if (isActive) { setShowForm(false); }
                 else { setShowForm(true); setFormType(btn.type); setSelectedVacancy(null); setVacancyEdits({}); setFormDate(selectedDay ? `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}` : new Date().toISOString().slice(0, 10)); setFormBuilding(""); setFormRoom(""); setFormName(""); }
               }}
-                className="px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-all hover:opacity-90"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all hover:opacity-90"
                 style={{
                   border: isActive ? `2px solid ${btn.bg}` : "1px solid var(--color-hm-input-border)",
                   background: isActive ? "#fff" : btn.bg,

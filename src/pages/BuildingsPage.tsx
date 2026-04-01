@@ -109,8 +109,8 @@ const initialRegForm = {
 const SectionHeader = ({ icon, title, subtitle, open, onToggle }) => (
   <div className="flex justify-between items-center cursor-pointer" style={{ marginBottom: open ? 12 : 0 }} onClick={onToggle}>
     <div className="flex-1">
-      <div className="text-[15px] font-[800] text-hm-text">{icon} {title}</div>
-      {subtitle && <div className="text-[11px] text-hm-text-muted mt-0.5">{subtitle}</div>}
+      <div className="text-base font-bold text-hm-text">{icon} {title}</div>
+      {subtitle && <div className="text-xs text-hm-text-muted mt-0.5">{subtitle}</div>}
     </div>
     <span className="text-sm text-hm-text-muted transition-transform duration-200" style={{ transform: open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
   </div>
@@ -118,7 +118,7 @@ const SectionHeader = ({ icon, title, subtitle, open, onToggle }) => (
 
 /* ── Helper: label with DB column hint ── */
 const RegDbLabel = ({ label, col }) => (
-  <div className="text-[11px] text-hm-text-muted mb-0.5">{label}</div>
+  <div className="text-xs text-hm-text-muted mb-0.5">{label}</div>
 );
 
 /* ── Helper: text input bound to regForm.field via setRegField ── */
@@ -172,7 +172,7 @@ const RegFileUpload = ({ saved, field, label, col, updateBD }) => {
       <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={handleUpload} className="hidden" />
       {!value ? (
         <button onClick={() => fileRef.current?.click()}
-          className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-hm-bg-hover text-gray-500 text-[11px] cursor-pointer font-[inherit] text-center hover:border-hm-blue hover:text-hm-blue transition-colors">
+          className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-hm-bg-hover text-gray-500 text-xs cursor-pointer font-[inherit] text-center hover:border-hm-blue hover:text-hm-blue transition-colors">
           파일 첨부 (이미지/PDF)
         </button>
       ) : (
@@ -180,15 +180,15 @@ const RegFileUpload = ({ saved, field, label, col, updateBD }) => {
           <div className="w-full h-20 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center bg-hm-bg-hover">
             {isPdf ? (
               <div className="text-center">
-                <div className="text-[28px]">PDF</div>
-                <div className="text-[9px] text-gray-500 mt-0.5">{fileName}</div>
+                <div className="text-2xl">PDF</div>
+                <div className="text-xs text-gray-500 mt-0.5">{fileName}</div>
               </div>
             ) : (
               <img src={value} alt={label} className="max-w-full max-h-full object-contain" />
             )}
           </div>
           <button onClick={(e) => { e.stopPropagation(); updateBD({ [field]: null, [field + 'Name']: null, [field + 'Type']: null }); }}
-            className="absolute top-1 right-1 w-5 h-5 rounded-full border-none bg-red-500 text-white text-[11px] cursor-pointer flex items-center justify-center p-0 hover:bg-red-600 transition-colors">X</button>
+            className="absolute top-1 right-1 w-5 h-5 rounded-full border-none bg-red-500 text-white text-xs cursor-pointer flex items-center justify-center p-0 hover:bg-red-600 transition-colors">X</button>
         </div>
       )}
     </div>
@@ -353,13 +353,13 @@ export const BuildingsPage = ({
         <SectionTitle sub={subTab === "list" ? `총 ${filteredBuildings.length}개 건물` : "새 건물 정보 입력"}>🏢 건물 · 호실정보</SectionTitle>
         {subTab === "list" && (
           <button onClick={() => setSubTab("register")}
-            className="py-2.5 px-6 rounded-[10px] border-none bg-hm-blue-dark text-white font-[800] text-[13px] cursor-pointer font-[inherit] flex items-center gap-1.5 whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-blue-800 active:scale-[0.98] transition-all">
+            className="py-2.5 px-6 rounded-[10px] border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-blue-800 active:scale-[0.98] transition-all">
             ➕ 신규 건물 등록
           </button>
         )}
         {subTab === "register" && (
           <button onClick={() => setSubTab("list")}
-            className="py-2.5 px-6 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-[13px] cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
+            className="py-2.5 px-6 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
             ← 건물 목록
           </button>
         )}
@@ -378,7 +378,7 @@ export const BuildingsPage = ({
             const bd = buildingData || {};
             const visibleBuildings = filteredBuildings.filter(b => matchKorean(b.name, searchText));
             return (<>
-              {searchText && <div className="text-[11px] text-hm-text-muted mb-2">검색결과: {visibleBuildings.length}개</div>}
+              {searchText && <div className="text-xs text-hm-text-muted mb-2">검색결과: {visibleBuildings.length}개</div>}
           <div className={`grid gap-3 ${isMobile ? "grid-cols-1" : "grid-cols-3"}`}>
           {visibleBuildings.map((b, i) => {
             const dynOccupied = activeTenants.filter(t => t.building === b.name).length;
@@ -389,20 +389,20 @@ export const BuildingsPage = ({
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-[800] text-[15px] text-hm-text">{b.name}</span>
+                      <span className="font-bold text-base text-hm-text">{b.name}</span>
                       {b.source === "supabase" && (
-                        <span className="text-[9px] font-bold py-0.5 px-[7px] rounded bg-green-100 text-green-600 border border-green-200">DB</span>
+                        <span className="text-xs font-bold py-0.5 px-[7px] rounded bg-green-100 text-green-600 border border-green-200">DB</span>
                       )}
                       {b._custom && (
-                        <span className="text-[9px] font-bold py-0.5 px-[7px] rounded bg-hm-blue-bg text-hm-blue-dark border border-blue-200">신규</span>
+                        <span className="text-xs font-bold py-0.5 px-[7px] rounded bg-hm-blue-bg text-hm-blue-dark border border-blue-200">신규</span>
                       )}
                       {b.special && (
-                        <span className={`text-[9px] font-bold py-0.5 px-[7px] rounded border ${b.special === "무리한 요구" ? "bg-hm-danger-bg text-hm-danger border-hm-danger-border" : "bg-hm-warning-bg text-hm-warning border-hm-warning-border"}`}>
+                        <span className={`text-xs font-bold py-0.5 px-[7px] rounded border ${b.special === "무리한 요구" ? "bg-hm-danger-bg text-hm-danger border-hm-danger-border" : "bg-hm-warning-bg text-hm-warning border-hm-warning-border"}`}>
                           ⚠ {b.special}
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-hm-text-muted mt-0.5">{b.type}{feeLabel(b) && ` · ${feeLabel(b)}`}</div>
+                    <div className="text-xs text-hm-text-muted mt-0.5">{b.type}{feeLabel(b) && ` · ${feeLabel(b)}`}</div>
                   </div>
                   {pendingCount > 0 ? (
                     <div className="bg-hm-danger-bg text-hm-danger py-[3px] px-2.5 rounded-md text-xs font-bold">🔧 {pendingCount}건</div>
@@ -425,8 +425,8 @@ export const BuildingsPage = ({
       ) : regDone ? (
         <Card className="!py-10 !px-5 text-center">
           <span className="text-5xl">✅</span>
-          <div className="text-lg font-[800] text-hm-success mt-3">건물이 등록되었습니다</div>
-          <div className="text-[13px] text-hm-text-muted mt-1.5">{regForm.name} · {regForm.roomList.length}개 호실 · 곧 건물 목록으로 이동합니다</div>
+          <div className="text-lg font-bold text-hm-success mt-3">건물이 등록되었습니다</div>
+          <div className="text-sm text-hm-text-muted mt-1.5">{regForm.name} · {regForm.roomList.length}개 호실 · 곧 건물 목록으로 이동합니다</div>
         </Card>
       ) : showPreview ? (
         /* ── 미리보기 ── */
@@ -434,17 +434,17 @@ export const BuildingsPage = ({
           <div className="py-3.5 px-5 rounded-xl mb-4 flex justify-between items-center" style={{ background: "linear-gradient(135deg, #1A1D23 0%, #2D3748 100%)" }}>
             <div>
               <div className="text-lg font-[900] text-white">📋 등록 미리보기</div>
-              <div className="text-[11px] text-gray-400 mt-0.5">입력하신 내용을 확인하세요</div>
+              <div className="text-xs text-gray-400 mt-0.5">입력하신 내용을 확인하세요</div>
             </div>
             <div className="flex gap-2.5">
               <button onClick={() => setShowPreview(false)} className="py-2 px-5 rounded-lg border-[1.5px] border-gray-400 bg-transparent text-white font-bold text-xs cursor-pointer font-[inherit] hover:bg-white/10 transition-colors">← 수정하기</button>
-              <button onClick={handleReg} className="py-2 px-6 rounded-lg border-none bg-emerald-500 text-white font-[800] text-[13px] cursor-pointer font-[inherit] shadow-[0_2px_8px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98] transition-all">등록 확인</button>
+              <button onClick={handleReg} className="py-2 px-6 rounded-lg border-none bg-emerald-500 text-white font-bold text-sm cursor-pointer font-[inherit] shadow-[0_2px_8px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98] transition-all">등록 확인</button>
             </div>
           </div>
 
           {/* 미리보기: 기본 정보 */}
           <Card className="!mb-3">
-            <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📋 기본 정보</div>
+            <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📋 기본 정보</div>
             <div className="grid grid-cols-2 gap-2.5">
               {[
                 { l: "건물명", v: regForm.name },
@@ -458,7 +458,7 @@ export const BuildingsPage = ({
                 { l: "주차 총 대수", v: regForm.parkingTotalSpaces ? `${regForm.parkingTotalSpaces}대` : "" },
               ].filter(x => x.v).map((x, i) => (
                 <div key={i} className="flex gap-2.5 py-[5px] border-b border-gray-100">
-                  <span className="text-[11px] text-hm-text-muted font-semibold min-w-[90px]">{x.l}</span>
+                  <span className="text-xs text-hm-text-muted font-semibold min-w-[90px]">{x.l}</span>
                   <span className="text-xs font-bold text-hm-text">{x.v}</span>
                 </div>
               ))}
@@ -468,7 +468,7 @@ export const BuildingsPage = ({
           {/* 미리보기: 건물주 정보 */}
           {regForm.ownerName && (
             <Card className="!mb-3">
-              <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">👤 건물주 정보</div>
+              <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">👤 건물주 정보</div>
               {(() => {
                 const owners = [
                   { name: regForm.ownerName, ssn: regForm.ownerResidentNumber, phone: regForm.ownerPhone, email: regForm.ownerEmail, address: regForm.ownerHomeAddress },
@@ -484,13 +484,13 @@ export const BuildingsPage = ({
                   const c = ownerColors[oi] || ownerColors[0];
                   return (
                     <div key={oi} className={`py-2 px-3 rounded-lg mb-2 ${c.bg}`}>
-                      <div className={`text-[10px] font-bold mb-1.5 ${c.color}`}>건물주 {oi + 1}{c.label ? ` (${c.label})` : ""}</div>
+                      <div className={`text-xs font-bold mb-1.5 ${c.color}`}>건물주 {oi + 1}{c.label ? ` (${c.label})` : ""}</div>
                       <div className="grid grid-cols-3 gap-1.5">
                         {[{ l: "이름", v: ow.name }, { l: "주민등록번호", v: ow.ssn }, { l: "전화번호", v: ow.phone }].filter(x => x.v).map((x, i) => (
-                          <div key={i}><span className="text-[9px] text-hm-text-muted">{x.l}</span><div className="text-xs font-bold">{x.v}</div></div>
+                          <div key={i}><span className="text-xs text-hm-text-muted">{x.l}</span><div className="text-xs font-bold">{x.v}</div></div>
                         ))}
                       </div>
-                      {ow.address && <div className="mt-1"><span className="text-[9px] text-hm-text-muted">주소</span><div className="text-xs font-bold">{ow.address}</div></div>}
+                      {ow.address && <div className="mt-1"><span className="text-xs text-hm-text-muted">주소</span><div className="text-xs font-bold">{ow.address}</div></div>}
                     </div>
                   );
                 });
@@ -501,7 +501,7 @@ export const BuildingsPage = ({
           {/* 미리보기: 건물 계좌 정보 */}
           {(regForm.acctMode1 || regForm.acctMode2) && (
             <Card className="!mb-3">
-              <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏦 건물 계좌 정보</div>
+              <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏦 건물 계좌 정보</div>
               <div className={`grid gap-2.5 ${acctTypes.length === 3 ? "grid-cols-3" : acctTypes.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
                 {acctTypes.map((aType, ai) => {
                   const suffix = String(ai + 1);
@@ -513,10 +513,10 @@ export const BuildingsPage = ({
                   const hmUsage = housemanUsageMap[currentMode];
                   return (
                     <div key={aType} className="py-2.5 px-3 rounded-lg" style={{ background: acctTypeBg[aType], border: `1.5px solid ${acctTypeColor[aType]}40` }}>
-                      <div className="text-xs font-[800] mb-1.5" style={{ color: acctTypeColor[aType] }}>{aType} · {modeLabel}</div>
-                      <div className="text-[10px] text-hm-text-sub mb-1">💡 {flowMap[currentMode]}</div>
+                      <div className="text-xs font-bold mb-1.5" style={{ color: acctTypeColor[aType] }}>{aType} · {modeLabel}</div>
+                      <div className="text-xs text-hm-text-sub mb-1">💡 {flowMap[currentMode]}</div>
                       {hmUsage && (
-                        <div className="text-[10px] mb-1">
+                        <div className="text-xs mb-1">
                           <span className="text-hm-blue-dark font-semibold">하우스맨 계좌 ({hmUsage}):</span>
                           <span className="font-mono ml-1">{regForm[`housemanAccount${suffix}`]}</span>
                         </div>
@@ -528,7 +528,7 @@ export const BuildingsPage = ({
                         const holder = accts[f.key + "_holder"] || "";
                         if (!bank && !num && !holder) return null;
                         return (
-                          <div key={f.key} className="text-[10px] mb-0.5">
+                          <div key={f.key} className="text-xs mb-0.5">
                             <span className="text-hm-warning font-semibold">{f.label}:</span>
                             <span className="font-mono ml-1">{[bank, num, holder].filter(Boolean).join(" ")}</span>
                           </div>
@@ -543,7 +543,7 @@ export const BuildingsPage = ({
 
           {/* 미리보기: 정산·청구 */}
           <Card className="!mb-3">
-            <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">💰 정산·청구</div>
+            <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">💰 정산·청구</div>
             <div className="grid grid-cols-3 gap-1.5">
               {[
                 { l: "수수료 방식", v: regForm.managementFeeType === "percent" ? "%" : regForm.managementFeeType === "fixed" ? "고정" : regForm.managementFeeType === "hybrid" ? "혼합" : "" },
@@ -555,7 +555,7 @@ export const BuildingsPage = ({
                 { l: "관리비 선후불", v: regForm.managementFeeBillingType === "prepaid" ? "선불" : regForm.managementFeeBillingType === "postpaid" ? "후불" : "" },
               ].filter(x => x.v).map((x, i) => (
                 <div key={i} className="py-1 border-b border-gray-100">
-                  <span className="text-[10px] text-hm-text-muted">{x.l}</span>
+                  <span className="text-xs text-hm-text-muted">{x.l}</span>
                   <div className="text-xs font-bold">{x.v}</div>
                 </div>
               ))}
@@ -573,10 +573,10 @@ export const BuildingsPage = ({
             ].filter(d => regForm[d.field]);
             return docs.length > 0 && (
               <Card className="!mb-3">
-                <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📎 서류</div>
+                <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">📎 서류</div>
                 <div className="flex flex-wrap gap-1.5">
                   {docs.map(d => (
-                    <span key={d.field} className="py-1 px-2.5 rounded-md text-[11px] font-bold bg-hm-success-bg text-hm-success border border-hm-success-border">
+                    <span key={d.field} className="py-1 px-2.5 rounded-md text-xs font-bold bg-hm-success-bg text-hm-success border border-hm-success-border">
                       {d.label} ({regForm[d.field + 'Name'] || '첨부됨'})
                     </span>
                   ))}
@@ -587,28 +587,28 @@ export const BuildingsPage = ({
 
           {/* 미리보기: 호실 목록 */}
           <Card className="!mb-3">
-            <div className="text-sm font-[800] text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🚪 호실 등록 ({regForm.roomList.length}개)</div>
+            <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🚪 호실 등록 ({regForm.roomList.length}개)</div>
             <div className={`grid gap-2.5 ${isMobile ? "grid-cols-1" : "grid-cols-2"}`}>
               {regForm.roomList.map((r, i) => {
                 const filled = r.roomType && r.standardRent;
                 return (
                   <div key={i} className={`py-2.5 px-3 rounded-lg border-[1.5px] ${filled ? "border-hm-success-border bg-green-50" : "border-amber-400 bg-amber-50"}`}>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[13px] font-[800] text-hm-text">{r.room}호</span>
-                      <span className={`text-[10px] font-bold py-0.5 px-2 rounded ${filled ? "text-hm-success bg-green-100" : "text-amber-600 bg-amber-100"}`}>
+                      <span className="text-sm font-bold text-hm-text">{r.room}호</span>
+                      <span className={`text-xs font-bold py-0.5 px-2 rounded ${filled ? "text-hm-success bg-green-100" : "text-amber-600 bg-amber-100"}`}>
                         {filled ? "입력완료" : "미완성"}
                       </span>
                     </div>
-                    {r.roomType && <div className="text-[11px] text-hm-text-sub">{r.roomType}{r.area ? ` · ${r.area}㎡` : ""}</div>}
+                    {r.roomType && <div className="text-xs text-hm-text-sub">{r.roomType}{r.area ? ` · ${r.area}㎡` : ""}</div>}
                     {acctTypes.length > 1 && (r.buildingType || acctTypes[0]) && (
-                      <span className="text-[9px] py-px px-1.5 rounded font-semibold" style={{ background: acctTypeBg[r.buildingType || acctTypes[0]], color: acctTypeColor[r.buildingType || acctTypes[0]] }}>{r.buildingType || acctTypes[0]}</span>
+                      <span className="text-xs py-px px-1.5 rounded font-semibold" style={{ background: acctTypeBg[r.buildingType || acctTypes[0]], color: acctTypeColor[r.buildingType || acctTypes[0]] }}>{r.buildingType || acctTypes[0]}</span>
                     )}
                     {(r.standardRent || r.standardDeposit || r.standardManagementFee) && (
-                      <div className="text-[10px] text-hm-text-muted mt-0.5">
+                      <div className="text-xs text-hm-text-muted mt-0.5">
                         {[r.standardDeposit && `예치금 ${r.standardDeposit}`, r.standardRent && `임대료 ${r.standardRent}`, r.standardManagementFee && `관리비 ${r.standardManagementFee}`].filter(Boolean).join(" · ")}
                       </div>
                     )}
-                    {r.photos.length > 0 && <div className="text-[10px] text-hm-blue mt-0.5">📸 사진 {r.photos.length}장</div>}
+                    {r.photos.length > 0 && <div className="text-xs text-hm-blue mt-0.5">📸 사진 {r.photos.length}장</div>}
                   </div>
                 );
               })}
@@ -618,11 +618,11 @@ export const BuildingsPage = ({
           {/* 하단 버튼 */}
           <div className="flex gap-2.5 mt-1">
             <button onClick={() => setShowPreview(false)}
-              className="flex-1 py-3.5 rounded-xl border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-[800] text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
+              className="flex-1 py-3.5 rounded-xl border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
               ← 수정하기
             </button>
             <button onClick={handleReg}
-              className="flex-[2] py-3.5 rounded-xl border-none bg-emerald-500 text-white font-[800] text-base cursor-pointer font-[inherit] shadow-[0_2px_12px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98] transition-all">
+              className="flex-[2] py-3.5 rounded-xl border-none bg-emerald-500 text-white font-bold text-base cursor-pointer font-[inherit] shadow-[0_2px_12px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98] transition-all">
               ✓ {regForm.name} · {regForm.roomList.length}개 호실 등록 확인
             </button>
           </div>
@@ -646,14 +646,14 @@ export const BuildingsPage = ({
               <div className="mb-4 py-2.5 px-3.5 bg-hm-bg-slate rounded-[10px] border border-hm-border">
                 <div className="flex justify-between items-center mb-1.5">
                   <span className="text-xs font-bold text-gray-700">등록 진행률</span>
-                  <span className={`text-xs font-[800] ${pct === 100 ? "text-hm-success" : "text-amber-600"}`}>{done}/{checks.length} ({pct}%)</span>
+                  <span className={`text-xs font-bold ${pct === 100 ? "text-hm-success" : "text-amber-600"}`}>{done}/{checks.length} ({pct}%)</span>
                 </div>
                 <div className="h-1.5 bg-gray-200 rounded-sm overflow-hidden mb-1.5">
                   <div className={`h-full rounded-sm transition-[width] duration-300 ${pct === 100 ? "bg-emerald-500" : "bg-amber-500"}`} style={{ width: `${pct}%` }} />
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {checks.map(c => (
-                    <span key={c.label} className={`text-[10px] py-0.5 px-2 rounded font-semibold ${c.done ? "bg-hm-success-bg text-emerald-800" : "bg-hm-danger-bg text-red-800"}`}>
+                    <span key={c.label} className={`text-xs py-0.5 px-2 rounded font-semibold ${c.done ? "bg-hm-success-bg text-emerald-800" : "bg-hm-danger-bg text-red-800"}`}>
                       {c.done ? "✓" : "○"} {c.label}
                     </span>
                   ))}
@@ -684,29 +684,29 @@ export const BuildingsPage = ({
             {sec7Open && <div>
               {/* Add rooms by floor */}
               <div className="py-3.5 px-4 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
-                <div className="text-[11px] font-bold text-hm-text-sub mb-2.5">층별 호실 추가</div>
+                <div className="text-xs font-bold text-hm-text-sub mb-2.5">층별 호실 추가</div>
                 <div className="flex gap-1.5 items-end">
                   <div className="flex-1">
-                    <div className="text-[9px] text-hm-text-muted mb-[3px]">층</div>
+                    <div className="text-xs text-hm-text-muted mb-[3px]">층</div>
                     <input value={regForm.newFloor} onChange={e => set({newFloor: e.target.value})} placeholder="예: 1, B1"
-                      className={`${inputClassName} !py-2 !px-2.5 !text-[13px]`} />
+                      className={`${inputClassName} !py-2 !px-2.5 !text-sm`} />
                   </div>
                   <div className="flex-1">
-                    <div className="text-[9px] text-hm-text-muted mb-[3px]">시작 호</div>
+                    <div className="text-xs text-hm-text-muted mb-[3px]">시작 호</div>
                     <input type="number" value={regForm.newFrom} onChange={e => set({newFrom: e.target.value})} placeholder="01"
-                      className={`${inputClassName} !py-2 !px-2.5 !text-[13px]`} />
+                      className={`${inputClassName} !py-2 !px-2.5 !text-sm`} />
                   </div>
                   <div className="flex-1">
-                    <div className="text-[9px] text-hm-text-muted mb-[3px]">끝 호</div>
+                    <div className="text-xs text-hm-text-muted mb-[3px]">끝 호</div>
                     <input type="number" value={regForm.newTo} onChange={e => set({newTo: e.target.value})} placeholder="04"
-                      className={`${inputClassName} !py-2 !px-2.5 !text-[13px]`} />
+                      className={`${inputClassName} !py-2 !px-2.5 !text-sm`} />
                   </div>
                   <button onClick={addRooms}
                     className="py-2 px-4 rounded-lg border-none bg-hm-blue text-white font-bold text-xs cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-600 active:scale-[0.98] transition-all">
                     + 추가
                   </button>
                 </div>
-                <div className="text-[10px] text-hm-text-muted mt-1.5">1층에 4호실 → 층 "1" 시작 "01" 끝 "04" → 101~104 생성 · 층별로 반복 추가</div>
+                <div className="text-xs text-hm-text-muted mt-1.5">1층에 4호실 → 층 "1" 시작 "01" 끝 "04" → 101~104 생성 · 층별로 반복 추가</div>
               </div>
 
               {/* Room Detail */}
@@ -715,11 +715,11 @@ export const BuildingsPage = ({
                   {/* 보기 모드 토글: 개별 / 일괄 */}
                   <div className="flex gap-1.5 mb-3">
                     <button onClick={() => set({ roomViewMode: "individual" })}
-                      className={`py-1.5 px-3.5 rounded-md text-[11px] font-bold cursor-pointer font-[inherit] border-none transition-colors ${(regForm.roomViewMode || "individual") === "individual" ? "bg-hm-text text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
+                      className={`py-1.5 px-3.5 rounded-md text-xs font-bold cursor-pointer font-[inherit] border-none transition-colors ${(regForm.roomViewMode || "individual") === "individual" ? "bg-hm-text text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
                       개별 편집
                     </button>
                     <button onClick={() => set({ roomViewMode: "bulk" })}
-                      className={`py-1.5 px-3.5 rounded-md text-[11px] font-bold cursor-pointer font-[inherit] border-none transition-colors ${regForm.roomViewMode === "bulk" ? "bg-hm-text text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
+                      className={`py-1.5 px-3.5 rounded-md text-xs font-bold cursor-pointer font-[inherit] border-none transition-colors ${regForm.roomViewMode === "bulk" ? "bg-hm-text text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
                       일괄 편집
                     </button>
                   </div>
@@ -727,7 +727,7 @@ export const BuildingsPage = ({
                   {/* 일괄 편집 테이블 */}
                   {regForm.roomViewMode === "bulk" ? (
                     <div className="overflow-x-auto rounded-[10px] border border-gray-200">
-                      <table className="w-full border-collapse text-[11px]">
+                      <table className="w-full border-collapse text-xs">
                         <thead>
                           <tr className="bg-gray-100">
                             <th className="py-2 px-2.5 text-left font-bold text-gray-700 border-b border-gray-200 whitespace-nowrap">호실</th>
@@ -746,16 +746,16 @@ export const BuildingsPage = ({
                                 <td className="py-1 px-1.5 border-b border-gray-100 font-bold text-xs text-gray-800">{r.room}</td>
                                 <td className="py-1 px-1.5 border-b border-gray-100">
                                   <select value={r.roomType || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], roomType: e.target.value }; set({ roomList: updated }); }}
-                                    className={`${inputClassName} !py-1.5 !px-1 !text-[11px] w-full`}>
+                                    className={`${inputClassName} !py-1.5 !px-1 !text-xs w-full`}>
                                     <option value="">선택</option>
                                     <option value="원룸">원룸</option><option value="투룸">투룸</option><option value="쓰리룸">쓰리룸</option>
                                     <option value="근생">근생</option><option value="사무실">사무실</option>
                                   </select>
                                 </td>
-                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.area || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], area: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-[11px] w-full text-right`} placeholder="19.8" /></td>
-                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardDeposit || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardDeposit: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-[11px] w-full text-right`} placeholder="0" /></td>
-                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardRent || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardRent: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-[11px] w-full text-right`} placeholder="0" /></td>
-                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardManagementFee || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardManagementFee: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-[11px] w-full text-right`} placeholder="0" /></td>
+                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.area || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], area: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-xs w-full text-right`} placeholder="19.8" /></td>
+                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardDeposit || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardDeposit: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-xs w-full text-right`} placeholder="0" /></td>
+                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardRent || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardRent: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-xs w-full text-right`} placeholder="0" /></td>
+                                <td className="py-1 px-1.5 border-b border-gray-100"><input value={r.standardManagementFee || ""} onChange={e => { const updated = [...regForm.roomList]; updated[i] = { ...updated[i], standardManagementFee: e.target.value }; set({ roomList: updated }); }} className={`${inputClassName} !py-1.5 !px-2 !text-xs w-full text-right`} placeholder="0" /></td>
                                 <td className="py-1 px-1.5 border-b border-gray-100 text-center">
                                   <button onClick={() => removeRoom(i)} className="bg-transparent border-none text-hm-danger cursor-pointer text-sm hover:text-red-700 transition-colors">✕</button>
                                 </td>
@@ -793,24 +793,24 @@ export const BuildingsPage = ({
                             <span className="text-xl font-[900] text-hm-text">🚪 {r.room}호</span>
                           </div>
                           <div className="flex gap-1.5">
-                            {idx > 0 && <button onClick={() => set({editIdx: idx - 1})} className="py-1 px-2.5 rounded-md border border-hm-input-border bg-white text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">← 이전</button>}
-                            {idx < regForm.roomList.length - 1 && <button onClick={() => set({editIdx: idx + 1})} className="py-1 px-2.5 rounded-md border border-hm-input-border bg-white text-[11px] cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">다음 →</button>}
-                            <button onClick={() => { if (window.confirm(`${r.room}호를 삭제하시겠습니까?`)) removeRoom(idx); }} className="py-1 px-2.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
+                            {idx > 0 && <button onClick={() => set({editIdx: idx - 1})} className="py-1 px-2.5 rounded-md border border-hm-input-border bg-white text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">← 이전</button>}
+                            {idx < regForm.roomList.length - 1 && <button onClick={() => set({editIdx: idx + 1})} className="py-1 px-2.5 rounded-md border border-hm-input-border bg-white text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">다음 →</button>}
+                            <button onClick={() => { if (window.confirm(`${r.room}호를 삭제하시겠습니까?`)) removeRoom(idx); }} className="py-1 px-2.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
                           </div>
                         </div>
 
-                        <div className="text-xs font-[800] text-hm-blue-dark mb-2.5 pb-1.5 border-b-2 border-blue-200 flex items-center gap-1.5">
-                          📋 호실 기본정보 <span className="text-[10px] font-medium text-hm-text-muted">이 정보가 공실관리 · 홈페이지의 기준값이 됩니다</span>
+                        <div className="text-xs font-bold text-hm-blue-dark mb-2.5 pb-1.5 border-b-2 border-blue-200 flex items-center gap-1.5">
+                          📋 호실 기본정보 <span className="text-xs font-medium text-hm-text-muted">이 정보가 공실관리 · 홈페이지의 기준값이 됩니다</span>
                         </div>
 
                         {/* 복합 유형일 때 호실 건물유형 선택 */}
                         {acctTypes.length > 1 && (
                           <div className="mb-2.5 py-2 px-3 bg-blue-50 rounded-lg border border-blue-200 flex items-center gap-2.5">
-                            <div className="text-[10px] font-[800] text-hm-blue-dark whitespace-nowrap">🏢 호실 유형</div>
+                            <div className="text-xs font-bold text-hm-blue-dark whitespace-nowrap">🏢 호실 유형</div>
                             <div className="flex gap-1">
                               {acctTypes.map(at => (
                                 <button key={at} onClick={() => updateRoom(idx, "buildingType", at)}
-                                  className="py-[5px] px-3.5 rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors"
+                                  className="py-[5px] px-3.5 rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors"
                                   style={{
                                     border: (r.buildingType || acctTypes[0]) === at ? `1.5px solid ${acctTypeColor[at]}` : "1px solid var(--color-hm-input-border)",
                                     background: (r.buildingType || acctTypes[0]) === at ? acctTypeBg[at] : "#fff",
@@ -861,24 +861,24 @@ export const BuildingsPage = ({
                           return (
                             <div className="mt-3.5 py-2.5 px-3.5 bg-[#FFFBF0] rounded-[10px] border border-amber-200">
                               <div className="flex items-center gap-1.5 mb-2">
-                                <span className="text-[10px] font-[800] text-amber-800">🏦 계좌 정보</span>
-                                <span className="text-[9px] py-0.5 px-2 rounded font-bold" style={{ background: acctTypeBg[roomBldgType], color: acctTypeColor[roomBldgType] }}>{roomBldgType}</span>
+                                <span className="text-xs font-bold text-amber-800">🏦 계좌 정보</span>
+                                <span className="text-xs py-0.5 px-2 rounded font-bold" style={{ background: acctTypeBg[roomBldgType], color: acctTypeColor[roomBldgType] }}>{roomBldgType}</span>
                               </div>
                               {/* 건물 따름 / 호실 개별 토글 */}
                               <div className="flex gap-1 mb-2.5">
                                 <button onClick={() => { if (isRoomCustom) disableRoomCustom(); }}
-                                  className={`py-[5px] px-3 rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${!isRoomCustom ? "border-[1.5px] border-emerald-500 bg-green-100 text-emerald-800" : "border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub"}`}>
+                                  className={`py-[5px] px-3 rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${!isRoomCustom ? "border-[1.5px] border-emerald-500 bg-green-100 text-emerald-800" : "border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub"}`}>
                                   🏢 건물 설정 따름
                                 </button>
                                 <button onClick={() => { if (!isRoomCustom) enableRoomCustom(); }}
-                                  className={`py-[5px] px-3 rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors ${isRoomCustom ? "border-[1.5px] border-amber-500 bg-amber-100 text-amber-800" : "border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub"}`}>
+                                  className={`py-[5px] px-3 rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${isRoomCustom ? "border-[1.5px] border-amber-500 bg-amber-100 text-amber-800" : "border border-hm-input-border bg-[#FAFBFC] text-hm-text-sub"}`}>
                                   🚪 호실 개별 설정
                                 </button>
                               </div>
                               {/* 건물 따름: 읽기전용 표시 — 건물 계좌의 실제 입력값 표시 */}
                               {!isRoomCustom && (
                                 <div className="opacity-70">
-                                  {!regForm[`acctMode${roomSuffix}`] && <div className="text-[11px] text-hm-text-muted py-2">건물 계좌가 아직 설정되지 않았습니다. 건물 계좌 정보에서 먼저 설정해주세요.</div>}
+                                  {!regForm[`acctMode${roomSuffix}`] && <div className="text-xs text-hm-text-muted py-2">건물 계좌가 아직 설정되지 않았습니다. 건물 계좌 정보에서 먼저 설정해주세요.</div>}
                                   {regForm[`acctMode${roomSuffix}`] && (() => {
                                     const curMode = regForm[`acctMode${roomSuffix}`];
                                     const curHmUsage = housemanUsageMap[curMode];
@@ -887,15 +887,15 @@ export const BuildingsPage = ({
                                     const curOwnerFields = ownerFieldCfg[curMode] || [];
                                     return (
                                       <div className="flex flex-col gap-1.5">
-                                        <div className="text-[9px] text-emerald-800 font-semibold py-1 px-2 bg-hm-success-bg rounded">건물 기본 설정을 따르고 있습니다 (읽기전용)</div>
+                                        <div className="text-xs text-emerald-800 font-semibold py-1 px-2 bg-hm-success-bg rounded">건물 기본 설정을 따르고 있습니다 (읽기전용)</div>
                                         <div className="py-2 px-2.5 rounded-md" style={{ background: acctTypeBg[roomBldgType], border: `1px solid ${acctTypeColor[roomBldgType]}30` }}>
-                                          <div className="text-[10px] font-bold mb-1" style={{ color: acctTypeColor[roomBldgType] }}>{roomBldgType}</div>
-                                          <div className="text-[10px] text-hm-text-sub mb-1">💡 {flowMap[curMode]}</div>
+                                          <div className="text-xs font-bold mb-1" style={{ color: acctTypeColor[roomBldgType] }}>{roomBldgType}</div>
+                                          <div className="text-xs text-hm-text-sub mb-1">💡 {flowMap[curMode]}</div>
                                           {/* 하우스맨 계좌 */}
                                           {curHmUsage && (
                                             <div className="py-[5px] px-2 bg-blue-50 rounded-[5px] border border-blue-200 mb-1">
                                               <div className="text-[8px] font-bold text-hm-blue-dark mb-0.5">🏗️ 하우스맨 ({curHmUsage})</div>
-                                              <div className="text-[10px] font-semibold text-hm-blue-dark font-mono">{curHmAcct || <span className="text-gray-400">미입력</span>}</div>
+                                              <div className="text-xs font-semibold text-hm-blue-dark font-mono">{curHmAcct || <span className="text-gray-400">미입력</span>}</div>
                                             </div>
                                           )}
                                           {/* 건물주 계좌 */}
@@ -905,7 +905,7 @@ export const BuildingsPage = ({
                                               {curOwnerFields.map(f => (
                                                 <div key={f.key} className="mb-0.5">
                                                   <div className="text-[7px] font-bold text-hm-warning mb-px">{f.label}</div>
-                                                  <div className="text-[10px] font-semibold text-hm-warning font-mono">
+                                                  <div className="text-xs font-semibold text-hm-warning font-mono">
                                                     {curOwnerAccts[f.key + "_bank"] || curOwnerAccts[f.key] ? (
                                                       <>{curOwnerAccts[f.key + "_bank"] || ""} {curOwnerAccts[f.key] || ""}{curOwnerAccts[f.key + "_holder"] ? ` (${curOwnerAccts[f.key + "_holder"]})` : ""}</>
                                                     ) : <span className="text-gray-400 font-sans">미입력</span>}
@@ -933,11 +933,11 @@ export const BuildingsPage = ({
                                     const curHmUsage = housemanUsageMap[curMode];
                                     return (
                                       <div key={aType} className="py-2 px-2.5 rounded-md" style={{ background: acctTypeBg[aType], border: `1px solid ${acctTypeColor[aType]}30` }}>
-                                        <div className="text-[10px] font-[800] mb-1.5" style={{ color: acctTypeColor[aType] }}>{aType}</div>
+                                        <div className="text-xs font-bold mb-1.5" style={{ color: acctTypeColor[aType] }}>{aType}</div>
                                         <div className="flex gap-[3px] flex-wrap" style={{ marginBottom: curMode ? 6 : 0 }}>
                                           {curOptions.map(opt => (
                                             <button key={opt.id} onClick={() => updateRoomAcctField(modeKey, opt.id)}
-                                              className={`py-1 px-2 rounded-[5px] text-[9px] font-bold cursor-pointer font-[inherit] transition-colors ${curMode === opt.id ? "border-[1.5px] border-amber-500 bg-amber-100 text-amber-800" : "border border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}
+                                              className={`py-1 px-2 rounded-[5px] text-xs font-bold cursor-pointer font-[inherit] transition-colors ${curMode === opt.id ? "border-[1.5px] border-amber-500 bg-amber-100 text-amber-800" : "border border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}
                                               title={opt.desc}>{opt.label}</button>
                                           ))}
                                         </div>
@@ -946,7 +946,7 @@ export const BuildingsPage = ({
                                             <div key="hm" className="py-1.5 px-2 bg-blue-50 rounded-[5px] border border-blue-200">
                                               <div className="text-[8px] font-bold text-hm-blue-dark mb-[3px]">🏗️ 하우스맨 ({curHmUsage})</div>
                                               <input value={r.roomAcctCustom[hmKey]} onChange={e => updateRoomAcctField(hmKey, e.target.value)}
-                                                className={`${inputClassName} !py-1 !px-2 !text-[10px] w-full font-mono`} />
+                                                className={`${inputClassName} !py-1 !px-2 !text-xs w-full font-mono`} />
                                             </div>
                                           );
                                           const owSec = curOwnerFields.length > 0 && (
@@ -957,14 +957,14 @@ export const BuildingsPage = ({
                                                   <div className="text-[7px] font-bold text-hm-warning mb-px">{f.label}</div>
                                                   <div className="grid grid-cols-[80px_1fr_60px] gap-[3px]">
                                                     <select value={(r.roomAcctCustom[ownerKey] || {})[f.key + "_bank"] || ""} onChange={e => updateRoomAcctField(ownerKey, { ...r.roomAcctCustom[ownerKey], [f.key + "_bank"]: e.target.value })}
-                                                      className={`${inputClassName} !py-1 !px-[5px] !text-[9px] cursor-pointer`}>
+                                                      className={`${inputClassName} !py-1 !px-[5px] !text-xs cursor-pointer`}>
                                                       <option value="">은행</option>
                                                       {banks.map(b => <option key={b} value={b}>{b}</option>)}
                                                     </select>
                                                     <input value={(r.roomAcctCustom[ownerKey] || {})[f.key] || ""} onChange={e => updateRoomAcctField(ownerKey, { ...r.roomAcctCustom[ownerKey], [f.key]: e.target.value })}
-                                                      placeholder="계좌번호" className={`${inputClassName} !py-1 !px-1.5 !text-[10px] font-mono`} />
+                                                      placeholder="계좌번호" className={`${inputClassName} !py-1 !px-1.5 !text-xs font-mono`} />
                                                     <input value={(r.roomAcctCustom[ownerKey] || {})[f.key + "_holder"] || ""} onChange={e => updateRoomAcctField(ownerKey, { ...r.roomAcctCustom[ownerKey], [f.key + "_holder"]: e.target.value })}
-                                                      placeholder="예금주" className={`${inputClassName} !py-1 !px-1.5 !text-[9px]`} />
+                                                      placeholder="예금주" className={`${inputClassName} !py-1 !px-1.5 !text-xs`} />
                                                   </div>
                                                 </div>
                                               ))}
@@ -973,7 +973,7 @@ export const BuildingsPage = ({
                                           return (
                                             <div className="flex flex-col gap-1">
                                               {ownerFirstModes[curMode] ? <>{owSec}{hmSec}</> : <>{hmSec}{owSec}</>}
-                                              <div className="text-[9px] text-hm-text-sub">💡 {flowMap[curMode]}</div>
+                                              <div className="text-xs text-hm-text-sub">💡 {flowMap[curMode]}</div>
                                             </div>
                                           );
                                         })()}
@@ -992,7 +992,7 @@ export const BuildingsPage = ({
                           return (
                             <div className="mt-3.5 py-2.5 px-3.5 bg-blue-50 rounded-[10px] border border-blue-200">
                               <div className="flex items-center justify-between mb-2">
-                                <div className="text-[10px] font-[800] text-hm-blue-dark">👤 호실 담당자 <span className="text-[9px] font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
+                                <div className="text-xs font-bold text-hm-blue-dark">👤 호실 담당자 <span className="text-xs font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
                               </div>
                               <div className={`grid gap-1.5 ${isMobile ? "grid-cols-2" : "grid-cols-5"}`}>
                                 {staffRoles.map(sr => {
@@ -1004,7 +1004,7 @@ export const BuildingsPage = ({
                                     <div key={sr.id}>
                                       <div className="text-[8px] font-bold mb-0.5" style={{ color: sr.color }}>{sr.icon} {sr.label}</div>
                                       <select value={roomMgr || ""} onChange={e => updateRoom(idx, `room_${sr.id}`, e.target.value)}
-                                        className={`${inputClassName} !py-[5px] !px-1.5 !text-[10px] cursor-pointer`}
+                                        className={`${inputClassName} !py-[5px] !px-1.5 !text-xs cursor-pointer`}
                                         style={{ border: isOverridden ? `1.5px solid ${sr.color}` : undefined, background: isOverridden ? sr.color + "10" : undefined }}>
                                         <option value="">{buildingMgr ? `${buildingMgr} (건물)` : "미배정"}</option>
                                         {staffList.filter(s => s.roles.includes(sr.id)).map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
@@ -1025,7 +1025,7 @@ export const BuildingsPage = ({
                 </div>
               ) : (
                 <div className="py-[30px] px-5 text-center text-gray-400 bg-[#FAFBFC] rounded-[10px] border-[1.5px] border-dashed border-hm-input-border">
-                  <span className="text-[28px]">🚪</span>
+                  <span className="text-2xl">🚪</span>
                   <div className="text-xs mt-2">위에서 층과 호수 범위를 입력하여 호실을 추가하세요</div>
                 </div>
               )}
@@ -1040,11 +1040,11 @@ export const BuildingsPage = ({
             return (
               <div className="flex gap-2.5 mt-1">
                 <button onClick={handlePreview}
-                  className={`flex-1 py-4 rounded-xl border-none text-white font-[800] text-[15px] font-[inherit] ${canPreview ? "bg-hm-text cursor-pointer hover:bg-gray-800 active:scale-[0.98]" : "bg-gray-300 cursor-default"} transition-all`}>
+                  className={`flex-1 py-4 rounded-xl border-none text-white font-bold text-base font-[inherit] ${canPreview ? "bg-hm-text cursor-pointer hover:bg-gray-800 active:scale-[0.98]" : "bg-gray-300 cursor-default"} transition-all`}>
                   {canPreview ? `📋 미리보기` : "📋 미리보기 (호실 필요)"}
                 </button>
                 <button onClick={() => { if (canSave) handleReg(); }}
-                  className={`flex-1 py-4 rounded-xl border-none text-white font-[800] text-[15px] font-[inherit] ${canSave ? "bg-emerald-500 cursor-pointer shadow-[0_2px_12px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98]" : "bg-gray-300 cursor-default shadow-none"} transition-all`}>
+                  className={`flex-1 py-4 rounded-xl border-none text-white font-bold text-base font-[inherit] ${canSave ? "bg-emerald-500 cursor-pointer shadow-[0_2px_12px_rgba(16,185,129,0.4)] hover:bg-emerald-600 active:scale-[0.98]" : "bg-gray-300 cursor-default shadow-none"} transition-all`}>
                   {canSave ? `✓ ${regForm.name} 저장` : `${missingFields.join(", ")} 입력 필요`}
                 </button>
               </div>

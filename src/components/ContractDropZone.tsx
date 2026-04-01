@@ -100,9 +100,9 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                     hasData(f) ? 'cursor-pointer hover:bg-hm-bg-hover' : 'cursor-default'
                   } transition-colors`}
                 >
-                  <span className="text-[13px]">{isImage(getName(f)) ? '🖼️' : '📄'}</span>
+                  <span className="text-sm">{isImage(getName(f)) ? '🖼️' : '📄'}</span>
                   <span
-                    className={`text-[11px] flex-1 overflow-hidden text-ellipsis whitespace-nowrap ${
+                    className={`text-xs flex-1 overflow-hidden text-ellipsis whitespace-nowrap ${
                       hasData(f)
                         ? 'text-hm-blue font-semibold underline'
                         : 'text-hm-text font-normal no-underline'
@@ -111,7 +111,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                     {getName(f)}
                   </span>
                   {hasData(f) && (
-                    <span className="text-[9px] text-hm-text-muted shrink-0">
+                    <span className="text-xs text-hm-text-muted shrink-0">
                       클릭하여 보기
                     </span>
                   )}
@@ -121,7 +121,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                         e.stopPropagation();
                         onRemove(i);
                       }}
-                      className="w-5 h-5 rounded border-none bg-red-100 text-hm-danger text-[11px] cursor-pointer font-[inherit] leading-none shrink-0 hover:bg-red-200 transition-colors"
+                      className="w-5 h-5 rounded border-none bg-red-100 text-hm-danger text-xs cursor-pointer font-[inherit] leading-none shrink-0 hover:bg-red-200 transition-colors"
                     >
                       ✕
                     </button>
@@ -131,18 +131,18 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
             </div>
             {/* Add more hint */}
             <div className="text-center">
-              <span className="text-[10px] text-hm-blue font-semibold">
+              <span className="text-xs text-hm-blue font-semibold">
                 + 클릭 또는 드래그하여 추가
               </span>
             </div>
           </div>
         ) : (
           <div className="text-center">
-            <div className="text-[28px] mb-1">📎</div>
-            <div className="text-[11px] font-bold text-hm-blue mb-0.5">
+            <div className="text-2xl mb-1">📎</div>
+            <div className="text-xs font-bold text-hm-blue mb-0.5">
               계약서를 드래그하거나 클릭하여 업로드
             </div>
-            <div className="text-[9px] text-hm-text-muted">여러장 가능 · PDF, JPG, PNG 등</div>
+            <div className="text-xs text-hm-text-muted">여러장 가능 · PDF, JPG, PNG 등</div>
           </div>
         )}
       </div>
@@ -169,13 +169,13 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                   a.download = previewFile.name;
                   a.click();
                 }}
-                className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors"
+                className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors"
               >
                 ⬇️ 다운로드
               </button>
               <button
                 onClick={() => setPreviewFile(null)}
-                className="w-7 h-7 rounded-full border-none bg-red-100 text-hm-danger text-sm font-extrabold cursor-pointer hover:bg-red-200 transition-colors"
+                className="w-7 h-7 rounded-full border-none bg-red-100 text-hm-danger text-sm font-bold cursor-pointer hover:bg-red-200 transition-colors"
               >
                 ✕
               </button>

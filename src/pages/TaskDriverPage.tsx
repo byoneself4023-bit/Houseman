@@ -519,7 +519,7 @@ export function TaskDriverPage({
         </div>
         <div className="flex-1 flex flex-col gap-0.5 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap" style={{ background: typeColor.bg, color: typeColor.color }}>{TYPE_LABELS[task.type] || task.type}</span>
+            <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap" style={{ background: typeColor.bg, color: typeColor.color }}>{TYPE_LABELS[task.type] || task.type}</span>
             <span className="text-sm font-medium text-slate-800 overflow-hidden text-ellipsis">{task.title}</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -530,7 +530,7 @@ export function TaskDriverPage({
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <span className="text-xs font-medium text-slate-500 whitespace-nowrap">{task.building}</span>
-          <span className={`inline-block px-2 py-0.5 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${
+          <span className={`inline-block px-2 py-0.5 rounded-[10px] text-xs font-bold whitespace-nowrap ${
             task.overdueDays > 0
               ? 'bg-red-100 text-red-500'
               : task.overdueDays === 0
@@ -538,7 +538,7 @@ export function TaskDriverPage({
                 : 'bg-hm-blue-bg text-hm-blue'
           }`}>{dDayLabel(task.overdueDays)}</span>
           {isCompleted && completedAt && (
-            <span className="text-[11px] text-emerald-500 whitespace-nowrap">
+            <span className="text-xs text-emerald-500 whitespace-nowrap">
               {new Date(completedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 완료
             </span>
           )}
@@ -558,7 +558,7 @@ export function TaskDriverPage({
       <div key={staffName} className="mb-6">
         <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] border-b border-hm-border" style={{ background: colors.bg, borderLeft: `4px solid ${colors.border}` }}>
           <span className="text-base">👤</span>
-          <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">{staffName}</p>
+          <p className="text-base font-semibold text-slate-800 m-0 flex-1">{staffName}</p>
           {overdueCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-red-500 text-white text-xs font-bold px-1.5">{overdueCount} 지연</span>
           )}
@@ -573,7 +573,7 @@ export function TaskDriverPage({
           )}
           {done.length > 0 && (
             <details className="border-t border-hm-border">
-              <summary className="px-4 py-2 text-[13px] text-slate-400 cursor-pointer bg-[#FAFBFC] hover:bg-slate-100 transition-colors duration-150">
+              <summary className="px-4 py-2 text-sm text-slate-400 cursor-pointer bg-[#FAFBFC] hover:bg-slate-100 transition-colors duration-150">
                 완료 {done.length}건
               </summary>
               {done.map(renderTaskItem)}
@@ -606,7 +606,7 @@ export function TaskDriverPage({
           <div className="mb-6">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-hm-danger-bg border-b border-hm-border border-l-4 border-l-red-500">
               <span className="text-base">🔴</span>
-              <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">미완료 (지연)</p>
+              <p className="text-base font-semibold text-slate-800 m-0 flex-1">미완료 (지연)</p>
               <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-red-500 text-white text-xs font-bold px-1.5">{overdue.length}</span>
             </div>
             <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">{overdue.map(renderTaskItem)}</div>
@@ -615,7 +615,7 @@ export function TaskDriverPage({
         <div className="mb-6">
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#FFFBEB] border-b border-hm-border border-l-4 border-l-amber-500">
             <span className="text-base">⚡</span>
-            <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">오늘 할 일</p>
+            <p className="text-base font-semibold text-slate-800 m-0 flex-1">오늘 할 일</p>
             <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-amber-500 text-white text-xs font-bold px-1.5">{todayList.length}</span>
           </div>
           <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">
@@ -628,7 +628,7 @@ export function TaskDriverPage({
           <div className="mb-6">
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#F0F9FF] border-b border-hm-border border-l-4 border-l-hm-blue">
               <span className="text-base">📋</span>
-              <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">이번 주 예정</p>
+              <p className="text-base font-semibold text-slate-800 m-0 flex-1">이번 주 예정</p>
               <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-hm-blue text-white text-xs font-bold px-1.5">{upcoming.length}</span>
             </div>
             <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">{upcoming.map(renderTaskItem)}</div>
@@ -664,7 +664,7 @@ export function TaskDriverPage({
           <p className="text-sm text-slate-500 m-0">{dateStr}</p>
         </div>
         <div className="flex flex-col gap-2 items-end">
-          <div className="flex gap-1.5 items-center text-[13px] text-slate-500">
+          <div className="flex gap-1.5 items-center text-sm text-slate-500">
             <span>정렬:</span>
             {SORT_OPTIONS.map(opt => (
               <button
@@ -686,9 +686,9 @@ export function TaskDriverPage({
       {/* 대표용: 직원 선택 탭 */}
       {isGeneral && (
         <div className="flex gap-1.5 flex-wrap items-center mb-4 px-4 py-3 bg-white rounded-xl border border-hm-border">
-          <span className="text-[13px] font-semibold text-gray-700 mr-1">직원:</span>
+          <span className="text-sm font-semibold text-gray-700 mr-1">직원:</span>
           <button
-            className={`px-3.5 py-1.5 rounded-full text-[13px] cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
               viewStaff === 'all'
                 ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
                 : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'
@@ -696,7 +696,7 @@ export function TaskDriverPage({
             onClick={() => setViewStaff('all')}
           >
             전체
-            <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-[11px] font-bold px-1 ${
+            <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-xs font-bold px-1 ${
               viewStaff === 'all' ? 'bg-hm-blue text-white' : 'bg-slate-200 text-slate-500'
             }`}>{allTasks.length}</span>
           </button>
@@ -705,7 +705,7 @@ export function TaskDriverPage({
             return (
               <button
                 key={staff.id}
-                className={`px-3.5 py-1.5 rounded-full text-[13px] cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
                   viewStaff === staff.name
                     ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
                     : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'
@@ -713,7 +713,7 @@ export function TaskDriverPage({
                 onClick={() => setViewStaff(staff.name)}
               >
                 {staff.name}
-                {count > 0 && <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-[11px] font-bold px-1 ${
+                {count > 0 && <span className={`inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-[9px] text-xs font-bold px-1 ${
                   viewStaff === staff.name ? 'bg-hm-blue text-white' : 'bg-slate-200 text-slate-500'
                 }`}>{count}</span>}
               </button>
@@ -736,17 +736,17 @@ export function TaskDriverPage({
               className="flex-1 border-none outline-none text-sm font-inherit bg-transparent"
             />
             <button onClick={addCustomTask}
-              className="px-4 py-1.5 rounded-lg border-none bg-hm-blue text-white text-[13px] font-bold cursor-pointer font-inherit whitespace-nowrap hover:bg-blue-600 transition-colors duration-150">
+              className="px-4 py-1.5 rounded-lg border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-inherit whitespace-nowrap hover:bg-blue-600 transition-colors duration-150">
               추가
             </button>
             <button onClick={() => { setShowAddTask(false); setNewTaskTitle(''); }}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 text-[13px] font-semibold cursor-pointer font-inherit hover:bg-slate-50 transition-colors duration-150">
+              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 text-sm font-semibold cursor-pointer font-inherit hover:bg-slate-50 transition-colors duration-150">
               취소
             </button>
           </div>
         ) : (
           <button onClick={() => setShowAddTask(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] border-[1.5px] border-dashed border-slate-300 bg-white text-hm-blue text-[13px] font-bold cursor-pointer font-inherit transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg">
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] border-[1.5px] border-dashed border-slate-300 bg-white text-hm-blue text-sm font-bold cursor-pointer font-inherit transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg">
             <span className="text-lg leading-none">+</span> 직접 할 일 추가
           </button>
         )}
@@ -757,7 +757,7 @@ export function TaskDriverPage({
         <div className="mb-4">
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-t-[10px] bg-[#F0F9FF] border-b border-hm-border border-l-4 border-l-violet-500">
             <span className="text-base">📌</span>
-            <p className="text-[15px] font-semibold text-slate-800 m-0 flex-1">직접 등록한 할 일</p>
+            <p className="text-base font-semibold text-slate-800 m-0 flex-1">직접 등록한 할 일</p>
             <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] rounded-full bg-violet-500 text-white text-xs font-bold px-1.5">{customTasks.length}</span>
           </div>
           <div className="bg-white border border-hm-border border-t-0 rounded-b-[10px]">
@@ -775,7 +775,7 @@ export function TaskDriverPage({
                     </div>
                     <div className="flex-1 flex flex-col gap-0.5 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap" style={{ background: TYPE_COLORS.custom.bg, color: TYPE_COLORS.custom.color }}>직접등록</span>
+                        <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap" style={{ background: TYPE_COLORS.custom.bg, color: TYPE_COLORS.custom.color }}>직접등록</span>
                         <span className="text-sm font-medium text-slate-800 overflow-hidden text-ellipsis">{ct.title}</span>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -802,8 +802,8 @@ export function TaskDriverPage({
           { count: completedCount, label: '완료', color: '#10B981' },
         ].map(card => (
           <div key={card.label} className="bg-white border border-hm-border rounded-xl p-4 flex flex-col items-center gap-1" style={{ borderBottom: `3px solid ${card.color}` }}>
-            <p className="text-[28px] font-bold m-0" style={{ color: card.color }}>{card.count}</p>
-            <p className="text-[13px] text-slate-500 m-0">{card.label}</p>
+            <p className="text-2xl font-bold m-0" style={{ color: card.color }}>{card.count}</p>
+            <p className="text-sm text-slate-500 m-0">{card.label}</p>
           </div>
         ))}
       </div>

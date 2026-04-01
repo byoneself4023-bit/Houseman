@@ -148,13 +148,13 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
       <div className="flex flex-wrap gap-3 mb-5 items-center">
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
-          <span className="text-[15px] font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
+          <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
         </div>
         <div className="flex gap-1">
           {["전체", "settlement", "moveout", "manual"].map(t => (
             <button key={t} onClick={() => setFilterType(t)}
-              className={`px-3 py-1.5 rounded-lg border border-hm-border text-[11px] font-semibold cursor-pointer font-[inherit] transition-colors ${filterType === t ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}>
+              className={`px-3 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${filterType === t ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}>
               {t === "전체" ? "전체" : TYPE_LABELS[t]}
             </button>
           ))}
@@ -162,7 +162,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
         <div className="flex gap-1">
           {["전체", "대기", "완료", "보류"].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1.5 rounded-lg border border-hm-border text-[11px] font-semibold cursor-pointer font-[inherit] transition-colors ${filterStatus === s && s !== "전체" ? "text-white border-transparent" : filterStatus === s ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}
+              className={`px-3 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${filterStatus === s && s !== "전체" ? "text-white border-transparent" : filterStatus === s ? "bg-[#1e40af] text-white border-[#1e40af]" : "bg-white text-hm-text-sub hover:bg-hm-bg-hover"}`}
               style={filterStatus === s && s !== "전체" ? { background: STATUS_MAP[s]?.color || "#1e40af" } : undefined}>
               {s === "전체" ? "전체" : STATUS_MAP[s]?.label || s}
             </button>
@@ -177,54 +177,54 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
       {/* 요약 카드 */}
       <div className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-4"} gap-3 mb-6`}>
         <Card style={{ borderLeft: "4px solid #6366F1" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">전체 건수</div>
-          <div className="text-xl font-extrabold text-[#6366F1]">{summary.totalCount}건</div>
-          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.totalAmount)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">전체 건수</div>
+          <div className="text-xl font-bold text-[#6366F1]">{summary.totalCount}건</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">{fmt(summary.totalAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #F59E0B" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">송금 대기</div>
-          <div className="text-xl font-extrabold text-[#F59E0B]">{summary.pendingCount}건</div>
-          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.pendingAmount)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">송금 대기</div>
+          <div className="text-xl font-bold text-[#F59E0B]">{summary.pendingCount}건</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">{fmt(summary.pendingAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #10B981" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">송금 완료</div>
-          <div className="text-xl font-extrabold text-[#10B981]">{summary.doneCount}건</div>
-          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.doneAmount)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">송금 완료</div>
+          <div className="text-xl font-bold text-[#10B981]">{summary.doneCount}건</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">{fmt(summary.doneAmount)}원</div>
         </Card>
         <Card style={{ borderLeft: "4px solid #EF4444" }}>
-          <div className="text-[11px] font-semibold text-gray-500 mb-1">보류</div>
-          <div className="text-xl font-extrabold text-[#EF4444]">{summary.heldCount}건</div>
-          <div className="text-[11px] text-hm-text-muted mt-0.5">{fmt(summary.heldAmount)}원</div>
+          <div className="text-xs font-semibold text-gray-500 mb-1">보류</div>
+          <div className="text-xl font-bold text-[#EF4444]">{summary.heldCount}건</div>
+          <div className="text-xs text-hm-text-muted mt-0.5">{fmt(summary.heldAmount)}원</div>
         </Card>
       </div>
 
       {/* 수동 입력 폼 */}
       {showAddForm && (
         <Card style={{ border: "2px solid #6366F1" }} className="mb-4">
-          <div className="text-[13px] font-extrabold text-[#6366F1] mb-3">수동 출납 입력</div>
+          <div className="text-sm font-bold text-[#6366F1] mb-3">수동 출납 입력</div>
           <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-[1fr_1fr_1fr_1fr_1fr_auto]"} gap-2 items-end`}>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">건물</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">건물</div>
               <input value={formBuilding} onChange={e => setFormBuilding(e.target.value)} placeholder="건물명"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">내역</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">내역</div>
               <input value={formDesc} onChange={e => setFormDesc(e.target.value)} placeholder="송금 내역"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">금액</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">금액</div>
               <input value={formAmount} onChange={e => setFormAmount(e.target.value)} type="number" placeholder="금액"
                 className={`${inputCls} text-right`} />
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">계좌</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">계좌</div>
               <input value={formAccount} onChange={e => setFormAccount(e.target.value)} placeholder="은행 계좌번호"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-[10px] text-hm-text-muted mb-0.5">구분</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">구분</div>
               <select value={formDirection} onChange={e => setFormDirection(e.target.value)}
                 className={`${inputCls} cursor-pointer`}>
                 <option value="출금">출금 (송금)</option>
@@ -257,13 +257,13 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                 {/* 날짜 헤더 */}
                 <div className="flex items-center gap-2.5 mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[15px] font-extrabold text-hm-text">{date.slice(5)}</span>
+                    <span className="text-base font-bold text-hm-text">{date.slice(5)}</span>
                     <span className="text-xs font-semibold text-hm-text-muted">({dow})</span>
                   </div>
                   <div className="flex-1 h-px bg-hm-border" />
                   <span className="text-xs font-bold text-gray-700">{fmt(dayTotal)}원</span>
                   {pendingCount > 0 && (
-                    <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-[#FEF3C7] text-[#92400E] font-bold">대기 {pendingCount}</span>
+                    <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-[#FEF3C7] text-[#92400E] font-bold">대기 {pendingCount}</span>
                   )}
                 </div>
 
@@ -285,20 +285,20 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                         {/* 상단: 유형 + 건물 + 상태 + 금액 */}
                         <div className="flex justify-between items-center mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] px-2.5 py-[3px] rounded-md font-bold"
+                            <span className="text-xs px-2.5 py-[3px] rounded-md font-bold"
                               style={{ background: typeStyle.bg, color: typeStyle.color, border: `1px solid ${typeStyle.border}` }}>
                               {TYPE_LABELS[entry.type] || entry.type}
                             </span>
-                            <span className={`text-sm font-extrabold ${isSent ? "text-gray-400" : "text-hm-text"}`}>{entry.building}</span>
+                            <span className={`text-sm font-bold ${isSent ? "text-gray-400" : "text-hm-text"}`}>{entry.building}</span>
                             {entry.round && entry.round > 0 && (
-                              <span className="text-[10px] px-2 py-0.5 rounded bg-[#8B5CF6] text-white font-bold">{entry.round}차</span>
+                              <span className="text-xs px-2 py-0.5 rounded bg-[#8B5CF6] text-white font-bold">{entry.round}차</span>
                             )}
                             {entry.room && (
-                              <span className="text-[11px] text-hm-text-sub font-semibold">{entry.room}호</span>
+                              <span className="text-xs text-hm-text-sub font-semibold">{entry.room}호</span>
                             )}
                           </div>
                           <div className="text-right">
-                            <div className={`text-lg font-extrabold ${isSent ? "text-gray-400" : entry.direction === "입금" ? "text-hm-success" : "text-hm-blue-dark"}`}>
+                            <div className={`text-lg font-bold ${isSent ? "text-gray-400" : entry.direction === "입금" ? "text-hm-success" : "text-hm-blue-dark"}`}>
                               {entry.direction === "입금" ? "+" : ""}{fmt(entry.amount)}원
                             </div>
                           </div>
@@ -309,23 +309,23 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                           <span>{entry.description}</span>
                           {entry.account && entry.account !== "—" && (
                             <span className="flex items-center gap-1">
-                              <span className="text-[10px] text-hm-text-muted">계좌</span>
-                              <strong className="text-hm-text font-mono text-[11px]">{entry.account}</strong>
+                              <span className="text-xs text-hm-text-muted">계좌</span>
+                              <strong className="text-hm-text font-mono text-xs">{entry.account}</strong>
                             </span>
                           )}
                           {entry.accountHolder && (
-                            <span className="text-[11px] text-gray-700">({entry.accountHolder})</span>
+                            <span className="text-xs text-gray-700">({entry.accountHolder})</span>
                           )}
                         </div>
 
                         {/* 하단: 상태 + 보냄 시각 + 액션 버튼 */}
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] px-3 py-[3px] rounded-[10px] font-bold"
+                          <span className="text-xs px-3 py-[3px] rounded-[10px] font-bold"
                             style={{ background: statusStyle.bg, color: statusStyle.color }}>
                             {statusStyle.label}
                           </span>
                           {isSent && entry.sentAt && (
-                            <span className="text-[10px] text-hm-success font-semibold">
+                            <span className="text-xs text-hm-success font-semibold">
                               {entry.sentAt} 송금완료
                             </span>
                           )}
@@ -333,30 +333,30 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                             {entry.status === "대기" && (
                               <>
                                 <button onClick={() => markSent(entry.id)}
-                                  className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
+                                  className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
                                   송금 완료
                                 </button>
                                 <button onClick={() => markHold(entry.id)}
-                                  className="px-3 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
+                                  className="px-3 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
                                   보류
                                 </button>
                               </>
                             )}
                             {entry.status === "완료" && (
                               <button onClick={() => markPending(entry.id)}
-                                className="px-3 py-[5px] rounded-md border border-hm-input-border bg-white text-hm-text-sub text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+                                className="px-3 py-[5px] rounded-md border border-hm-input-border bg-white text-hm-text-sub text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
                                 되돌리기
                               </button>
                             )}
                             {entry.status === "보류" && (
                               <button onClick={() => markPending(entry.id)}
-                                className="px-3 py-[5px] rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
+                                className="px-3 py-[5px] rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-xs font-semibold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">
                                 대기로 변경
                               </button>
                             )}
                             {entry.type === "manual" && (
                               <button onClick={() => deleteEntry(entry.id)}
-                                className="px-2.5 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-[11px] font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
+                                className="px-2.5 py-[5px] rounded-md border border-red-200 bg-white text-hm-danger text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-danger-bg transition-colors">
                                 삭제
                               </button>
                             )}

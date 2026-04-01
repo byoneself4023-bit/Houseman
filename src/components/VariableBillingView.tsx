@@ -209,7 +209,7 @@ export default function VariableBillingView({
         <button className="billing-btn ghost px-3 py-1.5" onClick={onBack}>
           ← 목록
         </button>
-        <h2 className="text-[17px] font-extrabold text-hm-text m-0">
+        <h2 className="text-lg font-bold text-hm-text m-0">
           {buildingName}
         </h2>
         <span className="billing-type-badge variable">변동관리비</span>
@@ -226,13 +226,13 @@ export default function VariableBillingView({
 
           {/* 전기 청구서 */}
           <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-            <div className="text-[13px] font-extrabold text-hm-text mb-3.5 flex items-center gap-1.5">
+            <div className="text-sm font-bold text-hm-text mb-3.5 flex items-center gap-1.5">
               <span className="text-base">⚡</span> 전기 청구서
-              {elecVerified && <span className="text-[10px] text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
+              {elecVerified && <span className="text-xs text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
                   type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.totalAmount || ''}
@@ -241,7 +241,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 사용량 (kWh)</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 사용량 (kWh)</span>
                 <input
                   type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.totalUsage || ''}
@@ -250,7 +250,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
                 <input
                   type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.periodStart}
@@ -258,7 +258,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
                 <input
                   type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.elec.periodEnd}
@@ -270,13 +270,13 @@ export default function VariableBillingView({
 
           {/* 수도 청구서 */}
           <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-            <div className="text-[13px] font-extrabold text-hm-text mb-3.5 flex items-center gap-1.5">
+            <div className="text-sm font-bold text-hm-text mb-3.5 flex items-center gap-1.5">
               <span className="text-base">💧</span> 수도 청구서
-              {waterVerified && <span className="text-[10px] text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
+              {waterVerified && <span className="text-xs text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
                   type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.totalAmount || ''}
@@ -285,7 +285,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">총 사용량 (㎥)</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 사용량 (㎥)</span>
                 <input
                   type="number" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.totalUsage || ''}
@@ -294,7 +294,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">사용기간 시작</span>
                 <input
                   type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.periodStart}
@@ -302,7 +302,7 @@ export default function VariableBillingView({
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
+                <span className="text-xs font-semibold text-hm-text-muted tracking-wide">사용기간 종료</span>
                 <input
                   type="date" className="w-full px-2.5 py-2 rounded-md border border-[#CCCCCC] text-xs font-[inherit] outline-none tabular-nums focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   value={utilityBill.water.periodEnd}
@@ -314,7 +314,7 @@ export default function VariableBillingView({
 
           {/* 관리자 메모 */}
           <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-            <div className="text-[13px] font-extrabold text-hm-text mb-2.5">관리자 메모</div>
+            <div className="text-sm font-bold text-hm-text mb-2.5">관리자 메모</div>
             <textarea
               value={memoText}
               onChange={e => setMemoText(e.target.value)}
@@ -327,17 +327,17 @@ export default function VariableBillingView({
         {/* ── 우측: 안분 결과 테이블 ── */}
         <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden">
           <div className="px-5 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
-            <span className="text-sm font-extrabold text-hm-text">호실별 검침 & 안분 결과</span>
+            <span className="text-sm font-bold text-hm-text">호실별 검침 & 안분 결과</span>
             <div className="flex gap-2">
               {elecApportion && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   elecVerified ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'
                 }`}>
                   전기 {elecVerified ? '✓' : '✗'} {fmtAmt(utilityBill.elec.totalAmount)}원
                 </span>
               )}
               {waterApportion && (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   waterVerified ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'
                 }`}>
                   수도 {waterVerified ? '✓' : '✗'} {fmtAmt(utilityBill.water.totalAmount)}원
@@ -360,7 +360,7 @@ export default function VariableBillingView({
                   <th className="amount">수도 사용량</th>
                   <th className="amount">수도 금액</th>
                   <th className="amount">공용수도</th>
-                  <th className="amount font-extrabold">합계</th>
+                  <th className="amount font-bold">합계</th>
                 </tr>
               </thead>
               <tbody>
@@ -387,7 +387,7 @@ export default function VariableBillingView({
                       </td>
                       <td className="amount text-[#666]">{elecRoom?.usage || '-'}</td>
                       <td className="amount">{elecRoom ? fmtAmt(elecRoom.amount) : '-'}</td>
-                      <td className="amount text-[#346aff] text-[11px]">
+                      <td className="amount text-[#346aff] text-xs">
                         {elecRoom ? fmtAmt(elecRoom.commonAmount) : '-'}
                       </td>
                       {/* 수도 검침 입력 */}
@@ -403,10 +403,10 @@ export default function VariableBillingView({
                       </td>
                       <td className="amount text-[#666]">{waterRoom?.usage || '-'}</td>
                       <td className="amount">{waterRoom ? fmtAmt(waterRoom.amount) : '-'}</td>
-                      <td className="amount text-[#346aff] text-[11px]">
+                      <td className="amount text-[#346aff] text-xs">
                         {waterRoom ? fmtAmt(waterRoom.commonAmount) : '-'}
                       </td>
-                      <td className="amount font-extrabold text-hm-text">
+                      <td className="amount font-bold text-hm-text">
                         {total > 0 ? fmtAmt(total) : '-'}
                       </td>
                     </tr>
@@ -416,7 +416,7 @@ export default function VariableBillingView({
                 {(elecApportion || waterApportion) && (
                   <>
                     <tr className="bg-hm-bg font-bold">
-                      <td colSpan={2} className="text-xs font-extrabold text-hm-text">호실 합계</td>
+                      <td colSpan={2} className="text-xs font-bold text-hm-text">호실 합계</td>
                       <td className="amount" />
                       <td className="amount">{elecApportion ? elecApportion.rooms.reduce((s: number, r: any) => s + r.usage, 0) : '-'}</td>
                       <td className="amount">{elecApportion ? fmtAmt(elecApportion.rooms.reduce((s: number, r: any) => s + r.amount, 0)) : '-'}</td>
@@ -429,14 +429,14 @@ export default function VariableBillingView({
                       <td className="amount text-[#346aff]">
                         {waterApportion ? fmtAmt(waterApportion.rooms.reduce((s: number, r: any) => s + r.commonAmount, 0)) : '-'}
                       </td>
-                      <td className="amount font-extrabold">
+                      <td className="amount font-bold">
                         {fmtAmt((elecApportion?.rooms.reduce((s: number, r: any) => s + r.total, 0) || 0) + (waterApportion?.rooms.reduce((s: number, r: any) => s + r.total, 0) || 0))}
                       </td>
                     </tr>
                     {/* 건물주 부담 (공실분) */}
                     {((elecApportion?.ownerBurden || 0) + (waterApportion?.ownerBurden || 0)) > 0 && (
                       <tr className="bg-hm-warning-bg">
-                        <td colSpan={2} className="text-[11px] font-bold text-hm-warning">건물주 부담 (공실분)</td>
+                        <td colSpan={2} className="text-xs font-bold text-hm-warning">건물주 부담 (공실분)</td>
                         <td className="amount" colSpan={3} />
                         <td className="amount text-hm-warning">
                           {elecApportion ? fmtAmt(elecApportion.ownerBurden) : '-'}
@@ -445,7 +445,7 @@ export default function VariableBillingView({
                         <td className="amount text-hm-warning">
                           {waterApportion ? fmtAmt(waterApportion.ownerBurden) : '-'}
                         </td>
-                        <td className="amount text-hm-warning font-extrabold">
+                        <td className="amount text-hm-warning font-bold">
                           {fmtAmt((elecApportion?.ownerBurden || 0) + (waterApportion?.ownerBurden || 0))}
                         </td>
                       </tr>

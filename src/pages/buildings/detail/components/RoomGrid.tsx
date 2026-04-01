@@ -51,21 +51,21 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
 
       {showAddRoom && (
         <div className="px-4 py-3.5 bg-[#F0F4FF] rounded-[10px] border-[1.5px] border-blue-200 mb-4">
-          <div className="text-[11px] font-bold text-hm-blue-dark mb-2.5">새 호실 추가</div>
+          <div className="text-xs font-bold text-hm-blue-dark mb-2.5">새 호실 추가</div>
           <div className="flex gap-2 items-end">
             <div className="flex-1">
-              <div className="text-[9px] text-hm-text-muted mb-[3px]">층</div>
+              <div className="text-xs text-hm-text-muted mb-[3px]">층</div>
               <input value={addRoomFloor} onChange={e => setAddRoomFloor(e.target.value)} placeholder="예: 1, B1, 2" className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
             </div>
             <div className="flex-1">
-              <div className="text-[9px] text-hm-text-muted mb-[3px]">호실번호</div>
+              <div className="text-xs text-hm-text-muted mb-[3px]">호실번호</div>
               <input value={addRoomNum} onChange={e => setAddRoomNum(e.target.value)} placeholder="예: 101, 1층" className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
             </div>
             <button onClick={() => { if (addRoomFloor && addRoomNum) { setAddRoomFloor(""); setAddRoomNum(""); setShowAddRoom(false); setSelectedRoom(addRoomNum); setRoomEditMode(true); }}} className={`px-5 py-2 rounded-lg border-none text-white font-bold text-xs font-[inherit] whitespace-nowrap transition-colors ${addRoomFloor && addRoomNum ? 'bg-hm-blue-dark cursor-pointer hover:brightness-90' : 'bg-gray-300 cursor-default'}`}>
               추가 후 정보입력
             </button>
           </div>
-          <div className="text-[10px] text-hm-text-muted mt-1.5">추가하면 바로 호실 상세 입력 화면이 열립니다. (기준금액, 사진 등)</div>
+          <div className="text-xs text-hm-text-muted mt-1.5">추가하면 바로 호실 상세 입력 화면이 열립니다. (기준금액, 사진 등)</div>
         </div>
       )}
 
@@ -90,7 +90,7 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
           return (
             <div key={floor} className="flex items-stretch">
               {/* Floor Label */}
-              <div className="w-[52px] flex items-center justify-center bg-[#1B1F2E] text-white font-extrabold text-xs rounded-l-lg shrink-0">
+              <div className="w-[52px] flex items-center justify-center bg-[#1B1F2E] text-white font-bold text-xs rounded-l-lg shrink-0">
                 {floor}
               </div>
               {/* Rooms */}
@@ -108,13 +108,13 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
                         border: `1.5px solid ${isSelected ? "var(--color-hm-text)" : st.border}`,
                       }}
                     >
-                      <div className="text-[13px] font-extrabold mb-0.5" style={{ color: isSelected ? "#fff" : st.color }}>{room}</div>
+                      <div className="text-sm font-bold mb-0.5" style={{ color: isSelected ? "#fff" : st.color }}>{room}</div>
                       <div className="text-[8px] font-bold mb-[1px]" style={{ color: isSelected ? "#ccc" : rtCfg(getRoomType(buildingName, room)).c }}>{getRoomType(buildingName, room)}</div>
-                      <div className="text-[10px] font-medium whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: isSelected ? "#ccc" : st.color }}>
+                      <div className="text-xs font-medium whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: isSelected ? "#ccc" : st.color }}>
                         {info.name || (info.status === "공실" ? "공실" : "입주중")}
                       </div>
                       {info.overdue > 0 && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-extrabold flex items-center justify-center">!</div>
+                        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">!</div>
                       )}
                       {info.status === "공실" && info.days > 30 && (
                         <div className="absolute -top-1 -right-1 text-[8px] bg-hm-danger text-white px-[5px] py-[1px] rounded font-bold">{info.days}일</div>

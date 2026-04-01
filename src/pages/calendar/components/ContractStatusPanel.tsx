@@ -35,7 +35,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
     <Card className="mb-4 border-2 border-hm-blue bg-hm-blue-bg">
       <div className="flex items-center gap-2 mb-2.5">
         <span className="text-base">📦</span>
-        <div className="text-[13px] font-extrabold text-hm-blue">계약현황 <span className="font-semibold text-[11px] text-hm-text-muted">({contractEvts.length}건)</span></div>
+        <div className="text-sm font-bold text-hm-blue">계약현황 <span className="font-semibold text-xs text-hm-text-muted">({contractEvts.length}건)</span></div>
       </div>
       <div className="flex flex-col gap-3">
         {contractEvts.map((ev, i) => {
@@ -66,10 +66,10 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   : 'border-b border-[#BFDBFE]'
               }`}
                 style={{ background: allDone ? undefined : "linear-gradient(90deg, var(--color-hm-blue-bg), #F8FAFF)" }}>
-                <div className={`text-[11px] font-bold mr-1.5 whitespace-nowrap ${allDone ? 'text-[#9CA3AF]' : 'text-hm-blue'}`}>{ev.building} {ev.room}호</div>
+                <div className={`text-xs font-bold mr-1.5 whitespace-nowrap ${allDone ? 'text-[#9CA3AF]' : 'text-hm-blue'}`}>{ev.building} {ev.room}호</div>
                 {ev.registeredSource === "broker"
-                  ? <span className="text-[9px] font-bold py-0.5 px-1.5 bg-[#EC4899] text-white rounded-[3px] mr-1.5 whitespace-nowrap">부동산</span>
-                  : <span className="text-[9px] font-bold py-0.5 px-1.5 bg-[#6B7280] text-white rounded-[3px] mr-1.5 whitespace-nowrap">직접</span>
+                  ? <span className="text-xs font-bold py-0.5 px-1.5 bg-[#EC4899] text-white rounded-[3px] mr-1.5 whitespace-nowrap">부동산</span>
+                  : <span className="text-xs font-bold py-0.5 px-1.5 bg-[#6B7280] text-white rounded-[3px] mr-1.5 whitespace-nowrap">직접</span>
                 }
                 <div className="flex-1 flex items-center">
                   {cSteps.map((step, si) => {
@@ -78,7 +78,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     return (
                       <div key={si} className="flex items-center flex-1">
                         <div className="flex flex-col items-center gap-0.5 min-w-[56px]">
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300"
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
                             style={{
                               background: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-blue)") : isActive ? "#fff" : "#E5E7EB",
                               color: stepDone ? "#fff" : isActive ? "var(--color-hm-blue)" : "#9CA3AF",
@@ -88,7 +88,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                             }}>
                             {stepDone ? "✓" : si + 1}
                           </div>
-                          <span className="text-[9px] whitespace-nowrap"
+                          <span className="text-xs whitespace-nowrap"
                             style={{
                               fontWeight: stepDone || isActive ? 700 : 500,
                               color: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-blue)") : isActive ? "#1D4ED8" : "#9CA3AF",
@@ -112,7 +112,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { depositConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, depositConfirmed: true } : e));
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.depositConfirmed
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-[#0369A1] border border-[#BAE6FD] bg-[#F0F9FF] cursor-pointer hover:bg-[#E0F2FE]'
@@ -147,7 +147,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   ].filter(Boolean);
                   setContractReport({ ev, owners, msgText: msgLines.join("\n") });
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.reported
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] cursor-pointer hover:bg-[#EDE9FE]'
@@ -161,7 +161,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { balanceConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, balanceConfirmed: true } : e));
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.balanceConfirmed
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-hm-success border border-hm-success-border bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
@@ -178,7 +178,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     setEvents?.((prev: any[]) => prev.filter((e: any) => !(e.type === "계약" && e.building === ev.building && String(e.room) === String(ev.room))));
                     setPage("tenants");
                   }}
-                    className="text-[10px] font-bold text-[#92400E] py-1 px-2.5 rounded-md border border-[#FDE68A] bg-[#FEF3C7] cursor-pointer whitespace-nowrap hover:bg-[#FDE68A] transition-colors">
+                    className="text-xs font-bold text-[#92400E] py-1 px-2.5 rounded-md border border-[#FDE68A] bg-[#FEF3C7] cursor-pointer whitespace-nowrap hover:bg-[#FDE68A] transition-colors">
                     계약서입력 →
                   </span>
                 )}
@@ -189,7 +189,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { finalPaymentConfirmed: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, finalPaymentConfirmed: true } : e));
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.finalPaymentConfirmed
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-[#0369A1] border border-[#BAE6FD] bg-[#F0F9FF] cursor-pointer hover:bg-[#E0F2FE]'
@@ -202,7 +202,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { interiorManaged: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, interiorManaged: true } : e));
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.interiorManaged
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] cursor-pointer hover:bg-[#EDE9FE]'
@@ -215,7 +215,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   persistUpdate(ev.supabaseId, { brokerFeeSent: true });
                   setEvents?.((prev: any[]) => prev.map((e: any) => e === ev ? { ...e, brokerFeeSent: true } : e));
                 }}
-                  className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
+                  className={`text-xs font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.brokerFeeSent
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
                       : 'text-hm-success border border-hm-success-border bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
@@ -273,7 +273,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
                     setBreakReport({ ev, owners, msgText: msgLines.join("\n") });
                   }}
-                    className="text-[10px] font-bold text-hm-danger py-1 px-2.5 rounded-md border border-hm-danger-border bg-hm-danger-bg cursor-pointer whitespace-nowrap hover:bg-[#FEE2E2] transition-colors">
+                    className="text-xs font-bold text-hm-danger py-1 px-2.5 rounded-md border border-hm-danger-border bg-hm-danger-bg cursor-pointer whitespace-nowrap hover:bg-[#FEE2E2] transition-colors">
                     계약파기
                   </span>
                 )}

@@ -36,7 +36,7 @@ export const Table = <T extends Record<string, any>>({
             <th
               key={i}
               className={cn(
-                'px-0.5 py-[5px] font-bold text-[11px] text-hm-text-sub border-b border-hm-border whitespace-nowrap',
+                'px-0.5 py-[5px] font-bold text-xs text-hm-text-sub border-b border-hm-border whitespace-nowrap',
                 alignClass[col.align || 'left'],
               )}
               style={{ width: col.width || 'auto' }}
@@ -54,7 +54,7 @@ export const Table = <T extends Record<string, any>>({
               <tr key={`g-${ri}`}>
                 <td
                   colSpan={columns.length}
-                  className="px-3 py-2 bg-[#F0F2F5] font-extrabold text-xs text-hm-text border-b-2 border-[#D1D5DB]"
+                  className="px-3 py-2 bg-[#F0F2F5] font-bold text-xs text-hm-text border-b-2 border-[#D1D5DB]"
                 >
                   {groupBy!(row)}
                 </td>

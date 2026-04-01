@@ -34,7 +34,7 @@ export const RoomTypeBadge: React.FC<RoomTypeBadgeProps> = ({ building, room }) 
   return (
     <span
       className={cn(
-        'inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded',
+        'inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded',
         cfg.bgClass,
         cfg.textClass,
       )}

@@ -30,7 +30,7 @@ export const TenantSearchBar: React.FC<TenantSearchBarProps> = ({
           const borderMap: Record<string, string> = { "연체": "border-hm-danger-border", "정상": "border-hm-success-border", "전체": "border-gray-300" };
           return (
             <button key={s} onClick={() => setStatusFilter(s)}
-              className={`px-3 py-[5px] rounded-md text-[11px] font-bold cursor-pointer font-[inherit] transition-colors ${
+              className={`px-3 py-[5px] rounded-md text-xs font-bold cursor-pointer font-[inherit] transition-colors ${
                 isActive
                   ? `${bgMap[s]} ${colorMap[s]} ${borderMap[s]} border-[1.5px]`
                   : "bg-white text-hm-text-muted border border-hm-input-border hover:bg-hm-bg-hover"
@@ -42,7 +42,7 @@ export const TenantSearchBar: React.FC<TenantSearchBarProps> = ({
       </div>
       {(buildingFilter !== "전체" || statusFilter !== "전체" || search) && (
         <button onClick={() => { setBuildingFilter("전체"); setStatusFilter("전체"); setSearch(""); }}
-          className="px-2.5 py-[5px] rounded-md border border-hm-input-border bg-hm-bg-hover text-[10px] font-semibold text-gray-500 cursor-pointer font-[inherit] hover:bg-gray-200 transition-colors">
+          className="px-2.5 py-[5px] rounded-md border border-hm-input-border bg-hm-bg-hover text-xs font-semibold text-gray-500 cursor-pointer font-[inherit] hover:bg-gray-200 transition-colors">
           초기화
         </button>
       )}

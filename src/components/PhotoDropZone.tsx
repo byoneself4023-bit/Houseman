@@ -66,7 +66,7 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="text-[10px] font-bold mb-1.5" style={{ color }}>
+      <div className="text-xs font-bold mb-1.5" style={{ color }}>
         📷 {label} ({count}/{maxPhotos})
       </div>
       <input
@@ -122,7 +122,7 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
                       e.stopPropagation();
                       onRemove(pi);
                     }}
-                    className="absolute top-0.5 right-0.5 w-[18px] h-[18px] rounded-full bg-hm-danger text-white text-[9px] font-extrabold flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                    className="absolute top-0.5 right-0.5 w-[18px] h-[18px] rounded-full bg-hm-danger text-white text-xs font-bold flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     ✕
                   </div>
@@ -144,11 +144,11 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
           </div>
         ) : (
           <div onClick={openPicker}>
-            <div className="text-[26px] mb-1">📷</div>
-            <div className="text-[11px] font-bold mb-0.5" style={{ color }}>
+            <div className="text-2xl mb-1">📷</div>
+            <div className="text-xs font-bold mb-0.5" style={{ color }}>
               사진을 드래그하거나 클릭하여 업로드
             </div>
-            <div className="text-[9px] text-hm-text-muted">최대 {maxPhotos}장 · JPG, PNG</div>
+            <div className="text-xs text-hm-text-muted">최대 {maxPhotos}장 · JPG, PNG</div>
           </div>
         )}
       </div>

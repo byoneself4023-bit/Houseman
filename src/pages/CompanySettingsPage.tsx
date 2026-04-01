@@ -89,13 +89,13 @@ export const CompanySettingsPage = () => {
 
       {/* Company Info */}
       <Card style={{ marginBottom: 20 }}>
-        <div className="text-sm font-extrabold text-hm-text mb-4 flex items-center gap-2">
+        <div className="text-sm font-bold text-hm-text mb-4 flex items-center gap-2">
           <span className="text-base">{"📋"}</span> 회사 정보
         </div>
 
         <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">회사명</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[5px]">회사명</div>
             <input
               value={settings.company_name || ""}
               onChange={e => update("company_name", e.target.value)}
@@ -104,7 +104,7 @@ export const CompanySettingsPage = () => {
             />
           </div>
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표 전화번호</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[5px]">대표 전화번호</div>
             <input
               value={settings.company_phone || ""}
               onChange={e => update("company_phone", e.target.value)}
@@ -113,7 +113,7 @@ export const CompanySettingsPage = () => {
             />
           </div>
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표 이메일</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[5px]">대표 이메일</div>
             <input
               value={settings.company_email || ""}
               onChange={e => update("company_email", e.target.value)}
@@ -122,7 +122,7 @@ export const CompanySettingsPage = () => {
             />
           </div>
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">회사 주소</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[5px]">회사 주소</div>
             <div className="flex gap-2">
               <input
                 value={settings.company_address || ""}
@@ -144,7 +144,7 @@ export const CompanySettingsPage = () => {
       {/* Bank Accounts */}
       <Card style={{ marginBottom: 20 }}>
         <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-extrabold text-hm-text flex items-center gap-2">
+          <div className="text-sm font-bold text-hm-text flex items-center gap-2">
             <span className="text-base">{"🏦"}</span> 하우스맨 계좌 목록
             <span className="text-xs font-semibold text-hm-text-muted">({accounts.length}개)</span>
           </div>
@@ -157,7 +157,7 @@ export const CompanySettingsPage = () => {
         </div>
 
         {accounts.length === 0 && (
-          <div className="text-center py-8 text-hm-text-muted text-[13px]">
+          <div className="text-center py-8 text-hm-text-muted text-sm">
             등록된 계좌가 없습니다. 위의 &quot;계좌 추가&quot; 버튼을 눌러 추가하세요.
           </div>
         )}
@@ -179,13 +179,13 @@ export const CompanySettingsPage = () => {
                 {/* 대표계좌 표시 */}
                 {acc.isPrimary && (
                   <div className="mb-2">
-                    <span className="text-[10px] font-extrabold text-hm-blue-dark bg-hm-blue-bg px-2 py-0.5 rounded border border-blue-200">★ 대표계좌</span>
+                    <span className="text-xs font-bold text-hm-blue-dark bg-hm-blue-bg px-2 py-0.5 rounded border border-blue-200">★ 대표계좌</span>
                   </div>
                 )}
 
                 <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-4'} gap-3 mb-3`}>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">별칭 (용도)</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">별칭 (용도)</div>
                     <input
                       value={acc.alias || ""}
                       onChange={e => updateAccount(idx, "alias", e.target.value)}
@@ -194,7 +194,7 @@ export const CompanySettingsPage = () => {
                     />
                   </div>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">은행명</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">은행명</div>
                     <select
                       value={acc.bank || "국민은행"}
                       onChange={e => updateAccount(idx, "bank", e.target.value)}
@@ -204,7 +204,7 @@ export const CompanySettingsPage = () => {
                     </select>
                   </div>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">계좌번호</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">계좌번호</div>
                     <input
                       value={acc.account_number || ""}
                       onChange={e => updateAccount(idx, "account_number", e.target.value)}
@@ -213,7 +213,7 @@ export const CompanySettingsPage = () => {
                     />
                   </div>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">예금주</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">예금주</div>
                     <input
                       value={acc.holder || ""}
                       onChange={e => updateAccount(idx, "holder", e.target.value)}
@@ -225,7 +225,7 @@ export const CompanySettingsPage = () => {
 
                 <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-[auto_1fr_2fr]'} gap-3`}>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">대표계좌</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">대표계좌</div>
                     <button
                       onClick={() => {
                         if (acc.isPrimary) return;
@@ -234,7 +234,7 @@ export const CompanySettingsPage = () => {
                       }}
                       className="font-[inherit] transition-colors"
                       style={{
-                        padding: "7px 14px", borderRadius: 7, fontSize: 11, fontWeight: 700,
+                        padding: "7px 14px", borderRadius: 7, fontSize: 12, fontWeight: 700,
                         border: acc.isPrimary ? "1.5px solid var(--color-hm-blue-dark)" : "1px solid var(--color-hm-input-border)",
                         background: acc.isPrimary ? "var(--color-hm-blue-bg)" : "#fff",
                         color: acc.isPrimary ? "var(--color-hm-blue-dark)" : "var(--color-hm-text-muted)",
@@ -245,7 +245,7 @@ export const CompanySettingsPage = () => {
                     </button>
                   </div>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">상태</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">상태</div>
                     <div className="flex gap-1.5">
                       {STATUS_OPTIONS.map(opt => {
                         const selected = acc.status === opt.value;
@@ -255,7 +255,7 @@ export const CompanySettingsPage = () => {
                             onClick={() => updateAccount(idx, "status", opt.value)}
                             className="flex-1 font-[inherit] cursor-pointer transition-colors"
                             style={{
-                              padding: "7px 8px", borderRadius: 7, fontSize: 11, fontWeight: selected ? 700 : 500,
+                              padding: "7px 8px", borderRadius: 7, fontSize: 12, fontWeight: selected ? 700 : 500,
                               border: selected ? `1.5px solid ${opt.color}` : "1px solid var(--color-hm-input-border)",
                               background: selected ? opt.bg : "#fff",
                               color: selected ? opt.color : "var(--color-hm-text-muted)",
@@ -268,7 +268,7 @@ export const CompanySettingsPage = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">메모</div>
+                    <div className="text-xs font-bold text-hm-text-sub mb-[5px]">메모</div>
                     <input
                       value={acc.note || ""}
                       onChange={e => updateAccount(idx, "note", e.target.value)}
@@ -281,7 +281,7 @@ export const CompanySettingsPage = () => {
                 {/* Status indicator bar */}
                 <div className="mt-2.5 flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full" style={{ background: statusCfg.color }} />
-                  <span className="text-[11px] font-semibold" style={{ color: statusCfg.color }}>
+                  <span className="text-xs font-semibold" style={{ color: statusCfg.color }}>
                     {acc.bank} {acc.account_number ? `(${acc.account_number})` : ""} - {statusCfg.label}
                   </span>
                 </div>
@@ -295,7 +295,7 @@ export const CompanySettingsPage = () => {
       <div className="flex justify-end gap-3">
         <button
           onClick={handleSave}
-          className={`px-10 py-3 rounded-[10px] border-none text-white font-extrabold text-sm cursor-pointer font-[inherit] transition-all duration-200 shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.35)] ${saved ? 'bg-green-600' : 'bg-hm-blue-dark'}`}
+          className={`px-10 py-3 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.35)] ${saved ? 'bg-green-600' : 'bg-hm-blue-dark'}`}
         >
           {saved ? "저장 완료!" : "저장"}
         </button>

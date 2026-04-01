@@ -50,18 +50,18 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
       <div className="bg-[#FFFBFB] rounded-2xl p-6 w-[480px] max-w-[95vw] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-[#EF4444]"
         onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-3.5">
-        <div className="text-[15px] font-extrabold text-hm-text">🚪 퇴실 등록</div>
+        <div className="text-base font-bold text-hm-text">🚪 퇴실 등록</div>
         <button onClick={closeForm}
           className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
       </div>
       <div className="flex gap-2.5 flex-wrap items-end">
         <div className="min-w-[160px]">
-          <div className="text-[10px] font-bold text-hm-text-sub mb-1">퇴실일</div>
+          <div className="text-xs font-bold text-hm-text-sub mb-1">퇴실일</div>
           <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
             className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>
         <div className="min-w-[160px] relative">
-          <div className="text-[10px] font-bold text-hm-text-sub mb-1">건물</div>
+          <div className="text-xs font-bold text-hm-text-sub mb-1">건물</div>
           <input value={formBuildingSearch} onChange={e => {
               const v = e.target.value;
               setFormBuildingSearch(v);
@@ -86,13 +86,13 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
               </div>
             ) : formBuildingSearch ? (
               <div className="absolute top-full left-0 right-0 bg-white border border-hm-input-border rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.1)] z-[100] mt-0.5">
-                <div className="py-2.5 px-3 text-[11px] text-hm-text-muted text-center">일치하는 건물이 없습니다</div>
+                <div className="py-2.5 px-3 text-xs text-hm-text-muted text-center">일치하는 건물이 없습니다</div>
               </div>
             ) : null;
           })()}
         </div>
         <div className="min-w-[100px]">
-          <div className="text-[10px] font-bold text-hm-text-sub mb-1">호실</div>
+          <div className="text-xs font-bold text-hm-text-sub mb-1">호실</div>
           <input value={formRoom} onChange={e => setFormRoom(e.target.value)} placeholder="301"
             className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
         </div>

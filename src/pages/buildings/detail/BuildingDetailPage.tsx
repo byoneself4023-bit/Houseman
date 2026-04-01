@@ -222,9 +222,9 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
         <button onClick={onBack} className="w-9 h-9 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base flex items-center justify-center font-[inherit] hover:bg-hm-bg-hover transition-colors">‹</button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-[22px] font-extrabold text-hm-text tracking-tight">{buildingName}</h1>
+            <h1 className="text-xl font-bold text-hm-text tracking-tight">{buildingName}</h1>
             {bldg.special && (
-              <span className={`text-[11px] font-bold px-2.5 py-[3px] rounded-[5px] border ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg text-hm-danger border-red-300' : 'bg-hm-warning-bg text-hm-warning border-orange-200'}`}>
+              <span className={`text-xs font-bold px-2.5 py-[3px] rounded-[5px] border ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg text-hm-danger border-red-300' : 'bg-hm-warning-bg text-hm-warning border-orange-200'}`}>
                 ⚠ 특별관리 · {bldg.special}
               </span>
             )}
@@ -234,8 +234,8 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowDetailPreview(true)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark font-bold text-[13px] cursor-pointer font-[inherit] hover:brightness-95 transition-all">📋 미리보기</button>
-          <button onClick={() => setDeleteStep(1)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-red-300 bg-hm-danger-bg text-hm-danger font-bold text-[13px] cursor-pointer font-[inherit] hover:brightness-95 transition-all">🗑 삭제</button>
+          <button onClick={() => setShowDetailPreview(true)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">📋 미리보기</button>
+          <button onClick={() => setDeleteStep(1)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-red-300 bg-hm-danger-bg text-hm-danger font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">🗑 삭제</button>
         </div>
       </div>
 
@@ -244,7 +244,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
         <div className={`mb-5 px-[18px] py-3.5 rounded-[10px] border-[1.5px] flex items-start gap-3 ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg border-red-300' : 'bg-hm-warning-bg border-orange-200'}`}>
           <span className="text-xl shrink-0">⚠️</span>
           <div>
-            <div className={`text-[13px] font-bold mb-1 ${bldg.special === "무리한 요구" ? 'text-red-800' : 'text-amber-800'}`}>특별관리 건물 · {bldg.special}</div>
+            <div className={`text-sm font-bold mb-1 ${bldg.special === "무리한 요구" ? 'text-red-800' : 'text-amber-800'}`}>특별관리 건물 · {bldg.special}</div>
             <div className={`text-xs leading-relaxed ${bldg.special === "무리한 요구" ? 'text-red-700' : 'text-amber-700'}`}>{bldg.specialNote}</div>
           </div>
         </div>
@@ -259,15 +259,15 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
           { label: "연체", value: overdueCount, unit: "건", color: "#EF4444" },
         ].map((s, i) => (
           <Card key={i}>
-            <div className="text-[10px] text-hm-text-muted font-semibold mb-1">{s.label}</div>
-            <div className="text-[22px] font-extrabold" style={{ color: s.color }}>{s.value}<span className="text-[11px] font-medium text-[#B0B5C1]"> {s.unit}</span></div>
+            <div className="text-xs text-hm-text-muted font-semibold mb-1">{s.label}</div>
+            <div className="text-xl font-bold" style={{ color: s.color }}>{s.value}<span className="text-xs font-medium text-[#B0B5C1]"> {s.unit}</span></div>
           </Card>
         ))}
       </div>
       <div className="flex gap-2 mb-5 px-3 py-2 bg-hm-bg-slate rounded-lg border border-hm-border">
-        <span className="text-[11px] text-hm-text-muted font-semibold">유형별:</span>
+        <span className="text-xs text-hm-text-muted font-semibold">유형별:</span>
         {Object.entries(typeCounts).filter(([,v]) => v > 0).map(([t, v]) => (
-          <span key={t} className="text-[11px] font-bold px-2 py-0.5 rounded" style={{ background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
+          <span key={t} className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>
         ))}
       </div>
 

@@ -241,11 +241,11 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           {/* CTA */}
           <Reveal>
             <div className={`rounded-3xl text-center ${isMobile ? 'px-6 py-8' : 'px-10 py-12'}`} style={{ background: "var(--clr-bg)" }}>
-              <h3 className={`hm-headline ${isMobile ? 'text-[22px]' : 'text-[28px]'} mb-3`} style={{ margin: "0 0 12px" }}>당신의 건물, 하우스맨이 책임집니다.</h3>
-              <p className="hm-body text-[15px] mb-7">표준화된 매뉴얼과 AI 기반 시스템으로 공실 없는 건물, 수익 중심의 운영을 실현합니다.</p>
+              <h3 className={`hm-headline ${isMobile ? 'text-xl' : 'text-2xl'} mb-3`} style={{ margin: "0 0 12px" }}>당신의 건물, 하우스맨이 책임집니다.</h3>
+              <p className="hm-body text-base mb-7">표준화된 매뉴얼과 AI 기반 시스템으로 공실 없는 건물, 수익 중심의 운영을 실현합니다.</p>
               <div className="flex gap-3 justify-center flex-wrap">
                 <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-filled">📞 {SITE.phone}</a>
-                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn px-8 py-3.5 rounded-full bg-[#fee500] text-[#1d1d1f] no-underline font-medium text-[17px]">💬 카카오톡 문의</a>
+                <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-btn px-8 py-3.5 rounded-full bg-[#fee500] text-[#1d1d1f] no-underline font-medium text-lg">💬 카카오톡 문의</a>
               </div>
             </div>
           </Reveal>
@@ -253,8 +253,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
         {/* 하단 고정 바 (모바일) */}
         {isMobile && (
           <div className="fixed bottom-0 left-0 right-0 z-[100] flex gap-0 bg-white border-t px-4 py-2.5" style={{ borderColor: "var(--clr-border)", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
-            <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-[15px] text-white" style={{ background: "var(--clr-black)" }}>📞 전화</a>
-            <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-[15px] ml-2">💬 카카오톡</a>
+            <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-base text-white" style={{ background: "var(--clr-black)" }}>📞 전화</a>
+            <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-base ml-2">💬 카카오톡</a>
           </div>
         )}
       </div>
@@ -316,11 +316,11 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
         <div className={`sticky top-0 z-10 backdrop-blur-[20px] border-b border-[#f0f0f0] ${isMobile ? 'px-5 py-3' : 'px-12 py-3.5'} flex items-center justify-between`} style={{ background: "rgba(255,255,255,0.95)" }}>
           <div className="flex items-center gap-2.5">
             <img src="/logo-c.svg" alt="HOUSEMAN" className="h-9 w-auto" />
-            <span className="text-base font-extrabold tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</span>
+            <span className="text-base font-bold tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</span>
           </div>
           <div className="flex items-center gap-3">
-            <a href={`tel:${SITE.phone}`} className="text-[13px] font-semibold no-underline" style={{ color: "var(--clr-red)" }}>{SITE.phone}</a>
-            <div onClick={goBack} className="px-4 py-2 rounded-full cursor-pointer text-[13px] font-semibold" style={{ background: "var(--clr-bg)", color: "var(--clr-muted)" }}>
+            <a href={`tel:${SITE.phone}`} className="text-sm font-semibold no-underline" style={{ color: "var(--clr-red)" }}>{SITE.phone}</a>
+            <div onClick={goBack} className="px-4 py-2 rounded-full cursor-pointer text-sm font-semibold" style={{ background: "var(--clr-bg)", color: "var(--clr-muted)" }}>
               {urlVacancy ? "전체 매물 보기" : "← 목록"}
             </div>
           </div>
@@ -355,7 +355,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           {/* 제목 + 배지 */}
           <div className="mb-6">
             <div className="flex items-center gap-2.5 mb-2 flex-wrap">
-              <h2 className={`${isMobile ? 'text-2xl' : 'text-[32px]'} font-extrabold m-0 text-[#111] tracking-tight`}>{v.building} {v.room}호</h2>
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-[32px]'} font-bold m-0 text-[#111] tracking-tight`}>{v.building} {v.room}호</h2>
               <span className="text-xs font-bold px-3 py-1 text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
               {isContract && <span className="text-xs font-bold px-3 py-1 bg-hm-danger text-white">계약중</span>}
             </div>
@@ -443,11 +443,11 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* 문의 버튼 */}
           <div className="flex gap-3 mb-10">
-            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark flex-1 justify-center px-8 py-4 text-[17px]">📞 전화 문의</a>
+            <a href={`tel:${SITE.phone}`} className="hm-btn hm-btn-dark flex-1 justify-center px-8 py-4 text-lg">📞 전화 문의</a>
             {isContract
-              ? <div className="flex-1 flex items-center justify-center px-8 py-4 text-[17px] font-bold bg-gray-200 text-gray-400">계약 진행중</div>
+              ? <div className="flex-1 flex items-center justify-center px-8 py-4 text-lg font-bold bg-gray-200 text-gray-400">계약 진행중</div>
               : <button onClick={() => { setContractStep("verify"); setContractPhone(""); setContractError(""); setContractBroker(null); }}
-                className="flex-1 flex items-center justify-center px-8 py-4 text-[17px] font-bold font-[inherit] bg-[#c41230] text-white border-none cursor-pointer hover:bg-[#a80f28] transition-colors">계약하기</button>
+                className="flex-1 flex items-center justify-center px-8 py-4 text-lg font-bold font-[inherit] bg-[#c41230] text-white border-none cursor-pointer hover:bg-[#a80f28] transition-colors">계약하기</button>
             }
 
           {/* ── 부동산 인증 팝업 ── */}
@@ -455,13 +455,13 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center"
               onClick={() => setContractStep(null)}>
               <div onClick={e => e.stopPropagation()} className={`bg-white p-8 ${isMobile ? 'w-[90%]' : 'w-[400px]'} max-w-[95%]`}>
-                <div className="text-lg font-extrabold mb-2">등록부동산 확인</div>
-                <div className="text-[13px] text-gray-500 mb-5">등록된 부동산만 계약을 진행할 수 있습니다.</div>
+                <div className="text-lg font-bold mb-2">등록부동산 확인</div>
+                <div className="text-sm text-gray-500 mb-5">등록된 부동산만 계약을 진행할 수 있습니다.</div>
                 <div className="mb-4">
                   <div className="text-xs font-semibold text-gray-700 mb-1">부동산 연락처</div>
                   <input value={contractPhone} onChange={e => { setContractPhone(e.target.value); setContractError(""); }}
                     placeholder="02-0000-0000 또는 010-0000-0000"
-                    className={`w-full px-4 py-3 text-[15px] font-[inherit] box-border ${contractError ? 'border-2 border-hm-danger' : 'border border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`} />
+                    className={`w-full px-4 py-3 text-base font-[inherit] box-border ${contractError ? 'border-2 border-hm-danger' : 'border border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`} />
                   {contractError && <div className="text-xs text-hm-danger mt-1.5">{contractError}</div>}
                 </div>
                 <div className="flex gap-2">
@@ -494,8 +494,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       contractDeposit: calcContractDeposit, depositor: "",
                     });
                     setContractStep("form");
-                  }} className="flex-1 p-3 bg-[#111] text-white border-none text-[15px] font-bold cursor-pointer font-[inherit] hover:bg-[#333] transition-colors">확인</button>
-                  <button onClick={() => setContractStep(null)} className="px-6 py-3 bg-gray-100 border-none text-[15px] font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
+                  }} className="flex-1 p-3 bg-[#111] text-white border-none text-base font-bold cursor-pointer font-[inherit] hover:bg-[#333] transition-colors">확인</button>
+                  <button onClick={() => setContractStep(null)} className="px-6 py-3 bg-gray-100 border-none text-base font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
                 </div>
               </div>
             </div>
@@ -506,23 +506,23 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center overflow-y-auto"
               onClick={() => setContractStep(null)}>
               <div onClick={e => e.stopPropagation()} className={`bg-white ${isMobile ? 'p-6 w-[95%]' : 'p-8 w-[520px]'} max-w-[95%] max-h-[90vh] overflow-y-auto my-5`}>
-                <div className="text-lg font-extrabold mb-1">계약 등록</div>
-                <div className="text-[13px] text-gray-500 mb-5">{v.building} {v.room}호 · {v.type}</div>
+                <div className="text-lg font-bold mb-1">계약 등록</div>
+                <div className="text-sm text-gray-500 mb-5">{v.building} {v.room}호 · {v.type}</div>
 
                 {/* 부동산 정보 (수정 가능) */}
                 <div className="p-3.5 bg-sky-50 border border-sky-200 mb-4">
                   <div className="text-xs font-bold text-sky-700 mb-1">부동산 정보</div>
-                  <div className="text-[11px] text-gray-500 mb-2">부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
+                  <div className="text-xs text-gray-500 mb-2">부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <div className="text-[10px] text-sky-700 mb-0.5">부동산명</div>
+                      <div className="text-xs text-sky-700 mb-0.5">부동산명</div>
                       <input value={contractForm.broker || ""} onChange={e => setContractForm(p => ({ ...p, broker: e.target.value }))}
-                        className="w-full px-2.5 py-[7px] border border-sky-200 text-[13px] font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
+                        className="w-full px-2.5 py-[7px] border border-sky-200 text-sm font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-sky-700 mb-0.5">연락처</div>
+                      <div className="text-xs text-sky-700 mb-0.5">연락처</div>
                       <input value={contractForm.brokerPhone || ""} onChange={e => setContractForm(p => ({ ...p, brokerPhone: e.target.value }))}
-                        className="w-full px-2.5 py-[7px] border border-sky-200 text-[13px] font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
+                        className="w-full px-2.5 py-[7px] border border-sky-200 text-sm font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -530,31 +530,31 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 {/* 금액 */}
                 <div className="grid grid-cols-3 gap-2.5 mb-3">
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">{depositLabel} (만원)</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">{depositLabel} (만원)</div>
                     <input type="number" value={contractForm.deposit ?? ""} onChange={e => setContractForm(p => ({ ...p, deposit: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">월세 (만원)</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">월세 (만원)</div>
                     <input type="number" value={contractForm.rent ?? ""} onChange={e => setContractForm(p => ({ ...p, rent: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">관리비 (만원)</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">관리비 (만원)</div>
                     <input type="number" value={contractForm.mgmt ?? ""} onChange={e => setContractForm(p => ({ ...p, mgmt: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
 
                 {/* 입주일/만기일 */}
                 <div className={`grid ${v.type === "단기" ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-2'} gap-2.5 mb-1 items-start`}>
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">입주일 *</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">입주일 *</div>
                     <input type="date" value={contractForm.moveIn || ""}
                       max={v.type === "단기" ? (() => { const d = new Date(); d.setDate(d.getDate() + 5); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })() : undefined}
                       min={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })()}
                       onChange={e => setContractForm(p => ({ ...p, moveIn: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   {v.type === "단기" && (
                     <button onClick={() => {
@@ -567,30 +567,30 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     }} className="px-3.5 py-2 border border-blue-500 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
                   )}
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">만기일</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">만기일</div>
                     <input type="date" value={contractForm.expiry || ""} onChange={e => setContractForm(p => ({ ...p, expiry: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
-                {v.type === "단기" && <div className="text-[10px] text-amber-500 mb-3">단기: 오늘로부터 5일 이내 입주</div>}
+                {v.type === "단기" && <div className="text-xs text-amber-500 mb-3">단기: 오늘로부터 5일 이내 입주</div>}
 
                 {/* 단기 전용 */}
                 {v.type === "단기" && (
                   <div className="grid grid-cols-3 gap-2.5 mb-3">
                     <div>
-                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">수도</div>
+                      <div className="text-xs font-semibold text-gray-500 mb-[3px]">수도</div>
                       <input value={contractForm.water ?? ""} onChange={e => setContractForm(p => ({ ...p, water: e.target.value }))}
-                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                     <div>
-                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">인터넷</div>
+                      <div className="text-xs font-semibold text-gray-500 mb-[3px]">인터넷</div>
                       <input value={contractForm.cable ?? ""} onChange={e => setContractForm(p => ({ ...p, cable: e.target.value }))}
-                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                     <div>
-                      <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">퇴실청소비</div>
+                      <div className="text-xs font-semibold text-gray-500 mb-[3px]">퇴실청소비</div>
                       <input value={contractForm.exitFee ?? ""} onChange={e => setContractForm(p => ({ ...p, exitFee: e.target.value }))}
-                        className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                        className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                     </div>
                   </div>
                 )}
@@ -598,15 +598,15 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 {/* 계약금 + 입금자명 */}
                 <div className="grid grid-cols-2 gap-2.5 mb-3">
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">계약금 (만원)</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">계약금 (만원)</div>
                     <input type="number" value={contractForm.contractDeposit ?? ""} onChange={e => setContractForm(p => ({ ...p, contractDeposit: e.target.value }))}
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                   <div>
-                    <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">입금자명</div>
+                    <div className="text-xs font-semibold text-gray-500 mb-[3px]">입금자명</div>
                     <input value={contractForm.depositor || ""} onChange={e => setContractForm(p => ({ ...p, depositor: e.target.value }))}
                       placeholder="입금자명"
-                      className="w-full px-2.5 py-2 border border-gray-300 text-[13px] font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
+                      className="w-full px-2.5 py-2 border border-gray-300 text-sm font-[inherit] box-border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" />
                   </div>
                 </div>
 
@@ -691,7 +691,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       <table className="w-full border-collapse text-xs">
                         <thead>
                           <tr className="bg-[#111]">
-                            <th colSpan={3} className="px-3 py-2 text-white text-xs font-bold text-left">입주금 안내 <span className="font-normal text-[10px] text-gray-400 ml-2">{desc}</span></th>
+                            <th colSpan={3} className="px-3 py-2 text-white text-xs font-bold text-left">입주금 안내 <span className="font-normal text-xs text-gray-400 ml-2">{desc}</span></th>
                           </tr>
                         </thead>
                         <tbody>
@@ -706,28 +706,28 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                           {ownerRows.length > 0 && (
                             <tr className="bg-orange-50 border-b border-gray-200">
                               <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-hm-warning" /></td>
-                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-hm-warning">건물주</span> <span className="text-gray-400 text-[10px]">{ownerAcct || "미설정"}</span></td>
+                              <td className="px-1 py-1.5 text-xs"><span className="font-bold text-hm-warning">건물주</span> <span className="text-gray-400 text-xs">{ownerAcct || "미설정"}</span></td>
                               <td className="px-3 py-1.5 text-right font-bold text-hm-warning font-mono">{fmtA(ownerTotal)}</td>
                             </tr>
                           )}
                           {hmRows.length > 0 && (
                             <tr className="bg-blue-50 border-b border-gray-200">
                               <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-hm-blue-dark" /></td>
-                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-hm-blue-dark">하우스맨</span> <span className="text-gray-400 text-[10px]">{hmAcct}</span></td>
+                              <td className="px-1 py-1.5 text-xs"><span className="font-bold text-hm-blue-dark">하우스맨</span> <span className="text-gray-400 text-xs">{hmAcct}</span></td>
                               <td className="px-3 py-1.5 text-right font-bold text-hm-blue-dark font-mono">{fmtA(hmTotal)}</td>
                             </tr>
                           )}
                           {defRows.length > 0 && (
                             <tr className="bg-amber-50 border-b border-gray-200">
                               <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#92400E]" /></td>
-                              <td className="px-1 py-1.5 text-[11px] text-[#92400E] font-semibold">후불 (퇴실정산)</td>
+                              <td className="px-1 py-1.5 text-xs text-[#92400E] font-semibold">후불 (퇴실정산)</td>
                               <td className="px-3 py-1.5 text-right font-semibold text-[#92400E] font-mono">{fmtA(defRows.reduce((a, x) => a + x.v, 0))}</td>
                             </tr>
                           )}
                           {/* 합계 */}
                           <tr className="bg-gray-100">
-                            <td colSpan={2} className="px-3 py-2 font-extrabold text-[13px] text-[#111]">입주금 합계</td>
-                            <td className="px-3 py-2 text-right font-extrabold text-sm text-[#111] font-mono">{fmtA(payTotal)}</td>
+                            <td colSpan={2} className="px-3 py-2 font-bold text-sm text-[#111]">입주금 합계</td>
+                            <td className="px-3 py-2 text-right font-bold text-sm text-[#111] font-mono">{fmtA(payTotal)}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -781,8 +781,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     }
                     setContractStep(null);
                     alert("계약이 등록되었습니다. HOUSEMAN에서 확인 후 연락드리겠습니다.");
-                  }} className="flex-1 p-3.5 bg-[#c41230] text-white border-none text-base font-extrabold cursor-pointer font-[inherit] hover:bg-[#a80f28] transition-colors">계약 등록</button>
-                  <button onClick={() => setContractStep(null)} className="px-6 py-3.5 bg-gray-100 border-none text-[15px] font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
+                  }} className="flex-1 p-3.5 bg-[#c41230] text-white border-none text-base font-bold cursor-pointer font-[inherit] hover:bg-[#a80f28] transition-colors">계약 등록</button>
+                  <button onClick={() => setContractStep(null)} className="px-6 py-3.5 bg-gray-100 border-none text-base font-semibold cursor-pointer font-[inherit] text-gray-500 hover:bg-gray-200 transition-colors">취소</button>
                 </div>
               </div>
             </div>
@@ -790,7 +790,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           </div>
 
           {/* 회사 정보 */}
-          <div className="px-6 py-5 bg-gray-50 border border-gray-200 text-[13px] text-gray-500 leading-[1.8]">
+          <div className="px-6 py-5 bg-gray-50 border border-gray-200 text-sm text-gray-500 leading-[1.8]">
             <div className="font-bold text-[#111] mb-1 text-sm">HOUSEMAN 하우스맨</div>
             <div>{SITE.phone} | {SITE.address}</div>
             <div>사업자등록번호: {SITE.bizNo}</div>
@@ -810,8 +810,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           <img src="/logo-c.svg" alt="HOUSEMAN" className={`${isMobile ? 'h-11' : 'h-[54px]'} w-auto transition-[filter] duration-[0.4s]`} style={{ filter: scrolled ? "none" : "brightness(0) invert(1)" }} />
           {isMobile && (
             <div className="transition-colors duration-[0.4s]">
-              <div className="text-[13px] font-extrabold tracking-tight leading-tight" style={{ color: scrolled ? "var(--clr-black)" : "#fff" }}>HOUSEMAN</div>
-              <div className="text-[9px] leading-[1.3]" style={{ color: scrolled ? "var(--clr-muted)" : "rgba(255,255,255,0.7)" }}>중소형 빌딩 관리<br/>임대 주택 관리</div>
+              <div className="text-sm font-bold tracking-tight leading-tight" style={{ color: scrolled ? "var(--clr-black)" : "#fff" }}>HOUSEMAN</div>
+              <div className="text-xs leading-[1.3]" style={{ color: scrolled ? "var(--clr-muted)" : "rgba(255,255,255,0.7)" }}>중소형 빌딩 관리<br/>임대 주택 관리</div>
             </div>
           )}
         </div>
@@ -853,14 +853,14 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
               </h1>
             </Reveal>
             <Reveal delay={0.5}>
-              <p className={`${isMobile ? 'text-[15px] mb-12' : 'text-lg mb-8'} text-white/75 leading-relaxed max-w-[460px] tracking-tight`}>
+              <p className={`${isMobile ? 'text-base mb-12' : 'text-lg mb-8'} text-white/75 leading-relaxed max-w-[460px] tracking-tight`}>
                 현실을 아는 운영, 숫자로 증명되는 결과.
               </p>
             </Reveal>
             <Reveal delay={0.6}>
               <div className="flex gap-3 flex-wrap">
-                <a href={`tel:${SITE.phone}`} className={`hm-btn hm-btn-filled ${isMobile ? 'text-[15px]' : 'text-[17px]'}`}>관리 문의</a>
-                <span onClick={() => scrollTo("vacancy")} className={`hm-btn hm-btn-outline ${isMobile ? 'text-[15px]' : 'text-[17px]'} cursor-pointer text-white`} style={{ borderColor: "rgba(255,255,255,0.4)" }}>공실 확인하기</span>
+                <a href={`tel:${SITE.phone}`} className={`hm-btn hm-btn-filled ${isMobile ? 'text-base' : 'text-lg'}`}>관리 문의</a>
+                <span onClick={() => scrollTo("vacancy")} className={`hm-btn hm-btn-outline ${isMobile ? 'text-base' : 'text-lg'} cursor-pointer text-white`} style={{ borderColor: "rgba(255,255,255,0.4)" }}>공실 확인하기</span>
               </div>
             </Reveal>
           </div>
@@ -900,8 +900,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
               </div>
             </Reveal>
             <Reveal delay={0.15}>
-              <EditableText field="aboutBody1" defaultVal="HOUSEMAN은 단순히 스타트업이 아니라, 14년간 현장을 누비며 건물 운영의 본질을 지켜온 실전형 전문가 조직입니다. 건물 관리는 단순히 시스템을 도입하거나 IT 기술을 흉내낸다고 해서 운영이 되는 일이 아닙니다." tag="p" style={{ fontSize: 15, color: "var(--clr-muted)", lineHeight: 1.8, marginBottom: 16, letterSpacing: "-0.01em" }} />
-              <EditableText field="aboutBody2" defaultVal="HOUSEMAN은 2012년 설립 이후 수많은 건물을 직접 관리하며 축적한 현장 중심의 노하우를 바탕으로, 운영 프로세스 개선, 기술 도입, 문제 해결력 강화를 멈추지 않고 이어가고 있습니다. 기술도 경험도 함께 갖춘, 가장 현실적이고 신뢰할 수 있는 운영 파트너, 그 이름이 바로 HOUSEMAN입니다." tag="p" style={{ fontSize: 15, color: "var(--clr-muted)", lineHeight: 1.8, letterSpacing: "-0.01em" }} />
+              <EditableText field="aboutBody1" defaultVal="HOUSEMAN은 단순히 스타트업이 아니라, 14년간 현장을 누비며 건물 운영의 본질을 지켜온 실전형 전문가 조직입니다. 건물 관리는 단순히 시스템을 도입하거나 IT 기술을 흉내낸다고 해서 운영이 되는 일이 아닙니다." tag="p" style={{ fontSize: 16, color: "var(--clr-muted)", lineHeight: 1.8, marginBottom: 16, letterSpacing: "-0.01em" }} />
+              <EditableText field="aboutBody2" defaultVal="HOUSEMAN은 2012년 설립 이후 수많은 건물을 직접 관리하며 축적한 현장 중심의 노하우를 바탕으로, 운영 프로세스 개선, 기술 도입, 문제 해결력 강화를 멈추지 않고 이어가고 있습니다. 기술도 경험도 함께 갖춘, 가장 현실적이고 신뢰할 수 있는 운영 파트너, 그 이름이 바로 HOUSEMAN입니다." tag="p" style={{ fontSize: 16, color: "var(--clr-muted)", lineHeight: 1.8, letterSpacing: "-0.01em" }} />
             </Reveal>
           </div>
           {/* 우측: 빨간 배경 + 사진 겹침 */}
@@ -927,7 +927,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             <Reveal key={i} className="hm-reveal-scale" delay={i * 0.08}>
               <div className={`hm-svc-card ${isMobile ? 'p-6' : 'p-8'}`}>
                 <div className="hm-svc-icon mb-4">{item.icon}</div>
-                <div className="text-[17px] font-bold mb-1.5 tracking-tight" style={{ color: "var(--clr-black)" }}>{item.t}</div>
+                <div className="text-lg font-bold mb-1.5 tracking-tight" style={{ color: "var(--clr-black)" }}>{item.t}</div>
                 <div className="hm-body text-sm">{item.d}</div>
               </div>
             </Reveal>
@@ -940,7 +940,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
         <div className="hm-hero-bg" /><div className="hm-hero-grid" />
         <div className="max-w-[700px] mx-auto text-center relative z-[1]">
           <Reveal>
-            <h2 className={`hm-headline ${isMobile ? 'text-[26px]' : 'text-[40px]'} mb-4`} style={{ margin: "0 0 16px" }}>하우스맨은 중개보수를<br/>쉐어하지 않습니다.</h2>
+            <h2 className={`hm-headline ${isMobile ? 'text-2xl' : 'text-[40px]'} mb-4`} style={{ margin: "0 0 16px" }}>하우스맨은 중개보수를<br/>쉐어하지 않습니다.</h2>
             <p className={`hm-body ${isMobile ? 'text-base' : 'text-xl'}`}>그래서 더 많은 중개사가 움직이고,<br/>공실은 더 빨리 사라집니다.</p>
           </Reveal>
         </div>
@@ -969,7 +969,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   </div>
                   <div className={`${isMobile ? 'px-6 py-7' : 'px-10 py-12'}`} style={{ order: isMobile ? 1 : (i % 2 === 0 ? 1 : 0) }}>
                     <div className="text-[32px] mb-4">{s.icon}</div>
-                    <h3 className={`hm-headline ${isMobile ? 'text-[22px]' : 'text-[28px]'} mb-3`} style={{ margin: "0 0 12px" }}>{s.title}</h3>
+                    <h3 className={`hm-headline ${isMobile ? 'text-xl' : 'text-2xl'} mb-3`} style={{ margin: "0 0 12px" }}>{s.title}</h3>
                     <p className={`hm-body ${isMobile ? 'text-sm' : 'text-base'}`}>{s.desc}</p>
                     <span className="inline-block mt-4 text-sm font-medium" style={{ color: "var(--clr-red)" }}>자세히 보기 →</span>
                   </div>
@@ -986,7 +986,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           <Reveal>
             <p className="hm-eyebrow mb-4">Vacancy</p>
             <h2 className={`hm-headline ${isMobile ? 'text-[30px]' : 'text-[44px]'} mb-2`} style={{ margin: "0 0 8px" }}>공실 현황</h2>
-            <p className="hm-body text-[17px] mb-9">현재 입주 가능한 <span className="font-semibold" style={{ color: "var(--clr-red)" }}>{pub.length}개</span> 매물</p>
+            <p className="hm-body text-lg mb-9">현재 입주 가능한 <span className="font-semibold" style={{ color: "var(--clr-red)" }}>{pub.length}개</span> 매물</p>
           </Reveal>
           <div className="flex gap-2 mb-8 flex-wrap">
             {["전체", "단기", "일반임대", "근생", "계약중"].map(t => {
@@ -1025,26 +1025,26 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                         <span className="text-[40px] opacity-25">🏢</span>}
                       {/* 상단 배지 */}
                       <div className="absolute top-0 left-0 right-0 px-3 py-2.5 flex gap-1.5" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)" }}>
-                        <span className="text-[11px] font-bold px-2.5 py-[3px] text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
-                        {isContracted && <span className="text-[11px] font-bold px-2.5 py-[3px] bg-hm-danger text-white">계약중</span>}
+                        <span className="text-xs font-bold px-2.5 py-[3px] text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
+                        {isContracted && <span className="text-xs font-bold px-2.5 py-[3px] bg-hm-danger text-white">계약중</span>}
                       </div>
-                      {photos.length > 1 && <span className="absolute bottom-2 right-2 text-[10px] font-semibold px-2 py-[3px] bg-black/60 text-white">{photos.length}</span>}
+                      {photos.length > 1 && <span className="absolute bottom-2 right-2 text-xs font-semibold px-2 py-[3px] bg-black/60 text-white">{photos.length}</span>}
                     </div>
                     <div className="px-4 py-3.5">
-                      <div className="text-[15px] font-bold text-[#111] tracking-tight mb-1.5">
+                      <div className="text-base font-bold text-[#111] tracking-tight mb-1.5">
                         {v.building} {v.room}호
-                        {_roomInfo.roomType && <span className="text-[11px] font-medium text-gray-400 ml-1.5">{_roomInfo.roomType}{_roomInfo.area ? ` ${_roomInfo.area}㎡` : ""}</span>}
+                        {_roomInfo.roomType && <span className="text-xs font-medium text-gray-400 ml-1.5">{_roomInfo.roomType}{_roomInfo.area ? ` ${_roomInfo.area}㎡` : ""}</span>}
                       </div>
                       <div className="flex items-baseline gap-1 mb-1">
-                        <span className="text-[11px] text-gray-400">{v.type === "단기" ? "예치금" : "보증금"}</span>
-                        <span className="text-[15px] font-extrabold text-[#111]">{fmt(_dep)}</span>
-                        <span className="text-[11px] text-gray-400 mx-0.5">/</span>
-                        <span className="text-[11px] text-gray-400">월세</span>
-                        <span className="text-[15px] font-extrabold text-[#c41230]">{fmt(_rent)}</span>
-                        <span className="text-[11px] text-gray-400">만</span>
+                        <span className="text-xs text-gray-400">{v.type === "단기" ? "예치금" : "보증금"}</span>
+                        <span className="text-base font-bold text-[#111]">{fmt(_dep)}</span>
+                        <span className="text-xs text-gray-400 mx-0.5">/</span>
+                        <span className="text-xs text-gray-400">월세</span>
+                        <span className="text-base font-bold text-[#c41230]">{fmt(_rent)}</span>
+                        <span className="text-xs text-gray-400">만</span>
                       </div>
                       {(_mgmt > 0 || _water > 0 || _internet > 0) && (
-                        <div className="text-[11px] text-gray-400 flex gap-2">
+                        <div className="text-xs text-gray-400 flex gap-2">
                           {_mgmt > 0 && <span>관리비 {_mgmt}만</span>}
                           {_water > 0 && <span>수도 {_water > 1 ? _water + "만" : (_water * 10000).toLocaleString() + "원"}</span>}
                           {_internet > 0 && <span>인터넷 {_internet > 1 ? _internet + "만" : (_internet * 10000).toLocaleString() + "원"}</span>}
@@ -1053,9 +1053,9 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     </div>
                     {editMode && (
                       <div className="absolute top-2 right-2 flex gap-1 z-[5]" onClick={e => e.stopPropagation()}>
-                        <span className="text-[11px] font-extrabold px-2 py-0.5 bg-black/70 text-white">{globalIdx + 1}</span>
-                        <button onClick={() => moveVacancy(globalIdx, -1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-[13px] font-extrabold hover:bg-black/90 transition-colors">↑</button>
-                        <button onClick={() => moveVacancy(globalIdx, 1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-[13px] font-extrabold hover:bg-black/90 transition-colors">↓</button>
+                        <span className="text-xs font-bold px-2 py-0.5 bg-black/70 text-white">{globalIdx + 1}</span>
+                        <button onClick={() => moveVacancy(globalIdx, -1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-sm font-bold hover:bg-black/90 transition-colors">↑</button>
+                        <button onClick={() => moveVacancy(globalIdx, 1)} className="w-[26px] h-[26px] border-none bg-black/70 text-white cursor-pointer text-sm font-bold hover:bg-black/90 transition-colors">↓</button>
                       </div>
                     )}
                   </div>
@@ -1077,7 +1077,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             </div>
           )}
           {filtered.length > 0 && (
-            <div className="text-center mt-4 text-[13px]" style={{ color: "var(--clr-light)" }}>
+            <div className="text-center mt-4 text-sm" style={{ color: "var(--clr-light)" }}>
               {vacancyPage * VACANCY_PER_PAGE + 1}~{Math.min((vacancyPage + 1) * VACANCY_PER_PAGE, filtered.length)} / 총 {filtered.length}개
             </div>
           )}
@@ -1116,7 +1116,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           </div>
           <Reveal delay={0.3}>
             <div className="text-center mt-12">
-              <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-btn hm-btn-outline text-[15px]">더 많은 사례 보기</a>
+              <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-btn hm-btn-outline text-base">더 많은 사례 보기</a>
             </div>
           </Reveal>
         </div>
@@ -1131,10 +1131,10 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
         <div className={`relative z-[1] ${isMobile ? 'px-6 py-20' : 'px-12 py-[120px]'} text-center`}>
           <div className="max-w-[650px] mx-auto">
             <Reveal>
-              <h2 className={`${isMobile ? 'text-[28px]' : 'text-5xl'} font-bold text-white leading-[1.15] mb-5 tracking-tight`} style={{ margin: "0 0 20px" }}>당신의 건물,<br/>하우스맨이 책임집니다.</h2>
+              <h2 className={`${isMobile ? 'text-2xl' : 'text-5xl'} font-bold text-white leading-[1.15] mb-5 tracking-tight`} style={{ margin: "0 0 20px" }}>당신의 건물,<br/>하우스맨이 책임집니다.</h2>
             </Reveal>
             <Reveal delay={0.15}>
-              <p className={`${isMobile ? 'text-[15px]' : 'text-lg'} text-white/70 leading-relaxed mb-10 tracking-tight`}>
+              <p className={`${isMobile ? 'text-base' : 'text-lg'} text-white/70 leading-relaxed mb-10 tracking-tight`}>
                 표준화된 매뉴얼과 AI 기반 시스템으로<br/>공실 없는 건물, 수익 중심의 운영을 실현합니다.
               </p>
             </Reveal>
@@ -1154,7 +1154,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
           <div className={`${isMobile ? 'block' : 'flex justify-between'} mb-8 gap-10`}>
             <div className={`${isMobile ? 'mb-6' : 'mb-0'}`}>
               <div className="text-lg font-bold mb-3 tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</div>
-              <div className="text-[13px] leading-[2]" style={{ color: "var(--clr-light)" }}>
+              <div className="text-sm leading-[2]" style={{ color: "var(--clr-light)" }}>
                 대표: {SITE.ceo} · 사업자번호: {SITE.bizNo}<br/>{SITE.address}<br/>Email: {SITE.email}
               </div>
             </div>
@@ -1177,8 +1177,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       {/* ═══ 모바일 하단 고정 바 ═══ */}
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 z-[100] flex gap-2 bg-white/95 backdrop-blur-[20px] border-t px-4 py-2.5" style={{ borderColor: "var(--clr-border)", paddingBottom: "calc(10px + env(safe-area-inset-bottom))" }}>
-          <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-[15px] text-white" style={{ background: "var(--clr-black)" }}>📞 전화하기</a>
-          <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-[15px]">💬 카카오톡</a>
+          <a href={`tel:${SITE.phone}`} className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl no-underline font-semibold text-base text-white" style={{ background: "var(--clr-black)" }}>📞 전화하기</a>
+          <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1.5 p-3.5 rounded-xl bg-[#fee500] text-[#1d1d1f] no-underline font-semibold text-base">💬 카카오톡</a>
         </div>
       )}
 

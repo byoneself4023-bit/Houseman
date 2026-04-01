@@ -23,7 +23,7 @@ export const TenantSummaryCards: React.FC<TenantSummaryCardsProps> = ({ myTenant
               background: isActive ? `${colors[t]}10` : "#fff",
               color: isActive ? colors[t] : "var(--color-hm-text-sub)",
             }}>
-            {t} <span className="font-extrabold">{cnt}</span>
+            {t} <span className="font-bold">{cnt}</span>
           </button>
         );
       })}

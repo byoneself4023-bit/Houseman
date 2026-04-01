@@ -23,7 +23,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
       <div className="bg-white rounded-2xl p-6 w-[480px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <div className="text-[15px] font-extrabold text-hm-text">📷 퇴실사진 등록 — {photoModalTenant.building} {photoModalTenant.room}호</div>
+          <div className="text-base font-bold text-hm-text">📷 퇴실사진 등록 — {photoModalTenant.building} {photoModalTenant.room}호</div>
           <button onClick={() => setPhotoModalTenant(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <PhotoDropZone
@@ -105,7 +105,7 @@ export const CheckPhotoModal: React.FC<CheckPhotoModalProps> = ({
       <div className="bg-white rounded-2xl p-6 w-[480px] max-h-[80vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,.3)]"
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <div className="text-[15px] font-extrabold text-hm-text">📷 입주체크사진 등록 — {checkPhotoModalTenant.building} {checkPhotoModalTenant.room}호</div>
+          <div className="text-base font-bold text-hm-text">📷 입주체크사진 등록 — {checkPhotoModalTenant.building} {checkPhotoModalTenant.room}호</div>
           <button onClick={() => setCheckPhotoModalTenant(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <PhotoDropZone
@@ -199,13 +199,13 @@ export const ZoomPhotoModal: React.FC<ZoomPhotoModalProps> = ({ zoomPhoto, setZo
       }}>
       {zp.index > 0 && (
         <button onClick={e => { e.stopPropagation(); goTo(-1); }}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-[28px] text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-2xl text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
           &#8249;
         </button>
       )}
       {zp.index < zp.photos.length - 1 && (
         <button onClick={e => { e.stopPropagation(); goTo(1); }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-[28px] text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/15 border-none text-2xl text-white cursor-pointer rounded-full w-12 h-12 flex items-center justify-center z-[2] hover:bg-white/25 transition-colors">
           &#8250;
         </button>
       )}
@@ -214,15 +214,15 @@ export const ZoomPhotoModal: React.FC<ZoomPhotoModalProps> = ({ zoomPhoto, setZo
         style={{ transform: `scale(${zp.zoom})` }}
         onClick={e => e.stopPropagation()}
         draggable={false} />
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 rounded-[20px] px-4 py-1.5 text-white text-[13px] font-bold">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/50 rounded-[20px] px-4 py-1.5 text-white text-sm font-bold">
         {zp.index + 1} / {zp.photos.length}
-        {zp.zoom !== 1 && <span className="ml-2 text-[11px] text-blue-300">{Math.round(zp.zoom * 100)}%</span>}
+        {zp.zoom !== 1 && <span className="ml-2 text-xs text-blue-300">{Math.round(zp.zoom * 100)}%</span>}
       </div>
       <button onClick={() => setZoomPhoto(null)}
         className="absolute top-4 right-4 bg-white/20 border-none text-2xl text-white cursor-pointer rounded-full w-10 h-10 flex items-center justify-center hover:bg-white/30 transition-colors">
         ✕
       </button>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-[11px]">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs">
         ← → 이전/다음 · 스크롤 확대/축소 · ESC 닫기
       </div>
     </div>
@@ -258,15 +258,15 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
         onClick={e => e.stopPropagation()}>
         {/* 헤더 */}
         <div className="px-6 py-3 bg-black/60 flex items-center justify-between shrink-0">
-          <div className="text-[15px] font-extrabold text-white">🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
+          <div className="text-base font-bold text-white">🔍 사진 비교 — {compareData.building} {compareData.room}호</div>
           <div className="flex items-center gap-3">
             {isCompareMode && (
               <button onClick={() => updateCmp({ _leftIdx: null, _rightIdx: null, _leftZoom: 1, _rightZoom: 1, _leftPos: { x: 0, y: 0 }, _rightPos: { x: 0, y: 0 } })}
-                className="px-3.5 py-[5px] rounded-md border border-white/30 bg-white/10 text-white text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-white/20 transition-colors">
+                className="px-3.5 py-[5px] rounded-md border border-white/30 bg-white/10 text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-white/20 transition-colors">
                 목록으로
               </button>
             )}
-            <button onClick={() => setCompareData(null)} className="bg-transparent border-none text-[22px] cursor-pointer text-white hover:text-white/70 transition-colors">✕</button>
+            <button onClick={() => setCompareData(null)} className="bg-transparent border-none text-xl cursor-pointer text-white hover:text-white/70 transition-colors">✕</button>
           </div>
         </div>
 
@@ -275,7 +275,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
           {/* 왼쪽: 입주체크사진 */}
           <div className="flex-1 flex flex-col border-r-2 border-white/15">
             <div className="px-4 py-2 bg-amber-500/15 text-center shrink-0">
-              <span className="text-xs font-extrabold text-yellow-300">📋 입주체크사진 (입주 시) — {leftPhotos.length}장</span>
+              <span className="text-xs font-bold text-yellow-300">📋 입주체크사진 (입주 시) — {leftPhotos.length}장</span>
             </div>
             <div className="flex-1 overflow-auto" style={{ padding: cmpLeft !== null ? 0 : 12 }}>
               {cmpLeft !== null && leftPhotos[cmpLeft] ? (
@@ -307,7 +307,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                     <button onClick={() => updateCmp({ _leftIdx: cmpLeft + 1, _leftZoom: 1, _leftPos: { x: 0, y: 0 } })}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8250;</button>
                   )}
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-[10px] font-bold">
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-xs font-bold">
                     {cmpLeft + 1}/{leftPhotos.length} {cmpLeftZoom !== 1 && `· ${Math.round(cmpLeftZoom * 100)}%`}
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
           {/* 오른쪽: 퇴실사진 */}
           <div className="flex-1 flex flex-col">
             <div className="px-4 py-2 bg-red-600/15 text-center shrink-0">
-              <span className="text-xs font-extrabold text-red-300">🚪 퇴실사진 (퇴실 시) — {rightPhotos.length}장</span>
+              <span className="text-xs font-bold text-red-300">🚪 퇴실사진 (퇴실 시) — {rightPhotos.length}장</span>
             </div>
             <div className="flex-1 overflow-auto" style={{ padding: cmpRight !== null ? 0 : 12 }}>
               {cmpRight !== null && rightPhotos[cmpRight] ? (
@@ -362,7 +362,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 border-none text-white text-xl cursor-pointer rounded-full w-9 h-9 flex items-center justify-center hover:bg-black/70 transition-colors">&#8250;</button>
                   )}
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                    <div className="bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-[10px] font-bold">
+                    <div className="bg-black/60 rounded-xl px-2.5 py-[3px] text-white text-xs font-bold">
                       {cmpRight + 1}/{rightPhotos.length} {cmpRightZoom !== 1 && `· ${Math.round(cmpRightZoom * 100)}%`}
                     </div>
                     {onRemoveRight && (
@@ -373,7 +373,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                         if (newLen === 0) updateCmp({ _rightIdx: null });
                         else if (cmpRight >= newLen) updateCmp({ _rightIdx: newLen - 1, _rightZoom: 1, _rightPos: { x: 0, y: 0 } });
                       }}
-                        className="px-2.5 py-[3px] rounded-xl border-none bg-red-600/80 text-white text-[10px] font-bold cursor-pointer font-[inherit] hover:bg-red-700 transition-colors">
+                        className="px-2.5 py-[3px] rounded-xl border-none bg-red-600/80 text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-700 transition-colors">
                         🗑 삭제
                       </button>
                     )}
@@ -401,7 +401,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                         </div>
                         {onRemoveRight && (
                           <div onClick={(e) => { e.stopPropagation(); onRemoveRight(i); toast.success("퇴실사진 삭제됨"); }}
-                            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-red-600/85 text-white text-[10px] font-extrabold flex items-center justify-center cursor-pointer hover:bg-red-700 transition-colors">
+                            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-red-600/85 text-white text-xs font-bold flex items-center justify-center cursor-pointer hover:bg-red-700 transition-colors">
                             ✕
                           </div>
                         )}
@@ -411,7 +411,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
                   {onAddRight && (
                     <div className="mt-2 text-center">
                       <button onClick={() => rightFileRef.current?.click()}
-                        className="px-4 py-1.5 rounded-lg border-2 border-dashed border-red-200/60 bg-red-600/10 text-red-300 text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-red-600/20 transition-colors">
+                        className="px-4 py-1.5 rounded-lg border-2 border-dashed border-red-200/60 bg-red-600/10 text-red-300 text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-600/20 transition-colors">
                         + 사진 추가
                       </button>
                     </div>
@@ -439,7 +439,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
 
         {/* 하단 안내 */}
         <div className="px-6 py-2 bg-black/60 text-center shrink-0">
-          <span className="text-white/50 text-[11px]">사진 클릭하여 확대 · 스크롤로 줌 · 드래그로 이동 · ESC 닫기</span>
+          <span className="text-white/50 text-xs">사진 클릭하여 확대 · 스크롤로 줌 · 드래그로 이동 · ESC 닫기</span>
         </div>
       </div>
     </div>

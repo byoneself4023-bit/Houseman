@@ -73,12 +73,12 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
 
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-4">
-          <div className="text-[15px] font-extrabold text-hm-text">{isPrefill ? "📝 자동저장값 수정" : "✏️ 퇴실정보 직접입력"}</div>
+          <div className="text-base font-bold text-hm-text">{isPrefill ? "📝 자동저장값 수정" : "✏️ 퇴실정보 직접입력"}</div>
           <button onClick={() => setDirectInputModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
 
         {isPrefill && (
-          <div className="px-2.5 py-1.5 rounded-md bg-hm-blue-bg border border-blue-200 text-[10px] text-hm-blue-dark mb-3">
+          <div className="px-2.5 py-1.5 rounded-md bg-hm-blue-bg border border-blue-200 text-xs text-hm-blue-dark mb-3">
             임차인이 입력한 정보입니다. 수정 후 저장하세요.
           </div>
         )}
@@ -86,7 +86,7 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
         <div className="flex flex-col gap-3">
           {/* 퇴실일시 */}
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">퇴실일시</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">퇴실일시</div>
             <div className="flex gap-1.5">
               <input id="di-date" type="date" defaultValue={defaultDate} className={`${inputClassName} !px-2.5 !py-2 !text-xs flex-1`} />
               <input id="di-time" type="time" defaultValue={defaultTime} className={`${inputClassName} !px-2.5 !py-2 !text-xs min-w-[130px]`} />
@@ -94,13 +94,13 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
           </div>
           {/* 비밀번호 */}
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">호실 비밀번호</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">호실 비밀번호</div>
             <input id="di-pw" defaultValue={isPrefill ? (evData.doorPassword || "") : ""} placeholder="비밀번호 입력 (숫자)"
               className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
           </div>
           {/* 환불 은행 */}
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">환불 은행</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">환불 은행</div>
             <select id="di-bank" defaultValue={isPrefill ? (evData.refundBank || "") : ""}
               className={`${inputClassName} !px-2.5 !py-2 !text-xs cursor-pointer`}>
               <option value="">은행 선택</option>
@@ -109,14 +109,14 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
           </div>
           {/* 계좌번호 */}
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">계좌번호</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">계좌번호</div>
             <input id="di-acct" defaultValue={isPrefill ? (evData.refundAccount || "") : ""} placeholder="숫자만 입력 (예: 12612772801011)"
               onInput={(e: any) => { e.target.value = e.target.value.replace(/[^0-9]/g, ""); }}
               className={`${inputClassName} !px-2.5 !py-2 !text-xs font-mono`} />
           </div>
           {/* 예금주 */}
           <div>
-            <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">예금주</div>
+            <div className="text-xs font-bold text-hm-text-sub mb-[3px]">예금주</div>
             <input id="di-holder" defaultValue={isPrefill ? (evData.refundHolder || dim.tenantName) : dim.tenantName} placeholder="예금주 입력"
               className={`${inputClassName} !px-2.5 !py-2 !text-xs`} />
           </div>
@@ -145,8 +145,8 @@ export const DirectInputModal = ({ directInputModal: dim, setDirectInputModal, s
           onMouseDown={() => setShowResetConfirm(false)}>
           <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,.3)]"
             onMouseDown={e => e.stopPropagation()}>
-            <div className="text-[15px] font-extrabold text-hm-text mb-3">🔄 초기화</div>
-            <div className="text-[13px] text-gray-700 leading-relaxed">퇴실링크 입력을 초기화하시겠습니까?</div>
+            <div className="text-base font-bold text-hm-text mb-3">🔄 초기화</div>
+            <div className="text-sm text-gray-700 leading-relaxed">퇴실링크 입력을 초기화하시겠습니까?</div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setShowResetConfirm(false)}
                 className="px-5 py-2 rounded-lg border border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">

@@ -108,8 +108,8 @@ export const MoveOutLinkPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-hm-bg font-['Pretendard',sans-serif]">
       <div className="bg-white rounded-2xl p-8 max-w-[400px] text-center shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
         <div className="text-5xl mb-4">✅</div>
-        <div className="text-lg font-extrabold text-hm-success mb-2">퇴실 정보 입력 완료</div>
-        <div className="text-[13px] text-hm-text-muted leading-relaxed">
+        <div className="text-lg font-bold text-hm-success mb-2">퇴실 정보 입력 완료</div>
+        <div className="text-sm text-hm-text-muted leading-relaxed">
           {event?.building_name} {event?.room_number}호<br />
           입력해주셔서 감사합니다.<br />
           퇴실 절차가 진행됩니다.
@@ -124,11 +124,11 @@ export const MoveOutLinkPage = () => {
         {/* 헤더 */}
         <div className="bg-white rounded-2xl px-5 py-6 mb-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] text-center">
           <div className="text-sm font-bold text-hm-text-muted mb-1">HOUSEMAN 건물관리</div>
-          <div className="text-[22px] font-extrabold text-hm-text mb-2">🚪 퇴실 정보 입력</div>
+          <div className="text-xl font-bold text-hm-text mb-2">🚪 퇴실 정보 입력</div>
           <div className="inline-flex gap-2 px-4 py-1.5 rounded-lg bg-hm-danger-bg border border-hm-danger-border">
-            <span className="text-[13px] font-bold text-hm-danger">{event?.building_name} {event?.room_number}호</span>
-            <span className="text-[13px] text-hm-text-muted">·</span>
-            <span className="text-[13px] text-hm-danger">{event?.event_date}</span>
+            <span className="text-sm font-bold text-hm-danger">{event?.building_name} {event?.room_number}호</span>
+            <span className="text-sm text-hm-text-muted">·</span>
+            <span className="text-sm text-hm-danger">{event?.event_date}</span>
           </div>
         </div>
 
@@ -178,18 +178,18 @@ export const MoveOutLinkPage = () => {
           <label className="flex items-center gap-2 mt-3 cursor-pointer">
             <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)}
               className="w-[18px] h-[18px] accent-hm-success" />
-            <span className={`text-[13px] font-bold ${agreed ? 'text-hm-success' : 'text-hm-text-muted'}`}>위 내용을 확인했습니다</span>
+            <span className={`text-sm font-bold ${agreed ? 'text-hm-success' : 'text-hm-text-muted'}`}>위 내용을 확인했습니다</span>
           </label>
         </div>
 
         {/* 제출 버튼 */}
         <button onClick={handleSubmit}
           disabled={!agreed}
-          className={`w-full py-4 rounded-xl border-none text-base font-extrabold font-[inherit] transition-all duration-200 ${agreed ? 'bg-hm-danger text-white cursor-pointer shadow-[0_4px_12px_rgba(220,38,38,0.3)] hover:bg-red-700' : 'bg-gray-200 text-gray-400 cursor-default shadow-none'}`}>
+          className={`w-full py-4 rounded-xl border-none text-base font-bold font-[inherit] transition-all duration-200 ${agreed ? 'bg-hm-danger text-white cursor-pointer shadow-[0_4px_12px_rgba(220,38,38,0.3)] hover:bg-red-700' : 'bg-gray-200 text-gray-400 cursor-default shadow-none'}`}>
           퇴실 정보 제출
         </button>
 
-        <div className="text-center mt-4 text-[11px] text-[#B0B5C1]">
+        <div className="text-center mt-4 text-xs text-[#B0B5C1]">
           HOUSEMAN 건물관리 시스템
         </div>
       </div>

@@ -556,12 +556,12 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
     return (
       <div className="flex flex-col h-full">
         <div className="px-3.5 py-3 border-b border-[#E5E5E5] bg-white">
-          <div className="text-[13px] font-extrabold text-[#346aff]">AI 어시스턴트</div>
-          <div className="text-[9px] text-[#8B95A1] mt-0.5">건물/호실/임차인 정보를 자연어로 조회/수정</div>
+          <div className="text-sm font-bold text-[#346aff]">AI 어시스턴트</div>
+          <div className="text-xs text-[#8B95A1] mt-0.5">건물/호실/임차인 정보를 자연어로 조회/수정</div>
         </div>
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-2.5">
           {messages.length === 0 && (
-            <div className="text-center px-3 py-6 text-[#8B95A1] text-[11px] leading-[1.8]">
+            <div className="text-center px-3 py-6 text-[#8B95A1] text-xs leading-[1.8]">
               명령 예시:<br/>
               &quot;제이앤제이 현관 비번 1234로 바꿔줘&quot;<br/>
               &quot;스타빌 공실 몇 개야?&quot;<br/>
@@ -570,17 +570,17 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
           )}
           {messages.map((msg, i) => (
             <div key={i} className={msgClassName(msg)}>
-              <span className="text-[13px] whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
+              <span className="text-sm whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
             </div>
           ))}
-          {loading && <div className={MSG_CLS.assistant}><span className="text-[13px] text-gray-500 italic">응답 대기중...</span></div>}
+          {loading && <div className={MSG_CLS.assistant}><span className="text-sm text-gray-500 italic">응답 대기중...</span></div>}
         </div>
         <div className="px-3 py-2.5 border-t border-[#E5E5E5] bg-white">
           <div className="flex gap-1.5">
             <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-              placeholder="명령 입력..." className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-[13px] outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow" disabled={loading} />
+              placeholder="명령 입력..." className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow" disabled={loading} />
             <button onClick={sendMessage} disabled={loading || !input.trim()}
-              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-[13px] cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}>전송</button>
+              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-sm cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}>전송</button>
           </div>
         </div>
       </div>
@@ -611,12 +611,12 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
                 key={i}
                 className={msgClassName(msg)}
               >
-                <span className="text-[13px] whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
+                <span className="text-sm whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
               </div>
             ))}
             {loading && (
               <div className={MSG_CLS.assistant}>
-                <span className="text-[13px] text-gray-500 italic">응답 대기중...</span>
+                <span className="text-sm text-gray-500 italic">응답 대기중...</span>
               </div>
             )}
           </div>
@@ -630,13 +630,13 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="건물 정보 조회/수정 명령을 입력하세요..."
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-[13px] outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow"
               disabled={loading}
             />
             <button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-[13px] cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}
+              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-sm cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}
             >
               전송
             </button>

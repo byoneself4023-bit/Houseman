@@ -21,15 +21,15 @@ export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, set
       <div className="bg-white rounded-2xl p-6 w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         onMouseDown={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <div className="text-[15px] font-extrabold text-hm-text">{"\uD83D\uDCE9"} 다른번호로 보내기</div>
+          <div className="text-base font-bold text-hm-text">{"\uD83D\uDCE9"} 다른번호로 보내기</div>
           <button onClick={() => setSendLinkModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">{"\u2715"}</button>
         </div>
-        <div className="text-[11px] text-hm-text-muted mb-3">{building} {room}호 퇴실링크</div>
+        <div className="text-xs text-hm-text-muted mb-3">{building} {room}호 퇴실링크</div>
         <div className="mb-3">
-          <div className="text-[11px] font-bold text-hm-text-sub mb-[3px]">연락처</div>
-          <input id="sl-phone" placeholder="010-0000-0000" className={`${inputClassName} !py-2.5 !px-3 !text-[13px] font-mono`} autoFocus />
+          <div className="text-xs font-bold text-hm-text-sub mb-[3px]">연락처</div>
+          <input id="sl-phone" placeholder="010-0000-0000" className={`${inputClassName} !py-2.5 !px-3 !text-sm font-mono`} autoFocus />
         </div>
-        <div className="mb-4 p-2 px-2.5 bg-hm-bg-hover rounded-md border border-[#E5E7EB] text-[10px] text-hm-text-sub whitespace-pre-wrap">
+        <div className="mb-4 p-2 px-2.5 bg-hm-bg-hover rounded-md border border-[#E5E7EB] text-xs text-hm-text-sub whitespace-pre-wrap">
           {msgText}
         </div>
         <button onClick={() => {
@@ -43,7 +43,7 @@ export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, set
           setEvents?.((prev: any[]) => prev.map((e: any) => e === sendLinkModal.ev ? { ...e, ...patch } : e));
           setSendLinkModal(null);
         }}
-          className="w-full py-2.5 rounded-lg border-none bg-[#F59E0B] text-white font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-[#D97706] transition-colors">
+          className="w-full py-2.5 rounded-lg border-none bg-[#F59E0B] text-white font-bold text-sm cursor-pointer font-[inherit] hover:bg-[#D97706] transition-colors">
           {"\uD83D\uDCE9"} 문자 보내기
         </button>
       </div>

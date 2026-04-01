@@ -510,7 +510,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       {/* ── Header / Week Nav ── */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <div className={`${isMobile ? "text-lg" : "text-[22px]"} font-extrabold text-gray-900`}>
+          <div className={`${isMobile ? "text-lg" : "text-xl"} font-bold text-gray-900`}>
             순회 동선 제안
           </div>
           <div className="text-xs text-gray-400 bg-gray-100 rounded-md px-2 py-0.5 font-semibold">
@@ -519,7 +519,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
         </div>
         <div className="flex items-center gap-2">
           <button className="px-4 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setWeekOffset(w => w - 1)}>&lt;</button>
-          <div className={`${isMobile ? "text-base" : "text-xl"} font-extrabold text-gray-900`}>
+          <div className={`${isMobile ? "text-base" : "text-xl"} font-bold text-gray-900`}>
             {weekLabel} ({formatDate(weekDates[0])} ~ {formatDate(weekDates[4])})
           </div>
           <button className="px-4 py-2 rounded-lg border border-gray-300 bg-white cursor-pointer text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" onClick={() => setWeekOffset(w => w + 1)}>&gt;</button>
@@ -536,7 +536,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
       {/* ── Staff Filter ── */}
       <div className="flex gap-2 mb-4 flex-wrap items-center">
-        <span className="text-[13px] font-bold text-gray-500 mr-1">담당자:</span>
+        <span className="text-sm font-bold text-gray-500 mr-1">담당자:</span>
         {['전체', ...externalStaff.map(s => s.name)].map(name => {
           const isActive = selectedStaff === name;
           const staffInfo = externalStaff.find(s => s.name === name);
@@ -545,15 +545,15 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             <button
               key={name}
               onClick={() => setSelectedStaff(name)}
-              className={`px-3.5 py-1.5 rounded-lg text-[13px] cursor-pointer transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-sm cursor-pointer transition-all ${
                 isActive
-                  ? 'border-2 border-hm-blue bg-hm-blue-bg text-blue-700 font-extrabold'
+                  ? 'border-2 border-hm-blue bg-hm-blue-bg text-blue-700 font-bold'
                   : 'border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50'
               }`}
             >
               {name}
               {buildingCount != null && (
-                <span className={`text-[11px] ml-1 ${isActive ? 'text-hm-blue' : 'text-gray-400'}`}>
+                <span className={`text-xs ml-1 ${isActive ? 'text-hm-blue' : 'text-gray-400'}`}>
                   ({buildingCount})
                 </span>
               )}
@@ -585,7 +585,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   setViewMode(mode as 'list' | 'map');
                 }
               }}
-              className={`px-3.5 py-[5px] rounded-md border-none text-[13px] cursor-pointer transition-all ${
+              className={`px-3.5 py-[5px] rounded-md border-none text-sm cursor-pointer transition-all ${
                 viewMode === mode
                   ? 'bg-white text-gray-900 font-bold shadow-sm'
                   : 'bg-transparent text-gray-500 font-medium hover:text-gray-700'
@@ -631,7 +631,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           {/* 지도 요일 범례 */}
           <div className="flex gap-3 mb-2 flex-wrap">
             {WEEKDAY_NAMES.map((name, idx) => (
-              <div key={idx} className="flex items-center gap-1 text-[11px] text-gray-500">
+              <div key={idx} className="flex items-center gap-1 text-xs text-gray-500">
                 <div className="w-3 h-[3px] rounded-sm" style={{ background: DAY_COLORS[idx] }} />
                 <span>{name.slice(0, 1)}</span>
               </div>
@@ -648,7 +648,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           {/* 선택된 날의 동선 순서 표시 */}
           {mapDay !== null && optimizedSchedule[mapDay]?.buildings.length > 0 && (
             <div className="mt-3 p-3 bg-hm-bg-hover rounded-[10px]" style={{ border: `2px solid ${DAY_COLORS[mapDay]}20` }}>
-              <div className="text-[13px] font-extrabold text-gray-900 mb-2">
+              <div className="text-sm font-bold text-gray-900 mb-2">
                 {WEEKDAY_NAMES[mapDay]} 최적 동선 ({optimizedSchedule[mapDay].buildings.length}개 건물)
               </div>
               <div className="flex items-center flex-wrap gap-1">
@@ -659,12 +659,12 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   return (
                     <span key={i} className="flex items-center gap-1">
                       {i > 0 && (
-                        <span className="text-[11px] text-gray-400">
+                        <span className="text-xs text-gray-400">
                           → {dist && `${dist}km`}
                         </span>
                       )}
                       <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-md text-xs font-bold text-gray-900" style={{ background: `${DAY_COLORS[mapDay!]}15`, border: `1px solid ${DAY_COLORS[mapDay!]}30` }}>
-                        <span className="w-[18px] h-[18px] rounded-full text-[10px] font-extrabold text-white inline-flex items-center justify-center" style={{ background: DAY_COLORS[mapDay!] }}>{i + 1}</span>
+                        <span className="w-[18px] h-[18px] rounded-full text-xs font-bold text-white inline-flex items-center justify-center" style={{ background: DAY_COLORS[mapDay!] }}>{i + 1}</span>
                         {b.building}
                       </span>
                     </span>
@@ -680,7 +680,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   if (prev && curr) totalDist += haversine(prev.lat, prev.lng, curr.lat, curr.lng);
                 }
                 return totalDist > 0 ? (
-                  <div className="text-[11px] text-gray-500 mt-2">
+                  <div className="text-xs text-gray-500 mt-2">
                     총 이동거리: <strong className="text-gray-900">{totalDist.toFixed(1)}km</strong> (직선거리 기준)
                   </div>
                 ) : null;
@@ -710,7 +710,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                 {/* Day Header */}
                 <div className={`flex justify-between items-center ${isExpanded && totalTasks > 0 ? "mb-3" : ""}`}>
                   <div className="flex items-center gap-2">
-                    <span className="text-[15px] font-extrabold text-gray-900">
+                    <span className="text-base font-bold text-gray-900">
                       {WEEKDAY_NAMES[idx]} ({formatDate(date)})
                     </span>
                     {day.region && (
@@ -719,7 +719,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                       </span>
                     )}
                   </div>
-                  <span className={`text-[13px] font-bold ${totalTasks > 0 ? 'text-hm-blue' : 'text-gray-400'}`}>
+                  <span className={`text-sm font-bold ${totalTasks > 0 ? 'text-hm-blue' : 'text-gray-400'}`}>
                     {totalTasks}건
                   </span>
                 </div>
@@ -750,13 +750,13 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
                             {/* Content */}
                             <div className={`flex-1 flex items-center gap-2 flex-wrap ${isLast ? "" : "pb-2"}`}>
-                              <span className="text-[13px] font-bold text-gray-500 min-w-[40px] tabular-nums">
+                              <span className="text-sm font-bold text-gray-500 min-w-[40px] tabular-nums">
                                 {currentSlot}
                               </span>
                               <span className="text-sm font-bold text-gray-900">
                                 {b.building}
                               </span>
-                              <span className="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold text-white mr-1.5" style={{ background: TASK_COLORS[task.type] || '#6B7280' }}>
+                              <span className="inline-block px-2 py-0.5 rounded-md text-xs font-bold text-white mr-1.5" style={{ background: TASK_COLORS[task.type] || '#6B7280' }}>
                                 {TASK_LABELS[task.type]}
                               </span>
                               <span className="text-xs text-gray-500">
@@ -772,7 +772,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
                 {/* Empty day */}
                 {totalTasks === 0 && (
-                  <div className="text-[13px] text-gray-400 mt-1">
+                  <div className="text-sm text-gray-400 mt-1">
                     배정된 일정 없음
                   </div>
                 )}
@@ -783,19 +783,19 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
           {/* ── Unassigned Section ── */}
           {unassigned.length > 0 && (
             <div className="bg-amber-50 rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md" style={{ borderLeft: '4px solid #F59E0B' }}>
-              <div className="text-sm font-extrabold text-amber-900 mb-2">
+              <div className="text-sm font-bold text-amber-900 mb-2">
                 {'\u26A0\uFE0F'} 미배정 건물 (별도 일정 필요)
               </div>
               {unassigned.map((b, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 py-1 text-[13px]"
+                  className="flex items-center gap-2 py-1 text-sm"
                   onMouseEnter={() => setHighlightedBuilding(b.building)}
                   onMouseLeave={() => setHighlightedBuilding(null)}
                 >
                   <span className="font-bold text-gray-900">{b.building}</span>
                   {b.region && (
-                    <span className="text-[11px] text-amber-900">({b.region})</span>
+                    <span className="text-xs text-amber-900">({b.region})</span>
                   )}
                   <span className="text-gray-500">
                     {b.tasks.map(t => `${TASK_LABELS[t.type]} ${t.label}`).join(', ')}
@@ -812,7 +812,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             {/* 근처 건물 제안 */}
             {highlightedBuilding && nearbyBuildings.length > 0 && (
               <div className="bg-sky-50 rounded-xl border border-sky-200 p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
-                <div className="text-[13px] font-extrabold text-sky-700 mb-2">
+                <div className="text-sm font-bold text-sky-700 mb-2">
                   {'\uD83D\uDCCD'} 근처 건물 제안
                 </div>
                 <div className="text-xs text-gray-500 mb-2">
@@ -831,7 +831,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             {/* 순회 지연 TOP 5 */}
             {delayRanking.length > 0 && (
               <div className="bg-white rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
-                <div className="text-[13px] font-extrabold text-gray-900 mb-2.5">
+                <div className="text-sm font-bold text-gray-900 mb-2.5">
                   순회 지연 TOP {delayRanking.length}
                 </div>
                 {delayRanking.map((t, i) => {
@@ -843,8 +843,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                       className={`flex items-center justify-between py-1.5 ${i < delayRanking.length - 1 ? 'border-b border-gray-100' : ''}`}
                     >
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[13px] font-extrabold text-gray-400 w-[18px]">{i + 1}.</span>
-                        <span className="text-[13px] font-bold text-gray-900">{t.building}</span>
+                        <span className="text-sm font-bold text-gray-400 w-[18px]">{i + 1}.</span>
+                        <span className="text-sm font-bold text-gray-900">{t.building}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-bold" style={{ color: severity }}>{t.daysSince}일 경과</span>
@@ -858,7 +858,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
             {/* 요약 통계 */}
             <div className="bg-hm-bg-hover rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md">
-              <div className="text-[13px] font-extrabold text-gray-900 mb-2">
+              <div className="text-sm font-bold text-gray-900 mb-2">
                 이번 주 요약
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -868,7 +868,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                     <div key={type} className="flex items-center gap-1.5 text-xs">
                       <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: TASK_COLORS[type] }} />
                       <span className="text-gray-500">{label}</span>
-                      <span className="font-extrabold text-gray-900">{count}</span>
+                      <span className="font-bold text-gray-900">{count}</span>
                     </div>
                   );
                 })}
@@ -885,7 +885,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
       {/* ── Mobile: delay ranking at bottom ── */}
       {isMobile && delayRanking.length > 0 && (
         <div className="bg-white rounded-xl border border-hm-border p-4 mt-3 cursor-pointer transition-shadow hover:shadow-md">
-          <div className="text-[13px] font-extrabold text-gray-900 mb-2.5">
+          <div className="text-sm font-bold text-gray-900 mb-2.5">
             순회 지연 TOP {delayRanking.length}
           </div>
           {delayRanking.map((t, i) => {
@@ -897,8 +897,8 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                 className={`flex items-center justify-between py-1.5 ${i < delayRanking.length - 1 ? 'border-b border-gray-100' : ''}`}
               >
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-extrabold text-gray-400 w-[18px]">{i + 1}.</span>
-                  <span className="text-[13px] font-bold text-gray-900">{t.building}</span>
+                  <span className="text-sm font-bold text-gray-400 w-[18px]">{i + 1}.</span>
+                  <span className="text-sm font-bold text-gray-900">{t.building}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-bold" style={{ color: severity }}>{t.daysSince}일 경과</span>

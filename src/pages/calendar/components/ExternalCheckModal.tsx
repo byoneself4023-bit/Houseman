@@ -87,7 +87,7 @@ export const ExternalCheckModal = ({
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-4">
           <div>
-            <div className="text-lg font-extrabold text-hm-text">🔍 퇴실체크</div>
+            <div className="text-lg font-bold text-hm-text">🔍 퇴실체크</div>
             <div className="text-xs text-hm-text-muted mt-0.5">{ecEv.building} {ecEv.room}호 · {ecEv.name || ""}</div>
           </div>
           <button onClick={() => setExternalCheckModal(null)}
@@ -167,17 +167,17 @@ export const ExternalCheckModal = ({
           <div className="mb-4">
             <div className="flex justify-between items-center mb-1.5">
               <div className="text-xs font-bold text-hm-text">📝 손상내역 / 공제금액</div>
-              {deductionTotal > 0 && <span className="text-[11px] font-extrabold text-hm-danger">공제합계: {deductionTotal.toLocaleString()}원</span>}
+              {deductionTotal > 0 && <span className="text-xs font-bold text-hm-danger">공제합계: {deductionTotal.toLocaleString()}원</span>}
             </div>
             <div className="flex gap-1.5 mb-1">
               <span className="min-w-[16px]" />
-              <span className="flex-1 text-[9px] text-gray-400 font-semibold">손상 내역 (정산서 공제항목 연동)</span>
-              <span className="w-[100px] text-[9px] text-gray-400 font-semibold text-right">공제 금액</span>
+              <span className="flex-1 text-xs text-gray-400 font-semibold">손상 내역 (정산서 공제항목 연동)</span>
+              <span className="w-[100px] text-xs text-gray-400 font-semibold text-right">공제 금액</span>
             </div>
             <div className="flex flex-col gap-1.5">
               {Array.from({ length: deductionCount }, (_, idx) => (
                 <div key={idx} className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-hm-text-muted min-w-[16px] text-center">{idx + 1}</span>
+                  <span className="text-xs font-bold text-hm-text-muted min-w-[16px] text-center">{idx + 1}</span>
                   <input value={comments[idx] || ""} onChange={e => {
                     const next = [...comments];
                     while (next.length <= idx) next.push("");
@@ -198,7 +198,7 @@ export const ExternalCheckModal = ({
               ))}
             </div>
             <button type="button" onClick={() => setDeductionCount(c => c + 1)}
-              className="mt-1.5 px-3 py-1 rounded-md border border-dashed border-gray-400 bg-hm-bg-hover text-gray-500 text-[10px] font-semibold cursor-pointer font-[inherit] hover:bg-gray-200 transition-colors">
+              className="mt-1.5 px-3 py-1 rounded-md border border-dashed border-gray-400 bg-hm-bg-hover text-gray-500 text-xs font-semibold cursor-pointer font-[inherit] hover:bg-gray-200 transition-colors">
               + 공제항목 추가
             </button>
           </div>
@@ -210,16 +210,16 @@ export const ExternalCheckModal = ({
             <div className="text-xs font-bold text-hm-text mb-1.5">⚡ 퇴실 검침값</div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="text-[10px] font-semibold text-hm-warning mb-[3px]">전기 검침</div>
+                <div className="text-xs font-semibold text-hm-warning mb-[3px]">전기 검침</div>
                 <input value={meterElec} onChange={e => setMeterElec(e.target.value)}
                   placeholder="검침값 입력" type="number"
-                  className="w-full px-2.5 py-2 rounded-md border border-orange-200 bg-hm-warning-bg text-[13px] font-mono text-right box-border outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+                  className="w-full px-2.5 py-2 rounded-md border border-orange-200 bg-hm-warning-bg text-sm font-mono text-right box-border outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
               </div>
               <div>
-                <div className="text-[10px] font-semibold text-hm-blue mb-[3px]">가스 검침</div>
+                <div className="text-xs font-semibold text-hm-blue mb-[3px]">가스 검침</div>
                 <input value={meterGas} onChange={e => setMeterGas(e.target.value)}
                   placeholder="검침값 입력" type="number"
-                  className="w-full px-2.5 py-2 rounded-md border border-blue-200 bg-hm-blue-bg text-[13px] font-mono text-right box-border outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+                  className="w-full px-2.5 py-2 rounded-md border border-blue-200 bg-hm-blue-bg text-sm font-mono text-right box-border outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ export const ExternalCheckModal = ({
                     {checked && item.key === "기타" && (
                       <input value={issueEtcText} onChange={e => { e.stopPropagation(); setIssueEtcText(e.target.value); }}
                         onClick={e => e.stopPropagation()} placeholder="내용 입력"
-                        className="flex-1 px-2 py-1 rounded border border-hm-input-border text-[11px] font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors" />
+                        className="flex-1 px-2 py-1 rounded border border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors" />
                     )}
                   </label>
                 );
@@ -252,7 +252,7 @@ export const ExternalCheckModal = ({
         {/* 체크 완료 버튼 */}
         {!ecm.viewOnly && (
           <button type="button" onClick={handleComplete}
-            className="w-full py-3.5 rounded-[10px] border-none bg-hm-blue text-white text-[15px] font-extrabold cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
+            className="w-full py-3.5 rounded-[10px] border-none bg-hm-blue text-white text-base font-bold cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             ✅ 퇴실체크 완료
           </button>
         )}
@@ -260,17 +260,17 @@ export const ExternalCheckModal = ({
         {/* viewOnly: 체크 결과 표시 */}
         {ecm.viewOnly && (
           <div className="mt-2 p-3 rounded-lg bg-hm-bg-hover border border-hm-border">
-            <div className="text-[11px] text-hm-text-muted font-bold mb-1">체크 완료됨</div>
+            <div className="text-xs text-hm-text-muted font-bold mb-1">체크 완료됨</div>
             {ecEv.deductionItems && ecEv.deductionItems.length > 0 && (
               <div className="mt-1">
-                <div className="text-[11px] font-bold text-hm-text-sub mb-1">📝 공제 내역</div>
+                <div className="text-xs font-bold text-hm-text-sub mb-1">📝 공제 내역</div>
                 {ecEv.deductionItems.map((d: any, i: number) => (
                   <div key={i} className="flex justify-between text-xs text-gray-700 pl-2 mb-0.5">
                     <span>• {d.label}</span>
                     {d.amount > 0 && <span className="font-bold text-hm-danger">{d.amount.toLocaleString()}원</span>}
                   </div>
                 ))}
-                <div className="flex justify-between pl-2 mt-1 pt-1 border-t border-gray-200 text-xs font-extrabold">
+                <div className="flex justify-between pl-2 mt-1 pt-1 border-t border-gray-200 text-xs font-bold">
                   <span>공제 합계</span>
                   <span className="text-hm-danger">{ecEv.deductionItems.reduce((s: number, d: any) => s + (d.amount || 0), 0).toLocaleString()}원</span>
                 </div>
@@ -278,7 +278,7 @@ export const ExternalCheckModal = ({
             )}
             {!ecEv.deductionItems && ecEv.externalCheckComment && (
               <div className="mt-1">
-                <div className="text-[11px] font-bold text-hm-text-sub mb-0.5">📝 손상 코멘트</div>
+                <div className="text-xs font-bold text-hm-text-sub mb-0.5">📝 손상 코멘트</div>
                 {ecEv.externalCheckComment.split(" / ").map((c: string, i: number) => (
                   <div key={i} className="text-xs text-gray-700 pl-2">• {c}</div>
                 ))}
@@ -286,8 +286,8 @@ export const ExternalCheckModal = ({
             )}
             {(ecEv.meterElec || ecEv.meterGas) && (
               <div className="flex gap-3 mt-2">
-                {ecEv.meterElec && <span className="text-[11px] text-hm-warning font-semibold">⚡ 전기: {ecEv.meterElec}</span>}
-                {ecEv.meterGas && <span className="text-[11px] text-hm-blue font-semibold">🔥 가스: {ecEv.meterGas}</span>}
+                {ecEv.meterElec && <span className="text-xs text-hm-warning font-semibold">⚡ 전기: {ecEv.meterElec}</span>}
+                {ecEv.meterGas && <span className="text-xs text-hm-blue font-semibold">🔥 가스: {ecEv.meterGas}</span>}
               </div>
             )}
             {ecEv.repairNeeded ? (

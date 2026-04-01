@@ -148,7 +148,7 @@ export const DunningTemplateSettings: React.FC = () => {
           <button
             key={type.id}
             onClick={() => setActiveTab(type.id)}
-            className={`px-5 py-2.5 rounded-[10px] font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 ${
+            className={`px-5 py-2.5 rounded-[10px] font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 ${
               activeTab === type.id
                 ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark'
                 : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:border-hm-blue/40'
@@ -157,7 +157,7 @@ export const DunningTemplateSettings: React.FC = () => {
             {type.label}
             {(templates[type.id] || []).length > 0 && (
               <span
-                className={`ml-1.5 px-[7px] py-px rounded-[10px] text-[11px] font-extrabold ${
+                className={`ml-1.5 px-[7px] py-px rounded-[10px] text-xs font-bold ${
                   activeTab === type.id
                     ? 'bg-hm-blue text-white'
                     : 'bg-[#F3F4F6] text-hm-text-muted'
@@ -193,12 +193,12 @@ export const DunningTemplateSettings: React.FC = () => {
       <div className="flex flex-col gap-2.5">
         {stages.length === 0 && (
           <Card className="px-5 py-10 text-center">
-            <div className="text-[13px] text-hm-text-muted mb-3">
+            <div className="text-sm text-hm-text-muted mb-3">
               등록된 독촉 단계가 없습니다
             </div>
             <button
               onClick={addStage}
-              className="px-6 py-2.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-[13px] cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors"
+              className="px-6 py-2.5 rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors"
             >
               + 첫 번째 단계 추가
             </button>
@@ -210,18 +210,18 @@ export const DunningTemplateSettings: React.FC = () => {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2.5">
                 <div
-                  className="w-7 h-7 rounded-lg bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white flex items-center justify-center text-xs font-extrabold"
+                  className="w-7 h-7 rounded-lg bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white flex items-center justify-center text-xs font-bold"
                 >
                   {idx + 1}
                 </div>
-                <span className="text-[13px] font-bold text-hm-text">
+                <span className="text-sm font-bold text-hm-text">
                   {idx + 1}단계
                 </span>
               </div>
               {!currentType?.fixedStages && (
                 <button
                   onClick={() => removeStage(idx)}
-                  className="px-2.5 py-1 rounded-md border border-red-200 bg-hm-danger-bg text-hm-danger text-[11px] font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors"
+                  className="px-2.5 py-1 rounded-md border border-red-200 bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors"
                 >
                   삭제
                 </button>
@@ -231,11 +231,11 @@ export const DunningTemplateSettings: React.FC = () => {
             <div className="flex gap-3 mb-2.5 flex-wrap">
               {/* Day offset */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-hm-text-muted">
+                <label className="text-xs font-bold text-hm-text-muted">
                   납부일 기준 (일)
                 </label>
                 <div className="flex items-center gap-1">
-                  <span className="text-[13px] font-bold text-hm-text-sub">+</span>
+                  <span className="text-sm font-bold text-hm-text-sub">+</span>
                   <input
                     type="number"
                     min="0"
@@ -243,7 +243,7 @@ export const DunningTemplateSettings: React.FC = () => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       updateStage(idx, 'dayOffset', e.target.value)
                     }
-                    className="w-[70px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-semibold font-[inherit] outline-none text-center focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+                    className="w-[70px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-sm font-semibold font-[inherit] outline-none text-center focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                   />
                   <span className="text-xs text-hm-text-muted">일</span>
                 </div>
@@ -251,20 +251,20 @@ export const DunningTemplateSettings: React.FC = () => {
 
               {/* Send time */}
               <div className="flex flex-col gap-1">
-                <label className="text-[11px] font-bold text-hm-text-muted">발송 시간</label>
+                <label className="text-xs font-bold text-hm-text-muted">발송 시간</label>
                 <input
                   type="time"
                   value={stage.time}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateStage(idx, 'time', e.target.value)
                   }
-                  className="w-[120px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-[13px] font-semibold font-[inherit] outline-none focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+                  className="w-[120px] px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-sm font-semibold font-[inherit] outline-none focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
                 />
               </div>
 
               {/* Summary badge */}
               <div className="flex items-end pb-0.5">
-                <span className="px-3 py-1.5 rounded-lg bg-hm-bg text-[11px] font-semibold text-hm-text-sub">
+                <span className="px-3 py-1.5 rounded-lg bg-hm-bg text-xs font-semibold text-hm-text-sub">
                   납부일 +{stage.dayOffset}일 {stage.time} 발송
                 </span>
               </div>
@@ -272,7 +272,7 @@ export const DunningTemplateSettings: React.FC = () => {
 
             {/* Message textarea */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-bold text-hm-text-muted">문자 내용</label>
+              <label className="text-xs font-bold text-hm-text-muted">문자 내용</label>
               <textarea
                 value={stage.message}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -280,9 +280,9 @@ export const DunningTemplateSettings: React.FC = () => {
                 }
                 placeholder="독촉 문자 내용을 입력하세요. [건물명]은 실제 건물명으로 자동 치환됩니다."
                 rows={3}
-                className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-[13px] font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               />
-              <div className="text-[10px] text-[#B0B5C1]">
+              <div className="text-xs text-[#B0B5C1]">
                 치환 변수: [건물명], [호수], [임차인명], [월세], [연체일수]
               </div>
             </div>
@@ -295,14 +295,14 @@ export const DunningTemplateSettings: React.FC = () => {
         {!currentType?.fixedStages && stages.length > 0 && (
           <button
             onClick={addStage}
-            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-hm-bg-slate text-hm-blue font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
+            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-hm-bg-slate text-hm-blue font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
           >
             + 단계 추가
           </button>
         )}
         <button
           onClick={handleSave}
-          className={`px-7 py-2.5 rounded-[10px] border-none text-white font-extrabold text-sm cursor-pointer font-[inherit] transition-all duration-200 ${
+          className={`px-7 py-2.5 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 ${
             saved
               ? 'bg-hm-success'
               : 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-md'
@@ -312,7 +312,7 @@ export const DunningTemplateSettings: React.FC = () => {
         </button>
         <button
           onClick={handleReset}
-          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-muted font-bold text-[13px] cursor-pointer font-[inherit] hover:border-hm-text-muted transition-colors"
+          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-muted font-bold text-sm cursor-pointer font-[inherit] hover:border-hm-text-muted transition-colors"
         >
           기본값 초기화
         </button>

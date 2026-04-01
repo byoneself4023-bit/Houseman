@@ -75,13 +75,13 @@ export const HomepageEditPage = () => {
     <div className="max-w-[800px] mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-[22px] font-extrabold tracking-tight m-0 mb-1">홈페이지 편집</h1>
-          <p className="text-[13px] text-[#86868b] m-0">홈페이지에 표시되는 텍스트를 수정합니다</p>
+          <h1 className="text-xl font-bold tracking-tight m-0 mb-1">홈페이지 편집</h1>
+          <p className="text-sm text-[#86868b] m-0">홈페이지에 표시되는 텍스트를 수정합니다</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleReset} className="px-5 py-2.5 rounded-[10px] border border-[#e5e5ea] bg-white text-[#6e6e73] font-semibold text-[13px] cursor-pointer">초기화</button>
+          <button onClick={handleReset} className="px-5 py-2.5 rounded-[10px] border border-[#e5e5ea] bg-white text-[#6e6e73] font-semibold text-sm cursor-pointer">초기화</button>
           <button onClick={handleSave}
-            className={`px-6 py-2.5 rounded-[10px] border-none text-white font-bold text-[13px] cursor-pointer transition-colors duration-300 ${saved ? 'bg-green-500' : 'bg-[#c8161d]'}`}>
+            className={`px-6 py-2.5 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer transition-colors duration-300 ${saved ? 'bg-green-500' : 'bg-[#c8161d]'}`}>
             {saved ? "✓ 저장완료" : "저장"}
           </button>
         </div>
@@ -97,12 +97,12 @@ export const HomepageEditPage = () => {
       {FIELDS.map((section, si) => (
         <div key={si} className="mb-8 bg-white rounded-2xl border border-[#e5e5ea] overflow-hidden">
           <div className="px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e5ea]">
-            <h2 className="text-[15px] font-bold m-0 text-[#1d1d1f]">{section.section}</h2>
+            <h2 className="text-base font-bold m-0 text-[#1d1d1f]">{section.section}</h2>
           </div>
           <div className="p-5">
             {section.fields.map((field, fi) => (
               <div key={fi} className={fi < section.fields.length - 1 ? 'mb-5' : ''}>
-                <label className="block text-[13px] font-semibold text-[#6e6e73] mb-1.5">{field.label}</label>
+                <label className="block text-sm font-semibold text-[#6e6e73] mb-1.5">{field.label}</label>
                 {field.type === "long" ? (
                   <Textarea
                     value={data[field.key] ?? field.default}
@@ -120,8 +120,8 @@ export const HomepageEditPage = () => {
                 )}
                 {(data[field.key] && data[field.key] !== field.default) && (
                   <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[11px] text-[#c8161d] font-semibold">수정됨</span>
-                    <span onClick={() => update(field.key, field.default)} className="text-[11px] text-[#86868b] cursor-pointer underline">원래대로</span>
+                    <span className="text-xs text-[#c8161d] font-semibold">수정됨</span>
+                    <span onClick={() => update(field.key, field.default)} className="text-xs text-[#86868b] cursor-pointer underline">원래대로</span>
                   </div>
                 )}
               </div>
@@ -131,8 +131,8 @@ export const HomepageEditPage = () => {
       ))}
 
       <div className="p-5 bg-[#f5f5f7] rounded-2xl mb-8">
-        <div className="text-[13px] font-semibold text-[#86868b] mb-2">안내</div>
-        <div className="text-[13px] text-[#6e6e73] leading-[1.7]">
+        <div className="text-sm font-semibold text-[#86868b] mb-2">안내</div>
+        <div className="text-sm text-[#6e6e73] leading-[1.7]">
           • 저장 후 홈페이지를 새로고침하면 반영됩니다<br/>
           • 줄바꿈은 텍스트 입력란에서 Enter로 가능합니다<br/>
           • 초기화하면 기본 텍스트로 돌아갑니다<br/>

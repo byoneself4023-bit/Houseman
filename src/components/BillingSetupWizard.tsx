@@ -117,10 +117,10 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
     <div className="bg-white rounded-xl border border-[#E5E5E5] p-8 max-w-[700px]">
       {/* 헤더 */}
       <div className="mb-6">
-        <h2 className="text-lg font-extrabold text-hm-text m-0">
+        <h2 className="text-lg font-bold text-hm-text m-0">
           청구 초기설정
         </h2>
-        <p className="text-[13px] text-hm-text-muted mt-1.5">
+        <p className="text-sm text-hm-text-muted mt-1.5">
           {buildingName} — {buildingType === 'short' ? '단기' : buildingType === 'variable' ? '변동관리비' : '고정관리비'}
         </p>
       </div>
@@ -157,7 +157,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 1 (단기): 안내 메시지 */}
       {step === 1 && buildingType === 'short' && (
         <div>
-          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">단기 청구 설정</h3>
+          <h3 className="text-base font-bold text-hm-text mb-1.5">단기 청구 설정</h3>
           <p className="text-xs text-hm-text-muted mb-5">
             단기 건물은 전기/가스 엑셀 업로드로 자동 매칭됩니다.
             초기 검침 데이터는 엑셀 업로드 시 자동으로 설정됩니다.
@@ -168,7 +168,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 2 (variable): 케이스 선택 */}
       {step === 2 && buildingType === 'variable' && (
         <div>
-          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">청구 케이스 선택</h3>
+          <h3 className="text-base font-bold text-hm-text mb-1.5">청구 케이스 선택</h3>
           <p className="text-xs text-hm-text-muted mb-5">
             이 건물의 기본 청구 발송 방식을 선택하세요 (임차인별로 변경 가능)
           </p>
@@ -183,7 +183,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
                     : 'border border-[#E5E5E5] bg-white hover:border-[#346aff]/40'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                   selectedCase === opt.value
                     ? 'bg-[#346aff] text-white'
                     : 'bg-hm-bg text-hm-text-muted'
@@ -191,12 +191,12 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
                   {opt.value}
                 </div>
                 <div className="flex-1">
-                  <div className={`text-[13px] font-bold ${selectedCase === opt.value ? 'text-[#346aff]' : 'text-hm-text'}`}>
+                  <div className={`text-sm font-bold ${selectedCase === opt.value ? 'text-[#346aff]' : 'text-hm-text'}`}>
                     {opt.label}
                   </div>
-                  <div className="text-[11px] text-hm-text-muted mt-0.5">{opt.desc}</div>
+                  <div className="text-xs text-hm-text-muted mt-0.5">{opt.desc}</div>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   opt.msgs === 1 ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-warning-bg text-hm-warning'
                 }`}>
                   {opt.msgs}통
@@ -230,7 +230,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
       {/* Step 4 (variable) / Step 3 (short) / Step 2 (fixed): 완료 확인 */}
       {step === totalSteps && (
         <div>
-          <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">설정 확인</h3>
+          <h3 className="text-base font-bold text-hm-text mb-1.5">설정 확인</h3>
           <div className="bg-hm-bg rounded-lg p-4 text-xs text-[#333] leading-8">
             {buildingType === 'variable' && (
               <>
@@ -298,11 +298,11 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
 
   return (
     <div>
-      <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">변동관리비 항목 구성</h3>
+      <h3 className="text-base font-bold text-hm-text mb-1.5">변동관리비 항목 구성</h3>
       <p className="text-xs text-hm-text-muted mb-4">왼쪽에서 클릭으로 추가, 오른쪽에서 화살표로 순서 변경</p>
       <div className="grid grid-cols-2 gap-4 mb-5">
         <div>
-          <div className="text-[11px] font-bold text-hm-text-muted mb-2">사용 가능</div>
+          <div className="text-xs font-bold text-hm-text-muted mb-2">사용 가능</div>
           <div className="flex flex-col gap-2">
             {available.length === 0 && <div className="text-xs text-[#ccc] p-5 text-center border border-dashed border-[#E5E5E5] rounded-[10px]">모두 선택됨</div>}
             {available.map(opt => (
@@ -312,14 +312,14 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
                 className="px-3.5 py-3 rounded-[10px] cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-2.5 select-none hover:border-[#346aff]/40"
               >
                 <span className="text-lg">{opt.icon}</span>
-                <div className="flex-1"><div className="text-xs font-bold">{opt.label}</div><div className="text-[10px] text-hm-text-muted">{opt.desc}</div></div>
-                <span className="text-base text-[#346aff] font-extrabold">+</span>
+                <div className="flex-1"><div className="text-xs font-bold">{opt.label}</div><div className="text-xs text-hm-text-muted">{opt.desc}</div></div>
+                <span className="text-base text-[#346aff] font-bold">+</span>
               </div>
             ))}
           </div>
         </div>
         <div>
-          <div className="text-[11px] font-bold text-[#346aff] mb-2">적용 항목 ({selectedComponents.length})</div>
+          <div className="text-xs font-bold text-[#346aff] mb-2">적용 항목 ({selectedComponents.length})</div>
           <div className={`flex flex-col gap-2 min-h-[120px] rounded-[10px] ${
             selectedComponents.length === 0 ? 'p-5 border-2 border-dashed border-gray-300 text-center' : ''
           }`}>
@@ -332,14 +332,14 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
                     <button
                       onClick={() => moveItem(index, 'up')}
                       disabled={index === 0}
-                      className={`bg-transparent border-none text-[10px] p-0 leading-none ${
+                      className={`bg-transparent border-none text-xs p-0 leading-none ${
                         index === 0 ? 'text-[#ccc] cursor-default' : 'text-hm-text-muted cursor-pointer hover:text-hm-text'
                       }`}
                     >▲</button>
                     <button
                       onClick={() => moveItem(index, 'down')}
                       disabled={index === selectedComponents.length - 1}
-                      className={`bg-transparent border-none text-[10px] p-0 leading-none ${
+                      className={`bg-transparent border-none text-xs p-0 leading-none ${
                         index === selectedComponents.length - 1 ? 'text-[#ccc] cursor-default' : 'text-hm-text-muted cursor-pointer hover:text-hm-text'
                       }`}
                     >▼</button>
@@ -355,7 +355,7 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
         </div>
       </div>
       <div>
-        <div className="text-[11px] font-bold text-[#666] mb-2">직접 추가</div>
+        <div className="text-xs font-bold text-[#666] mb-2">직접 추가</div>
         {customItems.map((item: any, idx: number) => (
           <div key={idx} className="flex gap-2 mb-2">
             <input value={item.label} onChange={e => updateCustomItem(idx, 'label', e.target.value)} placeholder="항목명"
@@ -384,7 +384,7 @@ interface LateFeeStepProps {
 function LateFeeStep({ enabled, setEnabled, rate, setRate, type, setType, value, setValue }: LateFeeStepProps) {
   return (
     <div>
-      <h3 className="text-[15px] font-extrabold text-hm-text mb-1.5">연체수수료 설정</h3>
+      <h3 className="text-base font-bold text-hm-text mb-1.5">연체수수료 설정</h3>
       <p className="text-xs text-hm-text-muted mb-5">기본값은 꺼짐입니다. 필요시 활성화하세요.</p>
 
       <div
@@ -396,7 +396,7 @@ function LateFeeStep({ enabled, setEnabled, rate, setRate, type, setType, value,
         <div className={`w-10 h-[22px] rounded-full p-0.5 transition-colors duration-200 ${enabled ? 'bg-[#346aff]' : 'bg-gray-300'}`}>
           <div className={`w-[18px] h-[18px] rounded-full bg-white transition-transform duration-200 ${enabled ? 'translate-x-[18px]' : 'translate-x-0'}`} />
         </div>
-        <span className={`text-[13px] font-bold ${enabled ? 'text-[#346aff]' : 'text-[#666]'}`}>
+        <span className={`text-sm font-bold ${enabled ? 'text-[#346aff]' : 'text-[#666]'}`}>
           연체수수료 {enabled ? '활성' : '비활성'}
         </span>
       </div>
@@ -404,27 +404,27 @@ function LateFeeStep({ enabled, setEnabled, rate, setRate, type, setType, value,
       {enabled && (
         <div className="grid grid-cols-3 gap-3">
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-hm-text-muted">수수료율 (%)</span>
+            <span className="text-xs font-semibold text-hm-text-muted">수수료율 (%)</span>
             <input
               type="number" value={rate} onChange={e => setRate(Number(e.target.value) || 0)}
-              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-hm-text-muted">적용 기준</span>
+            <span className="text-xs font-semibold text-hm-text-muted">적용 기준</span>
             <select
               value={type} onChange={e => setType(e.target.value)}
-              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             >
               <option value="days">며칠 후</option>
               <option value="months">개월 후</option>
             </select>
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-hm-text-muted">{type === 'days' ? '일수' : '개월수'}</span>
+            <span className="text-xs font-semibold text-hm-text-muted">{type === 'days' ? '일수' : '개월수'}</span>
             <input
               type="number" value={value} onChange={e => setValue(Number(e.target.value) || 0)}
-              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-[13px] font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-2.5 py-2 rounded-md border border-[#CCCCCC] text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
             />
           </label>
         </div>

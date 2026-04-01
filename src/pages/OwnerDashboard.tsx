@@ -67,9 +67,9 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       <div className="mb-6">
         <div className="flex items-center gap-2.5 mb-1">
           <span className="text-2xl">🏠</span>
-          <h1 className="text-[22px] font-extrabold text-hm-text">건물주 포털</h1>
+          <h1 className="text-xl font-bold text-hm-text">건물주 포털</h1>
         </div>
-        <p className="text-[13px] text-hm-text-muted">내 건물 현황을 한눈에 확인하세요 · {new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</p>
+        <p className="text-sm text-hm-text-muted">내 건물 현황을 한눈에 확인하세요 · {new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}</p>
       </div>
 
       {/* Building Selector */}
@@ -81,19 +81,19 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           return (
             <div key={name} onClick={() => setSelectedBldg(name)}
               className={`flex-1 p-4 rounded-[14px] cursor-pointer transition-all ${active ? 'bg-[#1B1F2E] border-2 border-[#1B1F2E] shadow-[0_4px_12px_rgba(27,31,46,0.15)]' : 'bg-white border-[1.5px] border-hm-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md'}`}>
-              <div className={`text-base font-extrabold mb-2 ${active ? 'text-white' : 'text-hm-text'}`}>{name}</div>
+              <div className={`text-base font-bold mb-2 ${active ? 'text-white' : 'text-hm-text'}`}>{name}</div>
               <div className="flex gap-3">
                 <div>
-                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>입주율</div>
-                  <div className={`text-base font-extrabold ${active ? 'text-[#10B981]' : 'text-hm-success'}`}>{bldg ? ((bldg.occupied / bldg.rooms) * 100).toFixed(0) : 0}%</div>
+                  <div className={`text-xs ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>입주율</div>
+                  <div className={`text-base font-bold ${active ? 'text-[#10B981]' : 'text-hm-success'}`}>{bldg ? ((bldg.occupied / bldg.rooms) * 100).toFixed(0) : 0}%</div>
                 </div>
                 <div>
-                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>공실</div>
-                  <div className={`text-base font-extrabold ${active ? 'text-[#F59E0B]' : 'text-[#D97706]'}`}>{vc}</div>
+                  <div className={`text-xs ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>공실</div>
+                  <div className={`text-base font-bold ${active ? 'text-[#F59E0B]' : 'text-[#D97706]'}`}>{vc}</div>
                 </div>
                 <div>
-                  <div className={`text-[9px] ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>호실</div>
-                  <div className={`text-base font-extrabold ${active ? 'text-white' : 'text-hm-text'}`}>{bldg ? bldg.rooms : 0}</div>
+                  <div className={`text-xs ${active ? 'text-[#9CA3B0]' : 'text-hm-text-muted'}`}>호실</div>
+                  <div className={`text-base font-bold ${active ? 'text-white' : 'text-hm-text'}`}>{bldg ? bldg.rooms : 0}</div>
                 </div>
               </div>
             </div>
@@ -110,8 +110,8 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           { label: "AS", value: filteredAS.filter(a => a.status !== "완료").length, unit: "건", color: "text-[#6366F1]", bg: "bg-[#F0F4FF]" },
         ].map((s, i) => (
           <Card key={i}>
-            <div className="text-[10px] text-hm-text-muted font-semibold mb-1">{s.label}</div>
-            <div className={`text-[22px] font-extrabold ${s.color}`}>{s.value}<span className="text-[11px] font-medium text-[#B0B5C1]"> {s.unit}</span></div>
+            <div className="text-xs text-hm-text-muted font-semibold mb-1">{s.label}</div>
+            <div className={`text-xl font-bold ${s.color}`}>{s.value}<span className="text-xs font-medium text-[#B0B5C1]"> {s.unit}</span></div>
           </Card>
         ))}
       </div>
@@ -120,28 +120,28 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {pendingApprovals.length > 0 && (
         <Card className="mb-4 border-2 border-[#FDE68A] bg-[#FFFDF5]">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[10px] font-bold text-[#D97706] tracking-wider">📩 승인 대기 AS ({pendingApprovals.length}건)</div>
+            <div className="text-xs font-bold text-[#D97706] tracking-wider">📩 승인 대기 AS ({pendingApprovals.length}건)</div>
           </div>
           <div className="flex flex-col gap-2.5">
             {pendingApprovals.map((a, i) => (
               <div key={a.id || i} className="px-4 py-3.5 rounded-xl bg-white border border-[#FDE68A]">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-extrabold text-hm-text">{a.building} {a.room}호</span>
+                    <span className="text-sm font-bold text-hm-text">{a.building} {a.room}호</span>
                     <StatusBadge status={a.status} />
                   </div>
-                  <span className="text-[11px] text-[#B0B5C1]">{a.date}</span>
+                  <span className="text-xs text-[#B0B5C1]">{a.date}</span>
                 </div>
-                <div className="text-[13px] font-semibold text-hm-text mb-1">{a.content || a.title}</div>
+                <div className="text-sm font-semibold text-hm-text mb-1">{a.content || a.title}</div>
                 <div className="text-xs text-hm-text-sub mb-2 leading-relaxed">{a.detail || a.desc}</div>
                 <div className="flex gap-2 mb-2.5 flex-wrap">
                   {(a.estimatedCost || 0) > 0 && (
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-hm-danger-bg text-hm-danger">
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-hm-danger-bg text-hm-danger">
                       예상비용 {fmt(a.estimatedCost)}원
                     </span>
                   )}
                   {a.vendor && (
-                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-[#F3F4F6] text-hm-text-sub">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#F3F4F6] text-hm-text-sub">
                       업체: {a.vendor}
                     </span>
                   )}
@@ -166,38 +166,38 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {filteredOverdue.length > 0 && (
         <Card className="mb-4 border-[1.5px] border-hm-danger-border">
           <div className="flex items-center justify-between mb-2.5">
-            <div className="text-[10px] font-bold text-hm-danger tracking-wider">🚨 연체 현황</div>
-            <span className="text-sm font-extrabold text-hm-danger">{fmt(filteredOverdue.reduce((s, t) => s + t.overdue, 0))}원</span>
+            <div className="text-xs font-bold text-hm-danger tracking-wider">🚨 연체 현황</div>
+            <span className="text-sm font-bold text-hm-danger">{fmt(filteredOverdue.reduce((s, t) => s + t.overdue, 0))}원</span>
           </div>
           <div className="flex flex-col gap-1.5">
             {filteredOverdue.sort((a, b) => b.overdue - a.overdue).map((t, i) => (
               <div key={i} className="flex items-center justify-between px-3 py-2.5 bg-hm-danger-bg rounded-lg">
                 <div>
-                  <span className="font-bold text-[13px]">{t.room}호</span>
-                  <span className="text-[11px] text-hm-text-muted ml-2">{t.name}</span>
+                  <span className="font-bold text-sm">{t.room}호</span>
+                  <span className="text-xs text-hm-text-muted ml-2">{t.name}</span>
                 </div>
-                <span className="font-extrabold text-[13px] text-hm-danger">{fmt(t.overdue)}원</span>
+                <span className="font-bold text-sm text-hm-danger">{fmt(t.overdue)}원</span>
               </div>
             ))}
           </div>
-          <div className="mt-2.5 text-[11px] text-hm-text-muted text-center">관리팀에서 독촉 진행 중입니다</div>
+          <div className="mt-2.5 text-xs text-hm-text-muted text-center">관리팀에서 독촉 진행 중입니다</div>
         </Card>
       )}
 
       {/* Vacancy */}
       {filteredVacancies.length > 0 && (
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-[#D97706] tracking-wider mb-2.5">📭 공실 현황</div>
+          <div className="text-xs font-bold text-[#D97706] tracking-wider mb-2.5">📭 공실 현황</div>
           <div className="flex flex-col gap-2">
             {filteredVacancies.map((v, i) => (
               <div key={i} className="flex items-center justify-between px-3.5 py-3 bg-[#FFFBEB] rounded-[10px] border border-[#FDE68A]">
                 <div>
-                  <span className="text-sm font-extrabold text-hm-text">{v.room}호</span>
-                  <span className="text-[11px] font-semibold ml-2 px-1.5 py-0.5 rounded bg-white border border-hm-input-border">{v.type}</span>
+                  <span className="text-sm font-bold text-hm-text">{v.room}호</span>
+                  <span className="text-xs font-semibold ml-2 px-1.5 py-0.5 rounded bg-white border border-hm-input-border">{v.type}</span>
                 </div>
                 <div className="text-right">
                   <div className="text-xs font-semibold">{v.deposit > 0 ? `${fmt(v.deposit)}/${fmt(v.rent)}만` : "—"}</div>
-                  <div className={`text-[10px] ${v.days > 30 ? 'text-hm-danger font-bold' : 'text-hm-text-muted font-normal'}`}>{v.days > 0 ? `공실 ${v.days}일` : "신규"}</div>
+                  <div className={`text-xs ${v.days > 30 ? 'text-hm-danger font-bold' : 'text-hm-text-muted font-normal'}`}>{v.days > 0 ? `공실 ${v.days}일` : "신규"}</div>
                 </div>
               </div>
             ))}
@@ -208,7 +208,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {/* AS 현황 */}
       <Card className="mb-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-[10px] font-bold text-[#6366F1] tracking-wider">🔧 AS 현황 · {selectedBldg}</div>
+          <div className="text-xs font-bold text-[#6366F1] tracking-wider">🔧 AS 현황 · {selectedBldg}</div>
           {asTotalCost > 0 && (
             <span className="text-xs font-bold text-hm-text">총 {fmt(asTotalCost)}원</span>
           )}
@@ -217,14 +217,14 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         {asTotalCost > 0 && (
           <div className="flex gap-2.5 mb-3.5">
             <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-hm-danger-border">
-              <div className="text-[9px] text-hm-text-muted mb-0.5">유상 (세입자부담)</div>
-              <div className="text-sm font-extrabold text-hm-danger">{fmt(asCostPaid)}원</div>
-              <div className="text-[10px] text-hm-danger">{filteredAS.filter(a => a.paid === "유상").length}건</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">유상 (세입자부담)</div>
+              <div className="text-sm font-bold text-hm-danger">{fmt(asCostPaid)}원</div>
+              <div className="text-xs text-hm-danger">{filteredAS.filter(a => a.paid === "유상").length}건</div>
             </div>
             <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-success-bg text-center border border-hm-success-border">
-              <div className="text-[9px] text-hm-text-muted mb-0.5">무상 (건물주부담)</div>
-              <div className="text-sm font-extrabold text-hm-success">{fmt(asCostFree)}원</div>
-              <div className="text-[10px] text-hm-success">{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
+              <div className="text-xs text-hm-text-muted mb-0.5">무상 (건물주부담)</div>
+              <div className="text-sm font-bold text-hm-success">{fmt(asCostFree)}원</div>
+              <div className="text-xs text-hm-success">{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
             </div>
           </div>
         )}
@@ -234,8 +234,8 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {filteredAS.length > 0 && (
         <Card className="mb-4">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[10px] font-bold text-hm-warning tracking-wider">🔧 AS 이력</div>
-            <button onClick={() => window.print()} className="text-[11px] font-semibold px-3 py-1.5 rounded-md border border-hm-input-border bg-white cursor-pointer font-[inherit] flex items-center gap-1 hover:bg-hm-bg-hover transition-colors">
+            <div className="text-xs font-bold text-hm-warning tracking-wider">🔧 AS 이력</div>
+            <button onClick={() => window.print()} className="text-xs font-semibold px-3 py-1.5 rounded-md border border-hm-input-border bg-white cursor-pointer font-[inherit] flex items-center gap-1 hover:bg-hm-bg-hover transition-colors">
               💾 저장/출력
             </button>
           </div>
@@ -245,18 +245,18 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-extrabold text-hm-text">{a.room}호</span>
+                    <span className="text-sm font-bold text-hm-text">{a.room}호</span>
                     <StatusBadge status={a.status} />
                     <StatusBadge status={a.priority} />
                   </div>
-                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-[5px] ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-[5px] ${a.paid === "유상" ? 'bg-hm-danger-bg text-hm-danger' : 'bg-hm-success-bg text-hm-success'}`}>
                     {a.paid}{a.cost > 0 ? ` ${fmt(a.cost)}원` : ""}
                   </span>
                 </div>
                 {/* Approval badge */}
                 {a.ownerApproval && (
                   <div className="mb-1.5">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${a.ownerApproval === "pending" ? 'bg-[#FFFBEB] text-[#D97706]' : a.ownerApproval === "approved" ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${a.ownerApproval === "pending" ? 'bg-[#FFFBEB] text-[#D97706]' : a.ownerApproval === "approved" ? 'bg-hm-success-bg text-hm-success' : 'bg-hm-danger-bg text-hm-danger'}`}>
                       {a.ownerApproval === "pending" ? "승인대기" : a.ownerApproval === "approved" ? "승인완료" : "반려"}
                     </span>
                   </div>
@@ -267,14 +267,14 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                 {/* Timeline */}
                 {a.steps && a.steps.length > 0 && (
                   <div className="p-3 bg-white rounded-[10px] border border-hm-border">
-                    <div className="text-[10px] font-bold text-hm-text-muted mb-2">처리 과정</div>
+                    <div className="text-xs font-bold text-hm-text-muted mb-2">처리 과정</div>
                     {a.steps.map((step: Record<string, any>, si: number) => (
                       <div key={si} className={`flex gap-2.5 ${si < a.steps.length - 1 ? 'mb-2 pb-2 border-b border-[#F0F2F5]' : ''}`}>
                         <div className={`w-2 h-2 rounded-full mt-[5px] shrink-0 ${si === a.steps.length - 1 ? 'bg-hm-blue' : 'bg-[#D1D5DB]'}`} />
                         <div className="flex-1">
                           <div className="flex justify-between mb-0.5">
                             <span className="text-xs font-bold text-hm-text">{step.action}</span>
-                            <span className="text-[10px] text-[#B0B5C1]">{step.date}</span>
+                            <span className="text-xs text-[#B0B5C1]">{step.date}</span>
                           </div>
                           <div className="text-[11.5px] text-hm-text-sub leading-relaxed">{step.note}</div>
                         </div>
@@ -285,11 +285,11 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                 {/* Photos */}
                 {(a.photoBefore || a.photoAfter) && (
                   <div className="flex gap-2 mt-2.5">
-                    {a.photoBefore && <span className="text-[10px] px-2 py-0.5 rounded-[5px] bg-hm-danger-bg text-hm-danger">📷 수리 전</span>}
-                    {a.photoAfter && <span className="text-[10px] px-2 py-0.5 rounded-[5px] bg-hm-success-bg text-hm-success">📷 수리 후</span>}
+                    {a.photoBefore && <span className="text-xs px-2 py-0.5 rounded-[5px] bg-hm-danger-bg text-hm-danger">📷 수리 전</span>}
+                    {a.photoAfter && <span className="text-xs px-2 py-0.5 rounded-[5px] bg-hm-success-bg text-hm-success">📷 수리 후</span>}
                   </div>
                 )}
-                <div className="text-[10px] text-[#B0B5C1] mt-2">접수일 {a.date} · 담당 {a.assignee} · {a.category || "기타"}{a.vendor ? ` · ${a.vendor}` : ""}</div>
+                <div className="text-xs text-[#B0B5C1] mt-2">접수일 {a.date} · 담당 {a.assignee} · {a.category || "기타"}{a.vendor ? ` · ${a.vendor}` : ""}</div>
               </div>
             ))}
           </div>
@@ -298,7 +298,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
       {/* 최근 순회 요약 (모든 건물) */}
       <Card className="mb-4">
-        <div className="text-[10px] font-bold text-[#7C3AED] tracking-wider mb-2.5">🚶 최근 순회</div>
+        <div className="text-xs font-bold text-[#7C3AED] tracking-wider mb-2.5">🚶 최근 순회</div>
         <div className="flex flex-col gap-1.5">
           {myBuildings.map(bName => {
             const latestRec = allPatrolRecords.find(r => r.building === bName);
@@ -308,15 +308,15 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
               <div key={bName} onClick={() => setSelectedBldg(bName)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-[#F0F2F5]'}`}>
                 <div className="flex items-center gap-2.5">
-                  <span className="text-[13px] font-extrabold text-hm-text">{bName}</span>
+                  <span className="text-sm font-bold text-hm-text">{bName}</span>
                   {latestRec && (
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${latestRec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${latestRec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
                       {latestRec.status}
                     </span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-hm-text-muted">{latestRec ? latestRec.date.slice(5) : "미순회"}</span>
+                  <span className="text-xs text-hm-text-muted">{latestRec ? latestRec.date.slice(5) : "미순회"}</span>
                   <span className="text-[#B0B5C1]">›</span>
                 </div>
               </div>
@@ -334,11 +334,11 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         return (
           <Card className="mb-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-[10px] font-bold text-[#7C3AED] tracking-wider">🚶 순회 관리 리포트</div>
+              <div className="text-xs font-bold text-[#7C3AED] tracking-wider">🚶 순회 관리 리포트</div>
               {bldgPatrol && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-hm-text-muted">월 {bldgPatrol.freq}회 · {interval}일 주기</span>
-                  <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-md ${bldgPatrol.doneCount >= bldgPatrol.freq ? 'bg-[#D1FAE5] text-hm-success' : 'bg-[#FEF3C7] text-[#D97706]'}`}>
+                  <span className="text-xs text-hm-text-muted">월 {bldgPatrol.freq}회 · {interval}일 주기</span>
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-md ${bldgPatrol.doneCount >= bldgPatrol.freq ? 'bg-[#D1FAE5] text-hm-success' : 'bg-[#FEF3C7] text-[#D97706]'}`}>
                     {bldgPatrol.doneCount}/{bldgPatrol.freq}회 완료
                   </span>
                 </div>
@@ -347,16 +347,16 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
             {bldgPatrol && (
               <div className="flex gap-2.5 mb-3.5">
                 <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
-                  <div className="text-[9px] text-hm-text-muted mb-0.5">담당자</div>
-                  <div className="text-[13px] font-extrabold text-[#7C3AED]">{bldgPatrol.assignee}</div>
+                  <div className="text-xs text-hm-text-muted mb-0.5">담당자</div>
+                  <div className="text-sm font-bold text-[#7C3AED]">{bldgPatrol.assignee}</div>
                 </div>
                 <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
-                  <div className="text-[9px] text-hm-text-muted mb-0.5">마지막 순회</div>
-                  <div className="text-[13px] font-extrabold text-hm-text">{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
+                  <div className="text-xs text-hm-text-muted mb-0.5">마지막 순회</div>
+                  <div className="text-sm font-bold text-hm-text">{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
                 </div>
                 <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
-                  <div className="text-[9px] text-hm-text-muted mb-0.5">최근 상태</div>
-                  <div className={`text-[13px] font-extrabold ${bldgPatrol.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{bldgPatrol.lastStatus || "—"}</div>
+                  <div className="text-xs text-hm-text-muted mb-0.5">최근 상태</div>
+                  <div className={`text-sm font-bold ${bldgPatrol.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{bldgPatrol.lastStatus || "—"}</div>
                 </div>
               </div>
             )}
@@ -367,24 +367,24 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                     className={`px-3.5 py-2.5 cursor-pointer transition-colors ${i < bldgRecords.length - 1 ? 'border-b border-[#F0F2F5]' : ''} ${rec.status === "이상발견" ? 'bg-hm-danger-bg hover:bg-[#FEE2E2]' : 'bg-white hover:bg-hm-bg-hover'}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-hm-text">{rec.date}</span>
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
-                        <span className="text-[10px] text-hm-text-muted">{rec.assignee}</span>
+                        <span className="text-xs font-bold text-hm-text">{rec.date}</span>
+                        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
+                        <span className="text-xs text-hm-text-muted">{rec.assignee}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-hm-text-muted">📸 {rec.photos.length}</span>
+                        <span className="text-xs text-hm-text-muted">📸 {rec.photos.length}</span>
                         <span className="text-xs text-[#B0B5C1] transition-transform duration-150" style={{ transform: expandedPatrol === i ? "rotate(90deg)" : "rotate(0)" }}>›</span>
                       </div>
                     </div>
-                    {expandedPatrol !== i && <div className="text-[11px] text-hm-text-muted mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{rec.comment}</div>}
+                    {expandedPatrol !== i && <div className="text-xs text-hm-text-muted mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{rec.comment}</div>}
                     {expandedPatrol === i && (
                       <div className="mt-2 px-3 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
                         {rec.checklist && rec.checklist.length > 0 && (
                           <div className="mb-2">
-                            <div className="text-[10px] font-bold text-hm-blue mb-1">시설 점검 결과</div>
+                            <div className="text-xs font-bold text-hm-blue mb-1">시설 점검 결과</div>
                             <div className="flex flex-wrap gap-1">
                               {rec.checklist.map((c: Record<string, any>, ci: number) => (
-                                <span key={ci} className={`text-[10px] px-2 py-0.5 rounded font-semibold ${c.status === "이상" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
+                                <span key={ci} className={`text-xs px-2 py-0.5 rounded font-semibold ${c.status === "이상" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
                                   {c.status === "정상" ? "✅" : "⚠"} {c.item}{c.comment ? `: ${c.comment}` : ""}
                                 </span>
                               ))}
@@ -394,10 +394,10 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                         <div className="text-xs text-hm-text leading-[1.8] mb-2">{rec.comment}</div>
                         <div className="flex gap-1.5 flex-wrap">
                           {rec.photos.map((p: string, pi: number) => (
-                            <div key={pi} className="w-12 h-12 rounded-md bg-hm-border flex items-center justify-center text-[10px] text-hm-text-muted">📷</div>
+                            <div key={pi} className="w-12 h-12 rounded-md bg-hm-border flex items-center justify-center text-xs text-hm-text-muted">📷</div>
                           ))}
                         </div>
-                        {rec.photos.length > 0 && <div className="text-[10px] text-hm-text-muted mt-1.5">사진 {rec.photos.length}장</div>}
+                        {rec.photos.length > 0 && <div className="text-xs text-hm-text-muted mt-1.5">사진 {rec.photos.length}장</div>}
                       </div>
                     )}
                   </div>
@@ -413,7 +413,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {/* Recent Transactions */}
       {filteredTx.length > 0 && (
         <Card className="mb-4">
-          <div className="text-[10px] font-bold text-hm-success tracking-wider mb-2.5">💰 최근 입출금</div>
+          <div className="text-xs font-bold text-hm-success tracking-wider mb-2.5">💰 최근 입출금</div>
           <div className="flex flex-col gap-1">
             {filteredTx.map((tx, i) => (
               <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-hm-bg-hover">
@@ -421,10 +421,10 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tx.type === "입금" ? 'bg-[#10B981]' : 'bg-[#EF4444]'}`} />
                   <div>
                     <div className="text-xs text-[#3D4251]">{tx.room ? `${tx.room}호` : ""} {tx.cat}</div>
-                    <div className="text-[10px] text-[#B0B5C1]">{tx.date}</div>
+                    <div className="text-xs text-[#B0B5C1]">{tx.date}</div>
                   </div>
                 </div>
-                <span className={`text-[13px] font-bold ${tx.type === "입금" ? 'text-hm-success' : 'text-hm-danger'}`}>{tx.type === "지출" ? "-" : "+"}{fmt(tx.amount)}원</span>
+                <span className={`text-sm font-bold ${tx.type === "입금" ? 'text-hm-success' : 'text-hm-danger'}`}>{tx.type === "지출" ? "-" : "+"}{fmt(tx.amount)}원</span>
               </div>
             ))}
           </div>
@@ -433,7 +433,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       {/* Footer */}
       <div className="mt-6 p-4 text-center rounded-[10px] bg-hm-bg-hover border border-hm-border">
         <div className="text-xs text-hm-text-muted">문의사항은 관리팀으로 연락해주세요</div>
-        <div className="text-[13px] font-bold text-hm-text mt-1">📞 02-1234-5678 · 하우스맨 관리팀</div>
+        <div className="text-sm font-bold text-hm-text mt-1">📞 02-1234-5678 · 하우스맨 관리팀</div>
       </div>
     </div>
   );
