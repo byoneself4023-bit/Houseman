@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { inputClassName } from '@/components/Field';
 import { persistUpdate } from '../calendarApi';
@@ -22,7 +23,7 @@ export const SendLinkModal: React.FC<SendLinkModalProps> = ({ sendLinkModal, set
         onMouseDown={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <div className="text-base font-bold text-hm-text">{"\uD83D\uDCE9"} 다른번호로 보내기</div>
-          <button onClick={() => setSendLinkModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">{"\u2715"}</button>
+          <button onClick={() => setSendLinkModal(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors"><X size={16} /></button>
         </div>
         <div className="text-xs text-hm-text-muted mb-3">{building} {room}호 퇴실링크</div>
         <div className="mb-3">

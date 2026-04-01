@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 import { matchKorean } from "../utils/koreanSearch";
 
 interface SearchInputProps {
@@ -29,7 +30,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         onClick={() => onChange("")}
         className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-sm text-hm-text-muted cursor-pointer p-0 hover:text-hm-text transition-colors"
       >
-        {"\u2715"}
+        <X size={16} />
       </button>
     )}
   </div>

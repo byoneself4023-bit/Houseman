@@ -15,28 +15,28 @@ import type { Staff } from '@/types';
 
 // Map menu item IDs to lucide icons
 const iconMap: Record<string, React.ReactNode> = {
-  'task-driver': <CheckSquare size={16} />,
-  'profit-dashboard': <BarChart3 size={16} />,
-  'calendar': <Calendar size={16} />,
-  'renewal': <RefreshCw size={16} />,
-  'contracts': <Mail size={16} />,
-  'transactions': <Landmark size={16} />,
-  'cashbook': <ClipboardList size={16} />,
-  'settlement': <CreditCard size={16} />,
-  'buildings': <Building2 size={16} />,
-  'tenants': <User size={16} />,
-  'pastTenants': <Package size={16} />,
-  'collection': <Coins size={16} />,
-  'billing': <Zap size={16} />,
-  'parking': <SquareParking size={16} />,
-  'as': <Wrench size={16} />,
-  'patrol': <Footprints size={16} />,
-  'route-schedule': <MapPin size={16} />,
-  'payroll': <Banknote size={16} />,
-  'broker': <Home size={16} />,
-  'staff': <Users size={16} />,
-  'data-upload': <FolderUp size={16} />,
-  'homepage-edit': <Globe size={16} />,
+  'task-driver': <CheckSquare size={18} />,
+  'profit-dashboard': <BarChart3 size={18} />,
+  'calendar': <Calendar size={18} />,
+  'renewal': <RefreshCw size={18} />,
+  'contracts': <Mail size={18} />,
+  'transactions': <Landmark size={18} />,
+  'cashbook': <ClipboardList size={18} />,
+  'settlement': <CreditCard size={18} />,
+  'buildings': <Building2 size={18} />,
+  'tenants': <User size={18} />,
+  'pastTenants': <Package size={18} />,
+  'collection': <Coins size={18} />,
+  'billing': <Zap size={18} />,
+  'parking': <SquareParking size={18} />,
+  'as': <Wrench size={18} />,
+  'patrol': <Footprints size={18} />,
+  'route-schedule': <MapPin size={18} />,
+  'payroll': <Banknote size={18} />,
+  'broker': <Home size={18} />,
+  'staff': <Users size={18} />,
+  'data-upload': <FolderUp size={18} />,
+  'homepage-edit': <Globe size={18} />,
 };
 
 interface SidebarProps {
@@ -190,7 +190,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                       <span className={cn('text-xs text-[#4B5563] transition-transform duration-200', settingsOpen && 'rotate-180')}>▼</span>
                     </>
                   ) : (
-                    <Settings size={16} className="text-[#4B5563]" />
+                    <Settings size={18} className="text-[#4B5563]" />
                   )}
                 </div>
                 {settingsOpen && sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
@@ -220,7 +220,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           className="flex items-center justify-center p-2 rounded-lg cursor-pointer text-[#6B7280] transition-colors hover:bg-[#22273A]"
           title={sidebarOpen ? '사이드바 접기' : '사이드바 펼치기'}
         >
-          {sidebarOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+          {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeft size={18} />}
           {sidebarOpen && <span className="ml-2 text-xs">접기</span>}
         </div>
         {sidebarOpen && <div className="text-center text-[8px] text-[#4B5563] mt-1">v2.0</div>}

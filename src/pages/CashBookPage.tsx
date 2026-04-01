@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { settlementMaster, buildingAccountMap } from '@/data';
 import { useIsMobile, fmt } from '@/utils';
 import { Card, SectionTitle } from '@/components';
@@ -147,9 +148,9 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
       {/* 월 선택기 + 필터 */}
       <div className="flex flex-wrap gap-3 mb-5 items-center">
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-hm-border">
-          <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
+          <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors"><ChevronLeft size={16} /></button>
           <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
-          <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
+          <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors"><ChevronRight size={16} /></button>
         </div>
         <div className="flex gap-1">
           {["전체", "settlement", "moveout", "manual"].map(t => (

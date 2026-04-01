@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { X } from "lucide-react";
 
 interface ModalProps {
   open: boolean;
@@ -51,7 +52,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, wi
                 onClick={onClose}
                 className="cursor-pointer text-lg text-hm-text-muted px-2 py-1 ml-auto hover:text-hm-text transition-colors"
               >
-                {"\u2715"}
+                <X size={16} />
               </div>
             )}
           </div>

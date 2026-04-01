@@ -3,7 +3,23 @@ import { useIsMobile } from '@/utils/useIsMobile';
 import { useCurrentPageId } from '@/hooks/useCurrentPageId';
 import { useAuthStore } from '@/stores/authStore';
 import { menuItems } from '@/config/navigation';
-import { Bell } from 'lucide-react';
+import {
+  Bell, CheckSquare, BarChart3, Calendar, RefreshCw, Mail, Landmark, ClipboardList,
+  CreditCard, Coins, Zap, SquareParking, Wrench, Footprints, MapPin,
+  Banknote, Home, Users, FolderUp, Globe, Building2, User, Package, Pin,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  'task-driver': CheckSquare, 'profit-dashboard': BarChart3, 'calendar': Calendar,
+  'renewal': RefreshCw, 'contracts': Mail, 'transactions': Landmark,
+  'cashbook': ClipboardList, 'settlement': CreditCard, 'buildings': Building2,
+  'tenants': User, 'pastTenants': Package, 'collection': Coins, 'billing': Zap,
+  'parking': SquareParking, 'as': Wrench, 'patrol': Footprints,
+  'route-schedule': MapPin, 'payroll': Banknote, 'broker': Home, 'staff': Users,
+  'data-upload': FolderUp, 'homepage-edit': Globe, 'homepage': Globe,
+  'company-settings': Building2,
+};
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { Staff } from '@/types';
@@ -34,8 +50,12 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
       )}>
         {/* Left: page title */}
         <div className={cn('flex items-center', isMobile ? 'gap-2' : 'gap-3')}>
-          <span className={isMobile ? 'text-base' : 'text-lg'}>
-            {role === 'owner' ? '🏠' : role === 'homepage' ? '🌐' : menuItems.find((m) => m.id === page)?.icon}
+          <span className={cn('text-hm-gray-500', isMobile ? 'text-base' : 'text-lg')}>
+            {(() => {
+              const iconId = role === 'owner' ? 'buildings' : role === 'homepage' ? 'homepage' : page;
+              const Icon = iconMap[iconId];
+              return Icon ? <Icon size={isMobile ? 18 : 20} /> : null;
+            })()}
           </span>
           <span className={cn('font-bold text-hm-text', isMobile ? 'text-sm' : 'text-base')}>
             {role === 'owner' ? '내 건물 현황' : role === 'homepage' ? '공실 매물' : menuItems.find((m) => m.id === page)?.label}
@@ -83,7 +103,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
       {/* Staff Filter Banner */}
       {currentStaff && !isGeneral && !isMobile && (
         <div className="px-6 py-2 bg-gradient-to-r from-[#FEF3C7] to-hm-warning-bg border-b border-[#FDE68A] flex items-center gap-2">
-          <span className="text-xs font-bold text-[#92400E]">📌 {currentStaff.name} · {myBuildings.length}개 건물</span>
+          <span className="text-xs font-bold text-[#92400E] flex items-center gap-1"><Pin size={14} /> {currentStaff.name} · {myBuildings.length}개 건물</span>
           <div className="flex gap-[3px] flex-wrap">
             {myBuildings.map((b) => (
               <span key={b} className="px-2 py-0.5 rounded text-xs font-semibold bg-white text-[#92400E] border border-[#FDE68A]">{b}</span>

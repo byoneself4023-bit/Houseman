@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Check, X, AlertTriangle } from "lucide-react";
 
 type ToastType = "success" | "error" | "warning";
 
@@ -21,7 +22,11 @@ const bgClasses: Record<ToastType, string> = {
   warning: "bg-amber-50 text-amber-900 border-amber-200",
 };
 
-const icons: Record<ToastType, string> = { success: "\u2713 ", error: "\u2715 ", warning: "\u26A0 " };
+const icons: Record<ToastType, React.ReactNode> = {
+  success: <Check size={14} className="inline-block mr-1 align-text-bottom" />,
+  error: <X size={14} className="inline-block mr-1 align-text-bottom" />,
+  warning: <AlertTriangle size={14} className="inline-block mr-1 align-text-bottom" />,
+};
 
 export function Toast() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
