@@ -14,6 +14,28 @@
 import { truncate10, calcDueAmounts } from '@/data';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// localStorage helpers (appData blob)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function readAppData(): Record<string, any> {
+  try {
+    const raw = localStorage.getItem('appData');
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function writeAppKey(key: string, value: any): void {
+  try {
+    const data = readAppData();
+    data[key] = value;
+    localStorage.setItem('appData', JSON.stringify(data));
+  } catch { /* ignore */ }
+}
+
+let _nextBillingId = Date.now();
+function nextId(): number { return _nextBillingId++; }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Types
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -182,18 +204,59 @@ export const getBillingSurcharges = (billingSettings: BillingSettings = {}, isSh
 /**
  * 퇴실 시 청구 설정을 기본값으로 리셋합니다.
  */
-export const resetBillingSettingsOnMoveOut = async (_roomId: number): Promise<void> => {
-  // TODO Phase 6: API mutation으로 전환
-  return;
+export const resetBillingSettingsOnMoveOut = async (roomId: number): Promise<void> => {
+  const data = readAppData();
+  const settings: Record<string, any> = data.hm_billingSettings || {};
+  delete settings[String(roomId)];
+  writeAppKey('hm_billingSettings', settings);
 };
 
 /**
  * 퇴실 확정 통합 함수 — 모든 상태를 한 번에 처리
  * CalendarPage, TenantsPage 어디서든 이 함수 하나만 호출
  */
-export async function confirmMoveOut(_params: { tenantId: number; roomId: number; moveOutDate: string }): Promise<{ ok: boolean; errors: string[] }> {
-  // TODO Phase 6: useMoveOut mutation으로 전환
-  return { ok: false, errors: ['use API mutation'] };
+export async function confirmMoveOut(params: { tenantId: number; roomId: number; moveOutDate: string }): Promise<{ ok: boolean; errors: string[] }> {
+  const errors: string[] = [];
+  const data = readAppData();
+
+  // 1) activeTenants에서 제거
+  const tenants: any[] = data.hm_activeTenants || [];
+  const tenant = tenants.find((t: any) => t.id === params.tenantId);
+  if (!tenant) {
+    errors.push('임차인을 찾을 수 없습니다.');
+    return { ok: false, errors };
+  }
+  data.hm_activeTenants = tenants.filter((t: any) => t.id !== params.tenantId);
+
+  // 2) pastTenantsData에 추가
+  const past: Record<string, any> = data.hm_pastTenantsData || {};
+  const key = `${tenant.building}_${tenant.room}`;
+  if (!past[key]) past[key] = [];
+  past[key].push({ ...tenant, moveOutDate: params.moveOutDate, movedOutAt: new Date().toISOString() });
+  data.hm_pastTenantsData = past;
+
+  // 3) 공실 등록
+  const vacancies: any[] = data.hm_activeVacancies || [];
+  const exists = vacancies.find((v: any) => v.building === tenant.building && v.room === tenant.room);
+  if (!exists) {
+    vacancies.push({
+      id: nextId(),
+      building: tenant.building,
+      room: tenant.room,
+      availableDate: params.moveOutDate,
+      status: '공실',
+      createdAt: new Date().toISOString(),
+    });
+    data.hm_activeVacancies = vacancies;
+  }
+
+  // 4) 청구 설정 초기화
+  const settings: Record<string, any> = data.hm_billingSettings || {};
+  delete settings[String(params.roomId)];
+  data.hm_billingSettings = settings;
+
+  localStorage.setItem('appData', JSON.stringify(data));
+  return { ok: true, errors };
 }
 
 // ── billing_initial_setup CRUD ──
@@ -201,41 +264,54 @@ export async function confirmMoveOut(_params: { tenantId: number; roomId: number
 /**
  * 건물의 초기설정을 조회합니다.
  */
-export const getBillingInitialSetup = async (_buildingId: number): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const getBillingInitialSetup = async (buildingId: number): Promise<any | null> => {
+  const data = readAppData();
+  const setups: Record<string, any> = data.hm_billingInitialSetup || {};
+  return setups[String(buildingId)] || null;
 };
 
 /**
  * 건물의 초기설정을 저장(upsert)합니다.
  */
-export const saveBillingInitialSetup = async (_setup: any): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const saveBillingInitialSetup = async (setup: any): Promise<any | null> => {
+  const data = readAppData();
+  const setups: Record<string, any> = data.hm_billingInitialSetup || {};
+  const id = setup.building_id;
+  const saved = { ...setup, id: setup.id || nextId(), updated_at: new Date().toISOString() };
+  setups[String(id)] = saved;
+  writeAppKey('hm_billingInitialSetup', setups);
+  return saved;
 };
 
 /**
  * 특정 호실의 billing_settings를 조회합니다.
  */
-export const getBillingSettings = async (_roomId: number): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const getBillingSettings = async (roomId: number): Promise<any | null> => {
+  const data = readAppData();
+  const settings: Record<string, any> = data.hm_billingSettings || {};
+  return settings[String(roomId)] || null;
 };
 
 /**
  * 특정 건물의 모든 호실 billing_settings를 조회합니다.
  */
-export const getBillingSettingsByBuilding = async (_buildingId: number): Promise<any[]> => {
-  // TODO Phase 6: API 전환
-  return [];
+export const getBillingSettingsByBuilding = async (buildingId: number): Promise<any[]> => {
+  const data = readAppData();
+  const settings: Record<string, any> = data.hm_billingSettings || {};
+  return Object.values(settings).filter((s: any) => s.building_id === buildingId);
 };
 
 /**
  * billing_settings를 저장(upsert)합니다.
  */
-export const saveBillingSettings = async (_settings: any): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const saveBillingSettings = async (settings: any): Promise<any | null> => {
+  const data = readAppData();
+  const all: Record<string, any> = data.hm_billingSettings || {};
+  const roomId = settings.room_id;
+  const saved = { ...settings, id: settings.id || nextId(), updated_at: new Date().toISOString() };
+  all[String(roomId)] = saved;
+  writeAppKey('hm_billingSettings', all);
+  return saved;
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -254,9 +330,34 @@ export const emptyUnpaid = (): UnpaidItems => ({
  * billing_records에서 미납 항목을 집계합니다.
  * status가 'sent' 또는 'overdue'이고 완납되지 않은 건
  */
-export const getUnpaidByItems = async (_roomId: number, _excludeMonth = ''): Promise<UnpaidItems> => {
-  // TODO Phase 6: API 전환
-  return emptyUnpaid();
+export const getUnpaidByItems = async (roomId: number, excludeMonth = ''): Promise<UnpaidItems> => {
+  const data = readAppData();
+  const records: any[] = data.hm_billingRecords || [];
+  const unpaid = emptyUnpaid();
+
+  records
+    .filter((r: any) =>
+      r.room_id === roomId &&
+      ['sent', 'overdue', 'partial'].includes(r.status) &&
+      r.billing_month !== excludeMonth
+    )
+    .forEach((r: any) => {
+      unpaid.rent += r.rent || 0;
+      unpaid.mgmt += r.management_fee || 0;
+      unpaid.elec += r.electric_fee || 0;
+      unpaid.gas += r.gas_fee || 0;
+      unpaid.water += r.water_fee || 0;
+      unpaid.internet += r.internet_fee || 0;
+      unpaid.parking += r.parking_fee || 0;
+      unpaid.surcharge += (r.elec_billing_surcharge || 0) + (r.gas_billing_surcharge || 0);
+      unpaid.lateFee += r.late_fee || 0;
+      unpaid.extra += r.extra_charge || 0;
+    });
+
+  unpaid.total = unpaid.rent + unpaid.mgmt + unpaid.elec + unpaid.gas + unpaid.water +
+    unpaid.internet + unpaid.parking + unpaid.surcharge + unpaid.lateFee + unpaid.extra;
+
+  return unpaid;
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -266,25 +367,47 @@ export const getUnpaidByItems = async (_roomId: number, _excludeMonth = ''): Pro
 /**
  * 특정 호실의 마지막 검침을 조회합니다.
  */
-export const getLastReading = async (_roomId: number, _type: 'elec' | 'gas' | 'water'): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const getLastReading = async (roomId: number, type: 'elec' | 'gas' | 'water'): Promise<any | null> => {
+  const data = readAppData();
+  const readings: any[] = data.hm_meterReadings || [];
+  const matched = readings
+    .filter((r: any) => r.room_id === roomId && r.type === type)
+    .sort((a: any, b: any) => (b.reading_date || '').localeCompare(a.reading_date || ''));
+  return matched[0] || null;
 };
 
 /**
  * 검침 데이터를 저장합니다.
  */
-export const saveReading = async (_reading: any): Promise<boolean> => {
-  // TODO Phase 6: API 전환
-  return false;
+export const saveReading = async (reading: any): Promise<boolean> => {
+  try {
+    const data = readAppData();
+    const readings: any[] = data.hm_meterReadings || [];
+    readings.push({ ...reading, id: reading.id || nextId(), created_at: new Date().toISOString() });
+    writeAppKey('hm_meterReadings', readings);
+    return true;
+  } catch { return false; }
 };
 
 /**
  * 같은 달에 2건의 검침이 있으면 계량기 교체로 판단하고 사용량을 합산합니다.
  */
-export const getMonthlyUsage = async (_roomId: number, _type: 'elec' | 'gas' | 'water', _billingMonth: string): Promise<MeterUsageResult> => {
-  // TODO Phase 6: API 전환
-  return { usage: 0, amount: 0, isMeterReplaced: false, matched: false };
+export const getMonthlyUsage = async (roomId: number, type: 'elec' | 'gas' | 'water', billingMonth: string): Promise<MeterUsageResult> => {
+  const data = readAppData();
+  const readings: any[] = data.hm_meterReadings || [];
+  const matched = readings.filter((r: any) => r.room_id === roomId && r.type === type && r.billing_month === billingMonth);
+
+  if (matched.length === 0) return { usage: 0, amount: 0, isMeterReplaced: false, matched: false };
+
+  const totalUsage = matched.reduce((sum: number, r: any) => sum + (r.usage || 0), 0);
+  const totalAmount = matched.reduce((sum: number, r: any) => sum + (r.amount || 0), 0);
+
+  return {
+    usage: totalUsage,
+    amount: totalAmount,
+    isMeterReplaced: matched.length > 1,
+    matched: true,
+  };
 };
 
 /**
@@ -563,17 +686,27 @@ export const generateBillingRecord = ({
 /**
  * billing_records를 Supabase에 저장합니다.
  */
-export const saveBillingRecord = async (_record: any): Promise<any | null> => {
-  // TODO Phase 6: API 전환 (useGenerateBilling mutation)
-  return null;
+export const saveBillingRecord = async (record: any): Promise<any | null> => {
+  try {
+    const data = readAppData();
+    const records: any[] = data.hm_billingRecords || [];
+    const saved = { ...record, id: record.id || nextId(), created_at: new Date().toISOString() };
+    records.push(saved);
+    writeAppKey('hm_billingRecords', records);
+    return saved;
+  } catch { return null; }
 };
 
 /**
  * 특정 청구월의 모든 billing_records를 조회합니다.
  */
-export const getBillingRecords = async (_billingMonth: string, _buildingId: number | null = null): Promise<any[]> => {
-  // TODO Phase 6: API 전환 (useBillingRecords query)
-  return [];
+export const getBillingRecords = async (billingMonth: string, buildingId: number | null = null): Promise<any[]> => {
+  const data = readAppData();
+  const records: any[] = data.hm_billingRecords || [];
+  return records.filter((r: any) =>
+    r.billing_month === billingMonth &&
+    (buildingId == null || r.building_id === buildingId)
+  );
 };
 
 /**
@@ -592,9 +725,24 @@ export const getBillingKpi = async (billingMonth: string): Promise<BillingKpi> =
 /**
  * 청구서 상태를 업데이트합니다.
  */
-export const updateBillingStatus = async (_recordId: number, _status: string, _extra: any = {}): Promise<boolean> => {
-  // TODO Phase 6: API 전환 (useConfirmBilling/useSendBilling mutation)
-  return false;
+export const updateBillingStatus = async (recordId: number, status: string, extra: any = {}): Promise<boolean> => {
+  try {
+    const data = readAppData();
+    const records: any[] = data.hm_billingRecords || [];
+    const idx = records.findIndex((r: any) => r.id === recordId);
+    if (idx === -1) return false;
+
+    records[idx] = {
+      ...records[idx],
+      ...extra,
+      status,
+      ...(status === 'sent' ? { sent_at: new Date().toISOString() } : {}),
+      ...(status === 'confirmed' ? { confirmed_at: new Date().toISOString() } : {}),
+      updated_at: new Date().toISOString(),
+    };
+    writeAppKey('hm_billingRecords', records);
+    return true;
+  } catch { return false; }
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -608,25 +756,68 @@ export const autoGenerateBillingRecords = async (
   billingMonth: string,
   tenants: any[],
   buildingDataMap: any,
-  meterReadings: any[],
+  _meterReadings: any[],
   getRoomTypeFn: ((building: string, room: string) => string) | null,
-  calendarEvents: any[] = [],
+  _calendarEvents: any[] = [],
 ): Promise<{ created: number; skipped: number; reviewRequired: number }> => {
-  // TODO Phase 6: useGenerateBilling mutation으로 전환
-  return { created: 0, skipped: 0, reviewRequired: 0 };
+  let created = 0;
+  let skipped = 0;
+  let reviewRequired = 0;
+
+  for (const tenant of tenants) {
+    const buildingName = tenant.building || tenant.buildingName;
+    const building = buildingDataMap[buildingName];
+    if (!building) { skipped++; continue; }
+
+    const roomType = getRoomTypeFn ? getRoomTypeFn(buildingName, tenant.room || tenant.roomNumber) : 'short';
+    const isShort = roomType === '단기' || building.isShortTermRental;
+    const monthsSince = getMonthsSinceMoveIn(tenant.moveInDate || tenant.move_in_date, billingMonth);
+
+    // 단기 1달차: 전기/가스 미청구 → 수동 검증 필요
+    if (isShort && monthsSince <= 1) { reviewRequired++; continue; }
+    // 단기 2달차: 수동 검증 필요
+    if (isShort && monthsSince === 2) { reviewRequired++; continue; }
+
+    const roomId = tenant.roomId || tenant.room_id;
+    const billingSettings = await getBillingSettings(roomId) || {};
+    const unpaid = await getUnpaidByItems(roomId, billingMonth);
+
+    const record = generateBillingRecord({
+      tenant, building, billingSettings, unpaid, billingMonth,
+    });
+
+    const saved = await saveBillingRecord(record);
+    if (saved) created++;
+    else skipped++;
+  }
+
+  return { created, skipped, reviewRequired };
 };
 
 /**
  * confirmed 상태인 전체 건 일괄 발송
  */
 export const bulkSendBilling = async (
-  _billingMonth: string,
+  billingMonth: string,
   _buildingDataMap: any,
   _tenants: any[],
-  _onProgress?: (current: number, total: number) => void,
+  onProgress?: (current: number, total: number) => void,
 ): Promise<{ sent: number; failed: number }> => {
-  // TODO Phase 6: useSendBilling mutation으로 전환
-  return { sent: 0, failed: 0 };
+  const data = readAppData();
+  const records: any[] = data.hm_billingRecords || [];
+  const targets = records.filter((r: any) => r.billing_month === billingMonth && r.status === 'confirmed');
+
+  let sent = 0;
+  let failed = 0;
+
+  for (let i = 0; i < targets.length; i++) {
+    const ok = await updateBillingStatus(targets[i].id, 'sent');
+    if (ok) sent++;
+    else failed++;
+    onProgress?.(i + 1, targets.length);
+  }
+
+  return { sent, failed };
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1022,9 +1213,28 @@ export const resolveAccountInfo = (building: any): AccountInfo => {
 /**
  * 연체료 해제 + billing_records 수정 + 메시지 재생성
  */
-export const waiveLateFee = async (_recordId: number, _building: any = {}, _tenant: any = {}): Promise<{ success: boolean; record: any | null }> => {
-  // TODO Phase 6: API 전환
-  return { success: false, record: null };
+export const waiveLateFee = async (recordId: number, _building: any = {}, _tenant: any = {}): Promise<{ success: boolean; record: any | null }> => {
+  try {
+    const data = readAppData();
+    const records: any[] = data.hm_billingRecords || [];
+    const idx = records.findIndex((r: any) => r.id === recordId);
+    if (idx === -1) return { success: false, record: null };
+
+    const record = records[idx];
+    const lateFee = record.late_fee || 0;
+    records[idx] = {
+      ...record,
+      late_fee: 0,
+      late_fee_waived: true,
+      late_fee_waived_amount: lateFee,
+      total: (record.total || 0) - lateFee,
+      total_within_due: (record.total_within_due || 0) - lateFee,
+      total_after_due: (record.total_after_due || 0) - lateFee,
+      updated_at: new Date().toISOString(),
+    };
+    writeAppKey('hm_billingRecords', records);
+    return { success: true, record: records[idx] };
+  } catch { return { success: false, record: null }; }
 };
 
 /**
@@ -1083,23 +1293,36 @@ export const getPowerCutStage = (record: any): PowerCutStageResult => {
 /**
  * 수금 노트 저장
  */
-export const saveCollectionNote = async (_note: any): Promise<any | null> => {
-  // TODO Phase 6: API 전환
-  return null;
+export const saveCollectionNote = async (note: any): Promise<any | null> => {
+  try {
+    const data = readAppData();
+    const notes: any[] = data.hm_collectionNotes || [];
+    const saved = { ...note, id: note.id || nextId(), created_at: new Date().toISOString() };
+    notes.push(saved);
+    writeAppKey('hm_collectionNotes', notes);
+    return saved;
+  } catch { return null; }
 };
 
 /**
  * 특정 호실의 수금 노트 히스토리 조회
  */
-export const getCollectionNotes = async (_roomId: number): Promise<any[]> => {
-  // TODO Phase 6: API 전환
-  return [];
+export const getCollectionNotes = async (roomId: number): Promise<any[]> => {
+  const data = readAppData();
+  const notes: any[] = data.hm_collectionNotes || [];
+  return notes
+    .filter((n: any) => n.room_id === roomId)
+    .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''));
 };
 
 /**
  * 오늘 약속인 건 조회 (스케줄러용)
  */
 export const getTodayPromises = async (): Promise<any[]> => {
-  // TODO Phase 6: API 전환
-  return [];
+  const data = readAppData();
+  const notes: any[] = data.hm_collectionNotes || [];
+  const today = new Date().toISOString().slice(0, 10);
+  return notes
+    .filter((n: any) => n.note_type === 'promise' && n.promised_date?.slice(0, 10) === today)
+    .sort((a: any, b: any) => (a.promised_date || '').localeCompare(b.promised_date || ''));
 };
