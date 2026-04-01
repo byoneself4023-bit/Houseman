@@ -470,7 +470,13 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
     })();
     /* eslint-enable no-restricted-syntax */
 
-    if (_localResult) {
+    const isLocalFailure = _localResult && (
+      _localResult.includes('없습니다') ||
+      _localResult.includes('찾을 수 없') ||
+      _localResult.includes('이름의 임차인이')
+    );
+
+    if (_localResult && !isLocalFailure) {
       setMessages(prev => [...prev, { role: 'assistant', content: _localResult }]);
       return;
     }
