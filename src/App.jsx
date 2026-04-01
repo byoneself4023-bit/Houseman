@@ -552,7 +552,7 @@ www.houseman.co.kr
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
       {/* Desktop Sidebar */}
@@ -721,7 +721,7 @@ www.houseman.co.kr
 
         {/* Page Content */}
         <div style={{ flex: 1, overflow: "auto", padding: isMobile ? 12 : 24, paddingBottom: isMobile ? 72 : 24 }}>
-          <div key={`${page}-${selectedBuilding || ''}`} style={{ animation: "fadeIn 0.3s ease", maxWidth: 1200 }}>
+          <div key={`${page}-${selectedBuilding || ''}`} style={{ animation: "fadeIn 0.2s ease", maxWidth: 1200 }}>
             <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200 }}><span style={{ fontSize: 14, color: "var(--color-hm-text-muted)" }}>로딩 중...</span></div>}>
               {renderPage()}
             </Suspense>
