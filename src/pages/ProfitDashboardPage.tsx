@@ -314,13 +314,13 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
         <table className="w-full bg-white border border-hm-border rounded-xl overflow-hidden mb-6 min-w-[560px]" cellSpacing={0}>
           <thead>
             <tr>
-              <th className="px-3.5 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">순위</th>
-              <th className="px-3.5 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">건물</th>
-              <th className="px-3.5 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">매출</th>
-              <th className="px-3.5 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">비용</th>
-              <th className="px-3.5 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">순이익</th>
-              <th className="px-3.5 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">수익률</th>
-              {!isMobile && <th className="px-3.5 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border w-[120px]">이익 바</th>}
+              <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">순위</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">건물</th>
+              <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">매출</th>
+              <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">비용</th>
+              <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">순이익</th>
+              <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border">수익률</th>
+              {!isMobile && <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 bg-slate-100 border-b border-hm-border w-[120px]">이익 바</th>}
             </tr>
           </thead>
           <tbody>
@@ -338,19 +338,19 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
                   }}
                   onClick={() => setSelectedBuilding(b.name === selectedBuilding ? null : b.name)}
                 >
-                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">{i + 1}</td>
-                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 font-bold">
+                  <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100">{i + 1}</td>
+                  <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100 font-bold">
                     {b.name}
                     {isBottom20 && <span className="inline-block bg-amber-100 text-amber-600 text-xs font-bold px-2 py-0.5 rounded-md ml-1.5">하위</span>}
                   </td>
-                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.revenue.total)}</td>
-                  <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
-                  <td className={`px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums font-bold ${profitColor}`}>{fmt(b.netProfit)}</td>
-                  <td className={`px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums ${profitColor}`}>
+                  <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.revenue.total)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
+                  <td className={`px-4 py-3 text-sm border-b border-slate-100 text-right tabular-nums font-bold ${profitColor}`}>{fmt(b.netProfit)}</td>
+                  <td className={`px-4 py-3 text-sm border-b border-slate-100 text-right tabular-nums ${profitColor}`}>
                     {b.profitRate.toFixed(1)}%
                   </td>
                   {!isMobile && (
-                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">
+                    <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100">
                       <div className={`h-[18px] rounded ${b.netProfit >= 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all duration-300 ease-in-out`} style={{ width: `${barW}%`, minWidth: barW > 0 ? 4 : 0 }} />
                     </td>
                   )}
@@ -360,19 +360,19 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
             {reviewItems.length > 0 && (
               <>
                 <tr>
-                  <td colSpan={isMobile ? 6 : 7} className="px-3.5 py-2 text-xs font-bold text-amber-600 bg-amber-100 border-b border-hm-border">
+                  <td colSpan={isMobile ? 6 : 7} className="px-4 py-2 text-xs font-bold text-amber-600 bg-amber-100 border-b border-hm-border">
                     -- 재검토 필요 ({reviewItems.length}개 건물) --
                   </td>
                 </tr>
                 {reviewItems.map(b => (
                   <tr key={b.name} className="bg-amber-50">
-                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100">-</td>
-                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 font-bold text-amber-600">{b.name}</td>
-                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">0</td>
-                    <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
-                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-red-500 font-bold">{fmt(b.netProfit)}</td>
-                    <td className="px-3.5 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-amber-600">재검토 필요</td>
-                    {!isMobile && <td className="px-3.5 py-3 text-sm text-slate-800 border-b border-slate-100" />}
+                    <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100">-</td>
+                    <td className="px-4 py-3 text-sm border-b border-slate-100 font-bold text-amber-600">{b.name}</td>
+                    <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">0</td>
+                    <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100 text-right tabular-nums">{fmt(b.cost.total)}</td>
+                    <td className="px-4 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-red-500 font-bold">{fmt(b.netProfit)}</td>
+                    <td className="px-4 py-3 text-sm border-b border-slate-100 text-right tabular-nums text-amber-600">재검토 필요</td>
+                    {!isMobile && <td className="px-4 py-3 text-sm text-slate-800 border-b border-slate-100" />}
                   </tr>
                 ))}
               </>

@@ -65,7 +65,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
   return (
     <div>
       <div className="mb-6">
-        <div className="flex items-center gap-2.5 mb-1">
+        <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">🏠</span>
           <h1 className="text-xl font-bold text-hm-text">건물주 포털</h1>
         </div>
@@ -102,7 +102,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
       </div>
 
       {/* Summary Row */}
-      <div className={`grid gap-2.5 mb-5 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
+      <div className={`grid gap-3 mb-5 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
         {[
           { label: "입주", value: filteredTenants.length, unit: "세대", color: "text-[#10B981]", bg: "bg-hm-success-bg" },
           { label: "공실", value: filteredVacancies.length, unit: "실", color: "text-[#F59E0B]", bg: "bg-[#FFFBEB]" },
@@ -122,7 +122,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs font-bold text-[#D97706] tracking-wider">📩 승인 대기 AS ({pendingApprovals.length}건)</div>
           </div>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-3">
             {pendingApprovals.map((a, i) => (
               <div key={a.id || i} className="px-4 py-3.5 rounded-xl bg-white border border-[#FDE68A]">
                 <div className="flex items-center justify-between mb-1.5">
@@ -190,7 +190,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           <div className="text-xs font-bold text-[#D97706] tracking-wider mb-2.5">📭 공실 현황</div>
           <div className="flex flex-col gap-2">
             {filteredVacancies.map((v, i) => (
-              <div key={i} className="flex items-center justify-between px-3.5 py-3 bg-[#FFFBEB] rounded-[10px] border border-[#FDE68A]">
+              <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#FFFBEB] rounded-[10px] border border-[#FDE68A]">
                 <div>
                   <span className="text-sm font-bold text-hm-text">{v.room}호</span>
                   <span className="text-xs font-semibold ml-2 px-1.5 py-0.5 rounded bg-white border border-hm-input-border">{v.type}</span>
@@ -215,14 +215,14 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         </div>
         {/* Cost breakdown */}
         {asTotalCost > 0 && (
-          <div className="flex gap-2.5 mb-3.5">
-            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-hm-danger-border">
-              <div className="text-xs text-hm-text-muted mb-0.5">유상 (세입자부담)</div>
+          <div className="flex gap-3 mb-4">
+            <div className="flex-1 px-4 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-hm-danger-border">
+              <div className="text-xs text-hm-text-muted mb-1">유상 (세입자부담)</div>
               <div className="text-sm font-bold text-hm-danger">{fmt(asCostPaid)}원</div>
               <div className="text-xs text-hm-danger">{filteredAS.filter(a => a.paid === "유상").length}건</div>
             </div>
-            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-success-bg text-center border border-hm-success-border">
-              <div className="text-xs text-hm-text-muted mb-0.5">무상 (건물주부담)</div>
+            <div className="flex-1 px-4 py-2.5 rounded-lg bg-hm-success-bg text-center border border-hm-success-border">
+              <div className="text-xs text-hm-text-muted mb-1">무상 (건물주부담)</div>
               <div className="text-sm font-bold text-hm-success">{fmt(asCostFree)}원</div>
               <div className="text-xs text-hm-success">{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
             </div>
@@ -269,10 +269,10 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                   <div className="p-3 bg-white rounded-[10px] border border-hm-border">
                     <div className="text-xs font-bold text-hm-text-muted mb-2">처리 과정</div>
                     {a.steps.map((step: Record<string, any>, si: number) => (
-                      <div key={si} className={`flex gap-2.5 ${si < a.steps.length - 1 ? 'mb-2 pb-2 border-b border-[#F0F2F5]' : ''}`}>
+                      <div key={si} className={`flex gap-3 ${si < a.steps.length - 1 ? 'mb-2 pb-2 border-b border-[#F0F2F5]' : ''}`}>
                         <div className={`w-2 h-2 rounded-full mt-[5px] shrink-0 ${si === a.steps.length - 1 ? 'bg-hm-blue' : 'bg-[#D1D5DB]'}`} />
                         <div className="flex-1">
-                          <div className="flex justify-between mb-0.5">
+                          <div className="flex justify-between mb-1">
                             <span className="text-xs font-bold text-hm-text">{step.action}</span>
                             <span className="text-xs text-[#B0B5C1]">{step.date}</span>
                           </div>
@@ -306,8 +306,8 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
             if (!latestRec && !bldgP) return null;
             return (
               <div key={bName} onClick={() => setSelectedBldg(bName)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-[#F0F2F5]'}`}>
-                <div className="flex items-center gap-2.5">
+                className={`flex items-center justify-between px-4 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-[#F0F2F5]'}`}>
+                <div className="flex items-center gap-3">
                   <span className="text-sm font-bold text-hm-text">{bName}</span>
                   {latestRec && (
                     <span className={`text-xs font-bold px-2 py-0.5 rounded ${latestRec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>
@@ -345,17 +345,17 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
               )}
             </div>
             {bldgPatrol && (
-              <div className="flex gap-2.5 mb-3.5">
-                <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
-                  <div className="text-xs text-hm-text-muted mb-0.5">담당자</div>
+              <div className="flex gap-3 mb-4">
+                <div className="flex-1 px-4 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
+                  <div className="text-xs text-hm-text-muted mb-1">담당자</div>
                   <div className="text-sm font-bold text-[#7C3AED]">{bldgPatrol.assignee}</div>
                 </div>
-                <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
-                  <div className="text-xs text-hm-text-muted mb-0.5">마지막 순회</div>
+                <div className="flex-1 px-4 py-2.5 rounded-lg bg-[#F5F3FF] text-center border border-[#DDD6FE]">
+                  <div className="text-xs text-hm-text-muted mb-1">마지막 순회</div>
                   <div className="text-sm font-bold text-hm-text">{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
                 </div>
-                <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
-                  <div className="text-xs text-hm-text-muted mb-0.5">최근 상태</div>
+                <div className={`flex-1 px-4 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
+                  <div className="text-xs text-hm-text-muted mb-1">최근 상태</div>
                   <div className={`text-sm font-bold ${bldgPatrol.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{bldgPatrol.lastStatus || "—"}</div>
                 </div>
               </div>
@@ -364,7 +364,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
               <div className="max-h-[280px] overflow-y-auto border border-hm-border rounded-[10px]">
                 {bldgRecords.map((rec, i) => (
                   <div key={i} onClick={() => setExpandedPatrol(expandedPatrol === i ? null : i)}
-                    className={`px-3.5 py-2.5 cursor-pointer transition-colors ${i < bldgRecords.length - 1 ? 'border-b border-[#F0F2F5]' : ''} ${rec.status === "이상발견" ? 'bg-hm-danger-bg hover:bg-[#FEE2E2]' : 'bg-white hover:bg-hm-bg-hover'}`}>
+                    className={`px-4 py-2.5 cursor-pointer transition-colors ${i < bldgRecords.length - 1 ? 'border-b border-[#F0F2F5]' : ''} ${rec.status === "이상발견" ? 'bg-hm-danger-bg hover:bg-[#FEE2E2]' : 'bg-white hover:bg-hm-bg-hover'}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-hm-text">{rec.date}</span>

@@ -688,7 +688,7 @@ export function TaskDriverPage({
         <div className="flex gap-1.5 flex-wrap items-center mb-4 px-4 py-3 bg-white rounded-xl border border-hm-border">
           <span className="text-sm font-semibold text-gray-700 mr-1">직원:</span>
           <button
-            className={`px-3.5 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+            className={`px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
               viewStaff === 'all'
                 ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
                 : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'
@@ -705,7 +705,7 @@ export function TaskDriverPage({
             return (
               <button
                 key={staff.id}
-                className={`px-3.5 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
+                className={`px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-150 flex items-center gap-1.5 ${
                   viewStaff === staff.name
                     ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue font-bold'
                     : 'border border-slate-300 bg-white text-slate-600 hover:border-slate-400'

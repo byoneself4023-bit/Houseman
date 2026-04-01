@@ -67,11 +67,11 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
           <div className="flex items-center gap-2">
             {sec1Open && (sec1Edit ? (
               <>
-                <button onClick={() => setSec1Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                <button onClick={() => setSec1Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
+                <button onClick={() => setSec1Edit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec1Edit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec1Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
+              <button onClick={() => setSec1Edit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
             ))}
             <span onClick={() => setSec1Open(!sec1Open)} className="text-sm text-hm-text-muted cursor-pointer transition-transform duration-200" style={{ transform: sec1Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
           </div>
@@ -79,7 +79,7 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
         {sec1Open && <div className={`transition-opacity duration-200 ${sec1Edit ? 'opacity-100' : 'opacity-70 pointer-events-none'}`}>
           <div className="grid grid-cols-4 gap-2 mb-2.5">
             <div className="col-span-full">
-              <div className="text-xs text-hm-text-muted mb-0.5">건물 유형 (최대 3개)</div>
+              <div className="text-xs text-hm-text-muted mb-1">건물 유형 (최대 3개)</div>
               <div className="flex flex-wrap gap-1.5 items-center">
                 {detailBuildingTypes.map((t, ti) => {
                   const acctKey = t === "기업시설관리" ? "관리사무소" : t;
@@ -108,25 +108,25 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
               </div>
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">관리시작일</div>
+              <div className="text-xs text-hm-text-muted mb-1">관리시작일</div>
               <input value={bdStartDate} onChange={e => setBdStartDate(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs`} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">🔑 현관 비밀번호</div>
+              <div className="text-xs text-hm-text-muted mb-1">🔑 현관 비밀번호</div>
               <input value={bdEntrancePw} onChange={e => setBdEntrancePw(e.target.value)} placeholder="비밀번호" className={`${inputClassName} !px-2 !py-1.5 !text-xs !font-mono !tracking-wider`} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2 mb-2.5">
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">주소</div>
+              <div className="text-xs text-hm-text-muted mb-1">주소</div>
               <input value={bdAddress} onChange={e => setBdAddress(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs`} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">도로명 주소</div>
+              <div className="text-xs text-hm-text-muted mb-1">도로명 주소</div>
               <input value={bdRoadAddress} onChange={e => setBdRoadAddress(e.target.value)} placeholder="도로명 주소" className={`${inputClassName} !px-2 !py-1.5 !text-xs`} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">시설</div>
+              <div className="text-xs text-hm-text-muted mb-1">시설</div>
               <div className="flex gap-2 py-1.5 items-center">
                 <span className="text-xs text-[#3D4251]">CCTV</span>
                 <input type="number" min="0" value={bdCctvCount} onChange={e => setBdCctvCount(e.target.value)} placeholder="0" className={`${inputClassName} !w-11 !px-1.5 !py-1 !text-xs !text-center`} />
@@ -150,11 +150,11 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
           <div className="flex items-center gap-2">
             {sec2Open && (sec2Edit ? (
               <>
-                <button onClick={() => setSec2Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                <button onClick={() => setSec2Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
+                <button onClick={() => setSec2Edit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec2Edit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec2Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
+              <button onClick={() => setSec2Edit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
             ))}
             <span onClick={() => setSec2Open(!sec2Open)} className="text-sm text-hm-text-muted cursor-pointer transition-transform duration-200" style={{ transform: sec2Open ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
           </div>
@@ -179,12 +179,12 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
                     )}
                   </div>
                   <div className="grid grid-cols-3 gap-1.5 mb-1.5">
-                    <div><div className="text-xs text-hm-text-muted mb-0.5">이름</div><input value={ow.name} onChange={e => setBdOwnerField(oi, "name", e.target.value)} placeholder="홍길동" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
-                    <div><div className="text-xs text-hm-text-muted mb-0.5">주민등록번호</div><input value={ow.ssn} onChange={e => setBdOwnerField(oi, "ssn", e.target.value)} placeholder="000000-0000000" className={`${inputClassName} !px-2 !py-[5px] !text-xs !font-mono`} /></div>
-                    <div><div className="text-xs text-hm-text-muted mb-0.5">전화번호</div><input value={ow.phone} onChange={e => setBdOwnerField(oi, "phone", e.target.value)} placeholder="010-0000-0000" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
+                    <div><div className="text-xs text-hm-text-muted mb-1">이름</div><input value={ow.name} onChange={e => setBdOwnerField(oi, "name", e.target.value)} placeholder="홍길동" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
+                    <div><div className="text-xs text-hm-text-muted mb-1">주민등록번호</div><input value={ow.ssn} onChange={e => setBdOwnerField(oi, "ssn", e.target.value)} placeholder="000000-0000000" className={`${inputClassName} !px-2 !py-[5px] !text-xs !font-mono`} /></div>
+                    <div><div className="text-xs text-hm-text-muted mb-1">전화번호</div><input value={ow.phone} onChange={e => setBdOwnerField(oi, "phone", e.target.value)} placeholder="010-0000-0000" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
                   </div>
-                  <div><div className="text-xs text-hm-text-muted mb-0.5">주소</div><input value={ow.address} onChange={e => setBdOwnerField(oi, "address", e.target.value)} placeholder="건물주 주소" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
-                  <div className="mt-1.5"><div className="text-xs text-hm-text-muted mb-0.5">정산계좌</div><input value={ow.settlement || ""} onChange={e => setBdOwnerField(oi, "settlement", e.target.value)} placeholder="은행명 + 계좌번호 + 예금주" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
+                  <div><div className="text-xs text-hm-text-muted mb-1">주소</div><input value={ow.address} onChange={e => setBdOwnerField(oi, "address", e.target.value)} placeholder="건물주 주소" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
+                  <div className="mt-1.5"><div className="text-xs text-hm-text-muted mb-1">정산계좌</div><input value={ow.settlement || ""} onChange={e => setBdOwnerField(oi, "settlement", e.target.value)} placeholder="은행명 + 계좌번호 + 예금주" className={`${inputClassName} !px-2 !py-[5px] !text-xs`} /></div>
                 </div>
               );
             });

@@ -111,11 +111,11 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           <div className="flex items-center gap-2">
             {sec3Open && (sec3Edit ? (
               <>
-                <button onClick={() => setSec3Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                <button onClick={() => setSec3Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
+                <button onClick={() => setSec3Edit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec3Edit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec3Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
+              <button onClick={() => setSec3Edit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
             <span onClick={() => setSec3Open(!sec3Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec3Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
@@ -127,7 +127,7 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
             <div className={`grid gap-1.5 ${isMobile ? 'grid-cols-2' : 'grid-cols-5'}`}>
               {staffRoles.map((d: any, i: number) => (
                 <div key={i}>
-                  <div className="text-xs font-bold mb-0.5" style={{ color: d.color }}>{d.icon} {d.label}</div>
+                  <div className="text-xs font-bold mb-1" style={{ color: d.color }}>{d.icon} {d.label}</div>
                   <select value={buildingMgrs[d.id] || ""} onChange={e => {
                     const name = e.target.value;
                     setBldgMgr(d.id, name);
@@ -144,24 +144,24 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           {/* Fee & contract conditions */}
           <div className={`grid gap-2 mb-2.5 ${detailBuildingTypes.includes("단기") ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">수수료 유형</div>
+              <div className="text-xs text-hm-text-muted mb-1">수수료 유형</div>
               <select value={detailFeeType} onChange={e => setDetailFeeType(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs cursor-pointer`}>
                 <option value="pct">수수료율 (%)</option>
                 <option value="fixed">정액제 (원)</option>
               </select>
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">{detailFeeType === "pct" ? "수수료율" : "정액 금액"}</div>
+              <div className="text-xs text-hm-text-muted mb-1">{detailFeeType === "pct" ? "수수료율" : "정액 금액"}</div>
               <input value={bdFeeValue} onChange={e => setBdFeeValue(e.target.value)} placeholder={detailFeeType === "pct" ? "5%" : "1,500,000"} className={`${inputClassName} !px-2 !py-1.5 !text-xs text-right`} />
             </div>
             {detailBuildingTypes.includes("단기") && <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">7일패널티 소유</div>
+              <div className="text-xs text-hm-text-muted mb-1">7일패널티 소유</div>
               <select value={bdPenaltyOwner} onChange={e => setBdPenaltyOwner(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs cursor-pointer`}>
                 {["건물주", "하우스맨", "해당없음"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>}
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">부가가치세</div>
+              <div className="text-xs text-hm-text-muted mb-1">부가가치세</div>
               <select value={bdVatType} onChange={e => setBdVatType(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs cursor-pointer`}>
                 {["포함", "별도", "없음"].map(o => <option key={o}>{o}</option>)}
               </select>
@@ -209,7 +209,7 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           {/* Management fee type */}
           <div className="grid grid-cols-2 gap-2 mb-2.5">
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">관리비 유형</div>
+              <div className="text-xs text-hm-text-muted mb-1">관리비 유형</div>
               {detailBuildingTypes.includes("단기") && !detailBuildingTypes.includes("일반임대") && !detailBuildingTypes.includes("근생") ? (
                 <div className={`${inputClassName} !px-2 !py-1.5 !text-xs !bg-gray-100 !text-gray-500`}>변동관리비 (단기 고정)</div>
               ) : (
@@ -227,19 +227,19 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           </div>
           <div className="grid grid-cols-3 gap-2 mb-2.5">
             {(detailBuildingTypes.includes("단기") || detailBuildingTypes.includes("일반임대")) && <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">표준임대차</div>
+              <div className="text-xs text-hm-text-muted mb-1">표준임대차</div>
               <select value={bdStandardLease} onChange={e => setBdStandardLease(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs cursor-pointer`}>
                 {["사용", "미사용"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>}
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">순회주기</div>
+              <div className="text-xs text-hm-text-muted mb-1">순회주기</div>
               <select value={bdVisitCycle} onChange={e => setBdVisitCycle(e.target.value)} className={`${inputClassName} !px-2 !py-1.5 !text-xs cursor-pointer`}>
                 {["월4회", "월3회", "월2회", "월1회"].map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
             <div>
-              <div className="flex items-center justify-between mb-0.5">
+              <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-hm-text-muted">E-MAIL</span>
                 <button onClick={() => setEmails([...emails, ""])} className="text-xs text-hm-blue bg-transparent border-none cursor-pointer font-[inherit] font-bold hover:underline">+ 추가</button>
               </div>
@@ -264,18 +264,18 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           <div className="flex items-center gap-2">
             {sec4Open && (sec4Edit ? (
               <>
-                <button onClick={() => setSec4Edit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                <button onClick={() => setSec4Edit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
+                <button onClick={() => setSec4Edit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setSec4Edit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setSec4Edit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
+              <button onClick={() => setSec4Edit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
             <span onClick={() => setSec4Open(!sec4Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec4Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
         {sec4Open && <div className={`transition-opacity duration-200 ${sec4Edit ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-70'}`}>
         {/* Checkbox selection */}
-        <div className="flex flex-wrap gap-1.5 mb-3 px-3.5 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
+        <div className="flex flex-wrap gap-1.5 mb-3 px-4 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
           {[
             { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
             { key: "elevator", label: "승강기", icon: "🛗", color: "var(--color-hm-blue)" },
@@ -408,18 +408,18 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
           <div className="flex items-center gap-2">
             {sec5Open && (notesEdit ? (
               <>
-                <button onClick={() => setNotesEdit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                <button onClick={() => setNotesEdit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
+                <button onClick={() => setNotesEdit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                <button onClick={() => setNotesEdit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">💾 저장</button>
               </>
             ) : (
-              <button onClick={() => setNotesEdit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
+              <button onClick={() => setNotesEdit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">✏️ 수정</button>
             ))}
             <span onClick={() => setSec5Open(!sec5Open)} className={`text-sm text-hm-text-muted cursor-pointer transition-transform duration-200 inline-block ${sec5Open ? 'rotate-0' : '-rotate-90'}`}>▼</span>
           </div>
         </div>
         {sec5Open &&
         <textarea value={bdNotes} onChange={e => setBdNotes(e.target.value)} readOnly={!notesEdit} placeholder={"건물 특이사항을 순차적으로 기록하세요.\n\n예시:\n- 2024.03 관리 시작. 1층 상가 분리 계량기 없어 공용전기에서 차감\n- 2024.05 옥상 방수공사 완료 (건물주 부담)\n- 2024.08 3층 배관 노후로 전체 교체\n- 세무사: 홍길동 세무사 (010-1234-5678)\n- 2025.01 소방점검 지적사항: 2층 비상구 표지등 불량\n..."} rows={12}
-          className={`${inputClassName} resize-y leading-[1.8] !text-xs !px-3.5 !py-3 min-h-[200px] ${notesEdit ? 'bg-white opacity-100' : 'bg-hm-bg-slate opacity-75'}`} />
+          className={`${inputClassName} resize-y leading-[1.8] !text-xs !px-4 !py-3 min-h-[200px] ${notesEdit ? 'bg-white opacity-100' : 'bg-hm-bg-slate opacity-75'}`} />
         }
       </Card>
 

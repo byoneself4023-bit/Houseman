@@ -118,7 +118,7 @@ export function AuthGate() {
 
       {/* Error message */}
       {loginError && (
-        <div className="px-3.5 py-2.5 rounded-lg bg-hm-danger-bg border border-hm-danger-border mb-4">
+        <div className="px-4 py-2.5 rounded-lg bg-hm-danger-bg border border-hm-danger-border mb-4">
           <span className="text-xs font-semibold text-hm-danger">{loginError}</span>
         </div>
       )}

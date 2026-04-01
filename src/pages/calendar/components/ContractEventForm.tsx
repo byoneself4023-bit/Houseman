@@ -37,7 +37,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
       onClick={() => { setShowForm(false); setSelectedVacancy(null); setVacancyEdits({}); }}>
       <div className="bg-[#FAFBFF] rounded-2xl p-6 w-[600px] max-w-[95vw] max-h-[90vh] overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-hm-blue"
         onClick={e => e.stopPropagation()}>
-      <div className="text-base font-bold text-hm-text mb-3.5">📦 계약 등록 — 공실 선택</div>
+      <div className="text-base font-bold text-hm-text mb-4">📦 계약 등록 — 공실 선택</div>
 
       <div className="max-h-60 overflow-y-auto border border-hm-input-border rounded-lg mb-3">
         <table className="w-full border-collapse text-xs">
@@ -117,7 +117,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                       const d = new Date(formDate); d.setMonth(d.getMonth() + 3); d.setDate(d.getDate() - 1);
                       setVacancyEdits((prev: any) => ({ ...prev, expiry: d.toISOString().slice(0, 10) }));
                     }}
-                      className="px-3.5 py-1.5 rounded-md border-[1.5px] border-hm-danger bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer whitespace-nowrap font-[inherit] hover:bg-red-100 transition-colors">
+                      className="px-4 py-1.5 rounded-md border-[1.5px] border-hm-danger bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer whitespace-nowrap font-[inherit] hover:bg-red-100 transition-colors">
                       3개월 →
                     </button>
                   ) : (<>
@@ -256,7 +256,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                 setFormDate(""); setSelectedVacancy(null); setVacancyEdits({});
                 setShowForm(false);
               }}
-                className="px-6 py-[9px] rounded-lg border-none bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                className="px-6 py-2.5 rounded-lg border-none bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                 계약 등록
               </button>
             </div>

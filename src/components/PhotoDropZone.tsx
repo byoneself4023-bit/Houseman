@@ -145,7 +145,7 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
         ) : (
           <div onClick={openPicker}>
             <div className="text-2xl mb-1">📷</div>
-            <div className="text-xs font-bold mb-0.5" style={{ color }}>
+            <div className="text-xs font-bold mb-1" style={{ color }}>
               사진을 드래그하거나 클릭하여 업로드
             </div>
             <div className="text-xs text-hm-text-muted">최대 {maxPhotos}장 · JPG, PNG</div>

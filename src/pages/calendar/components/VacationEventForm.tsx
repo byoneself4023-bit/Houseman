@@ -27,17 +27,17 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
       onClick={() => { setShowForm(false); setFormDate(""); setFormName(""); }}>
       <div className="bg-[#FDFBFF] rounded-2xl p-6 w-[400px] max-w-[95vw] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-[#8B5CF6]"
         onClick={e => e.stopPropagation()}>
-      <div className="text-base font-bold text-hm-text mb-3.5">🏖️ 휴무 등록</div>
-      <div className="flex gap-2.5 flex-wrap items-end">
+      <div className="text-base font-bold text-hm-text mb-4">🏖️ 휴무 등록</div>
+      <div className="flex gap-3 flex-wrap items-end">
         <div className="min-w-[160px]">
           <div className="text-xs font-bold text-hm-text-sub mb-1">휴무일</div>
           <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
-            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
+            className={`${inputClassName} !py-2.5 !px-2.5 !text-xs bg-white`} />
         </div>
         <div className="min-w-[160px]">
           <div className="text-xs font-bold text-hm-text-sub mb-1">이름</div>
           <input value={formName} onChange={e => setFormName(e.target.value)} placeholder="직원명"
-            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
+            className={`${inputClassName} !py-2.5 !px-2.5 !text-xs bg-white`} />
         </div>
         <button onClick={() => {
           if (!formDate) { toast.error("휴무일을 선택하세요"); return; }
@@ -53,7 +53,7 @@ export const VacationEventForm: React.FC<VacationEventFormProps> = ({
           setEvents((prev: any[]) => [...prev, newEvt]);
           setFormDate(""); setFormName(""); setShowForm(false);
         }}
-          className="py-[9px] px-5 rounded-lg border-none bg-[#8B5CF6] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#7C3AED] transition-colors">
+          className="py-2.5 px-5 rounded-lg border-none bg-[#8B5CF6] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#7C3AED] transition-colors">
           휴무 등록
         </button>
       </div>

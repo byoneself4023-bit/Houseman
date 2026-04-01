@@ -40,7 +40,7 @@ export const StaffPage = () => {
       {/* ========== 담당자 ========== */}
         <div>
           {/* 역할별 현황 카드 */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : `grid-cols-${staffRoles.length}`} gap-2.5 mb-5`}>
+          <div className={`grid ${isMobile ? 'grid-cols-2' : `grid-cols-${staffRoles.length}`} gap-3 mb-5`}>
             {staffRoles.map(role => {
               const count = staffList.filter(s => s.roles.includes(role.id)).length;
               const active = filterRole === role.id;
@@ -126,8 +126,8 @@ export const StaffPage = () => {
                       </div>
                     </div>
                     <div className="flex gap-1.5">
-                      <button onClick={() => startEdit(s)} className="px-3.5 py-1.5 rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">수정</button>
-                      <button onClick={() => removeStaff(s.id)} className="px-3.5 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
+                      <button onClick={() => startEdit(s)} className="px-4 py-1.5 rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">수정</button>
+                      <button onClick={() => removeStaff(s.id)} className="px-4 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
                     </div>
                   </div>
                   {/* 인라인 수정 폼 */}

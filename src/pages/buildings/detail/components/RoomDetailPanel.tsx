@@ -64,7 +64,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
     <Card className="mb-5 border-2 border-hm-blue">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <span className="text-xl font-bold text-hm-text">🚪 {selectedRoom}호</span>
           <select value={getRoomType(buildingName, selectedRoom)} onChange={e => { changeRoomType(buildingName, selectedRoom, e.target.value); setRoomTab(roomTab); /* force re-render */ }}
             className="text-xs font-bold px-2 py-[3px] rounded-md border-[1.5px] border-hm-input-border cursor-pointer font-[inherit]"
@@ -93,11 +93,11 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 items-stretch">
             <div>
               <div className="grid grid-cols-3 gap-2 mb-2.5">
-                <div><div className="text-xs text-hm-text-muted mb-0.5">방형태</div>
+                <div><div className="text-xs text-hm-text-muted mb-1">방형태</div>
                   <select id="re-roomType" defaultValue={master.roomType || ""} className={`${inputClassName} !px-2 !py-1.5 !text-xs`}><option value="">선택</option>{["원룸","투룸","쓰리룸","복층","상가","사무실"].map(t => <option key={t}>{t}</option>)}</select></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">면적 (㎡)</div>
+                <div><div className="text-xs text-hm-text-muted mb-1">면적 (㎡)</div>
                   <input id="re-area" defaultValue={master.area || ""} placeholder="26.4" className={`${inputClassName} !px-2 !py-1.5 !text-xs`} /></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">부동산수수료</div>
+                <div><div className="text-xs text-hm-text-muted mb-1">부동산수수료</div>
                   <input id="re-commFee" defaultValue={master.commFee || ""} placeholder="100,000" className={`${inputClassName} !px-2 !py-1.5 !text-xs text-right`} /></div>
               </div>
               <div className="text-xs font-bold text-hm-success mb-1.5">💰 기준 금액</div>
@@ -106,15 +106,15 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   { label: "예치금", key: "deposit", value: master.deposit }, { label: "임대료", key: "rent", value: master.rent }, { label: "관리비", key: "mgmt", value: master.mgmt },
                   { label: "수도", key: "water", value: master.water }, { label: "인터넷", key: "internet", value: master.internet }, { label: "퇴실청소비", key: "cleanFee", value: master.cleanFee },
                 ].map((f, i) => (
-                  <div key={i}><div className="text-[8px] text-hm-success mb-0.5">{f.label}</div>
+                  <div key={i}><div className="text-[8px] text-hm-success mb-1">{f.label}</div>
                     <input id={`re-${f.key}`} defaultValue={f.value || ""} placeholder="0" className={`${inputClassName} !px-2 !py-[5px] !text-xs text-right`} /></div>
                 ))}
               </div>
               <div className="text-xs font-bold text-[#6366F1] mb-1.5">🔌 고객번호</div>
               <div className="grid grid-cols-2 gap-1.5">
-                <div><div className="text-[8px] text-[#6366F1] mb-0.5">전기</div>
+                <div><div className="text-[8px] text-[#6366F1] mb-1">전기</div>
                   <input id="re-elecNo" defaultValue={master.elecNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-xs font-mono`} /></div>
-                <div><div className="text-[8px] text-[#6366F1] mb-0.5">가스</div>
+                <div><div className="text-[8px] text-[#6366F1] mb-1">가스</div>
                   <input id="re-gasNo" defaultValue={master.gasNo || ""} className={`${inputClassName} !px-2 !py-[5px] !text-xs font-mono`} /></div>
               </div>
             </div>
@@ -156,7 +156,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   { label: "수도", value: master.water }, { label: "인터넷", value: master.internet }, { label: "퇴실청소비", value: master.cleanFee },
                 ].map((f, i) => (
                   <div key={i} className="px-2 py-1.5 bg-[#F0FDF4] rounded-md border border-[#BBF7D0]">
-                    <div className="text-[8px] text-hm-success mb-0.5">{f.label}</div>
+                    <div className="text-[8px] text-hm-success mb-1">{f.label}</div>
                     <div className="text-xs font-bold text-[#065F46]">{f.value || "-"}</div>
                   </div>
                 ))}
@@ -165,7 +165,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
               <div className="grid grid-cols-2 gap-1.5">
                 {[{ label: "전기", value: master.elecNo }, { label: "가스", value: master.gasNo }].map((f, i) => (
                   <div key={i} className="px-2 py-1.5 bg-[#F5F3FF] rounded-md border border-[#DDD6FE]">
-                    <div className="text-[8px] text-[#6366F1] mb-0.5">{f.label}</div>
+                    <div className="text-[8px] text-[#6366F1] mb-1">{f.label}</div>
                     <div className="text-xs font-semibold text-[#4338CA] font-mono">{f.value || "-"}</div>
                   </div>
                 ))}
@@ -277,7 +277,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           return (
             <div className={`mt-3.5 ${isDangiRoom ? 'grid grid-cols-2 gap-3' : 'block'}`}>
             {/* Left: Account info */}
-            <div className="px-3.5 py-2.5 bg-[#FFFBF0] rounded-[10px] border border-[#FDE68A]">
+            <div className="px-4 py-2.5 bg-[#FFFBF0] rounded-[10px] border border-[#FDE68A]">
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-xs font-bold text-[#92400E]">🏦 계좌 정보</span>
                 <span className="text-xs px-2 py-0.5 rounded font-bold" style={{ background: acctTypeBg[roomAcctType], color: acctTypeColor[roomAcctType] }}>{acctTypeLabel[roomAcctType]}</span>
@@ -309,7 +309,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                         <div className="text-xs font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
                         {ownerFields.map((f: any) => (
                           <div key={f.key} className="mb-1">
-                            <div className="text-[8px] font-bold text-hm-warning mb-0.5">{f.label}</div>
+                            <div className="text-[8px] font-bold text-hm-warning mb-1">{f.label}</div>
                             <div className="text-xs font-semibold text-hm-warning font-mono">
                               {effectiveAcct.ownerAccounts[f.key + "_bank"] || ""} {effectiveAcct.ownerAccounts[f.key] || ""}{effectiveAcct.ownerAccounts[f.key + "_holder"] ? ` (${effectiveAcct.ownerAccounts[f.key + "_holder"]})` : ""}
                               {!effectiveAcct.ownerAccounts[f.key + "_bank"] && !effectiveAcct.ownerAccounts[f.key] && <span className="text-[#B0B5C1] font-sans">미입력</span>}
@@ -356,7 +356,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                       <div className="text-xs font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
                       {ownerFields.map((f: any) => (
                         <div key={f.key} className="mb-1">
-                          <div className="text-[8px] font-bold text-hm-warning mb-0.5">{f.label}</div>
+                          <div className="text-[8px] font-bold text-hm-warning mb-1">{f.label}</div>
                           {roomEditMode ? (
                             <div className="grid grid-cols-[90px_1fr_70px] gap-1">
                               <select value={effectiveAcct.ownerAccounts[f.key + "_bank"] || ""} onChange={e => setRoomOwnerAccts((prev: any) => ({ ...prev, [f.key + "_bank"]: e.target.value }))}
@@ -391,7 +391,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
 
             {/* Right: Move-in calculation (단기 only) */}
             {isDangiRoom && moveInCalc && (
-              <div className="px-3.5 py-2.5 bg-[#F0FDF4] rounded-[10px] border border-[#BBF7D0]">
+              <div className="px-4 py-2.5 bg-[#F0FDF4] rounded-[10px] border border-[#BBF7D0]">
                 <div className="text-xs font-bold text-[#065F46] mb-1">💰 입주금 계산</div>
                 <div className="text-xs text-gray-500 mb-2.5 leading-relaxed">
                   {moveInCalc.type === "single" && ((moveInCalc as any).acctName === "건물주계좌"
@@ -463,7 +463,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           const depKey = `${buildingName}_${selectedRoom}`;
           const currentDepName = depositNames[depKey] || "";
           return (
-            <div className="mt-3.5 px-3.5 py-2.5 bg-[#FDF4FF] rounded-[10px] border border-[#E9D5FF]">
+            <div className="mt-3.5 px-4 py-2.5 bg-[#FDF4FF] rounded-[10px] border border-[#E9D5FF]">
               <div className="text-xs font-bold text-[#7C3AED] mb-1.5">🏦 입금확인 이름 <span className="text-xs font-medium text-hm-text-muted">이 이름으로 입금 시 자동 100% 매칭</span></div>
               {roomEditMode ? (
                 <input value={currentDepName} onChange={e => setDepositNames((prev: Record<string, string>) => ({ ...prev, [depKey]: e.target.value }))}
@@ -481,7 +481,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
         {/* Room staff override */}
         {(() => {
           return (
-            <div className="mt-3.5 px-3.5 py-2.5 bg-[#F0F4FF] rounded-[10px] border border-[#BFDBFE]">
+            <div className="mt-3.5 px-4 py-2.5 bg-[#F0F4FF] rounded-[10px] border border-[#BFDBFE]">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs font-bold text-hm-blue-dark">👤 호실 담당자 <span className="text-xs font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
               </div>
@@ -492,7 +492,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                   const isOverridden = roomMgr && roomMgr !== bMgr;
                   return (
                     <div key={sr.id}>
-                      <div className="text-[8px] font-bold mb-0.5" style={{ color: sr.color }}>{sr.icon} {sr.label}</div>
+                      <div className="text-[8px] font-bold mb-1" style={{ color: sr.color }}>{sr.icon} {sr.label}</div>
                       {roomEditMode ? (
                         <select defaultValue={roomMgr || ""} className={`${inputClassName} !px-1.5 !py-[5px] !text-xs cursor-pointer`}
                           style={{ border: isOverridden ? `1.5px solid ${sr.color}` : undefined, background: isOverridden ? sr.color + "10" : undefined }}>

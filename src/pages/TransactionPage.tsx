@@ -275,7 +275,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                     {myDebts.map((d, i) => (
                       <div key={d.id || i} className={`flex items-center justify-between px-3 py-2.5 rounded-lg ${d.status === "미수" ? 'bg-hm-danger-bg border border-hm-danger-border' : d.status === "회수완료" ? 'bg-hm-success-bg border border-[#BBF7D0]' : 'bg-hm-bg-slate border border-hm-border'}`}>
                         <div>
-                          <div className="flex items-center gap-1.5 mb-0.5">
+                          <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-xs font-bold text-hm-text">{d.building} {d.room}호</span>
                             <span className="text-xs font-bold text-hm-text-sub">{d.name}</span>
                             <span className={`text-xs font-bold px-1.5 py-0.5 rounded text-white ${d.status === "미수" ? 'bg-hm-danger' : d.status === "회수완료" ? 'bg-hm-success' : 'bg-hm-text-muted'}`}>{d.status}</span>
@@ -330,7 +330,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
           {/* 지정 입금자명 관리 */}
           {showDepositNames && (
-            <div className="mb-4 px-3.5 py-3 rounded-[10px] bg-[#F5F3FF] border border-[#E9D5FF]">
+            <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#F5F3FF] border border-[#E9D5FF]">
               <div className="text-xs font-bold text-[#7C3AED] mb-2.5">지정 입금자명 관리</div>
               <div className="text-xs text-hm-text-muted mb-2.5">건물+호실별로 지정 입금자명을 등록하면 해당 이름으로 입금 시 100% 자동매칭됩니다.</div>
               {/* 등록된 목록 */}
@@ -373,7 +373,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                   setDepositNames(prev => ({ ...prev, [editDepKey]: editDepVal }));
                   setEditDepKey(""); setEditDepVal("");
                 }}
-                  className="px-3.5 py-1.5 rounded-md border-none bg-[#7C3AED] text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all">등록</button>
+                  className="px-4 py-1.5 rounded-md border-none bg-[#7C3AED] text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all">등록</button>
               </div>
             </div>
           )}
@@ -391,7 +391,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               const { bankTx, score, tenant, reason, saveName, candidates } = m;
               const isManual = manualAssign === bankTx.id;
               return (
-                <div key={bankTx.id} className={`px-3.5 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                <div key={bankTx.id} className={`px-4 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
                   {/* 뱅크다 거래 정보 */}
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
@@ -503,7 +503,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
           ) : (
             <>
               <div className="text-sm font-bold mb-3 text-hm-success">💵 입금 등록</div>
-              <div className="grid grid-cols-3 gap-2.5 mb-2.5">
+              <div className="grid grid-cols-3 gap-3 mb-2.5">
                 <div>
                   <div className="text-xs text-hm-text-muted mb-1">건물</div>
                   <select value={formBld} onChange={e => { setFormBld(e.target.value); setFormRoom(""); }}
@@ -529,7 +529,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                     className="w-full px-2.5 py-2 rounded-lg border-[1.5px] border-hm-input-border text-sm font-[inherit] text-right font-bold outline-none focus:ring-2 focus:ring-ring transition-colors" />
                 </div>
               </div>
-              <div className="grid grid-cols-[120px_1fr_auto] gap-2.5 items-end">
+              <div className="grid grid-cols-[120px_1fr_auto] gap-3 items-end">
                 <div>
                   <div className="text-xs text-hm-text-muted mb-1">입금방법</div>
                   <select value={formMethod} onChange={e => setFormMethod(e.target.value)}

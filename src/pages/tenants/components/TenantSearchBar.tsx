@@ -14,9 +14,9 @@ export const TenantSearchBar: React.FC<TenantSearchBarProps> = ({
   search, setSearch, statusFilter, setStatusFilter, buildingFilter, setBuildingFilter, buildingNames,
 }) => {
   return (
-    <div className="flex items-center gap-2.5 mb-4 flex-wrap">
+    <div className="flex items-center gap-3 mb-4 flex-wrap">
       <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름, 건물, 호실 검색..."
-        className="w-[200px] py-[7px] px-3.5 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:border-hm-blue focus:ring-1 focus:ring-hm-blue/30 transition-colors" />
+        className="w-[200px] py-[7px] px-4 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:border-hm-blue focus:ring-1 focus:ring-hm-blue/30 transition-colors" />
       <select value={buildingFilter} onChange={e => setBuildingFilter(e.target.value)}
         className={`py-[7px] px-3 rounded-lg border border-hm-input-border text-xs font-[inherit] transition-colors ${buildingFilter === "전체" ? "text-hm-text-muted" : "text-hm-text"}`}>
         <option value="전체">전체 건물</option>

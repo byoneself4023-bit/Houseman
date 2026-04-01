@@ -555,7 +555,7 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
   if (sidePanel) {
     return (
       <div className="flex flex-col h-full">
-        <div className="px-3.5 py-3 border-b border-[#E5E5E5] bg-white">
+        <div className="px-4 py-3 border-b border-[#E5E5E5] bg-white">
           <div className="text-sm font-bold text-[#346aff]">AI 어시스턴트</div>
           <div className="text-xs text-[#8B95A1] mt-0.5">건물/호실/임차인 정보를 자연어로 조회/수정</div>
         </div>

@@ -63,7 +63,7 @@ export const BrokerPage = ({ calendarEvts = [] }: { calendarEvts?: any[] }) => {
             {collectedBrokers.map((b, i) => {
               const alreadyAdded = brokerList.some(x => normalize(x.phone) === normalize(b.phone));
               return (
-                <div key={i} className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg border ${alreadyAdded ? 'bg-green-50 border-green-200' : 'bg-hm-bg-hover border-gray-200'}`}>
+                <div key={i} className={`flex items-center justify-between px-4 py-2.5 rounded-lg border ${alreadyAdded ? 'bg-green-50 border-green-200' : 'bg-hm-bg-hover border-gray-200'}`}>
                   <div>
                     <span className="text-sm font-bold text-gray-900">{b.name || "미입력"}</span>
                     <span className="text-xs text-gray-500 ml-2">{b.phone}</span>
@@ -71,7 +71,7 @@ export const BrokerPage = ({ calendarEvts = [] }: { calendarEvts?: any[] }) => {
                   </div>
                   {alreadyAdded
                     ? <span className="text-xs font-bold text-green-600">등록됨</span>
-                    : <button onClick={() => importBroker(b)} className="px-3.5 py-1.5 rounded-md border border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">등록</button>
+                    : <button onClick={() => importBroker(b)} className="px-4 py-1.5 rounded-md border border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">등록</button>
                   }
                 </div>
               );
@@ -126,8 +126,8 @@ export const BrokerPage = ({ calendarEvts = [] }: { calendarEvts?: any[] }) => {
               </div>
               <div className="flex gap-1.5">
                 {editingId !== b.id && <>
-                  <button onClick={() => startEdit(b)} className="px-3.5 py-1.5 rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">수정</button>
-                  <button onClick={() => removeBroker(b.id)} className="px-3.5 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
+                  <button onClick={() => startEdit(b)} className="px-4 py-1.5 rounded-md border border-blue-200 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] hover:bg-blue-100 transition-colors">수정</button>
+                  <button onClick={() => removeBroker(b.id)} className="px-4 py-1.5 rounded-md border border-hm-danger-border bg-hm-danger-bg text-hm-danger text-xs font-bold cursor-pointer font-[inherit] hover:bg-red-100 transition-colors">삭제</button>
                 </>}
               </div>
             </div>

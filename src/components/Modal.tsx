@@ -40,7 +40,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, wi
         onClick={(e) => e.stopPropagation()}
       >
         {(title || onClose) && (
-          <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center justify-between mb-4">
             {title && (
               <div className="text-base font-bold text-hm-text">
                 {title}

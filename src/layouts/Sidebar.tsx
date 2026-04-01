@@ -64,8 +64,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
       key={m.id}
       onClick={() => navigateTo(m.id)}
       className={cn(
-        'flex items-center gap-2.5 rounded-[9px] mb-0.5 cursor-pointer transition-all duration-150',
-        sidebarOpen ? 'px-3 py-[9px]' : 'px-2 py-[9px] justify-center',
+        'flex items-center gap-3 rounded-[9px] mb-1 cursor-pointer transition-all duration-150',
+        sidebarOpen ? 'px-3 py-2.5' : 'px-2 py-2.5 justify-center',
         active
           ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
           : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
@@ -93,7 +93,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
       style={{ width: sidebarOpen ? 230 : 64 }}
     >
       {/* Header */}
-      <div className={cn('border-b border-[#2A2F42] flex items-center gap-2.5', sidebarOpen ? 'px-3.5 py-2.5' : 'px-3 py-3.5')}>
+      <div className={cn('border-b border-[#2A2F42] flex items-center gap-3', sidebarOpen ? 'px-4 py-2.5' : 'px-3 py-3.5')}>
         <img src="/logo-icon.svg" alt="" className="h-[30px] w-auto shrink-0" />
         {sidebarOpen && (
           <div className="flex-1 flex items-center justify-between">
@@ -121,7 +121,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
 
       {/* Role tabs */}
       {sidebarOpen && (
-        <div className="px-3.5 py-1.5 border-b border-[#2A2F42]">
+        <div className="px-4 py-1.5 border-b border-[#2A2F42]">
           <div className="flex gap-[3px]">
             {[{ id: 'admin', icon: '🏗️', label: '관리' }, { id: 'owner', icon: '🏠', label: '건물주' }, { id: 'cleaning', icon: '🧹', label: '청소' }, { id: 'homepage', icon: '🌐', label: '홈페이지' }].map((r) => (
               <button
@@ -154,7 +154,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
               key={m.id}
               onClick={() => navigateTo(m.id)}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer transition-colors duration-150',
+                'flex items-center gap-3 px-3 py-2.5 rounded-[9px] cursor-pointer transition-colors duration-150',
                 active
                   ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
                   : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
@@ -168,7 +168,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           <div
             key={m.id}
             onClick={() => navigateTo(m.id)}
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
           >
             <Globe size={17} className="text-white shrink-0" />
             {sidebarOpen && <span className="text-sm font-bold text-white">{m.label}</span>}
@@ -181,7 +181,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className={cn(
                     'flex items-center cursor-pointer',
-                    sidebarOpen ? 'justify-between px-3 pt-3 pb-1' : 'justify-center px-2 py-[9px]',
+                    sidebarOpen ? 'justify-between px-3 pt-3 pb-1' : 'justify-center px-2 py-2.5',
                   )}
                 >
                   {sidebarOpen ? (

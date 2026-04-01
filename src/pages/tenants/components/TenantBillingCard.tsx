@@ -115,7 +115,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
       <div className="text-xs font-bold text-hm-danger mb-2 pb-1.5" style={{ borderBottom: "1.5px solid var(--color-hm-danger-border)" }}>🚨 청구/미납현황</div>
       <div className="flex flex-col gap-1.5 mb-3">
         {/* 흐름 안내 */}
-        {flow && <div className="text-xs text-hm-text-muted mb-0.5 px-2 py-1 bg-hm-bg-slate rounded-md">💰 {flow}</div>}
+        {flow && <div className="text-xs text-hm-text-muted mb-1 px-2 py-1 bg-hm-bg-slate rounded-md">💰 {flow}</div>}
         {/* 청구①②③ 슬롯 (수금관리와 동일) */}
         {slots.map((slot, si) => {
           const c = slotColors[si % slotColors.length];
@@ -154,7 +154,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
       {/* 가상퇴실계산 + 청구 이력 누적 */}
       <div className="mb-3">
         <button onClick={() => setBillOpen(!billOpen)}
-          className={`w-full px-3.5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
+          className={`w-full px-4 py-2.5 rounded-[10px] cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
           style={{ border: billOpen ? "2px solid #F59E0B" : "1.5px solid var(--color-hm-border)" }}>
           <div className="flex items-center gap-2">
             <span className="text-sm">🧾</span>
@@ -169,7 +169,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
           </div>
         </button>
         {billOpen && (
-          <div className="mt-2 px-3.5 py-3 rounded-[10px] bg-[#FFFBEB]" style={{ border: "1.5px solid #FDE68A" }}>
+          <div className="mt-2 px-4 py-3 rounded-[10px] bg-[#FFFBEB]" style={{ border: "1.5px solid #FDE68A" }}>
             {/* 누적 요약 */}
             <div className="flex flex-wrap gap-1.5 mb-2.5 pb-2 border-b border-[#FDE68A]">
               <span className="text-xs font-bold text-[#92400E]">누적 청구: {fmt(cumulative.total)}원</span>

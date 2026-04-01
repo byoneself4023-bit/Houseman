@@ -52,7 +52,7 @@ const FSelect = ({ data, field, onChange, options, style: extraStyle, readOnly }
 );
 
 const FCheck = ({ data, field, onChange, label, readOnly }) => (
-  <div className="flex items-center gap-2.5">
+  <div className="flex items-center gap-3">
     <input type="checkbox" checked={!!data[field]} onChange={e => !readOnly && onChange({ [field]: e.target.checked })} disabled={readOnly} className="w-4 h-4" />
     <div className="text-xs text-hm-text-muted">{label}</div>
   </div>
@@ -187,7 +187,7 @@ export function BuildingTypeCards({ data, onChange, locked, onUnlock, onLock, ed
           <button onClick={() => onLock && onLock()} className="px-3 py-1 rounded-md border border-emerald-200 bg-hm-success-bg text-hm-success text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-emerald-100 transition-colors">🔒 잠금</button>
         </div>
       )}
-      <div className="flex gap-2.5 flex-wrap">
+      <div className="flex gap-3 flex-wrap">
         {typeConfigs.map(t => {
           const active = !!data[t.field];
           const soloTypes = ["isManagementAgency", "isCorporateFacility"];
@@ -253,7 +253,7 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
       <SectionHeader title={corporateOnly ? "회사 정보" : "건물 정보"} subtitle={corporateOnly ? "기본정보" : "기본정보, 시설/보안, 공과금/인프라"} icon="📋" isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
       {isOpen && (
         <div>
-          <div className="grid grid-cols-4 gap-2.5 hm-form-grid-4">
+          <div className="grid grid-cols-4 gap-3 hm-form-grid-4">
             <div><FLabel label={corporateOnly ? "회사명" : "건물명"} /><FInput readOnly={ro} data={data} field="buildingName" onChange={onChange} placeholder={corporateOnly ? "회사명" : (buildingNamePlaceholder || "건물명")} /></div>
             <div><FLabel label="🔑 현관 비밀번호" /><FInput readOnly={ro} data={data} field="entranceDoorPassword" onChange={onChange} placeholder="비밀번호" className="font-mono tracking-wider" /></div>
             <div><FLabel label={corporateOnly ? "회사 약칭" : "건물 약칭"} /><FInput readOnly={ro} data={data} field="buildingNickname" onChange={onChange} placeholder="약칭" /></div>
@@ -268,7 +268,7 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
                       onChange({ addressOld: d.jibunAddress || d.autoJibunAddress || "", addressRoad: d.roadAddress || "" });
                     }
                   }).open();
-                }} className="px-3.5 py-1.5 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                }} className="px-4 py-1.5 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
               </div>
             </div>
             <div>
@@ -316,7 +316,7 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
                   <FCheck readOnly={ro} data={data} field="isRenthomeWritingAgency" onChange={onChange} label="렌트홈 작성 대행" />
                   <FCheck readOnly={ro} data={data} field="isStorageAvailable" onChange={onChange} label="창고 사용 가능" />
                 </div>
-                <div className="grid grid-cols-4 gap-2.5 hm-form-grid-4">
+                <div className="grid grid-cols-4 gap-3 hm-form-grid-4">
                   <div>
                     <FLabel label="7일 패널티 소유권" />
                     <FSelect readOnly={ro} data={data} field="penalty7daysOwnership" onChange={onChange} options={[
@@ -397,7 +397,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                       onChange({ ownerHomeAddress: d.roadAddress || d.jibunAddress || "" });
                     }
                   }).open();
-                }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                }} className="px-4 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                 <input value={data.ownerHomeAddressDetail || ""} onChange={e => !ro && onChange({ ownerHomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
               </div>
             </div>}
@@ -407,7 +407,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
           {!hideSettlementAccounts && (
           <div className="border-t border-hm-border pt-3.5 mt-4 mb-3">
             <div className="text-xs font-bold text-hm-success mb-2.5">🏦 {ownerLabel} 정산계좌</div>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               {/* 정산 계좌 1 */}
               <div className="p-2.5 px-3 bg-hm-success-bg rounded-lg border border-emerald-200">
                 <div className="text-xs font-bold text-hm-success mb-2">정산 계좌 ①</div>
@@ -429,7 +429,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
             </div>
             {/* 분배 설정 */}
             {data.settlementAccount2 && (
-              <div className="grid grid-cols-2 gap-2.5 mt-2">
+              <div className="grid grid-cols-2 gap-3 mt-2">
                 <div>
                   <FLabel label="분배 방식" />
                   <FSelect readOnly={ro} data={data} field="settlementSplitType" onChange={onChange} options={[
@@ -457,7 +457,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
               <div><FLabel label="사업자 상호" /><FInput readOnly={ro} data={data} field="ownerBusinessName" onChange={onChange} placeholder="상호명" /></div>
               <div><FLabel label="사업장 주소" /><FInput readOnly={ro} data={data} field="ownerBusinessAddress" onChange={onChange} placeholder="사업장 주소" /></div>
             </div>
-            <div className="grid grid-cols-3 gap-2.5 hm-form-grid-3">
+            <div className="grid grid-cols-3 gap-3 hm-form-grid-3">
               <div><FLabel label="업태" /><FInput readOnly={ro} data={data} field="ownerBusinessType" onChange={onChange} placeholder="부동산업" /></div>
               <div><FLabel label="종목" /><FInput readOnly={ro} data={data} field="ownerBusinessItem" onChange={onChange} placeholder="임대업" /></div>
               <div>
@@ -492,7 +492,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                 <div><FLabel label="주민등록번호" /><FInput readOnly={ro} data={data} field="owner2ResidentNumber" onChange={onChange} placeholder="000000-0000000" className="font-mono" /></div>
                 <div><FLabel label="전화번호" /><FInput readOnly={ro} data={data} field="owner2Phone" onChange={onChange} placeholder="010-0000-0000" /></div>
               </div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 <div><FLabel label="이메일" /><FInput readOnly={ro} data={data} field="owner2Email" onChange={onChange} placeholder="email" /></div>
                 <div>
                   <FLabel label="자택 주소" />
@@ -504,7 +504,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                           onChange({ owner2HomeAddress: d.roadAddress || d.jibunAddress || "" });
                         }
                       }).open();
-                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                    }} className="px-4 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                     <input value={data.owner2HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner2HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
@@ -532,7 +532,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                 <div><FLabel label="주민등록번호" /><FInput readOnly={ro} data={data} field="owner3ResidentNumber" onChange={onChange} placeholder="000000-0000000" className="font-mono" /></div>
                 <div><FLabel label="전화번호" /><FInput readOnly={ro} data={data} field="owner3Phone" onChange={onChange} placeholder="010-0000-0000" /></div>
               </div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 <div><FLabel label="이메일" /><FInput readOnly={ro} data={data} field="owner3Email" onChange={onChange} placeholder="email" /></div>
                 <div>
                   <FLabel label="자택 주소" />
@@ -544,7 +544,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                           onChange({ owner3HomeAddress: d.roadAddress || d.jibunAddress || "" });
                         }
                       }).open();
-                    }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
+                    }} className="px-4 py-2 rounded-md border-none bg-hm-blue text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
                     <input value={data.owner3HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner3HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
@@ -573,7 +573,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
             </div>
             <div className="border-t border-hm-border pt-2.5">
               <div className="text-xs font-bold text-hm-success mb-2">현장소장</div>
-              <div className="grid grid-cols-3 gap-2.5 hm-form-grid-3">
+              <div className="grid grid-cols-3 gap-3 hm-form-grid-3">
                 <div><FLabel label="소장 이름" /><FInput readOnly={ro} data={data} field="siteManagerName" onChange={onChange} /></div>
                 <div><FLabel label="소장 전화" /><FInput readOnly={ro} data={data} field="siteManagerPhone" onChange={onChange} /></div>
                 <div><FLabel label="소장 이메일" /><FInput readOnly={ro} data={data} field="siteManagerEmail" onChange={onChange} /></div>
@@ -620,14 +620,14 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
       {isOpen && (
         <div>
           {/* 관리수수료 (purple card) */}
-          <div className="p-3 px-3.5 bg-violet-50 rounded-[10px] border border-violet-200 mb-3.5">
+          <div className="p-3 px-4 bg-violet-50 rounded-[10px] border border-violet-200 mb-4">
             <div className="text-xs font-bold text-violet-600 mb-2.5">관리수수료</div>
             {corporateOnly ? (
               <div className="max-w-[300px]">
                 <FLabel label="고정금액 (원)" /><FInput readOnly={ro} data={data} field="managementFeeFixedAmount" onChange={onChange} type="number" placeholder="1,500,000" />
               </div>
             ) : (
-            <div className="grid grid-cols-3 gap-2.5 hm-form-grid-3">
+            <div className="grid grid-cols-3 gap-3 hm-form-grid-3">
               <div>
                 <FLabel label="방식" />
                 <FSelect readOnly={ro} data={data} field="managementFeeType" onChange={onChange} options={[
@@ -647,7 +647,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           </div>
 
           {/* 정산 일정 (green card) */}
-          <div className="p-3 px-3.5 bg-hm-success-bg rounded-[10px] border border-emerald-200 mb-3.5">
+          <div className="p-3 px-4 bg-hm-success-bg rounded-[10px] border border-emerald-200 mb-4">
             <div className="text-xs font-bold text-hm-success mb-2.5">{corporateOnly ? "청구서 발송일" : "정산 일정"}</div>
             {(() => {
               const d1 = parseInt(data.settlementDay1);
@@ -707,9 +707,9 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 검침 설정 (orange card) — 근생만 */}
           {data.isCommercial && (
-            <div className="p-3 px-3.5 bg-hm-warning-bg rounded-[10px] border border-orange-200 mb-3.5">
+            <div className="p-3 px-4 bg-hm-warning-bg rounded-[10px] border border-orange-200 mb-4">
               <div className="text-xs font-bold text-hm-warning mb-2.5">검침 설정 (사설계량기)</div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 {/* 전기 검침일 */}
                 <div>
                   <FLabel label="전기 검침일 (매월)" />
@@ -759,9 +759,9 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 납부일·청구서 (amber card) — 근생/일반임대 */}
           {(data.isCommercial || data.isLongTermRental) && (
-            <div className="p-3 px-3.5 bg-amber-50 rounded-[10px] border border-amber-200 mb-3.5">
+            <div className="p-3 px-4 bg-amber-50 rounded-[10px] border border-amber-200 mb-4">
               <div className="text-xs font-bold text-amber-600 mb-2.5">납부일·청구서</div>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 {/* 임대료 납부일 */}
                 <div>
                   <FLabel label="임대료 납부일" />
@@ -822,9 +822,9 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           )}
 
           {/* 청구 설정 (blue card) */}
-          <div className="p-3 px-3.5 bg-hm-blue-bg rounded-[10px] border border-blue-200 mb-3.5">
+          <div className="p-3 px-4 bg-hm-blue-bg rounded-[10px] border border-blue-200 mb-4">
             <div className="text-xs font-bold text-hm-blue-dark mb-2.5">청구 설정</div>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="flex flex-wrap gap-3">
               {isRentalOrCommercial && !isMeteredCommercial && !(data.isShortTermRental && !data.isLongTermRental && !data.isCommercial) && (
                 <div className="flex-[1_1_140px]">
                   <FLabel label="임대료 선후불" />
@@ -880,7 +880,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
             {/* 건물주 청구 계좌 1~3 */}
             {data.tenantAccountType !== "short_houseman_only" && (
-              <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+              <div className="grid grid-cols-2 gap-3 mb-2.5">
                 {[1, 2, 3].map(n => {
                   const hasValue = data[`billingAccount${n}`];
                   if (n > 1 && !hasValue) return null;
@@ -949,11 +949,11 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                       📦 {isMultiType ? `${bType} 호실` : ""} 항목별 입금 계좌 지정
                     </div>
                     {!isMultiType && <div className="text-xs text-[#8B95A1] mb-2.5">각 항목이 어느 계좌로 입금되는지 지정하세요. 레고 블럭처럼 자유롭게 조합.</div>}
-                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : `repeat(${items.length <= 4 ? items.length : 3}, 1fr)`, gap: 10 }} className={isMultiType ? "" : "mb-3.5"}>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : `repeat(${items.length <= 4 ? items.length : 3}, 1fr)`, gap: 10 }} className={isMultiType ? "" : "mb-4"}>
                       {items.map(item => {
                         const val = data[item.field] || "";
                         return (
-                          <div key={item.field} className="p-3 px-3.5 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
+                          <div key={item.field} className="p-3 px-4 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-xs font-bold" style={{ color: item.color }}>{item.label}</span>
                               {val && <span className="text-xs font-semibold" style={{ color: item.color }}>✓</span>}
@@ -1008,7 +1008,7 @@ export function DocumentSection({ data, onChange, editMode = true, defaultOpen =
       <SectionHeader title="서류" subtitle="첨부서류" icon="📎" isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
       {isOpen && (
         <div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {!corporateOnly && <FFileUpload data={data} field="fireInsuranceDocumentUrl" label="화재보험 증권" onChange={onChange} setFullScreenFile={setFullScreenFile} readOnly={ro} />}
             {!corporateOnly && <FFileUpload data={data} field="documentBuildingRegisterUrl" label="건축물대장" onChange={onChange} setFullScreenFile={setFullScreenFile} readOnly={ro} />}
             <FFileUpload data={data} field="documentManagementContractUrl" label="관리용역계약서" onChange={onChange} setFullScreenFile={setFullScreenFile} readOnly={ro} />
@@ -1049,7 +1049,7 @@ export function ContractSpecialTermsSection({ data, onChange, editMode = true, d
           <div className="text-xs text-[#8B95A1] mb-3">건물유형별로 특약사항을 작성하면 해당 유형 호실의 계약서에 자동으로 삽입됩니다. 호실에서는 수정할 수 없습니다.</div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${types.length}, 1fr)`, gap: 12 }}>
             {types.map(t => (
-              <div key={t.field} className="p-3 px-3.5 rounded-[10px] flex flex-col" style={{ background: t.bg, border: `1.5px solid ${t.border}` }}>
+              <div key={t.field} className="p-3 px-4 rounded-[10px] flex flex-col" style={{ background: t.bg, border: `1.5px solid ${t.border}` }}>
                 <div className="text-xs font-bold mb-2" style={{ color: t.color }}>{t.label}</div>
                 <FTextarea readOnly={ro} data={data} field={t.field} onChange={onChange} placeholder={`${t.label.slice(2)} 내용을 입력하세요...`} rows={8} />
               </div>

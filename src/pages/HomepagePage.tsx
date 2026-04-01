@@ -314,7 +314,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
       <div className="hm-page min-h-screen" style={{ background: "var(--clr-white)" }}>
         {/* 독립 헤더 */}
         <div className={`sticky top-0 z-10 backdrop-blur-[20px] border-b border-[#f0f0f0] ${isMobile ? 'px-5 py-3' : 'px-12 py-3.5'} flex items-center justify-between`} style={{ background: "rgba(255,255,255,0.95)" }}>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <img src="/logo-c.svg" alt="HOUSEMAN" className="h-9 w-auto" />
             <span className="text-base font-bold tracking-tight" style={{ color: "var(--clr-black)" }}>HOUSEMAN</span>
           </div>
@@ -354,7 +354,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
           {/* 제목 + 배지 */}
           <div className="mb-6">
-            <div className="flex items-center gap-2.5 mb-2 flex-wrap">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <h2 className={`${isMobile ? 'text-2xl' : 'text-[32px]'} font-bold m-0 text-[#111] tracking-tight`}>{v.building} {v.room}호</h2>
               <span className="text-xs font-bold px-3 py-1 text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
               {isContract && <span className="text-xs font-bold px-3 py-1 bg-hm-danger text-white">계약중</span>}
@@ -513,14 +513,14 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 <div className="p-3.5 bg-sky-50 border border-sky-200 mb-4">
                   <div className="text-xs font-bold text-sky-700 mb-1">부동산 정보</div>
                   <div className="text-xs text-gray-500 mb-2">부동산명과 처리담당자가 다른 경우 수정해주세요.</div>
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="text-xs text-sky-700 mb-0.5">부동산명</div>
+                      <div className="text-xs text-sky-700 mb-1">부동산명</div>
                       <input value={contractForm.broker || ""} onChange={e => setContractForm(p => ({ ...p, broker: e.target.value }))}
                         className="w-full px-2.5 py-[7px] border border-sky-200 text-sm font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
                     <div>
-                      <div className="text-xs text-sky-700 mb-0.5">연락처</div>
+                      <div className="text-xs text-sky-700 mb-1">연락처</div>
                       <input value={contractForm.brokerPhone || ""} onChange={e => setContractForm(p => ({ ...p, brokerPhone: e.target.value }))}
                         className="w-full px-2.5 py-[7px] border border-sky-200 text-sm font-[inherit] box-border bg-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition-colors" />
                     </div>
@@ -528,7 +528,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 </div>
 
                 {/* 금액 */}
-                <div className="grid grid-cols-3 gap-2.5 mb-3">
+                <div className="grid grid-cols-3 gap-3 mb-3">
                   <div>
                     <div className="text-xs font-semibold text-gray-500 mb-[3px]">{depositLabel} (만원)</div>
                     <input type="number" value={contractForm.deposit ?? ""} onChange={e => setContractForm(p => ({ ...p, deposit: e.target.value }))}
@@ -547,7 +547,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 </div>
 
                 {/* 입주일/만기일 */}
-                <div className={`grid ${v.type === "단기" ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-2'} gap-2.5 mb-1 items-start`}>
+                <div className={`grid ${v.type === "단기" ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-2'} gap-3 mb-1 items-start`}>
                   <div>
                     <div className="text-xs font-semibold text-gray-500 mb-[3px]">입주일 *</div>
                     <input type="date" value={contractForm.moveIn || ""}
@@ -564,7 +564,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       d.setDate(d.getDate() - 1);
                       const exp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
                       setContractForm(p => ({ ...p, expiry: exp }));
-                    }} className="px-3.5 py-2 border border-blue-500 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
+                    }} className="px-4 py-2 border border-blue-500 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
                   )}
                   <div>
                     <div className="text-xs font-semibold text-gray-500 mb-[3px]">만기일</div>
@@ -576,7 +576,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
                 {/* 단기 전용 */}
                 {v.type === "단기" && (
-                  <div className="grid grid-cols-3 gap-2.5 mb-3">
+                  <div className="grid grid-cols-3 gap-3 mb-3">
                     <div>
                       <div className="text-xs font-semibold text-gray-500 mb-[3px]">수도</div>
                       <input value={contractForm.water ?? ""} onChange={e => setContractForm(p => ({ ...p, water: e.target.value }))}
@@ -596,7 +596,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 )}
 
                 {/* 계약금 + 입금자명 */}
-                <div className="grid grid-cols-2 gap-2.5 mb-3">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                   <div>
                     <div className="text-xs font-semibold text-gray-500 mb-[3px]">계약금 (만원)</div>
                     <input type="number" value={contractForm.contractDeposit ?? ""} onChange={e => setContractForm(p => ({ ...p, contractDeposit: e.target.value }))}
@@ -806,7 +806,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
 
       {/* ═══ NAV ═══ */}
       <nav className={`hm-nav${scrolled ? " scrolled" : ""} ${isMobile ? 'px-5 py-3.5' : 'px-12 py-3.5'} flex items-center justify-between`}>
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <img src="/logo-c.svg" alt="HOUSEMAN" className={`${isMobile ? 'h-11' : 'h-[54px]'} w-auto transition-[filter] duration-[0.4s]`} style={{ filter: scrolled ? "none" : "brightness(0) invert(1)" }} />
           {isMobile && (
             <div className="transition-colors duration-[0.4s]">
@@ -1103,7 +1103,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     <img src={post.img} alt={post.title} className="w-full h-full object-cover block" />
                   </div>
                   <div className="px-6 py-[22px]">
-                    <div className="flex items-center gap-2.5 mb-3.5">
+                    <div className="flex items-center gap-3 mb-4">
                       <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[rgba(0,113,227,0.08)]" style={{ color: "var(--clr-red)" }}>{post.tag}</span>
                       <span className="text-xs" style={{ color: "var(--clr-light)" }}>{post.date}</span>
                     </div>
@@ -1158,7 +1158,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                 대표: {SITE.ceo} · 사업자번호: {SITE.bizNo}<br/>{SITE.address}<br/>Email: {SITE.email}
               </div>
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex gap-3">
               <a href={SITE.kakao} target="_blank" rel="noopener noreferrer" className="hm-sns-btn"><img src="/sns-kakao.svg" alt="카카오톡" /></a>
               <a href={SITE.blog} target="_blank" rel="noopener noreferrer" className="hm-sns-btn"><img src="/sns-blog.svg" alt="블로그" /></a>
             </div>

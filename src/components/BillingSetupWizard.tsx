@@ -172,7 +172,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
           <p className="text-xs text-hm-text-muted mb-5">
             이 건물의 기본 청구 발송 방식을 선택하세요 (임차인별로 변경 가능)
           </p>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-3">
             {CASE_OPTIONS.map(opt => (
               <div
                 key={opt.value}
@@ -309,7 +309,7 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
               <div
                 key={opt.type}
                 onClick={() => setSelectedComponents(p => [...p, opt.type])}
-                className="px-3.5 py-3 rounded-[10px] cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-2.5 select-none hover:border-[#346aff]/40"
+                className="px-4 py-3 rounded-[10px] cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-3 select-none hover:border-[#346aff]/40"
               >
                 <span className="text-lg">{opt.icon}</span>
                 <div className="flex-1"><div className="text-xs font-bold">{opt.label}</div><div className="text-xs text-hm-text-muted">{opt.desc}</div></div>
@@ -327,7 +327,7 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
             {selectedComponents.map((type, index) => {
               const opt = VARIABLE_FEE_OPTIONS.find(o => o.type === type);
               return opt ? (
-                <div key={type} className="px-3.5 py-3 rounded-[10px] border-2 border-[#346aff] bg-[#EBF0FF] transition-all duration-150 flex items-center gap-2.5 select-none">
+                <div key={type} className="px-4 py-3 rounded-[10px] border-2 border-[#346aff] bg-[#EBF0FF] transition-all duration-150 flex items-center gap-3 select-none">
                   <div className="flex flex-col gap-0.5">
                     <button
                       onClick={() => moveItem(index, 'up')}
@@ -363,7 +363,7 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
             <button onClick={() => removeCustomItem(idx)} className="px-2.5 py-1.5 rounded-md border border-[#E5E5E5] bg-white text-xs cursor-pointer text-hm-danger hover:bg-hm-danger-bg transition-colors">✕</button>
           </div>
         ))}
-        <button onClick={addCustomItem} className="px-3.5 py-2 rounded-md border border-dashed border-gray-300 bg-[#FAFBFC] text-xs font-semibold text-[#666] cursor-pointer w-full hover:border-[#346aff] hover:text-[#346aff] transition-colors">+ 항목 직접 추가</button>
+        <button onClick={addCustomItem} className="px-4 py-2 rounded-md border border-dashed border-gray-300 bg-[#FAFBFC] text-xs font-semibold text-[#666] cursor-pointer w-full hover:border-[#346aff] hover:text-[#346aff] transition-colors">+ 항목 직접 추가</button>
       </div>
     </div>
   );

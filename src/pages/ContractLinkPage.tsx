@@ -159,7 +159,7 @@ export const ContractLinkPage = () => {
               임차인분께서 직접 입력해주세요
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 mb-3">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <div className="text-xs font-semibold text-hm-danger mb-[3px]">이름 *</div>
                 <input value={tenantForm.name} onChange={e => setTenantForm(p => ({ ...p, name: e.target.value }))} placeholder="이름" className={inputCls} />
@@ -169,7 +169,7 @@ export const ContractLinkPage = () => {
                 <input value={tenantForm.phone} onChange={e => setTenantForm(p => ({ ...p, phone: e.target.value }))} placeholder="010-0000-0000" className={inputCls} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2.5 mb-3">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <div className="text-xs font-semibold text-hm-danger mb-[3px]">주민등록번호 *</div>
                 <input value={tenantForm.ssn} onChange={e => setTenantForm(p => ({ ...p, ssn: e.target.value }))} placeholder="000000-0000000" className={`${inputCls} font-mono`} />
@@ -187,20 +187,20 @@ export const ContractLinkPage = () => {
             <div className="text-xs font-bold text-gray-700 mb-2 mt-4 pt-3 border-t border-gray-200">비상연락처</div>
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div>
-                <div className="text-xs text-gray-500 mb-0.5">이름</div>
+                <div className="text-xs text-gray-500 mb-1">이름</div>
                 <input value={tenantForm.emergencyName} onChange={e => setTenantForm(p => ({ ...p, emergencyName: e.target.value }))} placeholder="이름" className={`${inputCls} py-2 text-sm`} />
               </div>
               <div>
-                <div className="text-xs text-gray-500 mb-0.5">연락처</div>
+                <div className="text-xs text-gray-500 mb-1">연락처</div>
                 <input value={tenantForm.emergencyPhone} onChange={e => setTenantForm(p => ({ ...p, emergencyPhone: e.target.value }))} placeholder="010-0000-0000" className={`${inputCls} py-2 text-sm`} />
               </div>
               <div>
-                <div className="text-xs text-gray-500 mb-0.5">관계</div>
+                <div className="text-xs text-gray-500 mb-1">관계</div>
                 <input value={tenantForm.emergencyRelation} onChange={e => setTenantForm(p => ({ ...p, emergencyRelation: e.target.value }))} placeholder="부모/배우자" className={`${inputCls} py-2 text-sm`} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 mb-4">
+            <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
                 <div className="text-xs font-semibold text-gray-700 mb-[3px]">차량번호</div>
                 <input value={tenantForm.carNumber} onChange={e => setTenantForm(p => ({ ...p, carNumber: e.target.value }))} placeholder="12가 3456" className={inputCls} />

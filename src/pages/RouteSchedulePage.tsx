@@ -545,7 +545,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
             <button
               key={name}
               onClick={() => setSelectedStaff(name)}
-              className={`px-3.5 py-1.5 rounded-lg text-sm cursor-pointer transition-all ${
+              className={`px-4 py-1.5 rounded-lg text-sm cursor-pointer transition-all ${
                 isActive
                   ? 'border-2 border-hm-blue bg-hm-blue-bg text-blue-700 font-bold'
                   : 'border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50'
@@ -585,7 +585,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                   setViewMode(mode as 'list' | 'map');
                 }
               }}
-              className={`px-3.5 py-[5px] rounded-md border-none text-sm cursor-pointer transition-all ${
+              className={`px-4 py-[5px] rounded-md border-none text-sm cursor-pointer transition-all ${
                 viewMode === mode
                   ? 'bg-white text-gray-900 font-bold shadow-sm'
                   : 'bg-transparent text-gray-500 font-medium hover:text-gray-700'
@@ -737,7 +737,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
                         return (
                           <div
                             key={`${b.building}-${tIdx}`}
-                            className="flex items-start gap-2.5 relative"
+                            className="flex items-start gap-3 relative"
                             onMouseEnter={() => setHighlightedBuilding(b.building)}
                             onMouseLeave={() => setHighlightedBuilding(null)}
                           >

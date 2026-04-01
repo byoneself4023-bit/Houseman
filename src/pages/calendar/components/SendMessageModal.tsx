@@ -51,7 +51,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
 
         <div className="px-6 py-4 overflow-y-auto flex-1">
           {/* 계약 요약 카드 */}
-          <div className="grid grid-cols-3 gap-1.5 mb-3.5">
+          <div className="grid grid-cols-3 gap-1.5 mb-4">
             {[
               { label: "예치금", value: `${dep}만`, color: "var(--color-hm-success)" },
               { label: "월세", value: `${rent}만`, color: "var(--color-hm-blue-dark)" },
@@ -59,7 +59,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
             ].map((s, i) => (
               <div key={i} className="py-2 px-2.5 rounded-lg text-center"
                 style={{ background: s.color + "08", border: `1px solid ${s.color}25` }}>
-                <div className="text-xs text-hm-text-muted font-semibold mb-0.5">{s.label}</div>
+                <div className="text-xs text-hm-text-muted font-semibold mb-1">{s.label}</div>
                 <div className="text-base font-bold" style={{ color: s.color }}>{s.value}</div>
               </div>
             ))}
@@ -69,7 +69,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
           <div className="flex gap-1.5 mb-2.5 flex-wrap">
             {tplKeys.map(tpl => (
               <button key={tpl} onClick={() => { setSelectedTemplate(tpl); setSendMsg(buildContractMsg(evt, tpl)); }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all ${
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all ${
                   selectedTemplate === tpl
                     ? 'border-2 border-hm-blue bg-hm-blue-bg text-[#1E40AF] shadow-[0_2px_8px_rgba(59,130,246,0.15)]'
                     : 'border border-hm-input-border bg-white text-hm-text-sub shadow-none hover:bg-hm-bg-hover'

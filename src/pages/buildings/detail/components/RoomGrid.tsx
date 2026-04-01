@@ -108,7 +108,7 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
                         border: `1.5px solid ${isSelected ? "var(--color-hm-text)" : st.border}`,
                       }}
                     >
-                      <div className="text-sm font-bold mb-0.5" style={{ color: isSelected ? "#fff" : st.color }}>{room}</div>
+                      <div className="text-sm font-bold mb-1" style={{ color: isSelected ? "#fff" : st.color }}>{room}</div>
                       <div className="text-[8px] font-bold mb-[1px]" style={{ color: isSelected ? "#ccc" : rtCfg(getRoomType(buildingName, room)).c }}>{getRoomType(buildingName, room)}</div>
                       <div className="text-xs font-medium whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: isSelected ? "#ccc" : st.color }}>
                         {info.name || (info.status === "공실" ? "공실" : "입주중")}

@@ -259,7 +259,7 @@ export const MoveOutMsgModal: React.FC<MoveOutMsgModalProps> = ({
           value={moveOutMsgModal.text}
           onChange={e => setMoveOutMsgModal((prev: any) => ({ ...prev, text: e.target.value }))}
           placeholder="수령한 퇴실문자 내용을 입력하세요..."
-          className="w-full min-h-[180px] px-3.5 py-3 rounded-lg border-[1.5px] border-hm-input-border text-xs leading-[1.7] resize-y font-[inherit] outline-none box-border focus:ring-2 focus:ring-ring transition-colors"
+          className="w-full min-h-[180px] px-4 py-3 rounded-lg border-[1.5px] border-hm-input-border text-xs leading-[1.7] resize-y font-[inherit] outline-none box-border focus:ring-2 focus:ring-ring transition-colors"
         />
         <div className="flex justify-end gap-2 mt-3">
           {moveOutMsgModal.ev.moveOutMsg && (

@@ -190,7 +190,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
             <div className="text-xs text-hm-text-muted mb-4">현재 입주 중인 호실을 선택하면 공실에 "임차인연결"로 등록됩니다</div>
             <input autoFocus value={linkSearch} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
-              className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none mb-3 box-border focus:border-hm-danger transition-colors" />
+              className="w-full px-4 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none mb-3 box-border focus:border-hm-danger transition-colors" />
             {/* 이미 연결된 호실 */}
             {Object.keys(linkedRooms).length > 0 && (
               <div className="mb-3">
@@ -236,7 +236,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                       } as any]);
                     }
                   }}
-                    className="flex items-center justify-between px-3.5 py-3 rounded-[10px] mb-1 cursor-pointer bg-hm-bg-hover hover:bg-hm-danger-bg transition-all">
+                    className="flex items-center justify-between px-4 py-3 rounded-[10px] mb-1 cursor-pointer bg-hm-bg-hover hover:bg-hm-danger-bg transition-all">
                     <div>
                       <div className="text-sm font-bold">{t.building} {t.room}호 <span className="font-medium text-hm-text-sub">{t.name}</span></div>
                       <div className="text-xs text-hm-text-muted mt-0.5">만기: {t.expiry || "-"} · 월세: {fmt(t.rent)} · {t.type || "단기"}</div>

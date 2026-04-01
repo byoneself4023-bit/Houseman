@@ -190,7 +190,7 @@ export const DunningTemplateSettings: React.FC = () => {
       </Card>
 
       {/* Stages */}
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3">
         {stages.length === 0 && (
           <Card className="px-5 py-10 text-center">
             <div className="text-sm text-hm-text-muted mb-3">
@@ -208,7 +208,7 @@ export const DunningTemplateSettings: React.FC = () => {
         {stages.map((stage, idx) => (
           <Card key={idx} className="px-[18px] py-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <div
                   className="w-7 h-7 rounded-lg bg-gradient-to-br from-hm-blue to-hm-blue-dark text-white flex items-center justify-center text-xs font-bold"
                 >
@@ -280,7 +280,7 @@ export const DunningTemplateSettings: React.FC = () => {
                 }
                 placeholder="독촉 문자 내용을 입력하세요. [건물명]은 실제 건물명으로 자동 치환됩니다."
                 rows={3}
-                className="w-full px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+                className="w-full px-4 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               />
               <div className="text-xs text-[#B0B5C1]">
                 치환 변수: [건물명], [호수], [임차인명], [월세], [연체일수]

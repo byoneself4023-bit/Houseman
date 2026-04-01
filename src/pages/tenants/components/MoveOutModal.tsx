@@ -252,7 +252,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
         {hasAnyPhotos && (
           <div className="max-w-[720px] mb-3">
             <button onClick={() => setMoveoutCompare({ building: t.building, room: t.room, moveInCheckPhotos, moveOutPhotos })}
-              className="w-full p-3.5 rounded-[10px] border-2 border-[#6366F1] text-[#6366F1] text-sm font-bold cursor-pointer font-[inherit] flex items-center justify-center gap-2.5 hover:opacity-90 transition-opacity"
+              className="w-full p-3.5 rounded-[10px] border-2 border-[#6366F1] text-[#6366F1] text-sm font-bold cursor-pointer font-[inherit] flex items-center justify-center gap-3 hover:opacity-90 transition-opacity"
               style={{ background: "linear-gradient(90deg, #EEF2FF, #FAF5FF)" }}>
               🔍 입퇴실 사진 비교 (입주 {moveInCheckPhotos.length}장 / 퇴실 {moveOutPhotos.length}장)
             </button>
@@ -277,7 +277,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           {/* Header */}
           <div className="flex justify-between items-start mb-4">
             <div>
-              <div className="text-lg font-bold text-hm-danger flex items-center gap-2.5">
+              <div className="text-lg font-bold text-hm-danger flex items-center gap-3">
                 🚪 퇴실정산서
                 <RoomTypeBadge building={t.building} room={t.room} />
                 <input type="date" value={moveoutDateStr} onChange={e => setMoveoutDateStr(e.target.value)}
@@ -296,8 +296,8 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
             <div>
               <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
               <div className="grid grid-cols-2 gap-2 mb-2">
-                <div><div className="text-xs text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{t.name}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.phone}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{t.name}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.phone}</div></div>
               </div>
               <div className="grid gap-0.5 mb-3 items-center" style={{ gridTemplateColumns: "20px auto 30px 1fr 30px 60px" }}>
                 <div className="text-xs text-hm-text-muted">은행</div>
@@ -312,22 +312,22 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {showProRata && <>
               <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">사용 기간</div>
               <div className="grid grid-cols-3 gap-2 mb-3">
-                <div><div className="text-xs text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{moveInStr || "-"}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0F4FF] text-xs font-bold text-hm-blue-dark text-center">{usagePeriod}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{moveInStr || "-"}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0F4FF] text-xs font-bold text-hm-blue-dark text-center">{usagePeriod}</div></div>
               </div>
 
               <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">계약 정보 (자동)</div>
               <div className="grid grid-cols-3 gap-2 mb-2">
-                <div><div className="text-xs text-hm-text-muted mb-0.5">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(t.deposit)}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.rent)}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.mgmt || 0)}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(t.deposit)}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">월세 <span className={`text-[8px] ${isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.rent)}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">관리비 <span className={`text-[8px] ${isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.mgmt || 0)}</div></div>
               </div>
               <div className="gap-2 mb-3" style={{ display: "grid", gridTemplateColumns: showCleanFee ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr" }}>
-                {showCleanFee && <div><div className="text-xs text-hm-text-muted mb-0.5">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(cleanFee)}</div></div>}
-                <div><div className="text-xs text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(waterAmt)}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(internetAmt)}</div></div>
-                <div><div className="text-xs text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
+                {showCleanFee && <div><div className="text-xs text-hm-text-muted mb-1">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(cleanFee)}</div></div>}
+                <div><div className="text-xs text-hm-text-muted mb-1">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(waterAmt)}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(internetAmt)}</div></div>
+                <div><div className="text-xs text-hm-text-muted mb-1">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
               </div>
               </>}
 
@@ -361,7 +361,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {/* 관리사무소 — 보증금 정보 + 엘리베이터 사용비 */}
               {isManagementOffice && <>
               <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">공제 항목</div>
-              <label className="flex items-center gap-2 px-3.5 py-2.5 bg-hm-danger-bg rounded-lg border-[1.5px] border-hm-danger-border mb-3 cursor-pointer">
+              <label className="flex items-center gap-2 px-4 py-2.5 bg-hm-danger-bg rounded-lg border-[1.5px] border-hm-danger-border mb-3 cursor-pointer">
                 <input type="checkbox" checked={elevatorFee} onChange={e => setElevatorFee(e.target.checked)} className="w-[18px] h-[18px] cursor-pointer" />
                 <div>
                   <div className="text-xs font-bold text-hm-danger">엘리베이터 사용</div>
@@ -389,7 +389,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {showProRata && <div className="text-xs text-hm-text-muted mb-1">기산일: {startDay}일 · 일할기준: {daysInMonth}일 · 사용일수: {usedDays}일</div>}
 
               {/* 반환 항목 */}
-              <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-[#BBF7D0]">
+              <div className="bg-[#F0FDF4] rounded-[10px] px-4 py-2.5 mb-2.5 border border-[#BBF7D0]">
                 <div className="text-xs font-bold text-hm-success mb-1">반환 항목</div>
                 <SRow label={depositLabel} value={t.deposit} color="var(--color-hm-success)" bold />
                 {netRent < 0 && <SRow label="월세 환불" sub={`${daysInMonth - usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={-netRent} color="var(--color-hm-success)" />}
@@ -403,7 +403,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               </div>
 
               {/* 공제 항목 */}
-              <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
+              <div className="bg-hm-danger-bg rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-danger-border">
                 <div className="text-xs font-bold text-hm-danger mb-1">공제 항목</div>
                 {netRent > 0 && <SRow label="월세" sub={`${usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={netRent} color="var(--color-hm-danger)" />}
                 {netMgmt > 0 && <SRow label="관리비" sub={`${usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={netMgmt} color="var(--color-hm-danger)" />}
@@ -494,7 +494,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
           {/* 전기/가스 금액 입력 */}
           {showManualInputs && (
-            <div className="mt-3 px-3.5 py-3 bg-[#FFFBEB] rounded-[10px] border-[1.5px] border-[#FDE68A]">
+            <div className="mt-3 px-4 py-3 bg-[#FFFBEB] rounded-[10px] border-[1.5px] border-[#FDE68A]">
               <div className="text-xs font-bold text-hm-warning mb-2">⚡🔥 전기 / 가스 청구금액</div>
               {(meterPhotos.electric.length > 0 || meterPhotos.gas.length > 0) && (
                 <div className="no-print mb-2.5 p-2 bg-white rounded-lg border border-[#FDE68A]">

@@ -100,7 +100,7 @@ export const CompanySettingsPage = () => {
               value={settings.company_name || ""}
               onChange={e => update("company_name", e.target.value)}
               placeholder="예: (주)하우스맨"
-              className={`${inputClassName} px-3.5 py-2.5`}
+              className={`${inputClassName} px-4 py-2.5`}
             />
           </div>
           <div>
@@ -109,7 +109,7 @@ export const CompanySettingsPage = () => {
               value={settings.company_phone || ""}
               onChange={e => update("company_phone", e.target.value)}
               placeholder="예: 02-1234-5678"
-              className={`${inputClassName} px-3.5 py-2.5`}
+              className={`${inputClassName} px-4 py-2.5`}
             />
           </div>
           <div>
@@ -118,7 +118,7 @@ export const CompanySettingsPage = () => {
               value={settings.company_email || ""}
               onChange={e => update("company_email", e.target.value)}
               placeholder="예: info@houseman.co.kr"
-              className={`${inputClassName} px-3.5 py-2.5`}
+              className={`${inputClassName} px-4 py-2.5`}
             />
           </div>
           <div>
@@ -128,7 +128,7 @@ export const CompanySettingsPage = () => {
                 value={settings.company_address || ""}
                 onChange={e => update("company_address", e.target.value)}
                 placeholder="주소를 입력하거나 검색하세요"
-                className={`${inputClassName} px-3.5 py-2.5 flex-1`}
+                className={`${inputClassName} px-4 py-2.5 flex-1`}
               />
               <button
                 onClick={openPostcodeSearch}
@@ -190,7 +190,7 @@ export const CompanySettingsPage = () => {
                       value={acc.alias || ""}
                       onChange={e => updateAccount(idx, "alias", e.target.value)}
                       placeholder="예: 관리비통장, 월세통장"
-                      className={`${inputClassName} px-3 py-[9px]`}
+                      className={`${inputClassName} px-3 py-2.5`}
                     />
                   </div>
                   <div>
@@ -198,7 +198,7 @@ export const CompanySettingsPage = () => {
                     <select
                       value={acc.bank || "국민은행"}
                       onChange={e => updateAccount(idx, "bank", e.target.value)}
-                      className={`${inputClassName} px-3 py-[9px] cursor-pointer`}
+                      className={`${inputClassName} px-3 py-2.5 cursor-pointer`}
                     >
                       {BANK_LIST.map(b => <option key={b} value={b}>{b}</option>)}
                     </select>
@@ -209,7 +209,7 @@ export const CompanySettingsPage = () => {
                       value={acc.account_number || ""}
                       onChange={e => updateAccount(idx, "account_number", e.target.value)}
                       placeholder="예: 123-456-789012"
-                      className={`${inputClassName} px-3 py-[9px]`}
+                      className={`${inputClassName} px-3 py-2.5`}
                     />
                   </div>
                   <div>
@@ -218,7 +218,7 @@ export const CompanySettingsPage = () => {
                       value={acc.holder || ""}
                       onChange={e => updateAccount(idx, "holder", e.target.value)}
                       placeholder="예: 박종호"
-                      className={`${inputClassName} px-3 py-[9px]`}
+                      className={`${inputClassName} px-3 py-2.5`}
                     />
                   </div>
                 </div>
@@ -273,7 +273,7 @@ export const CompanySettingsPage = () => {
                       value={acc.note || ""}
                       onChange={e => updateAccount(idx, "note", e.target.value)}
                       placeholder="예: 자동이체 연결됨, 예비 계좌"
-                      className={`${inputClassName} px-3 py-[9px]`}
+                      className={`${inputClassName} px-3 py-2.5`}
                     />
                   </div>
                 </div>

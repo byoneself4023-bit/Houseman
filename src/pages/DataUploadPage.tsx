@@ -778,7 +778,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
           {ledgerResult && (
             <div className="bg-white rounded-xl border border-hm-border p-5 mb-4">
               <h3 className="text-sm font-bold mb-3">업로드 결과</h3>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
                 {[
                   { label: "건물", count: ledgerResult.buildings, icon: "🏢" },
                   { label: "임차인", count: ledgerResult.tenants, icon: "👤" },

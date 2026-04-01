@@ -252,7 +252,7 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
       {/* 65일 알림 배너 */}
       {alert65Tenants.length > 0 && (
         <Card style={{ padding: "14px 18px", marginBottom: 12, background: "linear-gradient(135deg, var(--color-hm-warning-bg), #FFFBEB)", border: "2px solid #F59E0B" }}>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <div className="text-xl leading-none">{"\u26A0\uFE0F"}</div>
             <div className="flex-1">
               <div className="text-sm font-bold text-amber-800 mb-[3px]">

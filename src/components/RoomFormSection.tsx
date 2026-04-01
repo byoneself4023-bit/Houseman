@@ -126,7 +126,7 @@ export function RoomFormSection({
     return (
       <div>
         {/* ── 하우스맨 관리 여부 (최상단) ── */}
-        <div className={`mb-3 py-2 px-3 rounded-lg border-[1.5px] flex items-center gap-2.5 ${d.isManaged === false ? 'bg-hm-danger-bg border-red-200' : 'bg-green-50 border-green-200'}`}>
+        <div className={`mb-3 py-2 px-3 rounded-lg border-[1.5px] flex items-center gap-3 ${d.isManaged === false ? 'bg-hm-danger-bg border-red-200' : 'bg-green-50 border-green-200'}`}>
           <input type="checkbox" checked={d.isManaged !== false}
             onChange={e => {
               const newVal = e.target.checked;
@@ -323,7 +323,7 @@ export function RoomFormSection({
           {/* 변동관리비 메모 - 근생만 */}
           {isComm && (
             <div className="col-span-full">
-              <div className="text-[8px] text-amber-600 mb-0.5">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
+              <div className="text-[8px] text-amber-600 mb-1">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
               <textarea value={d.variableManagementFeeMemo || ""} onChange={e => set("variableManagementFeeMemo", e.target.value)} placeholder="근생 전용 - 변동관리비 메모"
                 rows={2} className={`${inputClassName} py-[5px] px-2 text-xs w-full resize-y min-h-[36px]`} />
             </div>
@@ -348,7 +348,7 @@ export function RoomFormSection({
   return (
     <div>
       {/* ── 하우스맨 관리 여부 표시 ── */}
-      <div className={`mb-3 py-2 px-3 rounded-lg border-[1.5px] flex items-center gap-2.5 ${d.isManaged === false ? 'bg-hm-danger-bg border-red-200' : 'bg-green-50 border-green-200'}`}>
+      <div className={`mb-3 py-2 px-3 rounded-lg border-[1.5px] flex items-center gap-3 ${d.isManaged === false ? 'bg-hm-danger-bg border-red-200' : 'bg-green-50 border-green-200'}`}>
         <span className={`text-xs font-bold ${d.isManaged === false ? 'text-hm-danger' : 'text-hm-success'}`}>
           {d.isManaged === false ? "❌ 비관리 호실" : "✅ 하우스맨 관리 호실"}
         </span>
@@ -453,7 +453,7 @@ export function RoomFormSection({
         {isComm && (
           <div className="col-span-full">
             <div className="py-1.5 px-2 bg-hm-warning-bg rounded-md border border-orange-200">
-              <div className="text-[8px] text-amber-600 mb-0.5">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
+              <div className="text-[8px] text-amber-600 mb-1">변동관리비 메모 <span className="text-amber-600 text-[7px]">근생 전용</span></div>
               <div className="text-xs text-amber-800 whitespace-pre-wrap">{d.variableManagementFeeMemo || "-"}</div>
             </div>
           </div>
@@ -494,7 +494,7 @@ function AccountSettingsDisplay({ saved }) {
         </div>
       )}
       {[1,2,3].map(n => saved[`billingAccount${n}`] && (
-        <div key={n} className="text-xs text-[#4E5968] mb-0.5">
+        <div key={n} className="text-xs text-[#4E5968] mb-1">
           건물주 청구계좌 {n}: {saved[`billingAccount${n}Bank`] || ""} {saved[`billingAccount${n}`]} ({saved[`billingAccount${n}Holder`] || ""})
         </div>
       ))}

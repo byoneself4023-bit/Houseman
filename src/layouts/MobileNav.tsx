@@ -54,7 +54,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
                     page === m.id ? 'bg-hm-blue-bg' : 'bg-hm-bg-hover hover:bg-[#F0F2F5]',
                   )}
                 >
-                  <div className="text-xl mb-0.5">{m.icon}</div>
+                  <div className="text-xl mb-1">{m.icon}</div>
                   <div className={cn('text-xs', page === m.id ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-sub')}>{m.label}</div>
                 </div>
               ))}
@@ -63,7 +63,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
               <span className="text-xs text-hm-text-muted">👤 {currentStaff?.name || '—'}</span>
               <button
                 onClick={() => { onLogout(); setShowMobileMore(false); }}
-                className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold text-hm-danger cursor-pointer hover:bg-hm-danger-bg transition-colors"
+                className="px-4 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold text-hm-danger cursor-pointer hover:bg-hm-danger-bg transition-colors"
               >
                 로그아웃
               </button>

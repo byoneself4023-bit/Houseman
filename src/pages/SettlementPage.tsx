@@ -754,7 +754,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             <input value={formAmount} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormAmount(e.target.value)} type="number" placeholder="금액"
               className="px-2.5 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] w-[90px] text-right outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             <button onClick={() => { setFormBuilding(bs.building); handleAddExpense(); }}
-              className="px-3.5 py-1.5 rounded-md border-none bg-hm-danger text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">추가</button>
+              className="px-4 py-1.5 rounded-md border-none bg-hm-danger text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">추가</button>
           </div>
         </Card>
       </div>
@@ -777,10 +777,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
         </div>
         <div className="flex gap-1 flex-wrap">
           <button onClick={() => setSelectedBuilding("전체")}
-            className={`px-3.5 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${selectedBuilding === "전체" ? 'bg-hm-blue-dark text-white border-hm-blue-dark' : 'bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>전체</button>
+            className={`px-4 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${selectedBuilding === "전체" ? 'bg-hm-blue-dark text-white border-hm-blue-dark' : 'bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>전체</button>
           {buildingList.map(b => (
             <button key={b} onClick={() => setSelectedBuilding(b)}
-              className={`px-3.5 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${selectedBuilding === b ? 'bg-hm-blue-dark text-white border-hm-blue-dark' : 'bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>{b}</button>
+              className={`px-4 py-1.5 rounded-lg border border-hm-border text-xs font-semibold cursor-pointer font-[inherit] transition-colors ${selectedBuilding === b ? 'bg-hm-blue-dark text-white border-hm-blue-dark' : 'bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>{b}</button>
           ))}
         </div>
       </div>

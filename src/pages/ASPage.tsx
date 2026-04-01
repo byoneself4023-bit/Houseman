@@ -239,7 +239,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             { label: "담당", value: as_.assignee, bg: "var(--color-hm-blue-bg)", color: "var(--color-hm-blue-dark)" },
             ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
-            <div key={i} className="shrink-0 px-3.5 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
+            <div key={i} className="shrink-0 px-4 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
               <div className="text-xs text-hm-text-muted font-semibold mb-[3px]">{chip.label}</div>
               <div className="text-sm font-bold" style={{ color: chip.color }}>{chip.value}</div>
             </div>
@@ -265,12 +265,12 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         <Card className="mb-4">
           <div className="text-xs font-bold text-hm-blue tracking-wider mb-2">📋 접수 내용</div>
           <div className="text-base font-bold text-hm-text mb-2 leading-snug">{as_.content || as_.title}</div>
-          <div className="text-sm text-hm-text-sub leading-relaxed px-3.5 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
+          <div className="text-sm text-hm-text-sub leading-relaxed px-4 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
           <div className="flex gap-2 mt-3 flex-wrap">
-            <div className="px-3.5 py-2 bg-hm-bg rounded-lg text-xs">
+            <div className="px-4 py-2 bg-hm-bg rounded-lg text-xs">
               🏷️ <span className="font-bold">{as_.category || "기타"}</span>
             </div>
-            <div className="px-3.5 py-2 bg-hm-bg rounded-lg text-xs">
+            <div className="px-4 py-2 bg-hm-bg rounded-lg text-xs">
               🏪 <span className="font-bold">{as_.vendor || "자체처리"}</span>
             </div>
           </div>
@@ -279,7 +279,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         {/* Before/After Photos */}
         <Card className="mb-4">
           <div className="text-xs font-bold text-hm-blue tracking-wider mb-3">📸 현장 사진</div>
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5`}>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-3`}>
             <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="var(--color-hm-danger)"
               onAdd={(dataUrls: string[]) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(pi: number) => setAsBeforePhotos(prev => prev.filter((_, i) => i !== pi))} />
@@ -477,17 +477,17 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
               </div>
             )}
             {as_.ownerApproval === "pending" && (
-              <div className="px-3.5 py-3 bg-[#FFFBEB] rounded-lg border border-[#FDE68A] text-xs text-[#92400E]">
+              <div className="px-4 py-3 bg-[#FFFBEB] rounded-lg border border-[#FDE68A] text-xs text-[#92400E]">
                 건물주 승인 대기 중입니다{(as_.estimatedCost ?? 0) > 0 ? ` · 예상비용 ${fmt(as_.estimatedCost!)}원` : ""}
               </div>
             )}
             {as_.ownerApproval === "approved" && (
-              <div className="px-3.5 py-3 bg-hm-success-bg rounded-lg border border-hm-success-border text-xs text-[#065F46]">
+              <div className="px-4 py-3 bg-hm-success-bg rounded-lg border border-hm-success-border text-xs text-[#065F46]">
                 건물주가 승인했습니다. 진행해 주세요.
               </div>
             )}
             {as_.ownerApproval === "rejected" && (
-              <div className="px-3.5 py-3 bg-hm-danger-bg rounded-lg border border-hm-danger-border text-xs text-[#991B1B]">
+              <div className="px-4 py-3 bg-hm-danger-bg rounded-lg border border-hm-danger-border text-xs text-[#991B1B]">
                 건물주가 반려했습니다. 재검토가 필요합니다.
               </div>
             )}
@@ -495,7 +495,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         )}
 
         {/* Quick Action Buttons */}
-        <div className="grid grid-cols-2 gap-2.5 mb-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <button className="p-4 rounded-xl border border-hm-input-border bg-white cursor-pointer font-[inherit] flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition-shadow">
             <span className="text-2xl">📞</span>
             <span className="text-xs font-bold text-hm-text">세입자 연락</span>
@@ -529,7 +529,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
               { label: "처리업체", value: as_.vendor || "자체처리" },
             ].map((item, i) => (
               <div key={i} className={`px-3 py-2.5 border-b border-[#F0F2F5] ${i % 2 === 0 ? 'border-r border-r-[#F0F2F5]' : ''}`}>
-                <div className="text-xs text-hm-text-muted mb-0.5">{item.label}</div>
+                <div className="text-xs text-hm-text-muted mb-1">{item.label}</div>
                 <div className={`text-sm ${item.highlight ? 'font-bold text-hm-danger' : 'font-semibold text-hm-text'}`}>{item.value}</div>
               </div>
             ))}
@@ -550,7 +550,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
         <Card className="mb-4">
           {/* Building */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">건물 *</div>
             <select value={newBuilding} onChange={e => setNewBuilding(e.target.value)}
               className={inputClassName}>
@@ -560,21 +560,21 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Room */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">호실</div>
             <input value={newRoom} onChange={e => setNewRoom(e.target.value)} placeholder="예: 301"
               className={inputClassName} />
           </div>
 
           {/* Description */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">설명 *</div>
             <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="AS 내용을 입력하세요 (첫 줄이 제목으로 사용됩니다)" rows={4}
               className={`${inputClassName} resize-y min-h-[80px]`} />
           </div>
 
           {/* Photos */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">사진</div>
             <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="var(--color-hm-blue)"
               onAdd={(dataUrls: string[]) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
@@ -582,7 +582,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Priority */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">긴급도</div>
             <div className="flex gap-2">
               {["일반", "긴급"].map(p => (
@@ -595,7 +595,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Source */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">접수 경로</div>
             <select value={newSource} onChange={e => setNewSource(e.target.value)}
               className={inputClassName}>
@@ -606,7 +606,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           </div>
 
           {/* Assignee */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1">담당자</div>
             <select value={newAssignee} onChange={e => setNewAssignee(e.target.value)}
               className={inputClassName}>
@@ -645,7 +645,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           <div className="text-xs font-bold text-hm-blue tracking-wider mb-2.5">
             {editingVendorIdx !== null ? "✏️ 업체 수정" : "➕ 업체 추가"}
           </div>
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5 mb-3`}>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-3 mb-3`}>
             <div>
               <div className="text-xs font-bold text-hm-text-sub mb-1">업체명 *</div>
               <input value={vendorForm.name} onChange={e => setVendorForm(p => ({ ...p, name: e.target.value }))} placeholder="업체명"
@@ -689,7 +689,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           ) : (
             <div className="flex flex-col gap-2">
               {vendors.map((v, i) => (
-                <div key={i} className="flex items-center justify-between px-3.5 py-3 bg-hm-bg-hover rounded-[10px] border border-hm-border">
+                <div key={i} className="flex items-center justify-between px-4 py-3 bg-hm-bg-hover rounded-[10px] border border-hm-border">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-bold text-hm-text">{v.name}</span>
@@ -781,7 +781,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             <div className="text-center py-10 text-[#B0B5C1] text-sm">해당 조건의 AS 내역이 없습니다</div>
           )}
           {filtered.map((a, i) => (
-            <Card key={a.id || i} onClick={() => setSelectedAS(a)} className="cursor-pointer px-3.5 py-3 hover:shadow-md transition-shadow">
+            <Card key={a.id || i} onClick={() => setSelectedAS(a)} className="cursor-pointer px-4 py-3 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-1.5">
                 <div className="flex items-center gap-1.5">
                   <StatusBadge status={a.status} />

@@ -226,11 +226,11 @@ export default function VariableBillingView({
 
           {/* 전기 청구서 */}
           <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-            <div className="text-sm font-bold text-hm-text mb-3.5 flex items-center gap-1.5">
+            <div className="text-sm font-bold text-hm-text mb-4 flex items-center gap-1.5">
               <span className="text-base">⚡</span> 전기 청구서
               {elecVerified && <span className="text-xs text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
@@ -270,11 +270,11 @@ export default function VariableBillingView({
 
           {/* 수도 청구서 */}
           <div className="bg-white rounded-xl border border-[#E5E5E5] p-5">
-            <div className="text-sm font-bold text-hm-text mb-3.5 flex items-center gap-1.5">
+            <div className="text-sm font-bold text-hm-text mb-4 flex items-center gap-1.5">
               <span className="text-base">💧</span> 수도 청구서
               {waterVerified && <span className="text-xs text-hm-success font-bold bg-hm-success-bg px-1.5 py-0.5 rounded">✓ 일치</span>}
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-hm-text-muted tracking-wide">총 금액 (원)</span>
                 <input
@@ -465,7 +465,7 @@ export default function VariableBillingView({
                 ? <span className="text-hm-success font-bold">✓ 관리자 확인 완료</span>
                 : '변동관리비는 관리자 확인 후 발송됩니다'}
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex gap-3">
               {!isConfirmed ? (
                 <button
                   className="billing-btn primary"

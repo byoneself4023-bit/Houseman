@@ -143,7 +143,7 @@ export default function RoomBillingSettingsPanel({
         {isShortTerm && (
           <div className="mb-6">
             <div className="text-sm font-bold text-hm-text mb-3">납부방식</div>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-3">
               {[
                 { field: 'elec_payment_method', label: '전기' },
                 { field: 'gas_payment_method', label: '가스' },
@@ -154,7 +154,7 @@ export default function RoomBillingSettingsPanel({
                     <button
                       key={val}
                       onClick={() => update(field, val)}
-                      className={`px-3.5 py-1.5 rounded-md text-xs font-bold cursor-pointer transition-all duration-150 ${
+                      className={`px-4 py-1.5 rounded-md text-xs font-bold cursor-pointer transition-all duration-150 ${
                         settings[field] === val
                           ? 'border-[1.5px] border-[#346aff] bg-[#EBF0FF] text-[#346aff]'
                           : 'border border-[#E5E5E5] bg-white text-[#666] hover:border-[#346aff]/40'
@@ -177,7 +177,7 @@ export default function RoomBillingSettingsPanel({
           <div className="text-xs text-hm-text-muted mb-2.5">
             비워두면 건물 기본 설정을 따릅니다. 0으로 설정하면 면제.
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-hm-text-muted tracking-wide">수수료율 (%)</span>
               <input
@@ -201,7 +201,7 @@ export default function RoomBillingSettingsPanel({
       </div>
 
       {/* 하단 버튼 */}
-      <div className="px-6 py-4 border-t border-[#E5E5E5] flex gap-2.5 justify-end">
+      <div className="px-6 py-4 border-t border-[#E5E5E5] flex gap-3 justify-end">
         <button className="billing-btn ghost" onClick={onClose}>취소</button>
         <button className="billing-btn primary" onClick={handleSave} disabled={saving}>
           {saving ? '저장 중...' : '저장'}

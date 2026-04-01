@@ -204,27 +204,27 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
           <div className="text-sm font-bold text-[#6366F1] mb-3">수동 출납 입력</div>
           <div className={`grid ${isMobile ? "grid-cols-1" : "grid-cols-[1fr_1fr_1fr_1fr_1fr_auto]"} gap-2 items-end`}>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">건물</div>
+              <div className="text-xs text-hm-text-muted mb-1">건물</div>
               <input value={formBuilding} onChange={e => setFormBuilding(e.target.value)} placeholder="건물명"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">내역</div>
+              <div className="text-xs text-hm-text-muted mb-1">내역</div>
               <input value={formDesc} onChange={e => setFormDesc(e.target.value)} placeholder="송금 내역"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">금액</div>
+              <div className="text-xs text-hm-text-muted mb-1">금액</div>
               <input value={formAmount} onChange={e => setFormAmount(e.target.value)} type="number" placeholder="금액"
                 className={`${inputCls} text-right`} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">계좌</div>
+              <div className="text-xs text-hm-text-muted mb-1">계좌</div>
               <input value={formAccount} onChange={e => setFormAccount(e.target.value)} placeholder="은행 계좌번호"
                 className={inputCls} />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">구분</div>
+              <div className="text-xs text-hm-text-muted mb-1">구분</div>
               <select value={formDirection} onChange={e => setFormDirection(e.target.value)}
                 className={`${inputCls} cursor-pointer`}>
                 <option value="출금">출금 (송금)</option>
@@ -255,7 +255,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
             return (
               <div key={date}>
                 {/* 날짜 헤더 */}
-                <div className="flex items-center gap-2.5 mb-2">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="flex items-center gap-1.5">
                     <span className="text-base font-bold text-hm-text">{date.slice(5)}</span>
                     <span className="text-xs font-semibold text-hm-text-muted">({dow})</span>
@@ -333,7 +333,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                             {entry.status === "대기" && (
                               <>
                                 <button onClick={() => markSent(entry.id)}
-                                  className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
+                                  className="px-4 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
                                   송금 완료
                                 </button>
                                 <button onClick={() => markHold(entry.id)}

@@ -30,7 +30,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
     <>
       <div className={cn(
         'bg-white border-b border-hm-border flex items-center justify-between shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.05)]',
-        isMobile ? 'h-12 px-3.5' : 'h-[60px] px-6',
+        isMobile ? 'h-12 px-4' : 'h-[60px] px-6',
       )}>
         {/* Left: page title */}
         <div className={cn('flex items-center', isMobile ? 'gap-2' : 'gap-3')}>

@@ -691,7 +691,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
             </div>
             <div className="flex flex-col gap-2">
               {billingPopup.bills.map((bill: any, i: number) => (
-                <div key={i} className={`py-3 px-3.5 rounded-[10px] border ${i === 0 ? "bg-amber-50 border-amber-200" : "bg-hm-bg-slate border-hm-border"}`}>
+                <div key={i} className={`py-3 px-4 rounded-[10px] border ${i === 0 ? "bg-amber-50 border-amber-200" : "bg-hm-bg-slate border-hm-border"}`}>
                   <div className="flex justify-between items-center mb-1.5">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-hm-text">{bill.date}</span>

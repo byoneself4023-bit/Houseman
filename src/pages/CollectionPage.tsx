@@ -293,7 +293,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           <div className="mb-3">
             <input value={buildingSearch} onChange={e => setBuildingSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
-              className="px-3.5 py-[9px] rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-4 py-2.5 rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               style={{ width: isMobile ? "100%" : 280 }} />
           </div>
 
@@ -321,7 +321,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 { id: "\uC5F0\uCCB4", label: `🚨 연체 (${overdueCount})`, bg: "var(--color-hm-danger-bg)", activeBg: "var(--color-hm-warning)", activeColor: "#fff", color: "var(--color-hm-warning)", border: "var(--color-hm-warning-border)", activeBorder: "var(--color-hm-warning)" },
               ].map(f => (
                 <button key={f.id} onClick={() => setStatusFilter(f.id)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all"
+                  className="px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer font-[inherit] transition-all"
                   style={{
                     background: statusFilter === f.id ? f.activeBg : f.bg,
                     color: statusFilter === f.id ? f.activeColor : f.color,
@@ -335,7 +335,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
 
           <Card className="overflow-auto">
             {statusFilter !== "\uC804\uCCB4" && (
-              <div className="px-3.5 py-2 mb-2.5 rounded-lg flex items-center justify-between"
+              <div className="px-4 py-2 mb-2.5 rounded-lg flex items-center justify-between"
                 style={{
                   background: statusFilter === "\uB2E8\uC804" ? "#FFF1F2" : statusFilter === "\uC704\uD5D8" ? "#FFFBEB" : "var(--color-hm-danger-bg)",
                   border: `1px solid ${statusFilter === "\uB2E8\uC804" ? "var(--color-hm-danger-border)" : statusFilter === "\uC704\uD5D8" ? "#FDE68A" : "var(--color-hm-warning-border)"}`,
@@ -540,9 +540,9 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                               </div>
                               {roomComments.length > 0 && (
                                 <div className="flex flex-col gap-1.5">
-                                  <div className="text-xs font-bold text-hm-text-muted mb-0.5">📋 {t.building} {t.room} 호실 코멘트 이력</div>
+                                  <div className="text-xs font-bold text-hm-text-muted mb-1">📋 {t.building} {t.room} 호실 코멘트 이력</div>
                                   {roomComments.map((c, ci) => (
-                                    <div key={ci} className="flex gap-2.5 px-2.5 py-2 bg-white rounded-md border border-hm-border">
+                                    <div key={ci} className="flex gap-3 px-2.5 py-2 bg-white rounded-md border border-hm-border">
                                       <div className="shrink-0 min-w-[80px]">
                                         <div className="text-xs font-bold text-hm-text">{c.date}</div>
                                         <div className="text-xs font-semibold" style={{ color: c.tenant === t.name ? "var(--color-hm-blue)" : "#9333EA" }}>

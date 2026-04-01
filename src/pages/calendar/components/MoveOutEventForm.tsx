@@ -49,16 +49,16 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
       onClick={closeForm}>
       <div className="bg-[#FFFBFB] rounded-2xl p-6 w-[480px] max-w-[95vw] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-[#EF4444]"
         onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-3.5">
+      <div className="flex justify-between items-center mb-4">
         <div className="text-base font-bold text-hm-text">🚪 퇴실 등록</div>
         <button onClick={closeForm}
           className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
       </div>
-      <div className="flex gap-2.5 flex-wrap items-end">
+      <div className="flex gap-3 flex-wrap items-end">
         <div className="min-w-[160px]">
           <div className="text-xs font-bold text-hm-text-sub mb-1">퇴실일</div>
           <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)}
-            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
+            className={`${inputClassName} !py-2.5 !px-2.5 !text-xs bg-white`} />
         </div>
         <div className="min-w-[160px] relative">
           <div className="text-xs font-bold text-hm-text-sub mb-1">건물</div>
@@ -71,7 +71,7 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
             onFocus={() => setShowBuildingSuggestions(true)}
             onBlur={() => setTimeout(() => setShowBuildingSuggestions(false), 150)}
             placeholder="건물명 검색 (초성 가능)"
-            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs`}
+            className={`${inputClassName} !py-2.5 !px-2.5 !text-xs`}
             style={{ background: formBuilding ? "var(--color-hm-blue-bg)" : "#fff" }} />
           {showBuildingSuggestions && !formBuilding && (() => {
             const suggestions = BUILDING_NAMES.filter(b => !formBuildingSearch || matchKorean(b, formBuildingSearch));
@@ -94,7 +94,7 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
         <div className="min-w-[100px]">
           <div className="text-xs font-bold text-hm-text-sub mb-1">호실</div>
           <input value={formRoom} onChange={e => setFormRoom(e.target.value)} placeholder="301"
-            className={`${inputClassName} !py-[9px] !px-2.5 !text-xs bg-white`} />
+            className={`${inputClassName} !py-2.5 !px-2.5 !text-xs bg-white`} />
         </div>
         <button onClick={() => {
           if (!formDate) { toast.error("퇴실일을 선택하세요"); return; }
@@ -114,11 +114,11 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
           setEvents((prev: any[]) => [...prev, newEvt]);
           closeForm();
         }}
-          className="py-[9px] px-5 rounded-lg border-none bg-[#EF4444] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-danger transition-colors">
+          className="py-2.5 px-5 rounded-lg border-none bg-[#EF4444] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-danger transition-colors">
           퇴실 등록
         </button>
         <button onClick={closeForm}
-          className="py-[9px] px-5 rounded-lg border border-hm-input-border bg-white text-hm-text-sub text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover transition-colors">
+          className="py-2.5 px-5 rounded-lg border border-hm-input-border bg-white text-hm-text-sub text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover transition-colors">
           취소
         </button>
       </div>

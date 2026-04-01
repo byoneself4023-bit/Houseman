@@ -140,19 +140,19 @@ export const PayrollPage = () => {
           <div className="text-sm font-bold text-[#6366F1] mb-3">직원 추가</div>
           <div className="flex gap-2 items-end flex-wrap">
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">이름</div>
+              <div className="text-xs text-hm-text-muted mb-1">이름</div>
               <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="직원명"
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] w-[120px] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">직급</div>
+              <div className="text-xs text-hm-text-muted mb-1">직급</div>
               <select value={newRole} onChange={e => setNewRole(e.target.value)}
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] cursor-pointer outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
                 {ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
             <div>
-              <div className="text-xs text-hm-text-muted mb-0.5">기본급</div>
+              <div className="text-xs text-hm-text-muted mb-1">기본급</div>
               <input value={newBasePay} onChange={e => setNewBasePay(e.target.value)} type="number" placeholder="3,000,000"
                 className="px-2.5 py-2 rounded-lg border border-hm-input-border text-xs font-[inherit] w-[140px] text-right outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
             </div>
@@ -178,7 +178,7 @@ export const PayrollPage = () => {
               className={isPaid ? "opacity-80" : ""}
               style={{ border: isPaid ? "1.5px solid var(--color-hm-success-border)" : "1.5px solid var(--color-hm-border)" }}>
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-base ${isPaid ? "bg-hm-success-bg" : "bg-hm-blue-bg"}`}>
                     {isPaid ? "✓" : "👤"}
                   </div>
@@ -201,27 +201,27 @@ export const PayrollPage = () => {
               {isEditing && (
                 <div className={`mt-3 pt-3 border-t border-hm-border grid ${isMobile ? "grid-cols-2" : "grid-cols-[1fr_1fr_1fr_1fr_auto]"} gap-2 items-end`}>
                   <div>
-                    <div className="text-xs text-hm-text-muted mb-0.5">기본급</div>
+                    <div className="text-xs text-hm-text-muted mb-1">기본급</div>
                     <input value={basePay} onChange={e => upsertRecord(staff.id, { basePay: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-xs text-hm-text-muted mb-0.5">수당/보너스</div>
+                    <div className="text-xs text-hm-text-muted mb-1">수당/보너스</div>
                     <input value={bonus} onChange={e => upsertRecord(staff.id, { bonus: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-xs text-hm-text-muted mb-0.5">공제</div>
+                    <div className="text-xs text-hm-text-muted mb-1">공제</div>
                     <input value={deduction} onChange={e => upsertRecord(staff.id, { deduction: Number(e.target.value) || 0 })} type="number"
                       className={inputCls} />
                   </div>
                   <div>
-                    <div className="text-xs text-hm-text-muted mb-0.5">비고</div>
+                    <div className="text-xs text-hm-text-muted mb-1">비고</div>
                     <input value={rec?.note || ""} onChange={e => upsertRecord(staff.id, { note: e.target.value })} placeholder="비고"
                       className="w-full px-2 py-1.5 rounded-md border border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
                   </div>
                   <button onClick={() => setEditingId(null)}
-                    className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">닫기</button>
+                    className="px-4 py-1.5 rounded-md border border-hm-input-border bg-white text-xs font-semibold cursor-pointer font-[inherit] text-hm-text-sub hover:bg-hm-bg-hover transition-colors">닫기</button>
                 </div>
               )}
 
@@ -233,7 +233,7 @@ export const PayrollPage = () => {
                 </button>
                 {!isPaid && (
                   <button onClick={() => markPaid(staff.id)}
-                    className="px-3.5 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
+                    className="px-4 py-[5px] rounded-md border-none bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-bold cursor-pointer font-[inherit] hover:from-emerald-600 hover:to-emerald-700 transition-all">
                     지급 완료
                   </button>
                 )}

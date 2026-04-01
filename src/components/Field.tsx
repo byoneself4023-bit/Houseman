@@ -7,7 +7,7 @@ interface FieldProps {
 }
 
 export const Field: React.FC<FieldProps> = ({ label, children, required }) => (
-  <div className="mb-3.5">
+  <div className="mb-4">
     <div className="text-xs font-bold text-hm-text-sub mb-[5px]">
       {label}
       {required && <span className="text-hm-danger"> *</span>}
@@ -26,4 +26,4 @@ export const inputStyle: React.CSSProperties = {
   outline: 'none',
 };
 
-export const inputClassName = 'w-full px-3 py-[9px] rounded-lg border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';
+export const inputClassName = 'w-full px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';

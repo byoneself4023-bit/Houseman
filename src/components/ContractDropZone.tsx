@@ -139,7 +139,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
         ) : (
           <div className="text-center">
             <div className="text-2xl mb-1">📎</div>
-            <div className="text-xs font-bold text-hm-blue mb-0.5">
+            <div className="text-xs font-bold text-hm-blue mb-1">
               계약서를 드래그하거나 클릭하여 업로드
             </div>
             <div className="text-xs text-hm-text-muted">여러장 가능 · PDF, JPG, PNG 등</div>
@@ -158,7 +158,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
             className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center"
           >
             {/* 상단 바: 파일명 + 다운로드 + 닫기 */}
-            <div className="flex items-center gap-2.5 mb-3 px-4 py-2 bg-white/95 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-3 mb-3 px-4 py-2 bg-white/95 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
               <span className="text-xs font-bold text-hm-text max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
                 {previewFile.name}
               </span>
@@ -169,7 +169,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
                   a.download = previewFile.name;
                   a.click();
                 }}
-                className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors"
+                className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-blue-100 transition-colors"
               >
                 ⬇️ 다운로드
               </button>

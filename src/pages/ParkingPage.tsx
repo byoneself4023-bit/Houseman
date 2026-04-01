@@ -128,7 +128,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         <div className="mb-3">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-            className={`${inputClassName} w-full px-3.5 py-2.5 text-sm bg-hm-bg-hover`} />
+            className={`${inputClassName} w-full px-4 py-2.5 text-sm bg-hm-bg-hover`} />
         </div>
 
         {/* Stats — search matched buildings */}
@@ -181,12 +181,12 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                     {isEditing ? (
                       <div className="flex flex-col gap-1.5 mt-1.5">
                         <div>
-                          <div className="text-xs text-hm-text-muted mb-0.5">차번호</div>
+                          <div className="text-xs text-hm-text-muted mb-1">차번호</div>
                           <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
                             placeholder="123가 4567" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
                         <div>
-                          <div className="text-xs text-hm-text-muted mb-0.5">차종</div>
+                          <div className="text-xs text-hm-text-muted mb-1">차종</div>
                           <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
                             placeholder="현대 아반떼" className={`${inputClassName} px-2.5 py-[7px] text-xs`} />
                         </div>
@@ -288,7 +288,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
 
       {/* Stats — search matched buildings */}
       {searchMatchedBuildings.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5 mb-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 mb-4">
           {searchMatchedBuildings.map(bName => {
             const used = buildingCarCounts[bName] || 0;
             const total = getBuildingParkingTotal(bName);
@@ -298,13 +298,13 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                 <div className="text-xs font-bold text-hm-text mb-2">{bName}</div>
                 <div className="flex justify-between items-end">
                   <div>
-                    <div className="text-xs text-hm-text-muted mb-0.5">등록 / 총 주차대수</div>
+                    <div className="text-xs text-hm-text-muted mb-1">등록 / 총 주차대수</div>
                     <div className="text-xl font-bold text-hm-blue">
                       {used}<span className="text-xs text-hm-text-muted mx-[3px]">/</span><span className="text-base text-hm-text">{total}</span><span className="text-xs text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-hm-text-muted mb-0.5">잔여</div>
+                    <div className="text-xs text-hm-text-muted mb-1">잔여</div>
                     <div className="text-lg font-bold" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
                       {remain}<span className="text-xs text-hm-text-muted ml-0.5">대</span>
                     </div>

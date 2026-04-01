@@ -262,7 +262,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({ compareData, setComp
           <div className="flex items-center gap-3">
             {isCompareMode && (
               <button onClick={() => updateCmp({ _leftIdx: null, _rightIdx: null, _leftZoom: 1, _rightZoom: 1, _leftPos: { x: 0, y: 0 }, _rightPos: { x: 0, y: 0 } })}
-                className="px-3.5 py-[5px] rounded-md border border-white/30 bg-white/10 text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-white/20 transition-colors">
+                className="px-4 py-[5px] rounded-md border border-white/30 bg-white/10 text-white text-xs font-bold cursor-pointer font-[inherit] hover:bg-white/20 transition-colors">
                 목록으로
               </button>
             )}

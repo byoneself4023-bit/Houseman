@@ -234,8 +234,8 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowDetailPreview(true)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">📋 미리보기</button>
-          <button onClick={() => setDeleteStep(1)} className="px-5 py-[9px] rounded-lg border-[1.5px] border-red-300 bg-hm-danger-bg text-hm-danger font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">🗑 삭제</button>
+          <button onClick={() => setShowDetailPreview(true)} className="px-5 py-2.5 rounded-lg border-[1.5px] border-hm-blue-dark bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">📋 미리보기</button>
+          <button onClick={() => setDeleteStep(1)} className="px-5 py-2.5 rounded-lg border-[1.5px] border-red-300 bg-hm-danger-bg text-hm-danger font-bold text-sm cursor-pointer font-[inherit] hover:brightness-95 transition-all">🗑 삭제</button>
         </div>
       </div>
 
@@ -251,7 +251,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
       )}
 
       {/* Summary Cards */}
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2.5 mb-2`}>
+      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 mb-2`}>
         {[
           { label: "전체", value: bldg.rooms, unit: "실", color: "var(--color-hm-blue)" },
           { label: "입주", value: bldg.occupied, unit: "실", color: "#10B981" },

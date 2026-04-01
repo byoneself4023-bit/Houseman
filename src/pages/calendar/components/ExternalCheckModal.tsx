@@ -265,7 +265,7 @@ export const ExternalCheckModal = ({
               <div className="mt-1">
                 <div className="text-xs font-bold text-hm-text-sub mb-1">📝 공제 내역</div>
                 {ecEv.deductionItems.map((d: any, i: number) => (
-                  <div key={i} className="flex justify-between text-xs text-gray-700 pl-2 mb-0.5">
+                  <div key={i} className="flex justify-between text-xs text-gray-700 pl-2 mb-1">
                     <span>• {d.label}</span>
                     {d.amount > 0 && <span className="font-bold text-hm-danger">{d.amount.toLocaleString()}원</span>}
                   </div>
@@ -278,7 +278,7 @@ export const ExternalCheckModal = ({
             )}
             {!ecEv.deductionItems && ecEv.externalCheckComment && (
               <div className="mt-1">
-                <div className="text-xs font-bold text-hm-text-sub mb-0.5">📝 손상 코멘트</div>
+                <div className="text-xs font-bold text-hm-text-sub mb-1">📝 손상 코멘트</div>
                 {ecEv.externalCheckComment.split(" / ").map((c: string, i: number) => (
                   <div key={i} className="text-xs text-gray-700 pl-2">• {c}</div>
                 ))}

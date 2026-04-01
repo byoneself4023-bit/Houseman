@@ -41,11 +41,11 @@ export const BuildingAccountSection: React.FC<BuildingAccountSectionProps> = ({
         <div className="flex items-center gap-2">
           {secAcctOpen && (secAcctEdit ? (
             <>
-              <button onClick={() => setSecAcctEdit(false)} className="px-3.5 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-              <button onClick={() => setSecAcctEdit(false)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
+              <button onClick={() => setSecAcctEdit(false)} className="px-4 py-[5px] rounded-md border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-xs cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+              <button onClick={() => setSecAcctEdit(false)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">💾 저장</button>
             </>
           ) : (
-            <button onClick={() => setSecAcctEdit(true)} className="px-3.5 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
+            <button onClick={() => setSecAcctEdit(true)} className="px-4 py-[5px] rounded-md border-none bg-hm-blue-dark text-white font-bold text-xs cursor-pointer font-[inherit] hover:brightness-90 transition-all">✏️ 수정</button>
           ))}
           <span onClick={() => setSecAcctOpen(!secAcctOpen)} className="text-sm text-hm-text-muted cursor-pointer transition-transform duration-200" style={{ transform: secAcctOpen ? "rotate(0)" : "rotate(-90deg)" }}>▼</span>
         </div>
@@ -90,7 +90,7 @@ export const BuildingAccountSection: React.FC<BuildingAccountSectionProps> = ({
                           <div className="text-xs font-bold text-hm-warning mb-1">👤 건물주 계좌</div>
                           {curOwnerFields.map((f: any) => (
                             <div key={f.key} className="mb-1">
-                              <div className="text-[8px] font-bold text-hm-warning mb-0.5">{f.label}</div>
+                              <div className="text-[8px] font-bold text-hm-warning mb-1">{f.label}</div>
                               <div className="grid grid-cols-[90px_1fr_70px] gap-1">
                                 <select value={(bldgAccts[ownerKey] || {})[f.key + "_bank"] || ""} onChange={e => updateBldgAcct({ [ownerKey]: { ...bldgAccts[ownerKey], [f.key + "_bank"]: e.target.value } })}
                                   className={`${inputClassName} !px-1.5 !py-[5px] !text-xs !cursor-pointer`}>
@@ -149,7 +149,7 @@ export const BuildingAccountSection: React.FC<BuildingAccountSectionProps> = ({
             const curMode = bldgAccts[`mode${suffix}`] || "";
             const isSingleAcct = ["houseman", "hm_owner1", "gs1"].includes(curMode);
             return (
-              <div className="mt-3.5 px-3.5 py-3 bg-amber-50 rounded-lg border-[1.5px] border-amber-200">
+              <div className="mt-3.5 px-4 py-3 bg-amber-50 rounded-lg border-[1.5px] border-amber-200">
                 <div className="flex justify-between items-center mb-2">
                   <div className="text-xs font-bold text-amber-800">🧮 입주금 계산식</div>
                   {calcTypes.length > 1 && (
@@ -190,13 +190,13 @@ export const BuildingAccountSection: React.FC<BuildingAccountSectionProps> = ({
             value={contractMsg}
             onChange={e => updateBD({ contractMsg: e.target.value })}
             placeholder={"예시)\n안녕하세요, " + buildingName + " 입니다.\n계약이 완료되었습니다.\n\n입주일: \n보증금: \n월세: \n관리비: \n\n입금계좌: \n\n감사합니다."}
-            className={`${inputClassName} !w-full !min-h-[280px] !px-3.5 !py-3 !text-xs !leading-[1.7] !resize-y !bg-white !font-[inherit]`}
+            className={`${inputClassName} !w-full !min-h-[280px] !px-4 !py-3 !text-xs !leading-[1.7] !resize-y !bg-white !font-[inherit]`}
           />
           <div className="flex justify-end gap-1.5 mt-2">
             <button onClick={() => {
               if (contractMsg) navigator.clipboard.writeText(contractMsg).then(() => alert("복사되었습니다"));
             }}
-              className="px-3.5 py-1.5 rounded-md border border-green-200 bg-green-50 text-hm-success text-xs font-bold cursor-pointer font-[inherit] hover:brightness-95 transition-all">
+              className="px-4 py-1.5 rounded-md border border-green-200 bg-green-50 text-hm-success text-xs font-bold cursor-pointer font-[inherit] hover:brightness-95 transition-all">
               📋 복사
             </button>
           </div>

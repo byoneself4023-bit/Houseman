@@ -202,35 +202,35 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                 <span className="text-xs font-bold px-2.5 py-1 rounded-md" style={{ background: rc.bg, color: rc.c }}>{r.reason}</span>
               </div>
 
-              <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2.5 mb-3`}>
+              <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 mb-3`}>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">입주일</div>
+                  <div className="text-xs text-hm-text-muted mb-1">입주일</div>
                   <div className="text-sm font-bold">{r.moveIn || "-"}</div>
                 </div>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">만기일</div>
+                  <div className="text-xs text-hm-text-muted mb-1">만기일</div>
                   <div className="text-sm font-bold">{r.expiry || "-"}</div>
                 </div>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">{r.reason === "재계약" ? "재계약일" : "퇴실일"}</div>
+                  <div className="text-xs text-hm-text-muted mb-1">{r.reason === "재계약" ? "재계약일" : "퇴실일"}</div>
                   <div className="text-sm font-bold">{r.moveOut || "-"}</div>
                 </div>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">정산일</div>
+                  <div className="text-xs text-hm-text-muted mb-1">정산일</div>
                   <div className="text-sm font-bold">{r.settlementDate || "-"}</div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2.5 mb-4">
+              <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">{depositLabel}</div>
+                  <div className="text-xs text-hm-text-muted mb-1">{depositLabel}</div>
                   <div className="text-sm font-bold">{fmt(r.deposit)}원</div>
                 </div>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">월세</div>
+                  <div className="text-xs text-hm-text-muted mb-1">월세</div>
                   <div className="text-sm font-bold">{fmt(r.rent)}원</div>
                 </div>
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border">
-                  <div className="text-xs text-hm-text-muted mb-0.5">관리비</div>
+                  <div className="text-xs text-hm-text-muted mb-1">관리비</div>
                   <div className="text-sm font-bold">{fmt(r.mgmt || 0)}원</div>
                 </div>
               </div>
@@ -247,20 +247,20 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
               {!hasSettlement && r.reason !== "재계약" && (
                 <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border mb-4">
-                  <div className="text-xs text-hm-text-muted mb-0.5">정산 상태</div>
+                  <div className="text-xs text-hm-text-muted mb-1">정산 상태</div>
                   <div className={`text-sm font-bold ${r.settlement === "정산완료" ? 'text-hm-success' : 'text-hm-danger'}`}>{r.settlement || "-"}</div>
                 </div>
               )}
 
               {r.renewedAt && (
                 <div className="p-2.5 px-3 bg-hm-blue-bg rounded-lg border border-[#BFDBFE] mb-4">
-                  <div className="text-xs text-hm-text-muted mb-0.5">재계약 처리일</div>
+                  <div className="text-xs text-hm-text-muted mb-1">재계약 처리일</div>
                   <div className="text-sm font-bold text-hm-blue-dark">{r.renewedAt}</div>
                 </div>
               )}
 
               {currentTenant && (
-                <div className="px-3.5 py-3 bg-[#F0FDF4] rounded-lg border border-hm-success-border mb-4">
+                <div className="px-4 py-3 bg-[#F0FDF4] rounded-lg border border-hm-success-border mb-4">
                   <div className="text-xs font-bold text-hm-success mb-1">현재 임차인</div>
                   <div className="text-sm font-bold text-hm-text">{currentTenant.name} · {currentTenant.phone}</div>
                   <div className="text-xs text-hm-text-sub mt-0.5">입주일 {currentTenant.moveIn || "-"} · 만기 {currentTenant.expiry || "-"} · 월세 {fmt(currentTenant.rent)}원</div>
@@ -392,7 +392,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
               {/* Header */}
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <div className="text-lg font-bold text-hm-danger flex items-center gap-2.5">
+                  <div className="text-lg font-bold text-hm-danger flex items-center gap-3">
                     🚪 퇴실정산서
                     <span className="text-xs font-bold px-2 py-0.5 rounded bg-gray-100 text-hm-text-sub">{r.roomType || ""}</span>
                   </div>
@@ -408,8 +408,8 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                 <>
                   <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    <div><div className="text-xs text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
-                    <div><div className="text-xs text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
+                    <div><div className="text-xs text-hm-text-muted mb-1">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
+                    <div><div className="text-xs text-hm-text-muted mb-1">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
                   </div>
                   <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
                   <div className="bg-[#F0FDF4] rounded-[10px] px-[18px] py-3.5 border-2 border-hm-success-border">
@@ -426,29 +426,29 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                   <div>
                     <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
                     <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{r.name}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
                     </div>
 
                     <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">사용 기간</div>
                     <div className="grid grid-cols-4 gap-2 mb-3">
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.moveIn || "-"}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">퇴실일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-bold text-hm-danger text-center">{r.moveOut}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-blue-bg text-xs font-bold text-hm-blue-dark text-center">{r.usagePeriod || (() => { if (!r.moveIn || !r.moveOut) return "-"; const a = new Date(r.moveIn), b = new Date(r.moveOut); let m = (b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); let d = b.getDate()-a.getDate(); if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();} return `${m}개월 ${d}일`; })()}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.moveIn || "-"}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">퇴실일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-bold text-hm-danger text-center">{r.moveOut}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-blue-bg text-xs font-bold text-hm-blue-dark text-center">{r.usagePeriod || (() => { if (!r.moveIn || !r.moveOut) return "-"; const a = new Date(r.moveIn), b = new Date(r.moveOut); let m = (b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()); let d = b.getDate()-a.getDate(); if(d<0){m--;d+=new Date(b.getFullYear(),b.getMonth(),0).getDate();} return `${m}개월 ${d}일`; })()}</div></div>
                     </div>
 
                     <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">계약 정보</div>
                     <div className="grid grid-cols-3 gap-2 mb-2">
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(r.deposit)}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${r.isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.rent)}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${r.isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.mgmt || 0)}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(r.deposit)}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">월세 <span className={`text-[8px] ${r.isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.rent)}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">관리비 <span className={`text-[8px] ${r.isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({r.isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(r.mgmt || 0)}</div></div>
                     </div>
                     <div className={`grid gap-2 mb-3 ${(r.cleanFee ?? 0) > 0 ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                      {(r.cleanFee ?? 0) > 0 && <div><div className="text-xs text-hm-text-muted mb-0.5">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(r.cleanFee!)}</div></div>}
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.waterAmt || 0)}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.internetAmt || 0)}</div></div>
-                      <div><div className="text-xs text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
+                      {(r.cleanFee ?? 0) > 0 && <div><div className="text-xs text-hm-text-muted mb-1">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(r.cleanFee!)}</div></div>}
+                      <div><div className="text-xs text-hm-text-muted mb-1">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.waterAmt || 0)}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(r.internetAmt || 0)}</div></div>
+                      <div><div className="text-xs text-hm-text-muted mb-1">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.expiry || "-"}</div></div>
                     </div>
 
                     {/* 수기 입력 내역 */}
@@ -504,7 +504,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     <div className="text-xs text-hm-text-muted mb-1">기산일: {r.startDay}일 · 월 일수: {r.daysInMonth}일 · 당월 사용: {r.usedDays}일</div>
 
                     {/* 반환 */}
-                    <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-success-border">
+                    <div className="bg-[#F0FDF4] rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-success-border">
                       <div className="text-xs font-bold text-hm-success mb-1">반환 항목</div>
                       <SRow label={depositLabel} value={r.deposit} color="var(--color-hm-success)" bold />
                       {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="var(--color-hm-success)" />}
@@ -518,7 +518,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     </div>
 
                     {/* 공제 */}
-                    <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
+                    <div className="bg-hm-danger-bg rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-danger-border">
                       <div className="text-xs font-bold text-hm-danger mb-1">공제 항목</div>
                       {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="var(--color-hm-danger)" />}
                       {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="var(--color-hm-danger)" />}
@@ -594,7 +594,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
       {/* Search + Building filter */}
       <div className="flex gap-2 mb-4 items-center flex-wrap">
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이름, 건물, 호실, 연락처 검색..."
-          className="w-60 px-3.5 py-2 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+          className="w-60 px-4 py-2 rounded-lg border border-hm-input-border text-xs outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
         <select value={filterBld} onChange={e => setFilterBld(e.target.value)}
           className="px-3 py-2 rounded-lg border-[1.5px] border-hm-input-border text-xs font-semibold font-[inherit] focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors">
           {buildingNames.map(b => <option key={b}>{b}</option>)}

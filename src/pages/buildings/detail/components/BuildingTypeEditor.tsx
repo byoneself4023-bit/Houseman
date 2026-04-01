@@ -126,7 +126,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                 {(previewAccts.mode1 || previewAccts.mode2) && (
                   <div className="mb-4">
                     <div className="text-sm font-bold text-hm-text mb-2.5 border-b-2 border-gray-200 pb-2">🏦 건물 계좌 정보</div>
-                    <div className={`grid gap-2.5 ${previewAcctTypes.length === 3 ? 'grid-cols-3' : previewAcctTypes.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                    <div className={`grid gap-3 ${previewAcctTypes.length === 3 ? 'grid-cols-3' : previewAcctTypes.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                       {previewAcctTypes.map((aType, ai) => {
                         const suffix = String(ai + 1);
                         const curMode = previewAccts[`mode${suffix}`];
@@ -152,7 +152,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                               const holder = accts[f.key + "_holder"] || "";
                               if (!bank && !num && !holder) return null;
                               return (
-                                <div key={f.key} className="text-xs mb-0.5">
+                                <div key={f.key} className="text-xs mb-1">
                                   <span className="text-hm-warning font-semibold">{f.label}:</span>
                                   <span className="font-mono ml-1">{[bank, num, holder].filter(Boolean).join(" ")}</span>
                                 </div>
@@ -306,7 +306,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   <strong className="text-hm-danger">{buildingName}</strong>의 모든 정보와<br />
                   <strong className="text-hm-danger">{Object.values(detail.floors).flat().length}개 호실</strong>이 영구적으로 삭제됩니다.
                 </div>
-                <div className="flex gap-2.5">
+                <div className="flex gap-3">
                   <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
                   <button onClick={() => setDeleteStep(2)} className="flex-1 py-3 rounded-[10px] border-none bg-hm-danger text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">삭제 진행</button>
                 </div>
@@ -326,7 +326,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                     ⚡ {buildingName} · {Object.values(detail.floors).flat().length}개 호실 · {bldgTenants.length}명 입주자 · AS {bldgAS.length}건
                   </div>
                 </div>
-                <div className="flex gap-2.5">
+                <div className="flex gap-3">
                   <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">아니요, 취소</button>
                   <button onClick={() => setDeleteStep(3)} className="flex-1 py-3 rounded-[10px] border-none bg-[#991B1B] text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">그래도 삭제</button>
                 </div>
@@ -340,7 +340,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   "{buildingName}" 를 입력하고 삭제 버튼을 누르세요.
                 </div>
                 <input id="deleteConfirmInput" placeholder={`"${buildingName}" 입력`} className={`${inputClassName} !px-4 !py-3 !text-sm text-center mb-4 !border-2 !border-hm-danger-border`} />
-                <div className="flex gap-2.5">
+                <div className="flex gap-3">
                   <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
                   <button onClick={() => {
                     const input = document.getElementById("deleteConfirmInput") as HTMLInputElement | null;

@@ -36,7 +36,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({
           <button onClick={() => setEditEvent(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
 
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {/* 공통: 날짜 */}
           <div>
             <div className="text-xs font-bold text-hm-text-sub mb-[3px]">날짜</div>

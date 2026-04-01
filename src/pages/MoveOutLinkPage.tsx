@@ -20,7 +20,7 @@ const BANKS = [
   "케이뱅크", "새마을금고", "신협", "우체국", "수협은행",
 ];
 
-const inputCls = 'w-full px-3.5 py-3 rounded-[10px] border border-hm-input-border text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';
+const inputCls = 'w-full px-4 py-3 rounded-[10px] border border-hm-input-border text-sm font-[inherit] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors';
 
 export const MoveOutLinkPage = () => {
   const { eventId } = useParams();

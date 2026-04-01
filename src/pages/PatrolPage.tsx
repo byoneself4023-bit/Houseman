@@ -216,7 +216,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           <div className="text-base font-bold text-hm-text mb-4 pb-2.5 border-b-2 border-hm-border">🚶 새 순회 기록</div>
 
           {/* Building selector */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1.5">건물 선택</div>
             <select value={formBuilding} onChange={e => updateFormBuilding(e.target.value)}
               className={selectClassName}>
@@ -227,7 +227,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* Assignee */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1.5">담당자</div>
             <select value={formAssignee} onChange={e => setFormAssignee(e.target.value)}
               className={selectClassName}>
@@ -238,18 +238,18 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* Date */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1.5">순회일자</div>
             <div className="px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-sm bg-hm-bg-slate text-hm-text font-semibold">{todayStr}</div>
           </div>
 
           {/* Facility Checklist */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-2">시설 점검 체크리스트</div>
             <div className="flex flex-col gap-1.5">
               {formChecklist.map((c, i) => (
                 <div key={i} className={`px-3 py-2.5 rounded-lg border-[1.5px] transition-all ${c.status === "이상" ? 'bg-hm-danger-bg border-hm-danger-border' : 'bg-[#F0FDF4] border-[#BBF7D0]'}`}>
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-hm-text flex-1">{c.item}</span>
                     <div className="flex gap-1">
                       <button onClick={() => { const u = [...formChecklist]; u[i] = { ...u[i], status: "정상", comment: "" }; setFormChecklist(u); }}
@@ -278,7 +278,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* General comment */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <div className="text-xs font-bold text-hm-text-sub mb-1.5">전체 코멘트</div>
             <textarea value={formComment} onChange={e => setFormComment(e.target.value)}
               placeholder="순회 결과를 기록해주세요..." rows={4}
@@ -286,7 +286,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
 
           {/* Photos */}
-          <div className="mb-3.5">
+          <div className="mb-4">
             <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="var(--color-hm-blue)"
               onAdd={(dataUrls: string[]) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(idx: number) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
@@ -333,12 +333,12 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             </div>
           </div>
           <div className="flex gap-3 mb-3">
-            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-[#F0F4FF] text-center">
+            <div className="flex-1 px-4 py-2.5 rounded-lg bg-[#F0F4FF] text-center">
               <div className="text-xs text-hm-text-muted mb-1">마지막 순회</div>
               <div className="text-sm font-bold text-hm-text">{b.lastDate ? b.lastDate.slice(5) : "—"}</div>
               {daysSince !== null && <div className={`text-xs ${daysSince > interval ? 'text-hm-danger' : 'text-hm-text-muted'}`}>{daysSince}일 전</div>}
             </div>
-            <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${b.lastStatus === "이상발견" ? 'bg-hm-danger-bg' : 'bg-[#F0FDF4]'}`}>
+            <div className={`flex-1 px-4 py-2.5 rounded-lg text-center ${b.lastStatus === "이상발견" ? 'bg-hm-danger-bg' : 'bg-[#F0FDF4]'}`}>
               <div className="text-xs text-hm-text-muted mb-1">마지막 상태</div>
               <div className={`text-sm font-bold ${b.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{b.lastStatus || "—"}</div>
             </div>
@@ -366,8 +366,8 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             <div className="flex flex-col gap-2">
               {records.map((rec, i) => (
                 <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-                  className={`flex items-center justify-between px-3.5 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
-                  <div className="flex items-center gap-2.5">
+                  className={`flex items-center justify-between px-4 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
+                  <div className="flex items-center gap-3">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                     <div>
                       <div className="text-sm font-bold text-hm-text">{rec.date}</div>
@@ -425,12 +425,12 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
       <div className="flex gap-1 mb-3">
         {assignees.map(a => (
           <button key={a} onClick={() => setFilterAssignee(a)}
-            className={`px-3.5 py-1.5 rounded-lg font-bold text-xs cursor-pointer font-[inherit] transition-all ${filterAssignee === a ? 'border-2 border-hm-text bg-hm-text text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
+            className={`px-4 py-1.5 rounded-lg font-bold text-xs cursor-pointer font-[inherit] transition-all ${filterAssignee === a ? 'border-2 border-hm-text bg-hm-text text-white' : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:bg-hm-bg-hover'}`}>
             {a} {a !== "전체" && <span className="text-xs opacity-70">({myPatrolBuildings.filter(b => b.assignee === a).length})</span>}
           </button>
         ))}
       </div>
-      <div className={`grid gap-2.5 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+      <div className={`grid gap-3 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
         {sorted.map((b, i) => {
           const remain = b.freq - b.doneCount;
           const interval = Math.floor(28 / b.freq);
@@ -541,8 +541,8 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
         <div className="flex flex-col gap-1.5">
           {allRecords.slice(0, 20).map((rec, i) => (
             <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
-              <div className="flex items-center gap-2.5">
+              className={`flex items-center justify-between px-4 py-2.5 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
+              <div className="flex items-center gap-3">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                 <div>
                   <div className="text-xs font-bold">{rec.building} · {rec.date}</div>

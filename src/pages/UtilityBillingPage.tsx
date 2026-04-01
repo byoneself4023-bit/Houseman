@@ -835,7 +835,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             const lastEnd = hist.length > 0 ? hist[hist.length - 1].endDay : 0;
             const autoStart = lastEnd > 0 ? (lastEnd % 31) + 1 : billingPeriod.startDay;
             return (
-              <Card className={`mb-2 !px-3.5 !py-2.5 ${billingPeriod.confirmed ? 'border-2 border-hm-success bg-[#F0FDF4]' : 'border-2 border-[#F59E0B] bg-[#FFFBEB]'}`}>
+              <Card className={`mb-2 !px-4 !py-2.5 ${billingPeriod.confirmed ? 'border-2 border-hm-success bg-[#F0FDF4]' : 'border-2 border-[#F59E0B] bg-[#FFFBEB]'}`}>
                 <div className={`flex items-center justify-between ${billingPeriod.confirmed ? '' : 'mb-2'}`}>
                   <div className="flex items-center gap-2">
                     <span className="text-sm">📆</span>
@@ -976,7 +976,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             </label>
           </div>
           {uploadResult && (
-            <div className={`px-3.5 py-2.5 rounded-lg border ${uploadResult.success ? 'bg-hm-success-bg border-[#BBF7D0]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+            <div className={`px-4 py-2.5 rounded-lg border ${uploadResult.success ? 'bg-hm-success-bg border-[#BBF7D0]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
               <div className={`text-xs font-bold ${uploadResult.success ? 'text-hm-success' : 'text-hm-danger'} ${uploadResult.details ? 'mb-2.5' : ''}`}>
                 {uploadResult.success ? "✅ " : "❌ "}{uploadResult.msg}
               </div>
@@ -1115,7 +1115,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           const inpCls = "px-2.5 py-[7px] rounded-md border-[1.5px] border-gray-300 text-sm font-[inherit] text-right font-bold bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors";
           return (
             <div key={i}
-              className={`px-3.5 py-2.5 rounded-[10px] cursor-pointer transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${urgent ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : noData ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : r.confirmed ? 'bg-[#F0FDF4] border-[1.5px] border-[#BBF7D0]' : 'bg-white border-[1.5px] border-hm-border'}`}>
+              className={`px-4 py-2.5 rounded-[10px] cursor-pointer transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${urgent ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : noData ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : r.confirmed ? 'bg-[#F0FDF4] border-[1.5px] border-[#BBF7D0]' : 'bg-white border-[1.5px] border-hm-border'}`}>
               <div className="flex items-center justify-between mb-1.5"
                 onClick={() => setSelectedItem(r)}>
                 <div className="flex items-center gap-2 flex-1 min-w-0">
