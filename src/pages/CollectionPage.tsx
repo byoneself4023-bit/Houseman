@@ -5,6 +5,7 @@ import { getRoomType, collectionAssigneeMap, initialStaffMembers } from '@/confi
 import { useIsMobile, fmt } from '@/utils';
 import { matchKorean } from '@/utils/koreanSearch';
 import { Card, SectionTitle, Table, StatusBadge, DunningTemplateSettings } from '@/components';
+import { Coins } from 'lucide-react';
 import { useLocalStorage } from '@/utils/useLocalStorage';
 
 const rk = (t: Record<string, any>) => `${t.building}_${t.room}`;
@@ -256,6 +257,33 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
       )}
 
       <SectionTitle sub={filterCollector === "\uC804\uCCB4" ? "\uC218\uAE08 \uAD00\uB9AC" : `${filterCollector} \uC804\uB2F4 · ${filteredFinal.length}\uBA85`}>💰 수금 관리</SectionTitle>
+
+      {/* 수금 진행률 */}
+      {(() => {
+        const totalCount = filteredFinal.length;
+        const overdueNum = filteredFinal.filter((t: any) => getBalance(t) > 0 && getDaysSinceDue(t) >= 0).length;
+        const paidCount = totalCount - overdueNum;
+        const rate = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
+        return (
+          <Card className="!p-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Coins size={18} className="text-hm-primary" />
+                <span className="text-sm font-bold text-hm-gray-800">이번 달 수금 현황</span>
+              </div>
+              <span className="text-2xl font-bold text-hm-primary">{rate}%</span>
+            </div>
+            <div className="w-full h-3 bg-hm-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-hm-primary to-[#5B7FFF] rounded-full transition-all duration-500" style={{ width: `${rate}%` }} />
+            </div>
+            <div className="flex justify-between mt-3 text-xs text-hm-gray-500">
+              <span>수금 완료 <span className="font-bold text-hm-success">{paidCount}건</span></span>
+              <span>미납 <span className="font-bold text-hm-danger">{overdueNum}건</span></span>
+              <span>전체 <span className="font-bold text-hm-gray-800">{totalCount}건</span></span>
+            </div>
+          </Card>
+        );
+      })()}
 
       {/* 상단 탭 */}
       <div className="flex gap-1.5 mb-4 flex-wrap">
