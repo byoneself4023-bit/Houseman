@@ -49,7 +49,6 @@ export async function fetchBankdaTransactions(params: {
   const res = await fetch('/api/bankda/bank_tr.php', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: body.toString(),

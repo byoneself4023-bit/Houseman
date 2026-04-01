@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: {
     command: 'VITE_USE_API=false npm run dev',
     port: 5173,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 });

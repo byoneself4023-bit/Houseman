@@ -18,6 +18,11 @@ export default defineConfig({
         target: 'https://a.bankda.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/bankda/, '/dtsvc'),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Authorization', 'Bearer 4f5c6376003bcbc2586d228e998c6d93');
+          });
+        },
       },
     },
   },

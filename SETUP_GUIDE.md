@@ -61,7 +61,7 @@ DB/서버 없이 프론트엔드만 실행합니다. 데이터는 브라우저 l
 
 ```bash
 # 1. 프로젝트 폴더로 이동
-cd C:\Users\%USERNAME%\Desktop\houseman
+cd C:\Users\%USERNAME%\Desktop\Houseman
 
 # 2. 패키지 설치 (최초 1회, 또는 package.json 변경 시)
 npm install
@@ -70,12 +70,13 @@ npm install
 copy .env.example .env.local
 ```
 
-`.env.local` 파일을 메모장으로 열어서 아래 내용으로 수정:
+`.env.local` 파일을 메모장으로 열어서 `VITE_USE_API` 값만 `false`로 수정:
 
 ```
-VITE_API_BASE_URL=http://localhost:8080
 VITE_USE_API=false
 ```
+
+> 나머지 값(`VITE_API_BASE_URL`, `VITE_GEMINI_API_KEY` 등)은 프론트만 모드에서는 사용되지 않으므로 그대로 둡니다.
 
 ```bash
 # 4. 개발 서버 시작
@@ -83,7 +84,8 @@ npm run dev
 ```
 
 브라우저에서 **http://localhost:5173** 접속.
-로그인: 아무 직원 이름 + 비밀번호 입력.
+로그인 화면에 직원 목록이 표시됩니다 — **클릭하면 자동으로 연락처와 비밀번호가 입력**됩니다.
+대표님 계정: 연락처 `010-5560-8245` / 비밀번호 `8245`.
 
 > 종료: 터미널에서 `Ctrl + C`
 
@@ -95,7 +97,7 @@ Docker Desktop이 실행 중이어야 합니다.
 
 ```bash
 # 1. 프로젝트 폴더로 이동
-cd C:\Users\%USERNAME%\Desktop\houseman
+cd C:\Users\%USERNAME%\Desktop\Houseman
 
 # 2. 전체 서비스 시작 (DB + 서버 + 프론트)
 docker compose up -d
@@ -114,7 +116,7 @@ docker compose ps
 |--------|------|------|
 | 프론트엔드 | http://localhost:3000 | React 앱 |
 | 백엔드 API | http://localhost:8080 | Spring Boot |
-| API 문서 | http://localhost:8080/swagger-ui.html | Swagger UI |
+| API 문서 | http://localhost:8080/swagger-ui | Swagger UI |
 | PostgreSQL | localhost:5434 | DB (user: houseman / pw: houseman) |
 
 ```bash
@@ -296,21 +298,6 @@ houseman/
 ├── .env.example                  # 환경변수 템플릿
 └── .github/workflows/            # CI/CD (ci.yml, deploy-pages.yml)
 ```
-
----
-
-## 5. 현재 미완성 기능 (TODO)
-
-아래 항목은 BE API는 존재하지만 FE 연동이 완전하지 않은 부분입니다.
-
-| 항목 | 현재 상태 | 필요 작업 |
-|------|-----------|-----------|
-| `addBilling` mutation | API shape 불일치 | `transforms.ts`에 변환 함수 추가 + mutation 훅 수정 |
-| `billingEngine` I/O | stub 상태 | BE `/api/billing/generate` 응답을 FE billingEngine 입력 형태로 변환 |
-| MoveOutLinkPage BE endpoint | FE는 `/api/calendar/:id`로 호출 중 | 공개 API `GET/PUT /api/move-out-link/:eventId` 신규 생성 |
-| MeterUpload BE endpoint | FE 파싱만 구현 | `POST /api/upload/meter` 엔드포인트 생성 + 검침값 DB 저장 |
-| `hm_lateFeeOverrides` | localStorage 직접 읽기 | BE에 연체료 override CRUD API 추가 + query 훅 연결 |
-| `hm_buildingData` | localStorage 직접 읽기 | `useBuildingQuery` 훅으로 전환 (building detail API 활용) |
 
 ---
 

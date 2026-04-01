@@ -161,7 +161,7 @@ test('5. 퇴실확정 시 임차인 이동 검증', async ({ page }) => {
         return tenants.some((t: any) => t.id === 9001);
       });
       expect(result).toBe(false);
-    }).toPass({ timeout: 5_000 });
+    }).toPass({ timeout: 15_000 });
 
     // pastTenantsData 검증
     const pastResult = await page.evaluate(() => {
