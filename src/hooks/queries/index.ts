@@ -8,3 +8,4 @@ export * from './useVacancyQuery';
 export * from './useSettlementQuery';
 export * from './useCashbookQuery';
 export * from './useParkingQuery';
+export * from './useLateFeeOverrideQuery';
