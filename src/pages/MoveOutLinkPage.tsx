@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { USE_API } from '@/lib/featureFlag';
 
 /**
  * 임차인 퇴실 링크 페이지 (외부 — 인증 없이 접근)
@@ -39,8 +40,8 @@ export const MoveOutLinkPage = () => {
   // 이벤트 로드
   useEffect(() => {
     if (!eventId) { setError('잘못된 링크입니다.'); setLoading(false); return; }
-    // TODO Phase 6: 공개 API endpoint 필요 (GET /api/move-out-link/:eventId)
-    api.get(`/api/calendar/${eventId}`)
+    const endpoint = USE_API ? `/api/public/move-out-link/${eventId}` : `/api/calendar/${eventId}`;
+    api.get(endpoint)
       .then((data) => {
         if (!data) {
           setError('퇴실 정보를 찾을 수 없습니다.');
@@ -66,17 +67,13 @@ export const MoveOutLinkPage = () => {
     if (!agreed) return alert('주의사항을 확인해주세요.');
 
     const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    // TODO Phase 6: 공개 API endpoint 필요 (PUT /api/move-out-link/:eventId)
+    const putEndpoint = USE_API ? `/api/public/move-out-link/${eventId}` : `/api/calendar/${eventId}`;
+    const putBody = USE_API
+      ? { doorPassword, refundBank, refundAccount, refundHolder }
+      : { moveOutLinkCompleted: true, moveOutLinkCompletedAt: now, doorPassword, refundBank, refundAccount, refundHolder };
     let err = null;
     try {
-      await api.put(`/api/calendar/${eventId}`, {
-        moveOutLinkCompleted: true,
-        moveOutLinkCompletedAt: now,
-        doorPassword,
-        refundBank,
-        refundAccount,
-        refundHolder,
-      });
+      await api.put(putEndpoint, putBody);
     } catch (e) {
       err = e;
     }

@@ -40,6 +40,7 @@ class SecurityConfig(
                     .requestMatchers("/health", "/actuator/**").permitAll()
                     .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/webjars/**").permitAll()
                     .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
+                    .requestMatchers("/api/public/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
