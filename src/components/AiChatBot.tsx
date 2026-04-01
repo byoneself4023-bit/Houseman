@@ -190,23 +190,59 @@ ${contextData.buildingDetailSummary}
 - boolean=true/false, 금액=숫자만(원단위,콤마없음)`;
 }
 
-async function callClaude(systemPrompt: string, history: Array<{ role: string; content: string }>): Promise<string> {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 500,
-      system: systemPrompt,
-      messages: history,
-    }),
-  });
+/* ── Daily usage limiter ── */
+const AI_DAILY_LIMIT = 50;
+
+function getAiUsage(): { date: string; count: number } {
+  try {
+    const raw = localStorage.getItem('hm_ai_usage');
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return { date: '', count: 0 };
+}
+
+function incrementAiUsage(): boolean {
+  const today = new Date().toISOString().slice(0, 10);
+  const usage = getAiUsage();
+  if (usage.date !== today) {
+    localStorage.setItem('hm_ai_usage', JSON.stringify({ date: today, count: 1 }));
+    return true;
+  }
+  if (usage.count >= AI_DAILY_LIMIT) return false;
+  localStorage.setItem('hm_ai_usage', JSON.stringify({ date: today, count: usage.count + 1 }));
+  return true;
+}
+
+async function callGemini(systemPrompt: string, history: Array<{ role: string; content: string }>): Promise<string> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) throw new Error('VITE_GEMINI_API_KEY가 설정되지 않았습니다.');
+
+  // Convert history to Gemini format (role: "user" | "model")
+  const contents = history.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 500, temperature: 0.3 },
+      }),
+    },
+  );
+
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`API 오류 (${res.status}): ${errText}`);
+    throw new Error(`Gemini API 오류 (${res.status}): ${errText}`);
   }
+
   const data = await res.json();
-  return data.content?.[0]?.text || '';
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
 interface AiChatBotProps {
@@ -383,6 +419,11 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
     }
 
     // AI 호출 (로컬에서 처리 못 한 경우)
+    if (!incrementAiUsage()) {
+      setMessages(prev => [...prev, { role: 'assistant', content: '오늘 AI 사용 한도(50회)를 초과했습니다. 내일 다시 이용해 주세요.' }]);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -452,7 +493,7 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
         ...recentMsgs.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })),
         { role: 'user', content: userMsg },
       ];
-      const text = await callClaude(systemPrompt, history);
+      const text = await callGemini(systemPrompt, history);
 
       // Parse JSON action from response
       const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
