@@ -5,6 +5,7 @@ import { getRoomType } from '@/config';
 import { useIsMobile, fmt } from '@/utils';
 import { matchKorean } from '@/utils/koreanSearch';
 import { Card, SectionTitle } from '@/components';
+import { Users, AlertTriangle, TrendingUp } from 'lucide-react';
 import { PhotoDropZone } from '@/components/PhotoDropZone';
 import { getBillingStatus, getLateFee } from './utils/billingStatus';
 import { getBillingSlots, singleAcctModes } from './utils/billingSlots';
@@ -513,6 +514,37 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
   return (
     <div>
       <SectionTitle sub={`총 ${activeTenants.length}명 입주 중`}>👤 임차인 관리</SectionTitle>
+
+      {/* KPI 요약 */}
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-4 mb-6`}>
+        <Card className="!p-4 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-hm-primary/10 flex items-center justify-center">
+            <Users size={20} className="text-hm-primary" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-gray-950">{myTenants.length}</div>
+            <div className="text-xs text-hm-gray-500">총 임차인</div>
+          </div>
+        </Card>
+        <Card className="!p-4 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-hm-danger/10 flex items-center justify-center">
+            <AlertTriangle size={20} className="text-hm-danger" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-danger">{myTenants.filter((t: any) => t.overdue > 0 || t.overdueDays > 0).length}</div>
+            <div className="text-xs text-hm-gray-500">연체 건수</div>
+          </div>
+        </Card>
+        <Card className="!p-4 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-hm-success/10 flex items-center justify-center">
+            <TrendingUp size={20} className="text-hm-success" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-success">{(() => { const now = new Date(); const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`; return myTenants.filter((t: any) => (t.moveInDate || t.moveIn || '').startsWith(ym)).length; })()}</div>
+            <div className="text-xs text-hm-gray-500">이번 달 입주</div>
+          </div>
+        </Card>
+      </div>
 
       {/* 공실→임차인 계약서 입력 */}
       {pendingContract && (
