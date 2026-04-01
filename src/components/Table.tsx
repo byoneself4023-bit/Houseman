@@ -31,12 +31,12 @@ export const Table = <T extends Record<string, any>>({
   <div className="overflow-x-auto rounded-lg border border-hm-border">
     <table className="w-full border-collapse text-xs table-fixed">
       <thead>
-        <tr className="bg-hm-bg-muted">
+        <tr className="bg-hm-gray-100">
           {columns.map((col, i) => (
             <th
               key={i}
               className={cn(
-                'px-0.5 py-[5px] font-bold text-xs text-hm-text-sub border-b border-hm-border whitespace-nowrap',
+                'px-2 py-2 font-semibold text-xs text-hm-gray-600 border-b border-hm-border whitespace-nowrap',
                 alignClass[col.align || 'left'],
               )}
               style={{ width: col.width || 'auto' }}
@@ -54,7 +54,7 @@ export const Table = <T extends Record<string, any>>({
               <tr key={`g-${ri}`}>
                 <td
                   colSpan={columns.length}
-                  className="px-3 py-2 bg-[#F0F2F5] font-bold text-xs text-hm-text border-b-2 border-[#D1D5DB]"
+                  className="px-3 py-2 bg-hm-gray-100 font-semibold text-xs text-hm-text border-b-2 border-hm-gray-300"
                 >
                   {groupBy!(row)}
                 </td>
@@ -64,7 +64,7 @@ export const Table = <T extends Record<string, any>>({
               key={ri}
               onClick={() => onRowClick?.(row)}
               className={cn(
-                'border-b border-[#F0F2F5] transition-colors duration-100',
+                'border-b border-hm-gray-100 transition-colors duration-100',
                 onRowClick && 'cursor-pointer',
                 'hover:bg-hm-bg-hover',
               )}
@@ -73,7 +73,7 @@ export const Table = <T extends Record<string, any>>({
                 <td
                   key={ci}
                   className={cn(
-                    'px-0.5 py-1 text-[#2D3142] whitespace-nowrap',
+                    'px-2 py-1.5 text-hm-gray-800 whitespace-nowrap',
                     alignClass[col.align || 'left'],
                   )}
                   style={{ width: col.width || 'auto' }}
