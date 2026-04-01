@@ -53,7 +53,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
           const currentStep = cSteps.findIndex(s => !s.done);
           return (
             <div key={i}
-              className={`rounded-[10px] overflow-hidden transition-all duration-300 ${
+              className={`rounded-lg overflow-hidden transition-all duration-300 ${
                 allDone
                   ? 'bg-hm-bg-hover border border-[#D1D5DB] grayscale opacity-70'
                   : 'bg-white border border-[#BFDBFE]'

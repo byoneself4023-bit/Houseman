@@ -35,7 +35,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, wi
       onClick={onClose}
     >
       <div
-        className="bg-[#FAFBFF] rounded-2xl p-6 max-w-[95vw] max-h-[90vh] overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-hm-blue relative"
+        className="bg-[#FAFBFF] rounded-xl p-6 max-w-[95vw] max-h-[90vh] overflow-y-auto shadow-[0_8px_32px_rgba(0,0,0,0.2)] border-2 border-hm-blue relative"
         style={{ width }}
         onClick={(e) => e.stopPropagation()}
       >

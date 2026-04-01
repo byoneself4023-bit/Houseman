@@ -148,7 +148,7 @@ export const DunningTemplateSettings: React.FC = () => {
           <button
             key={type.id}
             onClick={() => setActiveTab(type.id)}
-            className={`px-5 py-2.5 rounded-[10px] font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 ${
+            className={`px-5 py-2.5 rounded-lg font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 ${
               activeTab === type.id
                 ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark'
                 : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub hover:border-hm-blue/40'
@@ -157,7 +157,7 @@ export const DunningTemplateSettings: React.FC = () => {
             {type.label}
             {(templates[type.id] || []).length > 0 && (
               <span
-                className={`ml-1.5 px-[7px] py-px rounded-[10px] text-xs font-bold ${
+                className={`ml-1.5 px-[7px] py-px rounded-lg text-xs font-bold ${
                   activeTab === type.id
                     ? 'bg-hm-blue text-white'
                     : 'bg-[#F3F4F6] text-hm-text-muted'
@@ -280,7 +280,7 @@ export const DunningTemplateSettings: React.FC = () => {
                 }
                 placeholder="독촉 문자 내용을 입력하세요. [건물명]은 실제 건물명으로 자동 치환됩니다."
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+                className="w-full px-4 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-sm font-[inherit] outline-none resize-y leading-relaxed bg-[#FAFBFC] focus:border-hm-blue focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               />
               <div className="text-xs text-[#B0B5C1]">
                 치환 변수: [건물명], [호수], [임차인명], [월세], [연체일수]
@@ -295,14 +295,14 @@ export const DunningTemplateSettings: React.FC = () => {
         {!currentType?.fixedStages && stages.length > 0 && (
           <button
             onClick={addStage}
-            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-hm-bg-slate text-hm-blue font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
+            className="px-5 py-2.5 rounded-lg border-[1.5px] border-dashed border-blue-200 bg-hm-bg-slate text-hm-blue font-bold text-sm cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
           >
             + 단계 추가
           </button>
         )}
         <button
           onClick={handleSave}
-          className={`px-7 py-2.5 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 ${
+          className={`px-7 py-2.5 rounded-lg border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 ${
             saved
               ? 'bg-hm-success'
               : 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-md'
@@ -312,7 +312,7 @@ export const DunningTemplateSettings: React.FC = () => {
         </button>
         <button
           onClick={handleReset}
-          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-muted font-bold text-sm cursor-pointer font-[inherit] hover:border-hm-text-muted transition-colors"
+          className="px-5 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-muted font-bold text-sm cursor-pointer font-[inherit] hover:border-hm-text-muted transition-colors"
         >
           기본값 초기화
         </button>

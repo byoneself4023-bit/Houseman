@@ -190,7 +190,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           <div className="text-xs font-bold text-[#D97706] tracking-wider mb-2.5">📭 공실 현황</div>
           <div className="flex flex-col gap-2">
             {filteredVacancies.map((v, i) => (
-              <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#FFFBEB] rounded-[10px] border border-[#FDE68A]">
+              <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#FFFBEB] rounded-lg border border-[#FDE68A]">
                 <div>
                   <span className="text-sm font-bold text-hm-text">{v.room}호</span>
                   <span className="text-xs font-semibold ml-2 px-1.5 py-0.5 rounded bg-white border border-hm-input-border">{v.type}</span>
@@ -266,7 +266,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                 <div className="text-xs text-hm-text-sub leading-relaxed mb-2.5">{a.detail || a.desc}</div>
                 {/* Timeline */}
                 {a.steps && a.steps.length > 0 && (
-                  <div className="p-3 bg-white rounded-[10px] border border-hm-border">
+                  <div className="p-3 bg-white rounded-lg border border-hm-border">
                     <div className="text-xs font-bold text-hm-text-muted mb-2">처리 과정</div>
                     {a.steps.map((step: Record<string, any>, si: number) => (
                       <div key={si} className={`flex gap-3 ${si < a.steps.length - 1 ? 'mb-2 pb-2 border-b border-[#F0F2F5]' : ''}`}>
@@ -361,7 +361,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
               </div>
             )}
             {bldgRecords.length > 0 ? (
-              <div className="max-h-[280px] overflow-y-auto border border-hm-border rounded-[10px]">
+              <div className="max-h-[280px] overflow-y-auto border border-hm-border rounded-lg">
                 {bldgRecords.map((rec, i) => (
                   <div key={i} onClick={() => setExpandedPatrol(expandedPatrol === i ? null : i)}
                     className={`px-4 py-2.5 cursor-pointer transition-colors ${i < bldgRecords.length - 1 ? 'border-b border-[#F0F2F5]' : ''} ${rec.status === "이상발견" ? 'bg-hm-danger-bg hover:bg-[#FEE2E2]' : 'bg-white hover:bg-hm-bg-hover'}`}>
@@ -431,7 +431,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         </Card>
       )}
       {/* Footer */}
-      <div className="mt-6 p-4 text-center rounded-[10px] bg-hm-bg-hover border border-hm-border">
+      <div className="mt-6 p-4 text-center rounded-lg bg-hm-bg-hover border border-hm-border">
         <div className="text-xs text-hm-text-muted">문의사항은 관리팀으로 연락해주세요</div>
         <div className="text-sm font-bold text-hm-text mt-1">📞 02-1234-5678 · 하우스맨 관리팀</div>
       </div>

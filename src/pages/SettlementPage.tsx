@@ -670,7 +670,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
             </div>
             <div className="flex flex-col gap-3">
               {bs.moveOutSettlements.map((mt: any, i: number) => (
-                <div key={i} className="p-3.5 px-4 rounded-[10px] bg-hm-blue-bg border border-[#BFDBFE]">
+                <div key={i} className="p-3.5 px-4 rounded-lg bg-hm-blue-bg border border-[#BFDBFE]">
                   <div className="flex justify-between items-center mb-2.5 pb-2 border-b border-[#BFDBFE]">
                     <div>
                       <span className="font-bold text-sm">{mt.room}호</span>
@@ -770,7 +770,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
 
       {/* 월 선택기 + 건물 필터 */}
       <div className="flex flex-wrap gap-3 mb-5 items-center">
-        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-none text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
           <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-none text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
@@ -836,10 +836,10 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   <span className={`text-sm font-bold ${isToday ? 'text-hm-blue-dark' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>
                     {m}월 {dayNum}일 ({weekday})
                   </span>
-                  {isToday && <span className="text-xs px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>TODAY</span>}
-                  {!isPast && !isToday && isUrgent && <span className="text-xs px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, #F59E0B, #EF4444)" }}>D-{items[0].daysUntil}</span>}
-                  {!isPast && !isToday && !isUrgent && items[0].isSoon && <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-hm-blue-bg text-hm-blue-dark font-bold">D-{items[0].daysUntil}</span>}
-                  {isPast && <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-[#F3F4F6] text-[#9CA3AF] font-semibold">완료</span>}
+                  {isToday && <span className="text-xs px-2.5 py-0.5 rounded-lg text-white font-bold" style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>TODAY</span>}
+                  {!isPast && !isToday && isUrgent && <span className="text-xs px-2.5 py-0.5 rounded-lg text-white font-bold" style={{ background: "linear-gradient(135deg, #F59E0B, #EF4444)" }}>D-{items[0].daysUntil}</span>}
+                  {!isPast && !isToday && !isUrgent && items[0].isSoon && <span className="text-xs px-2.5 py-0.5 rounded-lg bg-hm-blue-bg text-hm-blue-dark font-bold">D-{items[0].daysUntil}</span>}
+                  {isPast && <span className="text-xs px-2.5 py-0.5 rounded-lg bg-[#F3F4F6] text-[#9CA3AF] font-semibold">완료</span>}
                   <span className={`ml-auto text-xs font-bold ${isPast ? 'text-[#9CA3AF]' : 'text-gray-700'}`}>{items.length}건</span>
                 </div>
 

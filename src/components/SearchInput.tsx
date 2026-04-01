@@ -19,7 +19,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full py-2.5 pl-9 pr-3.5 rounded-[10px] border-[1.5px] border-hm-input-border text-sm font-[inherit] bg-hm-bg-slate outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+      className="w-full py-2.5 pl-9 pr-3.5 rounded-lg border-[1.5px] border-hm-input-border text-sm font-[inherit] bg-hm-bg-slate outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
     />
     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base text-hm-text-muted pointer-events-none">
       {"\uD83D\uDD0D"}

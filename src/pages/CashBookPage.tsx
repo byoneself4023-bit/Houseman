@@ -146,7 +146,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
 
       {/* 월 선택기 + 필터 */}
       <div className="flex flex-wrap gap-3 mb-5 items-center">
-        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
           <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
@@ -263,7 +263,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
                   <div className="flex-1 h-px bg-hm-border" />
                   <span className="text-xs font-bold text-gray-700">{fmt(dayTotal)}원</span>
                   {pendingCount > 0 && (
-                    <span className="text-xs px-2.5 py-0.5 rounded-[10px] bg-[#FEF3C7] text-[#92400E] font-bold">대기 {pendingCount}</span>
+                    <span className="text-xs px-2.5 py-0.5 rounded-lg bg-[#FEF3C7] text-[#92400E] font-bold">대기 {pendingCount}</span>
                   )}
                 </div>
 
@@ -320,7 +320,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
 
                         {/* 하단: 상태 + 보냄 시각 + 액션 버튼 */}
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs px-3 py-[3px] rounded-[10px] font-bold"
+                          <span className="text-xs px-3 py-[3px] rounded-lg font-bold"
                             style={{ background: statusStyle.bg, color: statusStyle.color }}>
                             {statusStyle.label}
                           </span>

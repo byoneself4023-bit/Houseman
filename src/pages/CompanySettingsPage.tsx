@@ -295,7 +295,7 @@ export const CompanySettingsPage = () => {
       <div className="flex justify-end gap-3">
         <button
           onClick={handleSave}
-          className={`px-10 py-3 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.35)] ${saved ? 'bg-green-600' : 'bg-hm-blue-dark'}`}
+          className={`px-10 py-3 rounded-lg border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-all duration-200 shadow-[0_2px_8px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.35)] ${saved ? 'bg-green-600' : 'bg-hm-blue-dark'}`}
         >
           {saved ? "저장 완료!" : "저장"}
         </button>

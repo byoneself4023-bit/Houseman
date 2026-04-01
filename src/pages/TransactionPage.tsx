@@ -330,7 +330,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
           {/* 지정 입금자명 관리 */}
           {showDepositNames && (
-            <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#F5F3FF] border border-[#E9D5FF]">
+            <div className="mb-4 px-4 py-3 rounded-lg bg-[#F5F3FF] border border-[#E9D5FF]">
               <div className="text-xs font-bold text-[#7C3AED] mb-2.5">지정 입금자명 관리</div>
               <div className="text-xs text-hm-text-muted mb-2.5">건물+호실별로 지정 입금자명을 등록하면 해당 이름으로 입금 시 100% 자동매칭됩니다.</div>
               {/* 등록된 목록 */}
@@ -391,7 +391,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               const { bankTx, score, tenant, reason, saveName, candidates } = m;
               const isManual = manualAssign === bankTx.id;
               return (
-                <div key={bankTx.id} className={`px-4 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                <div key={bankTx.id} className={`px-4 py-3 rounded-lg border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
                   {/* 뱅크다 거래 정보 */}
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">

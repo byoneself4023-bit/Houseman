@@ -98,7 +98,7 @@ export const PayrollPage = () => {
 
       {/* 월 선택기 */}
       <div className="flex flex-wrap gap-3 mb-5 items-center">
-        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-[10px] border border-hm-border">
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-hm-border">
           <button onClick={() => changeMonth(-1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">◀</button>
           <span className="text-base font-bold text-hm-text min-w-[110px] text-center">{monthLabel}</span>
           <button onClick={() => changeMonth(1)} className="border-none bg-transparent text-base cursor-pointer text-hm-text-sub px-1.5 py-0.5 hover:text-hm-text transition-colors">▶</button>
@@ -186,7 +186,7 @@ export const PayrollPage = () => {
                     <div className="flex items-center gap-1.5">
                       <span className={`text-base font-bold ${isPaid ? "text-gray-500" : "text-hm-text"}`}>{staff.name}</span>
                       <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-hm-text-sub font-semibold">{staff.role}</span>
-                      {isPaid && <span className="text-xs px-2 py-0.5 rounded-[10px] bg-hm-success-bg text-hm-success font-bold">지급완료</span>}
+                      {isPaid && <span className="text-xs px-2 py-0.5 rounded-lg bg-hm-success-bg text-hm-success font-bold">지급완료</span>}
                     </div>
                     {isPaid && rec.paidAt && <div className="text-xs text-hm-success mt-0.5">{rec.paidAt}</div>}
                   </div>

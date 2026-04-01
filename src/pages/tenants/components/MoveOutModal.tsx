@@ -252,7 +252,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
         {hasAnyPhotos && (
           <div className="max-w-[720px] mb-3">
             <button onClick={() => setMoveoutCompare({ building: t.building, room: t.room, moveInCheckPhotos, moveOutPhotos })}
-              className="w-full p-3.5 rounded-[10px] border-2 border-[#6366F1] text-[#6366F1] text-sm font-bold cursor-pointer font-[inherit] flex items-center justify-center gap-3 hover:opacity-90 transition-opacity"
+              className="w-full p-3.5 rounded-lg border-2 border-[#6366F1] text-[#6366F1] text-sm font-bold cursor-pointer font-[inherit] flex items-center justify-center gap-3 hover:opacity-90 transition-opacity"
               style={{ background: "linear-gradient(90deg, #EEF2FF, #FAF5FF)" }}>
               🔍 입퇴실 사진 비교 (입주 {moveInCheckPhotos.length}장 / 퇴실 {moveOutPhotos.length}장)
             </button>
@@ -370,7 +370,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                 {elevatorFee && <span className="ml-auto text-sm font-bold text-hm-danger">{fmt(100000)}원</span>}
               </label>
               <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
-              <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
+              <div className={`rounded-lg px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
                 style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "var(--color-hm-danger-border)"}` }}>
                 <div className="flex justify-between items-center">
                   <div>
@@ -389,7 +389,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {showProRata && <div className="text-xs text-hm-text-muted mb-1">기산일: {startDay}일 · 일할기준: {daysInMonth}일 · 사용일수: {usedDays}일</div>}
 
               {/* 반환 항목 */}
-              <div className="bg-[#F0FDF4] rounded-[10px] px-4 py-2.5 mb-2.5 border border-[#BBF7D0]">
+              <div className="bg-[#F0FDF4] rounded-lg px-4 py-2.5 mb-2.5 border border-[#BBF7D0]">
                 <div className="text-xs font-bold text-hm-success mb-1">반환 항목</div>
                 <SRow label={depositLabel} value={t.deposit} color="var(--color-hm-success)" bold />
                 {netRent < 0 && <SRow label="월세 환불" sub={`${daysInMonth - usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={-netRent} color="var(--color-hm-success)" />}
@@ -403,7 +403,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               </div>
 
               {/* 공제 항목 */}
-              <div className="bg-hm-danger-bg rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-danger-border">
+              <div className="bg-hm-danger-bg rounded-lg px-4 py-2.5 mb-2.5 border border-hm-danger-border">
                 <div className="text-xs font-bold text-hm-danger mb-1">공제 항목</div>
                 {netRent > 0 && <SRow label="월세" sub={`${usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={netRent} color="var(--color-hm-danger)" />}
                 {netMgmt > 0 && <SRow label="관리비" sub={`${usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={netMgmt} color="var(--color-hm-danger)" />}
@@ -439,7 +439,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               </div>
 
               {/* 최종 정산 */}
-              <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
+              <div className={`rounded-lg px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
                 style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "var(--color-hm-danger-border)"}` }}>
                 <div className="flex justify-between items-center">
                   <span className={`text-sm font-bold ${settlement >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
@@ -473,7 +473,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                     type="number" inputMode="numeric"
                     value={meterElecReading} onChange={e => setMeterElecReading(e.target.value)}
                     placeholder="0"
-                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-bold !text-center !border-[#FBBF24] !border-2 !rounded-[10px] !bg-[#FFFBEB]`}
+                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-bold !text-center !border-[#FBBF24] !border-2 !rounded-lg !bg-[#FFFBEB]`}
                   />
                   <div className="text-xs text-hm-text-muted mt-[3px]">kWh</div>
                 </div>
@@ -484,7 +484,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                     type="number" inputMode="numeric"
                     value={meterGasReading} onChange={e => setMeterGasReading(e.target.value)}
                     placeholder="0"
-                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-bold !text-center !border-[#60A5FA] !border-2 !rounded-[10px] !bg-hm-blue-bg`}
+                    className={`${inputClassName} !w-full !px-3 !py-3.5 !text-xl !font-bold !text-center !border-[#60A5FA] !border-2 !rounded-lg !bg-hm-blue-bg`}
                   />
                   <div className="text-xs text-hm-text-muted mt-[3px]">m3</div>
                 </div>
@@ -494,7 +494,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
           {/* 전기/가스 금액 입력 */}
           {showManualInputs && (
-            <div className="mt-3 px-4 py-3 bg-[#FFFBEB] rounded-[10px] border-[1.5px] border-[#FDE68A]">
+            <div className="mt-3 px-4 py-3 bg-[#FFFBEB] rounded-lg border-[1.5px] border-[#FDE68A]">
               <div className="text-xs font-bold text-hm-warning mb-2">⚡🔥 전기 / 가스 청구금액</div>
               {(meterPhotos.electric.length > 0 || meterPhotos.gas.length > 0) && (
                 <div className="no-print mb-2.5 p-2 bg-white rounded-lg border border-[#FDE68A]">
@@ -623,13 +623,13 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           {/* Buttons */}
           <div className="no-print flex gap-2">
             <button onClick={() => { setActionMode(null); setSelectedTenant(null); }}
-              className="flex-1 py-[13px] rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+              className="flex-1 py-[13px] rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
             <button onClick={() => { window.print(); }}
-              className="flex-1 py-[13px] rounded-[10px] border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🖨 프린트</button>
+              className="flex-1 py-[13px] rounded-lg border-[1.5px] border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🖨 프린트</button>
             <button
               disabled={!hasMoveOutPhotos}
               onClick={() => { if (hasMoveOutPhotos) setShowMoveoutConfirmModal(true); }}
-              className={`flex-[2] py-[13px] rounded-[10px] border-none font-bold text-sm font-[inherit] transition-opacity ${hasMoveOutPhotos ? 'bg-hm-danger text-white cursor-pointer hover:opacity-90' : 'bg-hm-input-border text-hm-text-muted cursor-not-allowed opacity-60'}`}
+              className={`flex-[2] py-[13px] rounded-lg border-none font-bold text-sm font-[inherit] transition-opacity ${hasMoveOutPhotos ? 'bg-hm-danger text-white cursor-pointer hover:opacity-90' : 'bg-hm-input-border text-hm-text-muted cursor-not-allowed opacity-60'}`}
             >{hasMoveOutPhotos ? "🚪 퇴실 확정" : "📷 퇴실사진 등록 필요"}</button>
           </div>
         </Card>
@@ -664,9 +664,9 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setActionMode(null); setSelectedTenant(null); }}
-              className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+              className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
             <button onClick={doAction}
-              className="flex-[2] py-3 rounded-[10px] border-none bg-hm-success text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📦 입주 확정</button>
+              className="flex-[2] py-3 rounded-lg border-none bg-hm-success text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📦 입주 확정</button>
           </div>
         </Card>
       )}
@@ -674,7 +674,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
       {actionMode === "renew" && (
         <Card>
           <div className="text-base font-bold text-hm-blue mb-4 flex items-center gap-2">📝 연장계약 <span className="text-xs font-medium text-hm-text-muted">{t.building} {t.room}호 {t.name}</span></div>
-          <div className="px-4 py-3 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
+          <div className="px-4 py-3 bg-hm-bg-slate rounded-lg border border-hm-border mb-4">
             <div className="text-xs font-bold text-hm-text-muted mb-2">현재 계약</div>
             <div className="flex gap-5 text-xs flex-wrap">
               <div><span className="text-hm-text-muted">월세</span> <span className="font-bold">{fmt(t.rent)}원</span></div>
@@ -731,9 +731,9 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
           </div>
           <div className="flex gap-2">
             <button onClick={() => { setActionMode(null); setSelectedTenant(null); setRenewFiles([]); }}
-              className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+              className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
             <button onClick={doAction}
-              className="flex-[2] py-3 rounded-[10px] border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📝 연장계약 등록</button>
+              className="flex-[2] py-3 rounded-lg border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">📝 연장계약 등록</button>
           </div>
         </Card>
       )}

@@ -50,7 +50,7 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
       </div>
 
       {showAddRoom && (
-        <div className="px-4 py-3.5 bg-[#F0F4FF] rounded-[10px] border-[1.5px] border-blue-200 mb-4">
+        <div className="px-4 py-3.5 bg-[#F0F4FF] rounded-lg border-[1.5px] border-blue-200 mb-4">
           <div className="text-xs font-bold text-hm-blue-dark mb-2.5">새 호실 추가</div>
           <div className="flex gap-2 items-end">
             <div className="flex-1">

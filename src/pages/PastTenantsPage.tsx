@@ -237,7 +237,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
               {/* 최종 정산 요약 */}
               {hasSettlement && (
-                <div className={`rounded-[10px] px-[18px] py-3.5 mb-4 border-2 ${(r.finalSettlement! >= 0) ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                <div className={`rounded-lg px-[18px] py-3.5 mb-4 border-2 ${(r.finalSettlement! >= 0) ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
                   <div className="flex justify-between items-center">
                     <span className={`text-sm font-bold ${(r.finalSettlement! >= 0) ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{(r.finalSettlement! >= 0) ? "반환금액" : "추가청구"}</span>
                     <span className={`text-2xl font-bold ${(r.finalSettlement! >= 0) ? 'text-hm-success' : 'text-hm-danger'}`}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span className="text-xs">원</span></span>
@@ -412,7 +412,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     <div><div className="text-xs text-hm-text-muted mb-1">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{r.phone}</div></div>
                   </div>
                   <div className="text-xs font-bold text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
-                  <div className="bg-[#F0FDF4] rounded-[10px] px-[18px] py-3.5 border-2 border-hm-success-border">
+                  <div className="bg-[#F0FDF4] rounded-lg px-[18px] py-3.5 border-2 border-hm-success-border">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-[#065F46]">반환금액 (보증금)</span>
                       <span className="text-2xl font-bold text-hm-success">{fmt(r.deposit)}<span className="text-xs">원</span></span>
@@ -504,7 +504,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     <div className="text-xs text-hm-text-muted mb-1">기산일: {r.startDay}일 · 월 일수: {r.daysInMonth}일 · 당월 사용: {r.usedDays}일</div>
 
                     {/* 반환 */}
-                    <div className="bg-[#F0FDF4] rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-success-border">
+                    <div className="bg-[#F0FDF4] rounded-lg px-4 py-2.5 mb-2.5 border border-hm-success-border">
                       <div className="text-xs font-bold text-hm-success mb-1">반환 항목</div>
                       <SRow label={depositLabel} value={r.deposit} color="var(--color-hm-success)" bold />
                       {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="var(--color-hm-success)" />}
@@ -518,7 +518,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     </div>
 
                     {/* 공제 */}
-                    <div className="bg-hm-danger-bg rounded-[10px] px-4 py-2.5 mb-2.5 border border-hm-danger-border">
+                    <div className="bg-hm-danger-bg rounded-lg px-4 py-2.5 mb-2.5 border border-hm-danger-border">
                       <div className="text-xs font-bold text-hm-danger mb-1">공제 항목</div>
                       {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="var(--color-hm-danger)" />}
                       {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="var(--color-hm-danger)" />}
@@ -548,7 +548,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     </div>
 
                     {/* 최종 정산 */}
-                    <div className={`rounded-[10px] px-[18px] py-3.5 border-2 ${r.finalSettlement! >= 0 ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
+                    <div className={`rounded-lg px-[18px] py-3.5 border-2 ${r.finalSettlement! >= 0 ? 'bg-[#F0FDF4] border-hm-success-border' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
                       <div className="flex justify-between items-center">
                         <span className={`text-sm font-bold ${r.finalSettlement! >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{r.finalSettlement! >= 0 ? "반환금액" : "추가청구"}</span>
                         <span className={`text-2xl font-bold ${r.finalSettlement! >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>{r.finalSettlement! < 0 ? `-${fmt(Math.abs(r.finalSettlement!))}` : fmt(r.finalSettlement!)}<span className="text-xs">원</span></span>

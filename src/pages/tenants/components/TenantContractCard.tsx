@@ -63,7 +63,7 @@ export const TenantContractCard: React.FC<TenantContractCardProps> = ({
           {/* Left */}
           <div>
             <div className="text-xs font-bold text-hm-danger mb-2 pb-1.5 border-b-2 border-hm-danger-border">⚠️ 필수 입력</div>
-            <div className="grid grid-cols-3 gap-2 mb-3 p-2.5 bg-hm-danger-bg rounded-[10px] border-[1.5px] border-hm-danger-border">
+            <div className="grid grid-cols-3 gap-2 mb-3 p-2.5 bg-hm-danger-bg rounded-lg border-[1.5px] border-hm-danger-border">
               <div><div className="text-xs text-hm-danger font-bold mb-1">입주자명 <span className="text-hm-danger">*</span></div><input id="pc-name" placeholder="이름 입력" className={inputClassName} style={{ padding: "7px 10px", fontSize: 12, borderColor: "var(--color-hm-danger-border)" }} /></div>
               <div><div className="text-xs text-hm-danger font-bold mb-1">연락처1 <span className="text-hm-danger">*</span></div><input id="pc-phone" placeholder="010-0000-0000" className={inputClassName} style={{ padding: "7px 10px", fontSize: 12, borderColor: "var(--color-hm-danger-border)" }} /></div>
               <div><div className="text-xs text-hm-danger font-bold mb-1">주민등록번호 <span className="text-hm-danger">*</span></div><input id="pc-ssn" placeholder="000000-0000000" className={`${inputClassName} font-mono`} style={{ padding: "7px 10px", fontSize: 12, borderColor: "var(--color-hm-danger-border)" }} /></div>

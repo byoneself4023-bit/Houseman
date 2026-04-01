@@ -81,7 +81,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
 
           {/* 메시지 편집 영역 */}
           <textarea value={sendMsg} onChange={e => setSendMsg(e.target.value)}
-            className="w-full min-h-[260px] p-3.5 rounded-[10px] border-[1.5px] border-hm-input-border text-[12.5px] font-[inherit] leading-[1.8] text-hm-text resize-y box-border bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+            className="w-full min-h-[260px] p-3.5 rounded-lg border-[1.5px] border-hm-input-border text-[12.5px] font-[inherit] leading-[1.8] text-hm-text resize-y box-border bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
           <div className="text-xs text-hm-text-muted mt-1 text-right">
             전송 전 내용을 자유롭게 수정할 수 있습니다
           </div>
@@ -91,17 +91,17 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
         <div className="px-6 pt-3.5 pb-[18px] border-t border-[#F0F2F5] flex flex-col gap-2">
           <div className="flex gap-2">
             <button onClick={() => { handleSendSMS(evt, sendMsg); setPendingSendEvt(null); }}
-              className="flex-1 py-[13px] px-4 rounded-[10px] border-none text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
+              className="flex-1 py-[13px] px-4 rounded-lg border-none text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
               style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>
               💬 문자(SMS) 전송
             </button>
             <button onClick={() => { handleSendKakao(evt, sendMsg); setPendingSendEvt(null); }}
-              className="flex-1 py-[13px] px-4 rounded-[10px] border-none bg-[#FEE500] text-[#3C1E1E] text-sm font-bold cursor-pointer font-[inherit] hover:bg-[#EDD600] transition-colors">
+              className="flex-1 py-[13px] px-4 rounded-lg border-none bg-[#FEE500] text-[#3C1E1E] text-sm font-bold cursor-pointer font-[inherit] hover:bg-[#EDD600] transition-colors">
               💛 카카오톡 복사
             </button>
           </div>
           <button onClick={() => setPendingSendEvt(null)}
-            className="w-full py-2.5 px-4 rounded-[10px] border border-hm-input-border bg-white text-hm-text-muted text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+            className="w-full py-2.5 px-4 rounded-lg border border-hm-input-border bg-white text-hm-text-muted text-xs font-semibold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             나중에 전송
           </button>
         </div>

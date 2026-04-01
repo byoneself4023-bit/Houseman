@@ -28,7 +28,7 @@ export const Table = <T extends Record<string, any>>({
   onRowClick,
   groupBy,
 }: TableProps<T>): React.ReactElement => (
-  <div className="overflow-x-auto rounded-[10px] border border-hm-border">
+  <div className="overflow-x-auto rounded-lg border border-hm-border">
     <table className="w-full border-collapse text-xs table-fixed">
       <thead>
         <tr className="bg-hm-bg-muted">

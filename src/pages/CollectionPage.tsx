@@ -215,7 +215,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
               </div>
               <div onClick={() => setHistoryTarget(null)} className="cursor-pointer text-lg text-hm-text-muted px-2 py-1 hover:opacity-70 transition-opacity">✕</div>
             </div>
-            <div className="flex gap-3 mb-4 px-4 py-3 bg-hm-bg-slate rounded-[10px]">
+            <div className="flex gap-3 mb-4 px-4 py-3 bg-hm-bg-slate rounded-lg">
               <div className="text-center flex-1">
                 <div className="text-xs text-hm-text-muted">보증금</div>
                 <div className="text-sm font-bold">{fmt(historyTarget.deposit)}</div>
@@ -250,7 +250,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
                 </div>
               ))}
             </div>
-            <button onClick={() => setHistoryTarget(null)} className="mt-4 py-3 rounded-[10px] border-none bg-hm-text text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">닫기</button>
+            <button onClick={() => setHistoryTarget(null)} className="mt-4 py-3 rounded-lg border-none bg-hm-text text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">닫기</button>
           </div>
         </div>
       )}
@@ -264,7 +264,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           { key: "settings", label: "⚙ 독촉 설정" },
         ].map(tab => (
           <button key={tab.key} onClick={() => setViewMode(tab.key)}
-            className={`px-5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] text-sm transition-all
+            className={`px-5 py-2.5 rounded-lg cursor-pointer font-[inherit] text-sm transition-all
               ${viewMode === tab.key
                 ? 'border-2 border-hm-blue bg-hm-blue-bg text-hm-blue-dark font-bold'
                 : 'border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-semibold hover:bg-hm-bg-hover'}`}>
@@ -293,7 +293,7 @@ export const CollectionPage = ({ myBuildings = [], activeTenants = [], roomBalan
           <div className="mb-3">
             <input value={buildingSearch} onChange={e => setBuildingSearch(e.target.value)}
               placeholder="건물명 검색 (초성 가능)..."
-              className="px-4 py-2.5 rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
+              className="px-4 py-2.5 rounded-lg border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors"
               style={{ width: isMobile ? "100%" : 280 }} />
           </div>
 

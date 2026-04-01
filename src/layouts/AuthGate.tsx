@@ -128,7 +128,7 @@ export function AuthGate() {
         onClick={handleLogin}
         disabled={!loginPhone || !loginPw || isLoading}
         className={cn(
-          'w-full h-12 text-base font-bold rounded-[10px] transition-all duration-200',
+          'w-full h-12 text-base font-bold rounded-lg transition-all duration-200',
           loginPhone && loginPw && !isLoading
             ? 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-lg hover:brightness-110'
             : '',

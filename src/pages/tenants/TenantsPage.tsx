@@ -584,7 +584,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               />
               <div className="mt-4 flex justify-end">
                 <button onClick={() => setPhotoModalTenant(null)}
-                  className={`py-2.5 px-7 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${photos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-blue hover:bg-hm-blue-dark"}`}>
+                  className={`py-2.5 px-7 rounded-lg border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${photos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-blue hover:bg-hm-blue-dark"}`}>
                   {photos.length > 0 ? "✅ 완료" : "닫기"}
                 </button>
               </div>
@@ -622,7 +622,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               </div>
               <div className="mt-4 flex justify-end">
                 <button onClick={() => setCheckPhotoView(null)}
-                  className="py-2.5 px-7 rounded-[10px] border-none bg-hm-warning text-white font-bold text-sm cursor-pointer font-[inherit] hover:brightness-110 transition">
+                  className="py-2.5 px-7 rounded-lg border-none bg-hm-warning text-white font-bold text-sm cursor-pointer font-[inherit] hover:brightness-110 transition">
                   닫기
                 </button>
               </div>
@@ -666,7 +666,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
               />
               <div className="mt-4 flex justify-end">
                 <button onClick={() => setCheckPhotoEdit(null)}
-                  className={`py-2.5 px-7 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${cpPhotos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-warning hover:brightness-110"}`}>
+                  className={`py-2.5 px-7 rounded-lg border-none text-white font-bold text-sm cursor-pointer font-[inherit] transition-colors ${cpPhotos.length > 0 ? "bg-hm-success hover:bg-emerald-700" : "bg-hm-warning hover:brightness-110"}`}>
                   {cpPhotos.length > 0 ? "✅ 완료" : "닫기"}
                 </button>
               </div>
@@ -691,7 +691,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
             </div>
             <div className="flex flex-col gap-2">
               {billingPopup.bills.map((bill: any, i: number) => (
-                <div key={i} className={`py-3 px-4 rounded-[10px] border ${i === 0 ? "bg-amber-50 border-amber-200" : "bg-hm-bg-slate border-hm-border"}`}>
+                <div key={i} className={`py-3 px-4 rounded-lg border ${i === 0 ? "bg-amber-50 border-amber-200" : "bg-hm-bg-slate border-hm-border"}`}>
                   <div className="flex justify-between items-center mb-1.5">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-bold text-hm-text">{bill.date}</span>

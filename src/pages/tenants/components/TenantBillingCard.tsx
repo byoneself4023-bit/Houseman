@@ -154,7 +154,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
       {/* 가상퇴실계산 + 청구 이력 누적 */}
       <div className="mb-3">
         <button onClick={() => setBillOpen(!billOpen)}
-          className={`w-full px-4 py-2.5 rounded-[10px] cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
+          className={`w-full px-4 py-2.5 rounded-lg cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
           style={{ border: billOpen ? "2px solid #F59E0B" : "1.5px solid var(--color-hm-border)" }}>
           <div className="flex items-center gap-2">
             <span className="text-sm">🧾</span>
@@ -169,7 +169,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
           </div>
         </button>
         {billOpen && (
-          <div className="mt-2 px-4 py-3 rounded-[10px] bg-[#FFFBEB]" style={{ border: "1.5px solid #FDE68A" }}>
+          <div className="mt-2 px-4 py-3 rounded-lg bg-[#FFFBEB]" style={{ border: "1.5px solid #FDE68A" }}>
             {/* 누적 요약 */}
             <div className="flex flex-wrap gap-1.5 mb-2.5 pb-2 border-b border-[#FDE68A]">
               <span className="text-xs font-bold text-[#92400E]">누적 청구: {fmt(cumulative.total)}원</span>

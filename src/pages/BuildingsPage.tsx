@@ -353,13 +353,13 @@ export const BuildingsPage = ({
         <SectionTitle sub={subTab === "list" ? `총 ${filteredBuildings.length}개 건물` : "새 건물 정보 입력"}>🏢 건물 · 호실정보</SectionTitle>
         {subTab === "list" && (
           <button onClick={() => setSubTab("register")}
-            className="py-2.5 px-6 rounded-[10px] border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-blue-800 active:scale-[0.98] transition-all">
+            className="py-2.5 px-6 rounded-lg border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 whitespace-nowrap shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-blue-800 active:scale-[0.98] transition-all">
             ➕ 신규 건물 등록
           </button>
         )}
         {subTab === "register" && (
           <button onClick={() => setSubTab("list")}
-            className="py-2.5 px-6 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
+            className="py-2.5 px-6 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-bg-hover active:scale-[0.98] transition-all">
             ← 건물 목록
           </button>
         )}
@@ -643,7 +643,7 @@ export const BuildingsPage = ({
             const done = checks.filter(c => c.done).length;
             const pct = Math.round((done / checks.length) * 100);
             return (
-              <div className="mb-4 py-2.5 px-4 bg-hm-bg-slate rounded-[10px] border border-hm-border">
+              <div className="mb-4 py-2.5 px-4 bg-hm-bg-slate rounded-lg border border-hm-border">
                 <div className="flex justify-between items-center mb-1.5">
                   <span className="text-xs font-bold text-gray-700">등록 진행률</span>
                   <span className={`text-xs font-bold ${pct === 100 ? "text-hm-success" : "text-amber-600"}`}>{done}/{checks.length} ({pct}%)</span>
@@ -683,7 +683,7 @@ export const BuildingsPage = ({
             <SectionHeader icon="🚪" title={`호실 등록 (${regForm.roomList.length}개)`} subtitle="층별 호실 추가 · 상세 정보 입력" open={sec7Open} onToggle={() => setSec7Open(!sec7Open)} />
             {sec7Open && <div>
               {/* Add rooms by floor */}
-              <div className="py-3.5 px-4 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
+              <div className="py-3.5 px-4 bg-hm-bg-slate rounded-lg border border-hm-border mb-4">
                 <div className="text-xs font-bold text-hm-text-sub mb-2.5">층별 호실 추가</div>
                 <div className="flex gap-1.5 items-end">
                   <div className="flex-1">
@@ -726,7 +726,7 @@ export const BuildingsPage = ({
 
                   {/* 일괄 편집 테이블 */}
                   {regForm.roomViewMode === "bulk" ? (
-                    <div className="overflow-x-auto rounded-[10px] border border-gray-200">
+                    <div className="overflow-x-auto rounded-lg border border-gray-200">
                       <table className="w-full border-collapse text-xs">
                         <thead>
                           <tr className="bg-gray-100">
@@ -859,7 +859,7 @@ export const BuildingsPage = ({
                           const disableRoomCustom = () => updateRoom(idx, "roomAcctCustom", null);
                           const updateRoomAcctField = (field, value) => updateRoom(idx, "roomAcctCustom", { ...r.roomAcctCustom, [field]: value });
                           return (
-                            <div className="mt-3.5 py-2.5 px-4 bg-[#FFFBF0] rounded-[10px] border border-amber-200">
+                            <div className="mt-3.5 py-2.5 px-4 bg-[#FFFBF0] rounded-lg border border-amber-200">
                               <div className="flex items-center gap-1.5 mb-2">
                                 <span className="text-xs font-bold text-amber-800">🏦 계좌 정보</span>
                                 <span className="text-xs py-0.5 px-2 rounded font-bold" style={{ background: acctTypeBg[roomBldgType], color: acctTypeColor[roomBldgType] }}>{roomBldgType}</span>
@@ -990,7 +990,7 @@ export const BuildingsPage = ({
                         {(() => {
                           const mgrKeyMap = { internal: "internalMgr", external: "externalMgr", collection: "collectionMgr", contract: "contractMgr", general: "generalMgr" };
                           return (
-                            <div className="mt-3.5 py-2.5 px-4 bg-blue-50 rounded-[10px] border border-blue-200">
+                            <div className="mt-3.5 py-2.5 px-4 bg-blue-50 rounded-lg border border-blue-200">
                               <div className="flex items-center justify-between mb-2">
                                 <div className="text-xs font-bold text-hm-blue-dark">👤 호실 담당자 <span className="text-xs font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
                               </div>
@@ -1024,7 +1024,7 @@ export const BuildingsPage = ({
                 )}
                 </div>
               ) : (
-                <div className="py-[30px] px-5 text-center text-gray-400 bg-[#FAFBFC] rounded-[10px] border-[1.5px] border-dashed border-hm-input-border">
+                <div className="py-[30px] px-5 text-center text-gray-400 bg-[#FAFBFC] rounded-lg border-[1.5px] border-dashed border-hm-input-border">
                   <span className="text-2xl">🚪</span>
                   <div className="text-xs mt-2">위에서 층과 호수 범위를 입력하여 호실을 추가하세요</div>
                 </div>

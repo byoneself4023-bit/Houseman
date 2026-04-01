@@ -745,7 +745,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
             <p className="text-sm text-hm-text-sub leading-[1.7] mb-4">
               통합관리대장 엑셀 파일(.xlsx)을 그대로 올리면 모든 데이터가 자동으로 들어갑니다.
             </p>
-            <div className="bg-hm-bg-slate rounded-[10px] p-4 mb-4">
+            <div className="bg-hm-bg-slate rounded-lg p-4 mb-4">
               <div className="text-xs font-bold mb-2">자동 인식하는 시트:</div>
               <div className="flex gap-2 flex-wrap">
                 {[
@@ -786,7 +786,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
                   { label: "퇴실 기록", count: ledgerResult.pastTenants, icon: "📦" },
                   { label: "호실 관리", count: ledgerResult.rooms, icon: "🚪" },
                 ].map(item => (
-                  <div key={item.label} className="p-4 rounded-[10px] bg-hm-bg-slate text-center">
+                  <div key={item.label} className="p-4 rounded-lg bg-hm-bg-slate text-center">
                     <div className="text-xl mb-1">{item.icon}</div>
                     <div className="text-xl font-bold text-hm-text">{item.count}</div>
                     <div className="text-xs text-hm-text-muted">{item.label}</div>

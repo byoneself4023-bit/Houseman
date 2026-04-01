@@ -64,7 +64,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
       key={m.id}
       onClick={() => navigateTo(m.id)}
       className={cn(
-        'flex items-center gap-3 rounded-[9px] mb-1 cursor-pointer transition-all duration-150',
+        'flex items-center gap-3 rounded-lg mb-1 cursor-pointer transition-all duration-150',
         sidebarOpen ? 'px-3 py-2.5' : 'px-2 py-2.5 justify-center',
         active
           ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
@@ -80,7 +80,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
         </span>
       )}
       {menuBadges[m.id] > 0 && (
-        <span className="ml-auto min-w-[18px] h-[18px] rounded-[9px] bg-[#EF4444] text-white text-xs font-bold flex items-center justify-center px-[5px] shrink-0">
+        <span className="ml-auto min-w-[18px] h-[18px] rounded-lg bg-[#EF4444] text-white text-xs font-bold flex items-center justify-center px-[5px] shrink-0">
           {menuBadges[m.id]}
         </span>
       )}
@@ -154,7 +154,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
               key={m.id}
               onClick={() => navigateTo(m.id)}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-[9px] cursor-pointer transition-colors duration-150',
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-150',
                 active
                   ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
                   : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
@@ -168,7 +168,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           <div
             key={m.id}
             onClick={() => navigateTo(m.id)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
           >
             <Globe size={17} className="text-white shrink-0" />
             {sidebarOpen && <span className="text-sm font-bold text-white">{m.label}</span>}

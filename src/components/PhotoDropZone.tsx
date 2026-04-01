@@ -88,7 +88,7 @@ export const PhotoDropZone: React.FC<PhotoDropZoneProps> = ({
           e.currentTarget.style.background = '#FAFBFC';
         }}
         onDrop={onDrop}
-        className={`${count > 0 ? 'p-2.5' : 'px-2.5 py-5'} rounded-[10px] border-2 border-dashed border-gray-300 bg-[#FAFBFC] text-center cursor-pointer transition-all duration-200 min-h-[70px] flex-1`}
+        className={`${count > 0 ? 'p-2.5' : 'px-2.5 py-5'} rounded-lg border-2 border-dashed border-gray-300 bg-[#FAFBFC] text-center cursor-pointer transition-all duration-200 min-h-[70px] flex-1`}
       >
         {count > 0 ? (
           <div

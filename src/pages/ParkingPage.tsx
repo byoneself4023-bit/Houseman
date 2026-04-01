@@ -283,7 +283,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       <div className="mb-4">
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-          className="w-[300px] px-4 py-2.5 rounded-[10px] border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+          className="w-[300px] px-4 py-2.5 rounded-lg border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
       </div>
 
       {/* Stats — search matched buildings */}

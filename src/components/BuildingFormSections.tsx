@@ -620,7 +620,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
       {isOpen && (
         <div>
           {/* 관리수수료 (purple card) */}
-          <div className="p-3 px-4 bg-violet-50 rounded-[10px] border border-violet-200 mb-4">
+          <div className="p-3 px-4 bg-violet-50 rounded-lg border border-violet-200 mb-4">
             <div className="text-xs font-bold text-violet-600 mb-2.5">관리수수료</div>
             {corporateOnly ? (
               <div className="max-w-[300px]">
@@ -647,7 +647,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           </div>
 
           {/* 정산 일정 (green card) */}
-          <div className="p-3 px-4 bg-hm-success-bg rounded-[10px] border border-emerald-200 mb-4">
+          <div className="p-3 px-4 bg-hm-success-bg rounded-lg border border-emerald-200 mb-4">
             <div className="text-xs font-bold text-hm-success mb-2.5">{corporateOnly ? "청구서 발송일" : "정산 일정"}</div>
             {(() => {
               const d1 = parseInt(data.settlementDay1);
@@ -707,7 +707,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 검침 설정 (orange card) — 근생만 */}
           {data.isCommercial && (
-            <div className="p-3 px-4 bg-hm-warning-bg rounded-[10px] border border-orange-200 mb-4">
+            <div className="p-3 px-4 bg-hm-warning-bg rounded-lg border border-orange-200 mb-4">
               <div className="text-xs font-bold text-hm-warning mb-2.5">검침 설정 (사설계량기)</div>
               <div className="grid grid-cols-2 gap-3">
                 {/* 전기 검침일 */}
@@ -759,7 +759,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
           {/* 납부일·청구서 (amber card) — 근생/일반임대 */}
           {(data.isCommercial || data.isLongTermRental) && (
-            <div className="p-3 px-4 bg-amber-50 rounded-[10px] border border-amber-200 mb-4">
+            <div className="p-3 px-4 bg-amber-50 rounded-lg border border-amber-200 mb-4">
               <div className="text-xs font-bold text-amber-600 mb-2.5">납부일·청구서</div>
               <div className="grid grid-cols-2 gap-3">
                 {/* 임대료 납부일 */}
@@ -822,7 +822,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
           )}
 
           {/* 청구 설정 (blue card) */}
-          <div className="p-3 px-4 bg-hm-blue-bg rounded-[10px] border border-blue-200 mb-4">
+          <div className="p-3 px-4 bg-hm-blue-bg rounded-lg border border-blue-200 mb-4">
             <div className="text-xs font-bold text-hm-blue-dark mb-2.5">청구 설정</div>
             <div className="flex flex-wrap gap-3">
               {isRentalOrCommercial && !isMeteredCommercial && !(data.isShortTermRental && !data.isLongTermRental && !data.isCommercial) && (
@@ -944,7 +944,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                 const items = (itemsByType[bType] || allItems).map(item => ({ ...item, field: `${item.field}${suffix}` }));
 
                 return (
-                  <div key={bType} className={isMultiType ? "mb-4 p-3.5 rounded-[10px]" : "mb-4"} style={{ background: isMultiType ? typeBgs[bType] : "transparent", border: isMultiType ? `1.5px solid ${typeColors[bType]}30` : "none" }}>
+                  <div key={bType} className={isMultiType ? "mb-4 p-3.5 rounded-lg" : "mb-4"} style={{ background: isMultiType ? typeBgs[bType] : "transparent", border: isMultiType ? `1.5px solid ${typeColors[bType]}30` : "none" }}>
                     <div className="text-xs font-bold mb-2 pb-1.5" style={{ color: isMultiType ? typeColors[bType] : "#191F28", borderBottom: `1.5px solid ${isMultiType ? typeColors[bType] + "40" : "var(--color-hm-border)"}` }}>
                       📦 {isMultiType ? `${bType} 호실` : ""} 항목별 입금 계좌 지정
                     </div>
@@ -953,7 +953,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                       {items.map(item => {
                         const val = data[item.field] || "";
                         return (
-                          <div key={item.field} className="p-3 px-4 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
+                          <div key={item.field} className="p-3 px-4 rounded-lg transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-xs font-bold" style={{ color: item.color }}>{item.label}</span>
                               {val && <span className="text-xs font-semibold" style={{ color: item.color }}>✓</span>}
@@ -1049,7 +1049,7 @@ export function ContractSpecialTermsSection({ data, onChange, editMode = true, d
           <div className="text-xs text-[#8B95A1] mb-3">건물유형별로 특약사항을 작성하면 해당 유형 호실의 계약서에 자동으로 삽입됩니다. 호실에서는 수정할 수 없습니다.</div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${types.length}, 1fr)`, gap: 12 }}>
             {types.map(t => (
-              <div key={t.field} className="p-3 px-4 rounded-[10px] flex flex-col" style={{ background: t.bg, border: `1.5px solid ${t.border}` }}>
+              <div key={t.field} className="p-3 px-4 rounded-lg flex flex-col" style={{ background: t.bg, border: `1.5px solid ${t.border}` }}>
                 <div className="text-xs font-bold mb-2" style={{ color: t.color }}>{t.label}</div>
                 <FTextarea readOnly={ro} data={data} field={t.field} onChange={onChange} placeholder={`${t.label.slice(2)} 내용을 입력하세요...`} rows={8} />
               </div>

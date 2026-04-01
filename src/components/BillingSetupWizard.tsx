@@ -177,7 +177,7 @@ export default function BillingSetupWizard({ buildingId, buildingName, buildingT
               <div
                 key={opt.value}
                 onClick={() => setSelectedCase(opt.value)}
-                className={`px-4 py-3.5 rounded-[10px] cursor-pointer flex items-center gap-3 transition-all duration-150 ${
+                className={`px-4 py-3.5 rounded-lg cursor-pointer flex items-center gap-3 transition-all duration-150 ${
                   selectedCase === opt.value
                     ? 'border-2 border-[#346aff] bg-[#EBF0FF]'
                     : 'border border-[#E5E5E5] bg-white hover:border-[#346aff]/40'
@@ -304,12 +304,12 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
         <div>
           <div className="text-xs font-bold text-hm-text-muted mb-2">사용 가능</div>
           <div className="flex flex-col gap-2">
-            {available.length === 0 && <div className="text-xs text-[#ccc] p-5 text-center border border-dashed border-[#E5E5E5] rounded-[10px]">모두 선택됨</div>}
+            {available.length === 0 && <div className="text-xs text-[#ccc] p-5 text-center border border-dashed border-[#E5E5E5] rounded-lg">모두 선택됨</div>}
             {available.map(opt => (
               <div
                 key={opt.type}
                 onClick={() => setSelectedComponents(p => [...p, opt.type])}
-                className="px-4 py-3 rounded-[10px] cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-3 select-none hover:border-[#346aff]/40"
+                className="px-4 py-3 rounded-lg cursor-pointer border border-[#E5E5E5] bg-white transition-all duration-150 flex items-center gap-3 select-none hover:border-[#346aff]/40"
               >
                 <span className="text-lg">{opt.icon}</span>
                 <div className="flex-1"><div className="text-xs font-bold">{opt.label}</div><div className="text-xs text-hm-text-muted">{opt.desc}</div></div>
@@ -320,14 +320,14 @@ function VariableFeeBuilder({ selectedComponents, setSelectedComponents, customI
         </div>
         <div>
           <div className="text-xs font-bold text-[#346aff] mb-2">적용 항목 ({selectedComponents.length})</div>
-          <div className={`flex flex-col gap-2 min-h-[120px] rounded-[10px] ${
+          <div className={`flex flex-col gap-2 min-h-[120px] rounded-lg ${
             selectedComponents.length === 0 ? 'p-5 border-2 border-dashed border-gray-300 text-center' : ''
           }`}>
             {selectedComponents.length === 0 && <div className="text-xs text-[#ccc]">왼쪽에서 클릭하세요</div>}
             {selectedComponents.map((type, index) => {
               const opt = VARIABLE_FEE_OPTIONS.find(o => o.type === type);
               return opt ? (
-                <div key={type} className="px-4 py-3 rounded-[10px] border-2 border-[#346aff] bg-[#EBF0FF] transition-all duration-150 flex items-center gap-3 select-none">
+                <div key={type} className="px-4 py-3 rounded-lg border-2 border-[#346aff] bg-[#EBF0FF] transition-all duration-150 flex items-center gap-3 select-none">
                   <div className="flex flex-col gap-0.5">
                     <button
                       onClick={() => moveItem(index, 'up')}
@@ -389,7 +389,7 @@ function LateFeeStep({ enabled, setEnabled, rate, setRate, type, setType, value,
 
       <div
         onClick={() => setEnabled(!enabled)}
-        className={`flex items-center gap-3 p-3.5 rounded-[10px] cursor-pointer mb-4 transition-all duration-150 ${
+        className={`flex items-center gap-3 p-3.5 rounded-lg cursor-pointer mb-4 transition-all duration-150 ${
           enabled ? 'border-2 border-[#346aff] bg-[#EBF0FF]' : 'border border-[#E5E5E5] bg-white hover:border-[#346aff]/40'
         }`}
       >

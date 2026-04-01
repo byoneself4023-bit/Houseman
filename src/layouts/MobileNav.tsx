@@ -50,7 +50,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
                   key={m.id}
                   onClick={() => { navigateTo(m.id); setShowMobileMore(false); }}
                   className={cn(
-                    'py-2.5 px-1 rounded-[10px] text-center cursor-pointer transition-colors',
+                    'py-2.5 px-1 rounded-lg text-center cursor-pointer transition-colors',
                     page === m.id ? 'bg-hm-blue-bg' : 'bg-hm-bg-hover hover:bg-[#F0F2F5]',
                   )}
                 >

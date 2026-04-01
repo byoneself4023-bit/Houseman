@@ -164,7 +164,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
           const currentStep = mSteps.findIndex((s: any) => !s.done);
 
           return (
-            <div key={i} className={`rounded-[10px] overflow-hidden transition-all duration-300 ${allDone ? 'bg-hm-bg-hover border border-gray-300 grayscale opacity-70' : 'bg-white border border-red-200'}`}
+            <div key={i} className={`rounded-lg overflow-hidden transition-all duration-300 ${allDone ? 'bg-hm-bg-hover border border-gray-300 grayscale opacity-70' : 'bg-white border border-red-200'}`}
               onDoubleClick={() => { if (setEvents) openEditEvent(ev); }}>
               {/* 스텝 인디케이터 */}
               <div className={`px-4 py-2.5 flex items-center gap-0 ${allDone ? 'bg-gray-100 border-b border-gray-300' : 'border-b border-red-200'}`}

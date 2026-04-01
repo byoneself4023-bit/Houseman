@@ -158,7 +158,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
       )}
 
       {/* 납기내/납기후 합계 */}
-      <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
+      <div style={{ borderRadius: 8, overflow: 'hidden', marginBottom: 20 }}>
         <div style={{ background: '#346aff', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
             납기내 합계

@@ -400,7 +400,7 @@ www.houseman.co.kr
             <input value={loginPhone} onChange={e => { setLoginPhone(e.target.value); setLoginError(""); }}
               placeholder="010-0000-0000"
               onKeyDown={e => e.key === "Enter" && handleLogin()}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
+              style={{ width: "100%", padding: "12px 16px", borderRadius: 8, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
               onFocus={e => e.target.style.borderColor = "var(--color-hm-blue)"}
               onBlur={e => e.target.style.borderColor = "var(--color-hm-input-border)"} />
           </div>
@@ -410,7 +410,7 @@ www.houseman.co.kr
             <input type="password" value={loginPw} onChange={e => { setLoginPw(e.target.value); setLoginError(""); }}
               placeholder="비밀번호 입력"
               onKeyDown={e => e.key === "Enter" && handleLogin()}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
+              style={{ width: "100%", padding: "12px 16px", borderRadius: 8, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
               onFocus={e => e.target.style.borderColor = "var(--color-hm-blue)"}
               onBlur={e => e.target.style.borderColor = "var(--color-hm-input-border)"} />
           </div>
@@ -422,11 +422,11 @@ www.houseman.co.kr
           )}
 
           <button onClick={handleLogin}
-            style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: loginPhone && loginPw ? "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" : "#D1D5DB", color: "#fff", fontSize: 16, fontWeight: 700, cursor: loginPhone && loginPw ? "pointer" : "default", fontFamily: "inherit", transition: "all 0.2s" }}>
+            style={{ width: "100%", padding: "14px", borderRadius: 8, border: "none", background: loginPhone && loginPw ? "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" : "#D1D5DB", color: "#fff", fontSize: 16, fontWeight: 700, cursor: loginPhone && loginPw ? "pointer" : "default", fontFamily: "inherit", transition: "all 0.2s" }}>
             로그인
           </button>
 
-          <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: 10, background: "var(--color-hm-bg-slate)", border: "1px solid var(--color-hm-border)" }}>
+          <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: 8, background: "var(--color-hm-bg-slate)", border: "1px solid var(--color-hm-border)" }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-hm-text-muted)", marginBottom: 8 }}>테스트 계정</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 12, color: "var(--color-hm-text-sub)" }}>
               {initialStaffMembers.map(s => (
@@ -593,13 +593,13 @@ www.houseman.co.kr
             {role === "owner" ? null : role === "cleaning" ? [{ id: "calendar", icon: "📅", label: "계약/퇴실 일정" }, { id: "patrol", icon: "🚶", label: "순회 관리" }].map(m => {
               const active = page === m.id;
               return <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 9, cursor: "pointer", background: active ? "#2A3352" : "transparent" }}>
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, cursor: "pointer", background: active ? "#2A3352" : "transparent" }}>
                 <span style={{ fontSize: 18 }}>{m.icon}</span>
                 {sidebarOpen && <span style={{ fontSize: 14, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#9CA3B0" }}>{m.label}</span>}
               </div>;
             }) : role === "homepage" ? [{ id: "homepage", icon: "🌐", label: "공실 매물" }].map(m => (
               <div key={m.id} onClick={() => setPage(m.id)}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 9, cursor: "pointer", background: "#2A3352" }}>
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, cursor: "pointer", background: "#2A3352" }}>
                 <span style={{ fontSize: 18 }}>{m.icon}</span>
                 {sidebarOpen && <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{m.label}</span>}
               </div>
@@ -622,7 +622,7 @@ www.houseman.co.kr
                       const active = page === m.id;
                       return (
                         <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
-                          style={{ display: "flex", alignItems: "center", gap: 10, padding: sidebarOpen ? "9px 12px" : "9px 8px", borderRadius: 9, marginBottom: 1, cursor: "pointer", background: active ? "#2A3352" : "transparent", transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center" }}
+                          style={{ display: "flex", alignItems: "center", gap: 10, padding: sidebarOpen ? "9px 12px" : "9px 8px", borderRadius: 8, marginBottom: 1, cursor: "pointer", background: active ? "#2A3352" : "transparent", transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center" }}
                           onMouseEnter={e => !active && (e.currentTarget.style.background = "#22273A")}
                           onMouseLeave={e => !active && (e.currentTarget.style.background = "transparent")}>
                           <span style={{ fontSize: 16, flexShrink: 0 }}>{m.icon}</span>
@@ -641,13 +641,13 @@ www.houseman.co.kr
                   const active = page === m.id;
                   return (
                     <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); }}
-                      style={{ display: "flex", alignItems: "center", gap: 10, padding: sidebarOpen ? "9px 12px" : "9px 8px", borderRadius: 9, marginBottom: 1, cursor: "pointer", background: active ? "#2A3352" : "transparent", transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center" }}
+                      style={{ display: "flex", alignItems: "center", gap: 10, padding: sidebarOpen ? "9px 12px" : "9px 8px", borderRadius: 8, marginBottom: 1, cursor: "pointer", background: active ? "#2A3352" : "transparent", transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center" }}
                       onMouseEnter={e => !active && (e.currentTarget.style.background = "#22273A")}
                       onMouseLeave={e => !active && (e.currentTarget.style.background = "transparent")}>
                       <span style={{ fontSize: 16, flexShrink: 0 }}>{m.icon}</span>
                       {sidebarOpen && <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#fff" : "#9CA3B0", whiteSpace: "nowrap" }}>{m.label}</span>}
                       {menuBadges[m.id] > 0 && (
-                        <span style={{ marginLeft: "auto", minWidth: 18, height: 18, borderRadius: 9, background: "#EF4444", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px", flexShrink: 0 }}>
+                        <span style={{ marginLeft: "auto", minWidth: 18, height: 18, borderRadius: 8, background: "#EF4444", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px", flexShrink: 0 }}>
                           {menuBadges[m.id]}
                         </span>
                       )}
@@ -739,7 +739,7 @@ www.houseman.co.kr
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 4 }}>
                   {menuItems.map(m => (
                     <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); setShowMobileMore(false); }}
-                      style={{ padding: "10px 4px", borderRadius: 10, background: page === m.id ? "var(--color-hm-blue-bg)" : "var(--color-hm-bg-hover)", textAlign: "center", cursor: "pointer" }}>
+                      style={{ padding: "10px 4px", borderRadius: 8, background: page === m.id ? "var(--color-hm-blue-bg)" : "var(--color-hm-bg-hover)", textAlign: "center", cursor: "pointer" }}>
                       <div style={{ fontSize: 20, marginBottom: 2 }}>{m.icon}</div>
                       <div style={{ fontSize: 12, fontWeight: page === m.id ? 700 : 500, color: page === m.id ? "var(--color-hm-blue-dark)" : "var(--color-hm-text-sub)" }}>{m.label}</div>
                     </div>

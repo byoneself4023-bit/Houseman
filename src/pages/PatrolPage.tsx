@@ -191,7 +191,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             </div>
           )}
 
-          <div className="px-4 py-3.5 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
+          <div className="px-4 py-3.5 bg-hm-bg-slate rounded-lg border border-hm-border mb-4">
             <div className="text-xs font-bold text-hm-blue mb-1.5">📝 순회 코멘트</div>
             <div className="text-sm text-hm-text leading-[1.8]">{rec.comment}</div>
           </div>
@@ -294,11 +294,11 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
 
           {/* Save buttons */}
           <button onClick={savePatrolRecord}
-            className="w-full py-3.5 rounded-[10px] border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] mb-2 hover:opacity-90 active:scale-[0.98] transition-all">
+            className="w-full py-3.5 rounded-lg border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] mb-2 hover:opacity-90 active:scale-[0.98] transition-all">
             💾 순회 기록 저장
           </button>
           <button onClick={() => setShowNewForm(false)}
-            className="w-full py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+            className="w-full py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
             취소
           </button>
         </Card>
@@ -345,7 +345,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           </div>
           {/* New patrol button */}
           <button onClick={() => openNewForm(b.building)}
-            className="w-full py-3 rounded-[10px] border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 active:scale-[0.98] transition-all">
+            className="w-full py-3 rounded-lg border-none bg-hm-blue-dark text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 active:scale-[0.98] transition-all">
             + 새 순회 기록
           </button>
         </Card>
@@ -353,7 +353,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
         {/* Report button */}
         <Card className="mb-4">
           <button onClick={() => { alert(`[${b.building}] 순회관리 완료 리포트가 건물주에게 발송되었습니다.`); }}
-            className="w-full py-3 rounded-[10px] border-2 border-[#7C3AED] bg-[#F5F3FF] text-[#7C3AED] font-bold text-sm cursor-pointer font-[inherit] hover:bg-[#EDE9FE] active:scale-[0.98] transition-all">
+            className="w-full py-3 rounded-lg border-2 border-[#7C3AED] bg-[#F5F3FF] text-[#7C3AED] font-bold text-sm cursor-pointer font-[inherit] hover:bg-[#EDE9FE] active:scale-[0.98] transition-all">
             📤 순회관리완료 (건물주 리포트 발송)
           </button>
           <div className="text-xs text-hm-text-muted mt-1.5 text-center">이번 달 순회 기록을 정리하여 건물주 대시보드에 공유합니다</div>
@@ -366,7 +366,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             <div className="flex flex-col gap-2">
               {records.map((rec, i) => (
                 <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
                   <div className="flex items-center gap-3">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                     <div>

@@ -219,7 +219,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     return (
       <div>
         <div className="flex items-center gap-3 mb-5">
-          <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <button onClick={() => { setSelectedAS(null); setShowStatusModal(null); setShowApprovalForm(false); }} className="w-10 h-10 rounded-lg border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <h1 className="text-lg font-bold text-hm-text">AS #{as_.id}</h1>
@@ -239,7 +239,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             { label: "담당", value: as_.assignee, bg: "var(--color-hm-blue-bg)", color: "var(--color-hm-blue-dark)" },
             ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
-            <div key={i} className="shrink-0 px-4 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
+            <div key={i} className="shrink-0 px-4 py-2.5 rounded-lg text-center min-w-[80px]" style={{ background: chip.bg }}>
               <div className="text-xs text-hm-text-muted font-semibold mb-[3px]">{chip.label}</div>
               <div className="text-sm font-bold" style={{ color: chip.color }}>{chip.value}</div>
             </div>
@@ -265,7 +265,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         <Card className="mb-4">
           <div className="text-xs font-bold text-hm-blue tracking-wider mb-2">📋 접수 내용</div>
           <div className="text-base font-bold text-hm-text mb-2 leading-snug">{as_.content || as_.title}</div>
-          <div className="text-sm text-hm-text-sub leading-relaxed px-4 py-3 bg-hm-bg-hover rounded-[10px]">{as_.detail || as_.desc}</div>
+          <div className="text-sm text-hm-text-sub leading-relaxed px-4 py-3 bg-hm-bg-hover rounded-lg">{as_.detail || as_.desc}</div>
           <div className="flex gap-2 mt-3 flex-wrap">
             <div className="px-4 py-2 bg-hm-bg rounded-lg text-xs">
               🏷️ <span className="font-bold">{as_.category || "기타"}</span>
@@ -300,7 +300,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
               return (
                 <div key={i} className={`relative ${i < steps.length - 1 ? 'mb-4' : ''}`}>
                   <div className="absolute w-4 h-4 rounded-full z-[1]" style={{ left: -20, top: 6, background: isLast ? ac.color : "#fff", border: `2.5px solid ${ac.color}` }} />
-                  <div className="px-3 py-2.5 rounded-[10px]" style={{ background: isLast ? ac.bg : "#fff", border: `1px solid ${isLast ? ac.color + "40" : "var(--color-hm-border)"}` }}>
+                  <div className="px-3 py-2.5 rounded-lg" style={{ background: isLast ? ac.bg : "#fff", border: `1px solid ${isLast ? ac.color + "40" : "var(--color-hm-border)"}` }}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm">{ac.icon}</span>
@@ -332,13 +332,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
                     steps: [...(prev.steps || []), { date: today, action: "진행시작", note: "AS 처리 진행 시작" }],
                   }) : null);
                 }}
-                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-warning bg-hm-warning-bg cursor-pointer text-sm font-bold text-hm-warning font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+                  className="flex-1 py-3.5 rounded-lg border-2 border-hm-warning bg-hm-warning-bg cursor-pointer text-sm font-bold text-hm-warning font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ▶️ 진행중으로 변경
                 </button>
               )}
               {(as_.status === "대기" || as_.status === "진행중") && (
                 <button onClick={() => setShowStatusModal("완료")}
-                  className="flex-1 py-3.5 rounded-[10px] border-2 border-hm-success bg-hm-success-bg cursor-pointer text-sm font-bold text-hm-success font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+                  className="flex-1 py-3.5 rounded-lg border-2 border-hm-success bg-hm-success-bg cursor-pointer text-sm font-bold text-hm-success font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
                   ✅ 완료 처리
                 </button>
               )}
@@ -347,7 +347,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
 
           {/* Status change for static items - just shows button but no-op with note */}
           {as_.status !== "완료" && !canEdit && (
-            <button className="w-full mt-4 py-3.5 rounded-[10px] border-2 border-dashed border-hm-blue bg-hm-blue-bg cursor-pointer text-sm font-bold text-hm-blue-dark font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
+            <button className="w-full mt-4 py-3.5 rounded-lg border-2 border-dashed border-hm-blue bg-hm-blue-bg cursor-pointer text-sm font-bold text-hm-blue-dark font-[inherit] flex items-center justify-center gap-2 hover:shadow-md transition-all">
               ⏭️ 다음 단계 기록하기
             </button>
           )}
@@ -425,7 +425,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
             </div>
             {!as_.ownerApproval && !showApprovalForm && (
               <button onClick={() => setShowApprovalForm(true)}
-                className="w-full py-3 rounded-[10px] border-[1.5px] border-[#FDE68A] bg-[#FFFBEB] cursor-pointer text-sm font-bold text-[#D97706] font-[inherit] hover:shadow-md transition-all">
+                className="w-full py-3 rounded-lg border-[1.5px] border-[#FDE68A] bg-[#FFFBEB] cursor-pointer text-sm font-bold text-[#D97706] font-[inherit] hover:shadow-md transition-all">
                 📩 건물주 승인 요청
               </button>
             )}
@@ -544,7 +544,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     return (
       <div>
         <div className="flex items-center gap-3 mb-5">
-          <button onClick={() => setShowNewForm(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <button onClick={() => setShowNewForm(false)} className="w-10 h-10 rounded-lg border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
           <h1 className="text-lg font-bold text-hm-text">새 AS 접수</h1>
         </div>
 
@@ -618,11 +618,11 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           {/* Submit */}
           <div className="flex gap-2">
             <button onClick={() => setShowNewForm(false)}
-              className="flex-1 py-3.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
+              className="flex-1 py-3.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">
               취소
             </button>
             <button onClick={handleSubmitAS} disabled={!newBuilding || !newDesc.trim()}
-              className={`flex-[2] py-3.5 rounded-[10px] border-none text-white font-bold text-sm font-[inherit] transition-opacity ${newBuilding && newDesc.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
+              className={`flex-[2] py-3.5 rounded-lg border-none text-white font-bold text-sm font-[inherit] transition-opacity ${newBuilding && newDesc.trim() ? 'bg-hm-blue cursor-pointer hover:opacity-90' : 'bg-gray-300 cursor-default'}`}>
               접수하기
             </button>
           </div>
@@ -636,7 +636,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     return (
       <div>
         <div className="flex items-center gap-3 mb-5">
-          <button onClick={() => setShowVendorMgmt(false)} className="w-10 h-10 rounded-[10px] border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
+          <button onClick={() => setShowVendorMgmt(false)} className="w-10 h-10 rounded-lg border border-hm-input-border bg-white cursor-pointer text-lg flex items-center justify-center font-[inherit] shrink-0 hover:bg-hm-bg-hover transition-colors">‹</button>
           <h1 className="text-lg font-bold text-hm-text">🏪 협력업체 관리</h1>
         </div>
 
@@ -689,7 +689,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           ) : (
             <div className="flex flex-col gap-2">
               {vendors.map((v, i) => (
-                <div key={i} className="flex items-center justify-between px-4 py-3 bg-hm-bg-hover rounded-[10px] border border-hm-border">
+                <div key={i} className="flex items-center justify-between px-4 py-3 bg-hm-bg-hover rounded-lg border border-hm-border">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-bold text-hm-text">{v.name}</span>
@@ -727,13 +727,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       {/* Top Action Bar */}
       <div className={`flex gap-2 ${isMobile ? 'mb-2.5' : 'mb-4'} flex-wrap`}>
         <button onClick={() => setShowNewForm(true)}
-          className="px-5 py-2.5 rounded-[10px] border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] transition-shadow">
+          className="px-5 py-2.5 rounded-lg border-none bg-hm-blue text-white font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 shadow-[0_2px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.4)] transition-shadow">
           ➕ 새 AS 접수
         </button>
         <button onClick={() => setShowVendorMgmt(true)}
-          className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-hm-bg-hover transition-colors">
+          className="px-5 py-2.5 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] flex items-center gap-1.5 hover:bg-hm-bg-hover transition-colors">
           🏪 협력업체 관리
-          {vendors.length > 0 && <span className="bg-hm-blue-bg text-hm-blue px-[7px] py-[1px] rounded-[10px] text-xs font-bold">{vendors.length}</span>}
+          {vendors.length > 0 && <span className="bg-hm-blue-bg text-hm-blue px-[7px] py-[1px] rounded-lg text-xs font-bold">{vendors.length}</span>}
         </button>
       </div>
 

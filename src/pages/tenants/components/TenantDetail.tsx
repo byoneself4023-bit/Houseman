@@ -128,7 +128,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               const toggleLock = () => setBuildingData((prev: any) => ({ ...prev, [listingLockKey]: !isLocked }));
               return (
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-3 px-4 py-2 rounded-[10px]" style={{ border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "var(--color-hm-danger-bg)" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
+                  <div className="flex items-center gap-3 px-4 py-2 rounded-lg" style={{ border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "var(--color-hm-danger-bg)" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
                     <label className={`flex items-center gap-1.5 ${isLocked ? "cursor-default" : "cursor-pointer"}`}>
                       <input type="checkbox" defaultChecked={!!te.is_listing} disabled={isLocked}
                         onChange={e => {
@@ -450,7 +450,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
         <Card className="mb-4 border-2 border-hm-danger bg-hm-danger-bg">
           <div className="text-sm font-bold text-hm-danger mb-3">📝 재계약 입력 모드 — 적색 필드를 수정 후 저장하세요</div>
           <div className="flex gap-2">
-            <button onClick={() => { setRenewEditMode(false); }} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] transition-colors hover:bg-hm-bg-hover">취소</button>
+            <button onClick={() => { setRenewEditMode(false); }} className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] transition-colors hover:bg-hm-bg-hover">취소</button>
             <button onClick={() => {
               const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value ?? "";
               const newMoveIn = g("td-movein") || t.moveIn || "";
@@ -485,7 +485,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               setSelectedTenant({ ...t, ...updated });
               setRenewEditMode(false);
               alert("재계약이 저장되었습니다.");
-            }} className="flex-[2] py-3 rounded-[10px] border-none bg-hm-danger text-white font-bold text-sm cursor-pointer font-[inherit] transition-opacity hover:opacity-90">📝 재계약 저장</button>
+            }} className="flex-[2] py-3 rounded-lg border-none bg-hm-danger text-white font-bold text-sm cursor-pointer font-[inherit] transition-opacity hover:opacity-90">📝 재계약 저장</button>
           </div>
         </Card>
       )}

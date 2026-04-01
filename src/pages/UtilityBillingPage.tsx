@@ -760,22 +760,22 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             {/* 우: 메시지 & 버튼 */}
             <div>
               <div className="text-xs font-bold mb-2.5 pb-1.5 border-b-[1.5px] border-hm-border">📱 발송 메시지 미리보기</div>
-              <div className="bg-hm-bg-slate rounded-[10px] p-4 border border-hm-border whitespace-pre-line text-[11.5px] text-gray-700 leading-[1.8] mb-4 max-h-[360px] overflow-auto">{msg}</div>
+              <div className="bg-hm-bg-slate rounded-lg p-4 border border-hm-border whitespace-pre-line text-[11.5px] text-gray-700 leading-[1.8] mb-4 max-h-[360px] overflow-auto">{msg}</div>
               <div className="flex gap-2">
                 {!t.confirmed ? (
                   <button onClick={() => { confirmItem(t); setSelectedItem({ ...t, confirmed: true }); }}
-                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-success text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                    className="flex-1 p-3 rounded-lg border-none bg-hm-success text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     ✅ 금액 확인
                   </button>
                 ) : !t.sent ? (
                   <button onClick={() => { sendItem(t); setSelectedItem({ ...t, sent: true }); }}
-                    className="flex-1 p-3 rounded-[10px] border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                    className="flex-1 p-3 rounded-lg border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                     📱 문자 발송
                   </button>
                 ) : (
-                  <button className="flex-1 p-3 rounded-[10px] border-none bg-gray-300 text-white text-sm font-bold font-[inherit]">✓ 발송 완료</button>
+                  <button className="flex-1 p-3 rounded-lg border-none bg-gray-300 text-white text-sm font-bold font-[inherit]">✓ 발송 완료</button>
                 )}
-                <button onClick={() => navigator.clipboard?.writeText(msg)} className="px-5 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-sm font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">📋 복사</button>
+                <button onClick={() => navigator.clipboard?.writeText(msg)} className="px-5 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub text-sm font-bold cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">📋 복사</button>
               </div>
             </div>
           </div>
@@ -964,7 +964,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
             </div>
             <button onClick={() => { setShowUpload(null); setUploadResult(null); }} className="w-6 h-6 rounded border border-hm-input-border bg-white cursor-pointer text-xs font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
           </div>
-          <div className="p-4 rounded-[10px] border-2 border-dashed border-gray-300 bg-hm-bg-hover text-center mb-3">
+          <div className="p-4 rounded-lg border-2 border-dashed border-gray-300 bg-hm-bg-hover text-center mb-3">
             <div className="text-2xl mb-2">{showUpload === "elec" ? "📊" : "📄"}</div>
             <div className="text-xs text-hm-text-sub mb-2">
               {showUpload === "elec" ? "한전 빌링사에서 다운받은 엑셀(.xlsx)을 업로드하세요" : "가스 양식 엑셀(.xlsx)을 업로드하세요"}
@@ -1115,7 +1115,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           const inpCls = "px-2.5 py-[7px] rounded-md border-[1.5px] border-gray-300 text-sm font-[inherit] text-right font-bold bg-[#FAFBFC] outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors";
           return (
             <div key={i}
-              className={`px-4 py-2.5 rounded-[10px] cursor-pointer transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${urgent ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : noData ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : r.confirmed ? 'bg-[#F0FDF4] border-[1.5px] border-[#BBF7D0]' : 'bg-white border-[1.5px] border-hm-border'}`}>
+              className={`px-4 py-2.5 rounded-lg cursor-pointer transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${urgent ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : noData ? 'bg-hm-danger-bg border-[1.5px] border-hm-danger-border' : r.confirmed ? 'bg-[#F0FDF4] border-[1.5px] border-[#BBF7D0]' : 'bg-white border-[1.5px] border-hm-border'}`}>
               <div className="flex items-center justify-between mb-1.5"
                 onClick={() => setSelectedItem(r)}>
                 <div className="flex items-center gap-2 flex-1 min-w-0">

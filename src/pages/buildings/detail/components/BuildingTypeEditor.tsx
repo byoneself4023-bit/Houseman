@@ -285,7 +285,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
               {/* Footer close button */}
               <div className="px-7 py-4 border-t border-gray-200 text-center">
                 <button onClick={() => setShowDetailPreview(false)}
-                  className="px-10 py-2.5 rounded-[10px] border-none bg-hm-text text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
+                  className="px-10 py-2.5 rounded-lg border-none bg-hm-text text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">
                   닫기
                 </button>
               </div>
@@ -307,8 +307,8 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   <strong className="text-hm-danger">{Object.values(detail.floors).flat().length}개 호실</strong>이 영구적으로 삭제됩니다.
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
-                  <button onClick={() => setDeleteStep(2)} className="flex-1 py-3 rounded-[10px] border-none bg-hm-danger text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">삭제 진행</button>
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                  <button onClick={() => setDeleteStep(2)} className="flex-1 py-3 rounded-lg border-none bg-hm-danger text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">삭제 진행</button>
                 </div>
               </>
             )}
@@ -321,14 +321,14 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                   입주자 정보, 수금 내역, AS 이력, 순회 기록까지<br />
                   모두 함께 삭제됩니다.
                 </div>
-                <div className="px-4 py-3 bg-hm-danger-bg rounded-[10px] border border-hm-danger-border mb-5">
+                <div className="px-4 py-3 bg-hm-danger-bg rounded-lg border border-hm-danger-border mb-5">
                   <div className="text-xs text-[#991B1B] font-semibold text-center">
                     ⚡ {buildingName} · {Object.values(detail.floors).flat().length}개 호실 · {bldgTenants.length}명 입주자 · AS {bldgAS.length}건
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">아니요, 취소</button>
-                  <button onClick={() => setDeleteStep(3)} className="flex-1 py-3 rounded-[10px] border-none bg-[#991B1B] text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">그래도 삭제</button>
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">아니요, 취소</button>
+                  <button onClick={() => setDeleteStep(3)} className="flex-1 py-3 rounded-lg border-none bg-[#991B1B] text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">그래도 삭제</button>
                 </div>
               </>
             )}
@@ -341,7 +341,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                 </div>
                 <input id="deleteConfirmInput" placeholder={`"${buildingName}" 입력`} className={`${inputClassName} !px-4 !py-3 !text-sm text-center mb-4 !border-2 !border-hm-danger-border`} />
                 <div className="flex gap-3">
-                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-[10px] border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
+                  <button onClick={() => setDeleteStep(0)} className="flex-1 py-3 rounded-lg border-[1.5px] border-hm-input-border bg-white text-hm-text-sub font-bold text-sm cursor-pointer font-[inherit] hover:bg-hm-bg-hover transition-colors">취소</button>
                   <button onClick={() => {
                     const input = document.getElementById("deleteConfirmInput") as HTMLInputElement | null;
                     if (input && input.value === buildingName) {
@@ -356,7 +356,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                       setDeleteStep(0); onBack();
                     }
                     else if (input) { input.style.borderColor = "var(--color-hm-danger)"; input.style.background = "var(--color-hm-danger-bg)"; input.placeholder = "건물명이 일치하지 않습니다"; }
-                  }} className="flex-1 py-3 rounded-[10px] border-none bg-[#7F1D1D] text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🗑 영구 삭제</button>
+                  }} className="flex-1 py-3 rounded-lg border-none bg-[#7F1D1D] text-white font-bold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🗑 영구 삭제</button>
                 </div>
               </>
             )}

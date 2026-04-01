@@ -13,7 +13,7 @@ export function CardSkeleton() {
 
 export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
-    <div className="overflow-hidden rounded-[10px] border border-hm-border">
+    <div className="overflow-hidden rounded-lg border border-hm-border">
       <div className="bg-hm-bg-muted px-3 py-2 flex gap-4">
         {Array.from({ length: cols }).map((_, i) => (
           <Skeleton key={i} className="h-3 flex-1" />

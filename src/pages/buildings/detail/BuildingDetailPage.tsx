@@ -241,7 +241,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
 
       {/* Special Management Alert */}
       {bldg.special && (
-        <div className={`mb-5 px-[18px] py-3.5 rounded-[10px] border-[1.5px] flex items-start gap-3 ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg border-red-300' : 'bg-hm-warning-bg border-orange-200'}`}>
+        <div className={`mb-5 px-[18px] py-3.5 rounded-lg border-[1.5px] flex items-start gap-3 ${bldg.special === "무리한 요구" ? 'bg-hm-danger-bg border-red-300' : 'bg-hm-warning-bg border-orange-200'}`}>
           <span className="text-xl shrink-0">⚠️</span>
           <div>
             <div className={`text-sm font-bold mb-1 ${bldg.special === "무리한 요구" ? 'text-red-800' : 'text-amber-800'}`}>특별관리 건물 · {bldg.special}</div>

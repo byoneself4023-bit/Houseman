@@ -79,9 +79,9 @@ export const HomepageEditPage = () => {
           <p className="text-sm text-[#86868b] m-0">홈페이지에 표시되는 텍스트를 수정합니다</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleReset} className="px-5 py-2.5 rounded-[10px] border border-[#e5e5ea] bg-white text-[#6e6e73] font-semibold text-sm cursor-pointer">초기화</button>
+          <button onClick={handleReset} className="px-5 py-2.5 rounded-lg border border-[#e5e5ea] bg-white text-[#6e6e73] font-semibold text-sm cursor-pointer">초기화</button>
           <button onClick={handleSave}
-            className={`px-6 py-2.5 rounded-[10px] border-none text-white font-bold text-sm cursor-pointer transition-colors duration-300 ${saved ? 'bg-green-500' : 'bg-[#c8161d]'}`}>
+            className={`px-6 py-2.5 rounded-lg border-none text-white font-bold text-sm cursor-pointer transition-colors duration-300 ${saved ? 'bg-green-500' : 'bg-[#c8161d]'}`}>
             {saved ? "✓ 저장완료" : "저장"}
           </button>
         </div>

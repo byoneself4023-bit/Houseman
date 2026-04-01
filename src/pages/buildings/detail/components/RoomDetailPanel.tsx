@@ -277,7 +277,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           return (
             <div className={`mt-3.5 ${isDangiRoom ? 'grid grid-cols-2 gap-3' : 'block'}`}>
             {/* Left: Account info */}
-            <div className="px-4 py-2.5 bg-[#FFFBF0] rounded-[10px] border border-[#FDE68A]">
+            <div className="px-4 py-2.5 bg-[#FFFBF0] rounded-lg border border-[#FDE68A]">
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-xs font-bold text-[#92400E]">🏦 계좌 정보</span>
                 <span className="text-xs px-2 py-0.5 rounded font-bold" style={{ background: acctTypeBg[roomAcctType], color: acctTypeColor[roomAcctType] }}>{acctTypeLabel[roomAcctType]}</span>
@@ -391,7 +391,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
 
             {/* Right: Move-in calculation (단기 only) */}
             {isDangiRoom && moveInCalc && (
-              <div className="px-4 py-2.5 bg-[#F0FDF4] rounded-[10px] border border-[#BBF7D0]">
+              <div className="px-4 py-2.5 bg-[#F0FDF4] rounded-lg border border-[#BBF7D0]">
                 <div className="text-xs font-bold text-[#065F46] mb-1">💰 입주금 계산</div>
                 <div className="text-xs text-gray-500 mb-2.5 leading-relaxed">
                   {moveInCalc.type === "single" && ((moveInCalc as any).acctName === "건물주계좌"
@@ -463,7 +463,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
           const depKey = `${buildingName}_${selectedRoom}`;
           const currentDepName = depositNames[depKey] || "";
           return (
-            <div className="mt-3.5 px-4 py-2.5 bg-[#FDF4FF] rounded-[10px] border border-[#E9D5FF]">
+            <div className="mt-3.5 px-4 py-2.5 bg-[#FDF4FF] rounded-lg border border-[#E9D5FF]">
               <div className="text-xs font-bold text-[#7C3AED] mb-1.5">🏦 입금확인 이름 <span className="text-xs font-medium text-hm-text-muted">이 이름으로 입금 시 자동 100% 매칭</span></div>
               {roomEditMode ? (
                 <input value={currentDepName} onChange={e => setDepositNames((prev: Record<string, string>) => ({ ...prev, [depKey]: e.target.value }))}
@@ -481,7 +481,7 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
         {/* Room staff override */}
         {(() => {
           return (
-            <div className="mt-3.5 px-4 py-2.5 bg-[#F0F4FF] rounded-[10px] border border-[#BFDBFE]">
+            <div className="mt-3.5 px-4 py-2.5 bg-[#F0F4FF] rounded-lg border border-[#BFDBFE]">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs font-bold text-hm-blue-dark">👤 호실 담당자 <span className="text-xs font-medium text-hm-text-muted">건물 기본값 자동 적용 · 호실별 변경 가능</span></div>
               </div>

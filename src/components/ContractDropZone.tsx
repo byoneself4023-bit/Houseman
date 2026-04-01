@@ -84,7 +84,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         onClick={() => fileRef.current?.click()}
-        className={`rounded-[10px] border-2 border-dashed cursor-pointer transition-all duration-150 ${
+        className={`rounded-lg border-2 border-dashed cursor-pointer transition-all duration-150 ${
           dragging ? 'border-hm-blue bg-hm-blue-bg' : 'border-gray-300 bg-[#FAFBFC] hover:border-hm-blue/40'
         } ${files.length > 0 ? 'px-3 py-2.5' : 'px-3 py-[18px]'}`}
       >
@@ -158,7 +158,7 @@ export const ContractDropZone: React.FC<ContractDropZoneProps> = ({
             className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center"
           >
             {/* 상단 바: 파일명 + 다운로드 + 닫기 */}
-            <div className="flex items-center gap-3 mb-3 px-4 py-2 bg-white/95 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center gap-3 mb-3 px-4 py-2 bg-white/95 rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
               <span className="text-xs font-bold text-hm-text max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap">
                 {previewFile.name}
               </span>

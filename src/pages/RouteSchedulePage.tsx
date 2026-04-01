@@ -647,7 +647,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
 
           {/* 선택된 날의 동선 순서 표시 */}
           {mapDay !== null && optimizedSchedule[mapDay]?.buildings.length > 0 && (
-            <div className="mt-3 p-3 bg-hm-bg-hover rounded-[10px]" style={{ border: `2px solid ${DAY_COLORS[mapDay]}20` }}>
+            <div className="mt-3 p-3 bg-hm-bg-hover rounded-lg" style={{ border: `2px solid ${DAY_COLORS[mapDay]}20` }}>
               <div className="text-sm font-bold text-gray-900 mb-2">
                 {WEEKDAY_NAMES[mapDay]} 최적 동선 ({optimizedSchedule[mapDay].buildings.length}개 건물)
               </div>

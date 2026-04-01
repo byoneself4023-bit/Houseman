@@ -141,7 +141,7 @@ export const ContractLinkPage = () => {
               } catch { /* ignore */ }
               setStep('tenant');
             }}
-              className="w-full py-3.5 bg-hm-blue text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
+              className="w-full py-3.5 bg-hm-blue text-white border-none rounded-lg text-base font-bold cursor-pointer font-[inherit] hover:bg-blue-600 transition-colors">
               완료 → 임차인에게 전달하기
             </button>
             <div className="text-xs text-gray-400 text-center mt-2">완료 후 이 화면을 임차인에게 보여주시면 됩니다</div>
@@ -216,7 +216,7 @@ export const ContractLinkPage = () => {
               setVerifyPhone(tenantForm.phone);
               setStep('verify');
             }}
-              className="w-full py-3.5 bg-hm-success text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] hover:bg-emerald-700 transition-colors">
+              className="w-full py-3.5 bg-hm-success text-white border-none rounded-lg text-base font-bold cursor-pointer font-[inherit] hover:bg-emerald-700 transition-colors">
               다음 → 본인인증
             </button>
           </div>
@@ -239,7 +239,7 @@ export const ContractLinkPage = () => {
                 setSentCode(code);
                 toast.info(`[테스트] 인증번호: ${code} — 실제 운영 시 SMS로 발송됩니다.`);
               }}
-                className="w-full py-3.5 bg-amber-400 text-white border-none rounded-[10px] text-base font-bold cursor-pointer font-[inherit] mb-3 hover:bg-amber-500 transition-colors">
+                className="w-full py-3.5 bg-amber-400 text-white border-none rounded-lg text-base font-bold cursor-pointer font-[inherit] mb-3 hover:bg-amber-500 transition-colors">
                 📩 인증번호 발송
               </button>
             ) : (
@@ -268,7 +268,7 @@ export const ContractLinkPage = () => {
                     toast.error('인증번호가 일치하지 않습니다.');
                   }
                 }}
-                  className={`w-full py-3.5 text-white border-none rounded-[10px] text-base font-bold font-[inherit] mb-2 transition-colors ${verifyCode.length === 6 ? 'bg-hm-success cursor-pointer hover:bg-emerald-700' : 'bg-gray-300 cursor-default'}`}>
+                  className={`w-full py-3.5 text-white border-none rounded-lg text-base font-bold font-[inherit] mb-2 transition-colors ${verifyCode.length === 6 ? 'bg-hm-success cursor-pointer hover:bg-emerald-700' : 'bg-gray-300 cursor-default'}`}>
                   계약서 전송
                 </button>
                 <button onClick={() => { setSentCode(''); setVerifyCode(''); }}

@@ -252,7 +252,7 @@ export const ExternalCheckModal = ({
         {/* 체크 완료 버튼 */}
         {!ecm.viewOnly && (
           <button type="button" onClick={handleComplete}
-            className="w-full py-3.5 rounded-[10px] border-none bg-hm-blue text-white text-base font-bold cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
+            className="w-full py-3.5 rounded-lg border-none bg-hm-blue text-white text-base font-bold cursor-pointer font-[inherit] hover:bg-hm-blue-dark transition-colors">
             ✅ 퇴실체크 완료
           </button>
         )}
