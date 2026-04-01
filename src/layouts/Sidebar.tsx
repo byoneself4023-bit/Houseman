@@ -9,7 +9,7 @@ import {
   Calendar, Building2, User, Package, RefreshCw, Mail, Landmark, ClipboardList,
   CreditCard, Coins, Zap, SquareParking, Wrench, Footprints, MapPin,
   Banknote, Home, Users, FolderUp, Globe, CheckSquare, BarChart3,
-  Settings, PanelLeftClose, PanelLeft,
+  Settings, PanelLeftClose, PanelLeft, ChevronDown,
 } from 'lucide-react';
 import type { Staff } from '@/types';
 
@@ -37,6 +37,7 @@ const iconMap: Record<string, React.ReactNode> = {
   'staff': <Users size={18} />,
   'data-upload': <FolderUp size={18} />,
   'homepage-edit': <Globe size={18} />,
+  'company-settings': <Building2 size={18} />,
 };
 
 interface SidebarProps {
@@ -63,24 +64,25 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
     <div
       key={m.id}
       onClick={() => navigateTo(m.id)}
+      title={!sidebarOpen ? m.label : undefined}
       className={cn(
         'flex items-center gap-3 rounded-lg mb-1 cursor-pointer transition-all duration-150',
         sidebarOpen ? 'px-3 py-2.5' : 'px-2 py-2.5 justify-center',
         active
-          ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
-          : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
+          ? 'bg-hm-sidebar-active border-l-[3px] border-hm-primary'
+          : 'border-l-[3px] border-transparent hover:bg-[#1F2640]',
       )}
     >
-      <span className={cn('shrink-0', active ? 'text-white' : 'text-[#A0AEC0]')}>
+      <span className={cn('shrink-0', active ? 'text-hm-primary' : 'text-hm-sidebar-text')}>
         {iconMap[m.id] || <span className="text-[16px]">{m.icon}</span>}
       </span>
       {sidebarOpen && (
-        <span className={cn('text-xs whitespace-nowrap', active ? 'font-bold text-white' : 'font-medium text-[#A0AEC0]')}>
+        <span className={cn('text-xs whitespace-nowrap', active ? 'font-bold text-white' : 'font-medium text-hm-sidebar-text')}>
           {m.label}
         </span>
       )}
       {menuBadges[m.id] > 0 && (
-        <span className="ml-auto min-w-[18px] h-[18px] rounded-lg bg-[#EF4444] text-white text-xs font-bold flex items-center justify-center px-[5px] shrink-0">
+        <span className="ml-auto min-w-[18px] h-[18px] rounded-lg bg-hm-danger text-white text-xs font-bold flex items-center justify-center px-[5px] shrink-0">
           {menuBadges[m.id]}
         </span>
       )}
@@ -89,22 +91,22 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
 
   return (
     <div
-      className="flex flex-col shrink-0 overflow-hidden bg-[#1B1F2E] transition-[width] duration-[250ms] ease-in-out"
+      className="flex flex-col shrink-0 overflow-hidden bg-hm-sidebar transition-[width] duration-[250ms] ease-in-out"
       style={{ width: sidebarOpen ? 230 : 64 }}
     >
       {/* Header */}
-      <div className={cn('border-b border-[#2A2F42] flex items-center gap-3', sidebarOpen ? 'px-4 py-2.5' : 'px-3 py-3.5')}>
+      <div className={cn('border-b border-hm-sidebar-border flex items-center gap-3', sidebarOpen ? 'px-4 py-2.5' : 'px-3 py-3.5')}>
         <img src="/logo-icon.svg" alt="" className="h-[30px] w-auto shrink-0" />
         {sidebarOpen && (
           <div className="flex-1 flex items-center justify-between">
             <div>
               <div className="text-sm font-bold text-white tracking-tight">HOUSEMAN</div>
-              <div className="text-xs text-[#6B7280]">{currentStaff ? currentStaff.name : '건물관리 시스템'} · {isGeneral ? '전체 건물' : `${myBuildings.length}개`}</div>
+              <div className="text-xs text-hm-sidebar-muted">{currentStaff ? currentStaff.name : '건물관리 시스템'} · {isGeneral ? '전체 건물' : `${myBuildings.length}개`}</div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={onLogout}
-                className="px-2 py-0.5 rounded-[5px] border border-[#374151] bg-transparent text-[#9CA3B0] text-xs font-semibold cursor-pointer hover:bg-[#374151]/30 transition-colors"
+                className="px-2 py-0.5 rounded-[5px] border border-hm-sidebar-border bg-transparent text-hm-sidebar-text text-xs font-semibold cursor-pointer hover:bg-white/5 transition-colors"
               >
                 로그아웃
               </button>
@@ -121,7 +123,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
 
       {/* Role tabs */}
       {sidebarOpen && (
-        <div className="px-4 py-1.5 border-b border-[#2A2F42]">
+        <div className="px-4 py-1.5 border-b border-hm-sidebar-border">
           <div className="flex gap-[3px]">
             {[{ id: 'admin', icon: '🏗️', label: '관리' }, { id: 'owner', icon: '🏠', label: '건물주' }, { id: 'cleaning', icon: '🧹', label: '청소' }, { id: 'homepage', icon: '🌐', label: '홈페이지' }].map((r) => (
               <button
@@ -134,8 +136,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                 className={cn(
                   'flex-1 py-[5px] px-0.5 rounded-md border-none text-xs cursor-pointer transition-colors',
                   role === r.id
-                    ? 'bg-[#2A3352] text-white font-bold border-b-2 border-b-hm-blue'
-                    : 'bg-transparent text-[#6B7280] font-medium hover:bg-[#2A3352]/50',
+                    ? 'bg-hm-sidebar-active text-white font-bold border-b-2 border-b-hm-primary'
+                    : 'bg-transparent text-hm-sidebar-muted font-medium hover:bg-hm-sidebar-active/50',
                 )}
               >
                 {r.icon}<br />{r.label}
@@ -153,24 +155,25 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
             <div
               key={m.id}
               onClick={() => navigateTo(m.id)}
+              title={!sidebarOpen ? m.label : undefined}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-150',
                 active
-                  ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
-                  : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
+                  ? 'bg-hm-sidebar-active border-l-[3px] border-hm-primary'
+                  : 'border-l-[3px] border-transparent hover:bg-[#1F2640]',
               )}
             >
-              <span className={cn('text-lg shrink-0', active ? 'text-white' : 'text-[#A0AEC0]')}>{iconMap[m.id] || m.icon}</span>
-              {sidebarOpen && <span className={cn('text-sm', active ? 'font-bold text-white' : 'font-medium text-[#A0AEC0]')}>{m.label}</span>}
+              <span className={cn('shrink-0', active ? 'text-hm-primary' : 'text-hm-sidebar-text')}>{iconMap[m.id] || m.icon}</span>
+              {sidebarOpen && <span className={cn('text-sm', active ? 'font-bold text-white' : 'font-medium text-hm-sidebar-text')}>{m.label}</span>}
             </div>
           );
         }) : role === 'homepage' ? [{ id: 'homepage', icon: '🌐', label: '공실 매물' }].map((m) => (
           <div
             key={m.id}
             onClick={() => navigateTo(m.id)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer bg-hm-sidebar-active border-l-[3px] border-hm-primary"
           >
-            <Globe size={17} className="text-white shrink-0" />
+            <Globe size={18} className="text-hm-primary shrink-0" />
             {sidebarOpen && <span className="text-sm font-bold text-white">{m.label}</span>}
           </div>
         )) : menuSections.map((sec) => {
@@ -181,16 +184,16 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                   onClick={() => setSettingsOpen(!settingsOpen)}
                   className={cn(
                     'flex items-center cursor-pointer',
-                    sidebarOpen ? 'justify-between px-3 pt-3 pb-1' : 'justify-center px-2 py-2.5',
+                    sidebarOpen ? 'justify-between px-3 mt-5 mb-2' : 'justify-center px-2 py-2.5',
                   )}
                 >
                   {sidebarOpen ? (
                     <>
-                      <span className="text-xs font-bold text-[#4B5563] tracking-[0.15em] uppercase">{sec.section}</span>
-                      <span className={cn('text-xs text-[#4B5563] transition-transform duration-200', settingsOpen && 'rotate-180')}>▼</span>
+                      <span className="text-xs font-semibold text-hm-sidebar-text/50 tracking-wider uppercase">{sec.section}</span>
+                      <ChevronDown size={14} className={cn('text-hm-sidebar-text/50 transition-transform duration-200', settingsOpen && 'rotate-180')} />
                     </>
                   ) : (
-                    <Settings size={18} className="text-[#4B5563]" />
+                    <Settings size={18} className="text-hm-sidebar-text/50" />
                   )}
                 </div>
                 {settingsOpen && sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
@@ -202,8 +205,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           }
           return (
             <div key={sec.section}>
-              {sidebarOpen && <div className="text-xs font-bold text-[#4B5563] tracking-[0.15em] px-3 pt-3 pb-1 uppercase">{sec.section}</div>}
-              {!sidebarOpen && <div className="border-b border-[#2A2F42] mx-2 my-1.5" />}
+              {sidebarOpen && <div className="text-xs font-semibold text-hm-sidebar-text/50 tracking-wider px-3 mt-5 mb-2 uppercase">{sec.section}</div>}
+              {!sidebarOpen && <div className="border-b border-hm-sidebar-border mx-2 my-1.5" />}
               {sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
                 const active = page === m.id;
                 return renderMenuItem(m, active);
@@ -214,16 +217,16 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
       </nav>
 
       {/* Collapse toggle + version */}
-      <div className="p-3 border-t border-[#2A2F42]">
+      <div className="p-3 border-t border-hm-sidebar-border">
         <div
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="flex items-center justify-center p-2 rounded-lg cursor-pointer text-[#6B7280] transition-colors hover:bg-[#22273A]"
+          className="flex items-center justify-center p-2 rounded-lg cursor-pointer text-hm-sidebar-text transition-colors hover:bg-[#1F2640]"
           title={sidebarOpen ? '사이드바 접기' : '사이드바 펼치기'}
         >
           {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeft size={18} />}
           {sidebarOpen && <span className="ml-2 text-xs">접기</span>}
         </div>
-        {sidebarOpen && <div className="text-center text-[8px] text-[#4B5563] mt-1">v2.0</div>}
+        {sidebarOpen && <div className="text-center text-[8px] text-hm-sidebar-muted mt-1">v2.0</div>}
       </div>
     </div>
   );
