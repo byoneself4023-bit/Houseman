@@ -673,10 +673,10 @@ www.houseman.co.kr
       {/* Main Content */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         {/* Top Bar */}
-        <div style={{ height: isMobile ? 48 : 56, background: "#fff", borderBottom: "1px solid var(--color-hm-border)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 14px" : "0 24px", flexShrink: 0 }}>
+        <div style={{ height: isMobile ? 48 : 60, background: "#fff", borderBottom: "1px solid var(--color-hm-border)", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 14px" : "0 24px", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 12 }}>
             <span style={{ fontSize: isMobile ? 15 : 17 }}>{role === "owner" ? "🏠" : role === "homepage" ? "🌐" : menuItems.find(m => m.id === page)?.icon}</span>
-            <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 700, color: "var(--color-hm-text)" }}>
+            <span style={{ fontSize: isMobile ? 14 : 18, fontWeight: 700, color: "var(--color-hm-gray-950)" }}>
               {role === "owner" ? "내 건물 현황" : role === "homepage" ? "공실 매물" : menuItems.find(m => m.id === page)?.label}
               {!isMobile && role !== "owner" && selectedBuilding && <span style={{ color: "var(--color-hm-text-muted)", fontWeight: 500 }}> › {selectedBuilding}</span>}
             </span>

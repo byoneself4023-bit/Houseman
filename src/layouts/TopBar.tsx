@@ -57,7 +57,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
               return Icon ? <Icon size={isMobile ? 18 : 20} /> : null;
             })()}
           </span>
-          <span className={cn('font-bold text-hm-text', isMobile ? 'text-sm' : 'text-base')}>
+          <span className={cn('font-bold text-hm-gray-950', isMobile ? 'text-sm' : 'text-lg')}>
             {role === 'owner' ? '내 건물 현황' : role === 'homepage' ? '공실 매물' : menuItems.find((m) => m.id === page)?.label}
             {!isMobile && role !== 'owner' && selectedBuilding && (
               <span className="text-hm-text-muted font-medium"> › {selectedBuilding}</span>
