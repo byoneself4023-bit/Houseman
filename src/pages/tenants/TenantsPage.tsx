@@ -531,22 +531,24 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
       )}
 
       <TenantSummaryCards myTenants={myTenants} typeFilter={typeFilter} setTypeFilter={setTypeFilter} />
-      <TenantSearchBar
-        search={search} setSearch={setSearch}
-        statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-        buildingFilter={buildingFilter} setBuildingFilter={setBuildingFilter}
-        buildingNames={[...new Set(myTenants.map((t: any) => t.building))] as string[]}
-      />
-      <TenantList
-        filtered={filtered}
-        visibleFiltered={visibleFiltered}
-        visibleCount={visibleCount}
-        setVisibleCount={setVisibleCount}
-        setSelectedTenant={setSelectedTenant}
-        roomBalances={roomBalances}
-        buildingAccounts={buildingAccounts}
-        allBuildings={allBuildings}
-      />
+      <Card>
+        <TenantSearchBar
+          search={search} setSearch={setSearch}
+          statusFilter={statusFilter} setStatusFilter={setStatusFilter}
+          buildingFilter={buildingFilter} setBuildingFilter={setBuildingFilter}
+          buildingNames={[...new Set(myTenants.map((t: any) => t.building))] as string[]}
+        />
+        <TenantList
+          filtered={filtered}
+          visibleFiltered={visibleFiltered}
+          visibleCount={visibleCount}
+          setVisibleCount={setVisibleCount}
+          setSelectedTenant={setSelectedTenant}
+          roomBalances={roomBalances}
+          buildingAccounts={buildingAccounts}
+          allBuildings={allBuildings}
+        />
+      </Card>
 
       {/* 퇴실사진 모달 */}
       {photoModalTenant && (() => {

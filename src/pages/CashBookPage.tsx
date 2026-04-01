@@ -239,6 +239,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
       )}
 
       {/* 날짜별 출납 내역 */}
+      <Card>
       {dateGroups.length === 0 ? (
         <div className="text-center py-[60px] text-hm-text-muted">
           <div className="text-[40px] mb-3 opacity-30">📋</div>
@@ -372,6 +373,7 @@ export const CashBookPage = ({ cashbookEntries = [], setCashbookEntries, buildin
           })}
         </div>
       )}
+      </Card>
     </div>
   );
 };

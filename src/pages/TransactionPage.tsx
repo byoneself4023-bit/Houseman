@@ -574,6 +574,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
           ))}
         </div>
       ) : (
+      <Card className="overflow-auto">
       <Table
         columns={[
           { label: "일자", render: (r: Record<string, any>) => <span className="text-xs">{r.date.slice(5)}</span> },
@@ -591,6 +592,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
         ]}
         data={sortedTx}
       />
+      </Card>
       )}
     </div>
   );
