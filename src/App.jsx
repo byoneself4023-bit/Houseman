@@ -557,8 +557,8 @@ www.houseman.co.kr
 
       {/* Desktop Sidebar */}
       {!isMobile && (
-        <div style={{ width: sidebarOpen ? 230 : 64, background: "#1B1F2E", display: "flex", flexDirection: "column", transition: "width 0.25s ease", flexShrink: 0, overflow: "hidden" }}>
-          <div style={{ padding: sidebarOpen ? "10px 14px" : "14px 12px", borderBottom: "1px solid #2A2F42", display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: sidebarOpen ? 230 : 64, background: "linear-gradient(180deg, #0F172A 0%, #1E293B 100%)", display: "flex", flexDirection: "column", transition: "width 0.25s ease", flexShrink: 0, overflow: "hidden" }}>
+          <div style={{ padding: sidebarOpen ? "10px 14px" : "14px 12px", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", gap: 10 }}>
             <img src="/logo-icon.svg" alt="" style={{ height: 30, width: "auto", flexShrink: 0 }} />
             {sidebarOpen && (
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>

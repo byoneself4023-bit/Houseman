@@ -69,8 +69,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
         'flex items-center gap-3 rounded-lg mb-1 cursor-pointer transition-all duration-150',
         sidebarOpen ? 'px-3 py-2.5' : 'px-2 py-2.5 justify-center',
         active
-          ? 'bg-hm-sidebar-active border-l-[3px] border-hm-primary'
-          : 'border-l-[3px] border-transparent hover:bg-[#1F2640]',
+          ? 'bg-hm-primary/15 border-l-[3px] border-hm-primary'
+          : 'border-l-[3px] border-transparent hover:bg-white/5',
       )}
     >
       <span className={cn('shrink-0', active ? 'text-hm-primary' : 'text-hm-sidebar-text')}>
@@ -91,11 +91,11 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
 
   return (
     <div
-      className="flex flex-col shrink-0 overflow-hidden bg-hm-sidebar transition-[width] duration-[250ms] ease-in-out"
-      style={{ width: sidebarOpen ? 230 : 64 }}
+      className="flex flex-col shrink-0 overflow-hidden transition-[width] duration-[250ms] ease-in-out"
+      style={{ width: sidebarOpen ? 230 : 64, background: 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)' }}
     >
       {/* Header */}
-      <div className={cn('border-b border-hm-sidebar-border flex items-center gap-3', sidebarOpen ? 'px-4 py-2.5' : 'px-3 py-3.5')}>
+      <div className={cn('border-b border-white/10 flex items-center gap-3', sidebarOpen ? 'px-4 py-2.5' : 'px-3 py-3.5')}>
         <img src="/logo-icon.svg" alt="" className="h-[30px] w-auto shrink-0" />
         {sidebarOpen && (
           <div className="flex-1 flex items-center justify-between">
@@ -106,7 +106,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
             <div className="flex items-center gap-1">
               <button
                 onClick={onLogout}
-                className="px-2 py-0.5 rounded-[5px] border border-hm-sidebar-border bg-transparent text-hm-sidebar-text text-xs font-semibold cursor-pointer hover:bg-white/5 transition-colors"
+                className="px-2 py-0.5 rounded-[5px] border border-white/10 bg-transparent text-hm-sidebar-text text-xs font-semibold cursor-pointer hover:bg-white/5 transition-colors"
               >
                 로그아웃
               </button>
@@ -123,7 +123,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
 
       {/* Role tabs */}
       {sidebarOpen && (
-        <div className="px-4 py-1.5 border-b border-hm-sidebar-border">
+        <div className="px-4 py-1.5 border-b border-white/10">
           <div className="flex gap-[3px]">
             {[{ id: 'admin', icon: '🏗️', label: '관리' }, { id: 'owner', icon: '🏠', label: '건물주' }, { id: 'cleaning', icon: '🧹', label: '청소' }, { id: 'homepage', icon: '🌐', label: '홈페이지' }].map((r) => (
               <button
@@ -136,8 +136,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                 className={cn(
                   'flex-1 py-[5px] px-0.5 rounded-md border-none text-xs cursor-pointer transition-colors',
                   role === r.id
-                    ? 'bg-hm-sidebar-active text-white font-bold border-b-2 border-b-hm-primary'
-                    : 'bg-transparent text-hm-sidebar-muted font-medium hover:bg-hm-sidebar-active/50',
+                    ? 'bg-hm-primary/15 text-white font-bold border-b-2 border-b-hm-primary'
+                    : 'bg-transparent text-hm-sidebar-muted font-medium hover:bg-white/5',
                 )}
               >
                 {r.icon}<br />{r.label}
@@ -159,8 +159,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-150',
                 active
-                  ? 'bg-hm-sidebar-active border-l-[3px] border-hm-primary'
-                  : 'border-l-[3px] border-transparent hover:bg-[#1F2640]',
+                  ? 'bg-hm-primary/15 border-l-[3px] border-hm-primary'
+                  : 'border-l-[3px] border-transparent hover:bg-white/5',
               )}
             >
               <span className={cn('shrink-0', active ? 'text-hm-primary' : 'text-hm-sidebar-text')}>{iconMap[m.id] || m.icon}</span>
@@ -171,7 +171,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           <div
             key={m.id}
             onClick={() => navigateTo(m.id)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer bg-hm-sidebar-active border-l-[3px] border-hm-primary"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer bg-hm-primary/15 border-l-[3px] border-hm-primary"
           >
             <Globe size={18} className="text-hm-primary shrink-0" />
             {sidebarOpen && <span className="text-sm font-bold text-white">{m.label}</span>}
@@ -189,11 +189,11 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                 >
                   {sidebarOpen ? (
                     <>
-                      <span className="text-xs font-semibold text-hm-sidebar-text/50 tracking-wider uppercase">{sec.section}</span>
-                      <ChevronDown size={14} className={cn('text-hm-sidebar-text/50 transition-transform duration-200', settingsOpen && 'rotate-180')} />
+                      <span className="text-xs font-semibold text-white/30 tracking-wider uppercase">{sec.section}</span>
+                      <ChevronDown size={14} className={cn('text-white/30 transition-transform duration-200', settingsOpen && 'rotate-180')} />
                     </>
                   ) : (
-                    <Settings size={18} className="text-hm-sidebar-text/50" />
+                    <Settings size={18} className="text-white/30" />
                   )}
                 </div>
                 {settingsOpen && sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
@@ -205,8 +205,8 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           }
           return (
             <div key={sec.section}>
-              {sidebarOpen && <div className="text-xs font-semibold text-hm-sidebar-text/50 tracking-wider px-3 mt-5 mb-2 uppercase">{sec.section}</div>}
-              {!sidebarOpen && <div className="border-b border-hm-sidebar-border mx-2 my-1.5" />}
+              {sidebarOpen && <div className="text-xs font-semibold text-white/30 tracking-wider px-3 mt-5 mb-2 uppercase">{sec.section}</div>}
+              {!sidebarOpen && <div className="border-b border-white/10 mx-2 my-1.5" />}
               {sec.items.filter((m) => m.id !== 'profit-dashboard' || loggedInId === 1).map((m) => {
                 const active = page === m.id;
                 return renderMenuItem(m, active);
@@ -217,7 +217,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
       </nav>
 
       {/* Collapse toggle + version */}
-      <div className="p-3 border-t border-hm-sidebar-border">
+      <div className="p-3 border-t border-white/10">
         <div
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="flex items-center justify-center p-2 rounded-lg cursor-pointer text-hm-sidebar-text transition-colors hover:bg-[#1F2640]"
