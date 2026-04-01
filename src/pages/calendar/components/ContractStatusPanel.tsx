@@ -32,7 +32,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
   if (contractEvts.length === 0) return null;
 
   return (
-    <Card className="mb-4 border-2 border-hm-blue bg-hm-blue-bg">
+    <Card className="mb-4 border-l-4 border-hm-primary bg-white">
       <div className="flex items-center gap-2 mb-2.5">
         <span className="text-base">📦</span>
         <div className="text-sm font-bold text-hm-blue">계약현황 <span className="font-semibold text-xs text-hm-text-muted">({contractEvts.length}건)</span></div>

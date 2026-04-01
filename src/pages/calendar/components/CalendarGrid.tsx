@@ -38,7 +38,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* Day Cells */}
-      <div className={`grid grid-cols-7 ${isMobile ? 'gap-px' : 'gap-0.5'}`}>
+      <div className={`grid grid-cols-7 ${isMobile ? 'gap-px' : 'gap-1'}`}>
         {days.map((day, i) => {
           if (!day) return <div key={i} className={isMobile ? 'min-h-[72px]' : 'min-h-[120px]'} />;
           const evts = getEvents(day);
@@ -77,16 +77,16 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
                 setSelectedDay(day);
               }}
               className={`cursor-pointer transition-all ${isMobile ? 'min-h-[72px] px-[3px] py-[2px] rounded' : 'min-h-[120px] px-1.5 py-1 rounded-lg'} ${
-                isDrop ? 'bg-blue-100 border-2 border-dashed border-hm-blue' :
-                selected ? 'bg-hm-blue-bg border-2 border-solid border-hm-blue' :
-                isToday(day) ? 'bg-amber-50 border border-solid border-amber-200' :
-                'border border-solid border-[#F0F2F5] hover:bg-hm-bg-hover'
+                isDrop ? 'bg-blue-100 border-2 border-dashed border-hm-primary' :
+                selected ? 'bg-hm-primary-light border-2 border-solid border-hm-primary' :
+                isToday(day) ? 'bg-hm-primary/10 border border-solid border-hm-primary' :
+                'bg-white border border-solid border-hm-gray-200 hover:bg-hm-bg-hover'
               }`}
               onMouseEnter={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.add('bg-hm-bg-hover')}
               onMouseLeave={e => !selected && !isDrop && !isToday(day) && e.currentTarget.classList.remove('bg-hm-bg-hover')}>
-              <div className={`text-xs mb-[3px] ${isToday(day) ? 'font-bold' : 'font-semibold'} ${dayOfWeek === 0 ? 'text-red-500' : dayOfWeek === 6 ? 'text-hm-blue' : 'text-hm-text'}`}>
+              <div className={`text-xs mb-[3px] ${isToday(day) ? 'font-bold' : 'font-semibold'} ${dayOfWeek === 0 ? 'text-hm-danger' : dayOfWeek === 6 ? 'text-hm-primary' : 'text-hm-text'}`}>
                 {day}
-                {isToday(day) && <span className="text-[8px] bg-amber-500 text-white px-1 py-px rounded-[3px] ml-[3px] font-bold">오늘</span>}
+                {isToday(day) && <span className="text-[8px] bg-hm-primary text-white px-1 py-px rounded-[3px] ml-[3px] font-bold">오늘</span>}
               </div>
               <div className="flex flex-col gap-0.5">
                 {evts.slice(0, 3).map((evt, ei) => (

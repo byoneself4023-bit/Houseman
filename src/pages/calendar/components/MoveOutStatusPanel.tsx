@@ -76,7 +76,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
 
   return (
     <>
-    <Card className="mb-4 border-2 border-hm-danger bg-hm-danger-bg">
+    <Card className="mb-4 border-l-4 border-hm-danger bg-white">
       <div className="flex items-center gap-2 mb-2.5">
         <span className="text-base">{"\uD83D\uDEAA"}</span>
         <div className="text-sm font-bold text-hm-danger">퇴실현황 <span className="font-semibold text-xs text-hm-text-muted">({activeMoveOutEvts.length}건)</span></div>
