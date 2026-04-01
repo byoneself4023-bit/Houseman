@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { Bot, ChevronUp, ChevronDown } from 'lucide-react';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useTenantStore } from '@/stores/useTenantStore';
 import { useCalendarStore } from '@/stores/useCalendarStore';
@@ -591,8 +592,11 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
     <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
       {/* Toggle header */}
       <div className="flex justify-between items-center px-4 py-2.5 cursor-pointer bg-hm-bg-slate border-b border-gray-200 select-none hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
-        <span className="text-sm font-bold text-blue-800">AI 어시스턴트</span>
-        <span className="text-xs text-gray-500">{open ? '접기' : '펼치기'}</span>
+        <div className="flex items-center gap-2">
+          <Bot size={16} className="text-hm-primary" />
+          <span className="text-sm font-bold text-hm-gray-800">{open ? 'AI 어시스턴트' : 'AI'}</span>
+        </div>
+        {open ? <ChevronDown size={14} className="text-hm-gray-500" /> : <ChevronUp size={14} className="text-hm-gray-500" />}
       </div>
 
       {open && (

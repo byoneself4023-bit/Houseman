@@ -58,7 +58,7 @@ export function AppLayout() {
           selectedBuilding={selectedBuilding}
         />
 
-        <div className={`flex-1 overflow-auto ${isMobile ? 'p-3 pb-[72px]' : 'p-6'}`}>
+        <div className={`flex-1 overflow-auto bg-hm-gray-100 ${isMobile ? 'p-3 pb-[72px]' : 'p-6'}`}>
           <div key={pathname} className="max-w-[1600px] mx-auto" style={{ animation: 'fadeIn 0.2s ease' }}>
             <PageErrorBoundary>
               <Suspense fallback={<div className="flex justify-center items-center h-[200px]"><span className="text-sm text-hm-text-muted">로딩 중...</span></div>}>

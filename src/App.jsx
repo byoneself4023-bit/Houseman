@@ -545,7 +545,7 @@ www.houseman.co.kr
   const mobileMoreItems = role === "admin" ? menuItems.filter(m => !mobileTabs.find(t => t.id === m.id)) : [];
 
   return (
-    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: "100vh", background: "var(--color-hm-bg)", fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: "100vh", background: "var(--color-hm-gray-100)", fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", overflow: "hidden" }}>
       <style>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         * { box-sizing: border-box; margin: 0; padding: 0; }
