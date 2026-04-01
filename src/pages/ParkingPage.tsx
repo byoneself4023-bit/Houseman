@@ -229,7 +229,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
   const columns = [
     { label: "건물", key: "building", width: "5%" },
     { label: "호실", key: "room", width: "3%" },
-    { label: "입주자", key: "name", width: "3%", render: (row: Record<string, any>) => <span className="truncate block max-w-[80px]" title={row.name}>{row.name}</span> },
+    { label: "입주자", key: "name", width: "3%", render: (row: Record<string, any>) => <span className="text-xs whitespace-nowrap">{row.name}</span> },
     { label: "연락처", key: "phone", width: "5%", render: (row: Record<string, any>) => <span className="text-xs text-hm-text-sub">{row.phone || "-"}</span> },
     { label: "차번호", key: "carNumber", width: "5%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
