@@ -21,11 +21,9 @@ git --version
 
 ```bash
 cd C:\Users\%USERNAME%\Desktop
-git clone https://github.com/your-org/houseman.git
-cd houseman
+git clone https://github.com/acabar45-ops/Houseman.git
+cd Houseman
 ```
-
-> 실제 저장소 URL은 GitHub 레포 주소로 교체하세요.
 
 ### 1-3. Node.js 20 LTS 설치
 
