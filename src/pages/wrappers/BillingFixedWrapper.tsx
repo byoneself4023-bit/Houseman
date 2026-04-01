@@ -1,5 +1,6 @@
+import { useCallback } from 'react';
 import { useAppContext } from '@/types/appContext';
-import { useContracts, useBillingRecords } from '@/hooks/queries';
+import { useContracts, useBillingRecords, useGenerateBilling } from '@/hooks/queries';
 import { useApiOr } from '@/hooks/useApiOr';
 import { USE_API } from '@/lib/featureFlag';
 import { contractToTenant, billingRecordToLocal } from '@/lib/transforms';
@@ -9,13 +10,32 @@ export function BillingFixedWrapper() {
   const ctx = useAppContext();
   const contractsQ = useContracts();
   const billingQ = useBillingRecords();
+  const generateMutation = useGenerateBilling();
+
+  const addBilling = useCallback(
+    (building: string, room: string, name: string, items: any, total: number) => {
+      // localStorage 모드: 기존 동작
+      ctx.addBilling(building, room, name, items, total);
+
+      // API 모드: BE shape으로 변환하여 mutation 호출
+      if (USE_API) {
+        const bldg = (ctx.allBuildings || []).find((b: any) => b.building === building || b.buildingName === building) as any;
+        const buildingId = bldg?._supabaseId || bldg?.id;
+        if (buildingId) {
+          const now = new Date();
+          generateMutation.mutate({ buildingId: Number(buildingId), periodYear: now.getFullYear(), periodMonth: now.getMonth() + 1 });
+        }
+      }
+    },
+    [ctx, generateMutation],
+  );
 
   return (
     <UtilityBillingPage
       billingMode="fixed"
       myBuildings={ctx.myBuildings}
       activeTenants={useApiOr(contractsQ.data?.map(contractToTenant), ctx.activeTenants)}
-      addBilling={ctx.addBilling} /* TODO Phase 6: useGenerateBilling mutation — API shape differs (buildingId/year/month vs building/room/items) */
+      addBilling={addBilling}
       billingConfirmed={ctx.billingConfirmed}
       setBillingConfirmed={ctx.setBillingConfirmed}
       billingSent={ctx.billingSent}
