@@ -11,7 +11,7 @@ export const TenantSummaryCards: React.FC<TenantSummaryCardsProps> = ({ myTenant
   return (
     <div className="flex gap-2 mb-4 flex-wrap">
       {["전체", "단기", "일반임대", "근생", "관리사무소"].map(t => {
-        const colors: Record<string, string> = { "전체": "#1A1D23", "단기": "#EA580C", "일반임대": "#2563EB", "근생": "#7C3AED", "관리사무소": "#6B7280" };
+        const colors: Record<string, string> = { "전체": "var(--color-hm-text)", "단기": "var(--color-hm-warning)", "일반임대": "var(--color-hm-blue-dark)", "근생": "#7C3AED", "관리사무소": "#6B7280" };
         const cnt = t === "전체" ? myTenants.length : myTenants.filter(r => getRoomType(r.building, r.room) === t).length;
         const isActive = typeFilter === t;
         return (

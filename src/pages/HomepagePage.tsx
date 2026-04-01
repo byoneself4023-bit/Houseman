@@ -357,7 +357,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
             <div className="flex items-center gap-2.5 mb-2 flex-wrap">
               <h2 className={`${isMobile ? 'text-2xl' : 'text-[32px]'} font-extrabold m-0 text-[#111] tracking-tight`}>{v.building} {v.room}호</h2>
               <span className="text-xs font-bold px-3 py-1 text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
-              {isContract && <span className="text-xs font-bold px-3 py-1 bg-[#DC2626] text-white">계약중</span>}
+              {isContract && <span className="text-xs font-bold px-3 py-1 bg-hm-danger text-white">계약중</span>}
             </div>
             {(roomInfo.roomType || roomInfo.area) && (
               <div className="text-sm text-gray-500">
@@ -461,8 +461,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   <div className="text-xs font-semibold text-gray-700 mb-1">부동산 연락처</div>
                   <input value={contractPhone} onChange={e => { setContractPhone(e.target.value); setContractError(""); }}
                     placeholder="02-0000-0000 또는 010-0000-0000"
-                    className={`w-full px-4 py-3 text-[15px] font-[inherit] box-border ${contractError ? 'border-2 border-[#DC2626]' : 'border border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`} />
-                  {contractError && <div className="text-xs text-[#DC2626] mt-1.5">{contractError}</div>}
+                    className={`w-full px-4 py-3 text-[15px] font-[inherit] box-border ${contractError ? 'border-2 border-hm-danger' : 'border border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors`} />
+                  {contractError && <div className="text-xs text-hm-danger mt-1.5">{contractError}</div>}
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => {
@@ -564,7 +564,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       d.setDate(d.getDate() - 1);
                       const exp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
                       setContractForm(p => ({ ...p, expiry: exp }));
-                    }} className="px-3.5 py-2 border border-blue-500 bg-[#EFF6FF] text-[#2563EB] text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
+                    }} className="px-3.5 py-2 border border-blue-500 bg-hm-blue-bg text-hm-blue-dark text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap mt-[18px] hover:bg-blue-100 transition-colors">3개월</button>
                   )}
                   <div>
                     <div className="text-[11px] font-semibold text-gray-500 mb-[3px]">만기일</div>
@@ -684,7 +684,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                   const hmTotal = hmRows.reduce((a, x) => a + x.v, 0);
                   const payTotal = acctMode === "owner3" ? ownerTotal : total;
 
-                  const acctColor: Record<string, string> = { owner: "#EA580C", hm: "#2563EB", deferred: "#92400E" };
+                  const acctColor: Record<string, string> = { owner: "var(--color-hm-warning)", hm: "var(--color-hm-blue-dark)", deferred: "#92400E" };
 
                   return (
                     <div className="mb-4 border border-gray-300 overflow-hidden">
@@ -705,16 +705,16 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                           {/* 계좌별 소계 */}
                           {ownerRows.length > 0 && (
                             <tr className="bg-orange-50 border-b border-gray-200">
-                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#EA580C]" /></td>
-                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-[#EA580C]">건물주</span> <span className="text-gray-400 text-[10px]">{ownerAcct || "미설정"}</span></td>
-                              <td className="px-3 py-1.5 text-right font-bold text-[#EA580C] font-mono">{fmtA(ownerTotal)}</td>
+                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-hm-warning" /></td>
+                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-hm-warning">건물주</span> <span className="text-gray-400 text-[10px]">{ownerAcct || "미설정"}</span></td>
+                              <td className="px-3 py-1.5 text-right font-bold text-hm-warning font-mono">{fmtA(ownerTotal)}</td>
                             </tr>
                           )}
                           {hmRows.length > 0 && (
                             <tr className="bg-blue-50 border-b border-gray-200">
-                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-[#2563EB]" /></td>
-                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-[#2563EB]">하우스맨</span> <span className="text-gray-400 text-[10px]">{hmAcct}</span></td>
-                              <td className="px-3 py-1.5 text-right font-bold text-[#2563EB] font-mono">{fmtA(hmTotal)}</td>
+                              <td className="px-3 py-1.5"><div className="w-2 h-2 rounded-full bg-hm-blue-dark" /></td>
+                              <td className="px-1 py-1.5 text-[11px]"><span className="font-bold text-hm-blue-dark">하우스맨</span> <span className="text-gray-400 text-[10px]">{hmAcct}</span></td>
+                              <td className="px-3 py-1.5 text-right font-bold text-hm-blue-dark font-mono">{fmtA(hmTotal)}</td>
                             </tr>
                           )}
                           {defRows.length > 0 && (
@@ -751,7 +751,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                     const newEvt = {
                       date: contractForm.moveIn, type: "계약",
                       building: v.building, room: v.room, name: "",
-                      color: "#3B82F6", registeredAt, registeredBy: contractForm.broker,
+                      color: "var(--color-hm-blue)", registeredAt, registeredBy: contractForm.broker,
                       registeredSource: "broker", // 부동산 등록 구분
                       contractDate: todayStr,
                       deposit: Number(contractForm.deposit) || 0,
@@ -997,8 +997,8 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
               const isContract = t === "계약중";
               return <button key={t} onClick={() => { setVacancyFilter(t); setVacancyPage(0); }} className="rounded-full border-none cursor-pointer font-[inherit] font-medium text-sm tracking-tight transition-all duration-300" style={{
                 padding: "10px 24px",
-                background: vacancyFilter === t ? (isContract ? "#DC2626" : "var(--clr-black)") : "#fff",
-                color: vacancyFilter === t ? "#fff" : isContract ? "#DC2626" : "var(--clr-muted)",
+                background: vacancyFilter === t ? (isContract ? "var(--color-hm-danger)" : "var(--clr-black)") : "#fff",
+                color: vacancyFilter === t ? "#fff" : isContract ? "var(--color-hm-danger)" : "var(--clr-muted)",
                 boxShadow: vacancyFilter !== t ? "0 1px 4px rgba(0,0,0,0.04)" : "none",
               }}>{t} ({cnt})</button>;
             })}
@@ -1026,7 +1026,7 @@ export const HomepagePage = ({ buildingData = {}, activeVacancies = [], calendar
                       {/* 상단 배지 */}
                       <div className="absolute top-0 left-0 right-0 px-3 py-2.5 flex gap-1.5" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)" }}>
                         <span className="text-[11px] font-bold px-2.5 py-[3px] text-white" style={{ background: badgeColor(v.type) }}>{v.type}</span>
-                        {isContracted && <span className="text-[11px] font-bold px-2.5 py-[3px] bg-[#DC2626] text-white">계약중</span>}
+                        {isContracted && <span className="text-[11px] font-bold px-2.5 py-[3px] bg-hm-danger text-white">계약중</span>}
                       </div>
                       {photos.length > 1 && <span className="absolute bottom-2 right-2 text-[10px] font-semibold px-2 py-[3px] bg-black/60 text-white">{photos.length}</span>}
                     </div>

@@ -8,8 +8,8 @@ import { fmt } from '@/utils';
 const statusStyle = (status: string) => {
   switch (status) {
     case "공실": return { bg: "#FEF3C7", border: "#FDE68A", color: "#92400E", icon: "□" };
-    case "연체": return { bg: "#FEE2E2", border: "#FECACA", color: "#991B1B", icon: "!" };
-    default: return { bg: "#D1FAE5", border: "#A7F3D0", color: "#065F46", icon: "●" };
+    case "연체": return { bg: "#FEE2E2", border: "var(--color-hm-danger-border)", color: "#991B1B", icon: "!" };
+    default: return { bg: "#D1FAE5", border: "var(--color-hm-success-border)", color: "#065F46", icon: "●" };
   }
 };
 
@@ -72,8 +72,8 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
       {/* Legend */}
       <div className="flex gap-4 mb-4 px-3 py-2 bg-hm-bg-hover rounded-lg">
         {[
-          { label: "입주중", bg: "#D1FAE5", border: "#A7F3D0" },
-          { label: "연체", bg: "#FEE2E2", border: "#FECACA" },
+          { label: "입주중", bg: "#D1FAE5", border: "var(--color-hm-success-border)" },
+          { label: "연체", bg: "#FEE2E2", border: "var(--color-hm-danger-border)" },
           { label: "공실", bg: "#FEF3C7", border: "#FDE68A" },
         ].map((l, i) => (
           <div key={i} className="flex items-center gap-1.5 text-[11.5px] text-hm-text-sub">
@@ -94,7 +94,7 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
                 {floor}
               </div>
               {/* Rooms */}
-              <div className="flex-1 flex gap-1 px-2 py-1.5 bg-[#F7F8FA] rounded-r-lg flex-wrap">
+              <div className="flex-1 flex gap-1 px-2 py-1.5 bg-hm-bg-muted rounded-r-lg flex-wrap">
                 {rooms.map((room: string) => {
                   const info = getRoomStatus(room);
                   const st = statusStyle(info.status === "정상" ? "입주" : info.status === "연체" ? "연체" : info.status);
@@ -104,8 +104,8 @@ export const RoomGrid: React.FC<RoomGridProps> = ({
                       onClick={() => { setSelectedRoom(selectedRoom === room ? null : room); setRoomEditMode(false); setRoomDeleteStep(0); setRoomTab("info"); }}
                       className="min-w-[72px] px-2.5 py-2.5 rounded-lg cursor-pointer transition-all duration-150 text-center relative hover:-translate-y-0.5 hover:shadow-md"
                       style={{
-                        background: isSelected ? "#1A1D23" : st.bg,
-                        border: `1.5px solid ${isSelected ? "#1A1D23" : st.border}`,
+                        background: isSelected ? "var(--color-hm-text)" : st.bg,
+                        border: `1.5px solid ${isSelected ? "var(--color-hm-text)" : st.border}`,
                       }}
                     >
                       <div className="text-[13px] font-extrabold mb-0.5" style={{ color: isSelected ? "#fff" : st.color }}>{room}</div>

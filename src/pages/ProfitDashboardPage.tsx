@@ -334,7 +334,7 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
                   key={b.name}
                   className="cursor-pointer transition-colors duration-150 hover:bg-slate-50"
                   style={{
-                    background: selectedBuilding === b.name ? '#EFF6FF' : (isBottom20 ? '#FFFBEB' : undefined),
+                    background: selectedBuilding === b.name ? 'var(--color-hm-blue-bg)' : (isBottom20 ? '#FFFBEB' : undefined),
                   }}
                   onClick={() => setSelectedBuilding(b.name === selectedBuilding ? null : b.name)}
                 >

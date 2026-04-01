@@ -38,7 +38,7 @@ export function AppLayout() {
   };
 
   return (
-    <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} h-screen bg-[#F3F4F8] overflow-hidden`} style={{ fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} h-screen bg-hm-bg overflow-hidden`} style={{ fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       {!isMobile && (
         <Sidebar
           currentStaff={appData.currentStaff}
@@ -59,7 +59,7 @@ export function AppLayout() {
 
         <div className={`flex-1 overflow-auto ${isMobile ? 'p-3 pb-[72px]' : 'p-6'}`}>
           <div key={pathname} className="max-w-[1600px] mx-auto" style={{ animation: 'fadeIn 0.3s ease' }}>
-            <Suspense fallback={<div className="flex justify-center items-center h-[200px]"><span className="text-sm text-[#8F95A3]">로딩 중...</span></div>}>
+            <Suspense fallback={<div className="flex justify-center items-center h-[200px]"><span className="text-sm text-hm-text-muted">로딩 중...</span></div>}>
               <Outlet context={outletContext} />
             </Suspense>
           </div>

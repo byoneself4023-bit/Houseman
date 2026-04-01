@@ -28,17 +28,17 @@ interface StatusBadgeProps {
 }
 
 const statusMap: Record<StatusKey, StatusStyle> = {
-  정상: { bg: 'bg-[#ECFDF5]', text: 'text-[#059669]', border: 'border-[#A7F3D0]' },
-  연체: { bg: 'bg-[#FEF2F2]', text: 'text-[#DC2626]', border: 'border-[#FECACA]' },
-  청구: { bg: 'bg-[#FFF7ED]', text: 'text-[#EA580C]', border: 'border-[#FED7AA]' },
-  완료: { bg: 'bg-[#ECFDF5]', text: 'text-[#059669]', border: 'border-[#A7F3D0]' },
-  진행중: { bg: 'bg-[#FFF7ED]', text: 'text-[#EA580C]', border: 'border-[#FED7AA]' },
+  정상: { bg: 'bg-hm-success-bg', text: 'text-hm-success', border: 'border-hm-success-border' },
+  연체: { bg: 'bg-hm-danger-bg', text: 'text-hm-danger', border: 'border-hm-danger-border' },
+  청구: { bg: 'bg-hm-warning-bg', text: 'text-hm-warning', border: 'border-hm-warning-border' },
+  완료: { bg: 'bg-hm-success-bg', text: 'text-hm-success', border: 'border-hm-success-border' },
+  진행중: { bg: 'bg-hm-warning-bg', text: 'text-hm-warning', border: 'border-hm-warning-border' },
   대기: { bg: 'bg-[#F0F4FF]', text: 'text-[#4F46E5]', border: 'border-[#C7D2FE]' },
-  도래: { bg: 'bg-[#FEF2F2]', text: 'text-[#DC2626]', border: 'border-[#FECACA]' },
-  예정: { bg: 'bg-[#FFF7ED]', text: 'text-[#EA580C]', border: 'border-[#FED7AA]' },
+  도래: { bg: 'bg-hm-danger-bg', text: 'text-hm-danger', border: 'border-hm-danger-border' },
+  예정: { bg: 'bg-hm-warning-bg', text: 'text-hm-warning', border: 'border-hm-warning-border' },
   관심: { bg: 'bg-[#F0F4FF]', text: 'text-[#4F46E5]', border: 'border-[#C7D2FE]' },
-  높음: { bg: 'bg-[#FEF2F2]', text: 'text-[#DC2626]', border: 'border-[#FECACA]' },
-  보통: { bg: 'bg-[#FFF7ED]', text: 'text-[#EA580C]', border: 'border-[#FED7AA]' },
+  높음: { bg: 'bg-hm-danger-bg', text: 'text-hm-danger', border: 'border-hm-danger-border' },
+  보통: { bg: 'bg-hm-warning-bg', text: 'text-hm-warning', border: 'border-hm-warning-border' },
   낮음: { bg: 'bg-[#F0F4FF]', text: 'text-[#6366F1]', border: 'border-[#C7D2FE]' },
   임차인연결: { bg: 'bg-[#FFFBEB]', text: 'text-[#B45309]', border: 'border-[#FDE68A]' },
 };

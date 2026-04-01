@@ -785,8 +785,8 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
   }
 
   // ===== 목록 뷰 =====
-  const typeTabCfg: Record<string, any> = { "단기": { icon: "🏠", c: "#EA580C", bg: "#FFF7ED", desc: "임대료+관리비+공과금 통합 · 월세일 기준 청구" },
-    "고정관리비": { icon: "🏢", c: "#2563EB", bg: "#EFF6FF", desc: "일반임대/근생 · 고정관리비 건물" },
+  const typeTabCfg: Record<string, any> = { "단기": { icon: "🏠", c: "var(--color-hm-warning)", bg: "var(--color-hm-warning-bg)", desc: "임대료+관리비+공과금 통합 · 월세일 기준 청구" },
+    "고정관리비": { icon: "🏢", c: "var(--color-hm-blue-dark)", bg: "var(--color-hm-blue-bg)", desc: "일반임대/근생 · 고정관리비 건물" },
     "변동관리비": { icon: "📊", c: "#7C3AED", bg: "#F5F3FF", desc: "일반임대/근생 · 변동관리비 건물" } };
 
   return (
@@ -819,8 +819,8 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
           return (
             <button key={t} onClick={() => { setTypeTab(t); setFilterTab("전체"); setFilterBuilding("전체"); }}
               className="flex-1 px-1 py-1.5 rounded-lg cursor-pointer font-[inherit] transition-all"
-              style={{ border: active ? `2px solid ${cfg.c}` : "1.5px solid #E0E3E9", background: active ? cfg.bg : "#fff" }}>
-              <div className="text-xs font-extrabold" style={{ color: active ? cfg.c : "#5F6577" }}>{cfg.icon} {t} <span className="text-base font-black">{typeCounts[t]}</span></div>
+              style={{ border: active ? `2px solid ${cfg.c}` : "1.5px solid var(--color-hm-input-border)", background: active ? cfg.bg : "#fff" }}>
+              <div className="text-xs font-extrabold" style={{ color: active ? cfg.c : "var(--color-hm-text-sub)" }}>{cfg.icon} {t} <span className="text-base font-black">{typeCounts[t]}</span></div>
               <div className="text-[8px] text-hm-text-muted mt-[1px]">{cfg.desc}</div>
             </button>
           );
@@ -992,7 +992,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                     </thead>
                     <tbody>
                       {uploadResult.details.map((d: any, i: number) => (
-                        <tr key={i} className="border-b border-[#F0F2F5]" style={{ background: !d.matched ? "#FEF2F2" : d.chainMatch ? "#fff" : (d.lastCur > 0 ? "#FFFBEB" : "#fff") }}>
+                        <tr key={i} className="border-b border-[#F0F2F5]" style={{ background: !d.matched ? "var(--color-hm-danger-bg)" : d.chainMatch ? "#fff" : (d.lastCur > 0 ? "#FFFBEB" : "#fff") }}>
                           <td className="px-1 py-[5px] font-bold">{d.matched ? `${d.building} ${d.room}` : d.code}</td>
                           <td className="px-1 py-[5px] text-hm-text-sub text-[9px]">{d.custNo || "-"}</td>
                           {d.matched ? (<>
@@ -1033,14 +1033,14 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       {typeTab === "단기" ? (
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-6'} gap-1 mb-2`}>
           {[
-            { label: "자동매칭", sub: "업로드완료", count: autoCount, color: "#059669", bg: "#ECFDF5", tab: "자동매칭" },
-            { label: "수동매칭", sub: "수기입력", count: manualCount, color: "#2563EB", bg: "#EFF6FF", tab: "수동매칭" },
-            { label: "미매칭", sub: "데이터없음", count: unmatchedCount, color: "#DC2626", bg: "#FEF2F2", tab: "미매칭" },
-            { label: "확인완료", sub: "발송대기", count: confirmedCount, color: "#059669", bg: "#ECFDF5", tab: "확인완료" },
-            { label: "발송완료", sub: "이번달", count: sentCount, color: "#3B82F6", bg: "#EFF6FF", tab: "발송완료" },
-            { label: "전체", sub: "단기", count: billingItems.length, color: "#5F6577", bg: "#F8FAFC", tab: "전체" },
+            { label: "자동매칭", sub: "업로드완료", count: autoCount, color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", tab: "자동매칭" },
+            { label: "수동매칭", sub: "수기입력", count: manualCount, color: "var(--color-hm-blue-dark)", bg: "var(--color-hm-blue-bg)", tab: "수동매칭" },
+            { label: "미매칭", sub: "데이터없음", count: unmatchedCount, color: "var(--color-hm-danger)", bg: "var(--color-hm-danger-bg)", tab: "미매칭" },
+            { label: "확인완료", sub: "발송대기", count: confirmedCount, color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", tab: "확인완료" },
+            { label: "발송완료", sub: "이번달", count: sentCount, color: "var(--color-hm-blue)", bg: "var(--color-hm-blue-bg)", tab: "발송완료" },
+            { label: "전체", sub: "단기", count: billingItems.length, color: "var(--color-hm-text-sub)", bg: "var(--color-hm-bg-slate)", tab: "전체" },
           ].map((s, i) => (
-            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
               <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
               <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
             </Card>
@@ -1049,11 +1049,11 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
       ) : (
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-1 mb-2`}>
           {[
-            { label: "확인완료", count: confirmedCount, color: "#059669", bg: "#ECFDF5", tab: "확인완료" },
-            { label: "발송완료", count: sentCount, color: "#3B82F6", bg: "#EFF6FF", tab: "발송완료" },
-            { label: "전체", count: billingItems.length, color: "#5F6577", bg: "#F8FAFC", tab: "전체" },
+            { label: "확인완료", count: confirmedCount, color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", tab: "확인완료" },
+            { label: "발송완료", count: sentCount, color: "var(--color-hm-blue)", bg: "var(--color-hm-blue-bg)", tab: "발송완료" },
+            { label: "전체", count: billingItems.length, color: "var(--color-hm-text-sub)", bg: "var(--color-hm-bg-slate)", tab: "전체" },
           ].map((s, i) => (
-            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+            <Card key={i} onClick={() => setFilterTab(s.tab)} className="cursor-pointer !px-2 !py-1.5 transition-all hover:shadow-md" style={{ background: filterTab === s.tab ? s.bg : "#fff", border: filterTab === s.tab ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
               <div className="text-[8px] text-hm-text-muted font-semibold">{s.label}</div>
               <div className="text-lg font-extrabold" style={{ color: s.color }}>{s.count}</div>
             </Card>
@@ -1125,7 +1125,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                   <span className="text-[10px] font-bold text-[#92400E] px-1.5 py-0.5 rounded bg-[#FFFBEB] whitespace-nowrap">{r.dueDay}일</span>
                   {r.daysUntilDue >= 0 ? (
                     <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-[5px] whitespace-nowrap text-white"
-                      style={{ background: r.daysUntilDue <= 3 ? "#DC2626" : r.daysUntilDue <= 7 ? "#F59E0B" : "#E5E7EB", color: r.daysUntilDue <= 7 ? "#fff" : "#5F6577" }}>D-{r.daysUntilDue}</span>
+                      style={{ background: r.daysUntilDue <= 3 ? "var(--color-hm-danger)" : r.daysUntilDue <= 7 ? "#F59E0B" : "#E5E7EB", color: r.daysUntilDue <= 7 ? "#fff" : "var(--color-hm-text-sub)" }}>D-{r.daysUntilDue}</span>
                   ) : (
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-[5px] bg-hm-bg text-hm-text-muted whitespace-nowrap">D+{Math.abs(r.daysUntilDue)}</span>
                   )}
@@ -1133,8 +1133,8 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className="text-[9px] font-bold px-2 py-[3px] rounded-[5px] whitespace-nowrap"
                     style={{
-                      background: r.confirmed ? "#ECFDF5" : r.matchStatus === "none" ? "#FEF2F2" : r.matchStatus === "manual" ? "#EFF6FF" : "#ECFDF5",
-                      color: r.confirmed ? "#059669" : r.matchStatus === "none" ? "#DC2626" : r.matchStatus === "manual" ? "#2563EB" : "#059669",
+                      background: r.confirmed ? "var(--color-hm-success-bg)" : r.matchStatus === "none" ? "var(--color-hm-danger-bg)" : r.matchStatus === "manual" ? "var(--color-hm-blue-bg)" : "var(--color-hm-success-bg)",
+                      color: r.confirmed ? "var(--color-hm-success)" : r.matchStatus === "none" ? "var(--color-hm-danger)" : r.matchStatus === "manual" ? "var(--color-hm-blue-dark)" : "var(--color-hm-success)",
                     }}>{r.confirmed ? "확인완료" : r.matchStatus === "none" ? "미매칭" : r.matchStatus === "manual" ? "수동매칭" : "자동매칭"}</span>
                   <div className="flex gap-[3px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     {!r.confirmed ? (
@@ -1179,7 +1179,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       className={`${inpCls} w-[66px]`} />
                     <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={elecVal ? fmt(elecVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], elec: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: elecVal ? "#FFF7ED" : "#FEF2F2", borderColor: elecVal ? "#FDBA74" : "#FECACA" }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: elecVal ? "var(--color-hm-warning-bg)" : "var(--color-hm-danger-bg)", borderColor: elecVal ? "#FDBA74" : "var(--color-hm-danger-border)" }} placeholder="0" />
                   </div>
                   <div className={`flex items-center gap-1.5 w-full rounded-lg relative ${r.noGas && !gasVal ? 'py-2 px-3 bg-hm-danger-bg border-[2.5px] border-red-500' : 'py-1 px-2 bg-[#FFF1F2] border border-[#FECDD3]'}`}>
                     {r.noGas && !gasVal && <div className="absolute -top-px right-2 bg-hm-danger text-white text-[9px] font-extrabold px-2 py-[1px] rounded-b-md tracking-wider">미매칭</div>}
@@ -1218,7 +1218,7 @@ export const UtilityBillingPage = ({ billingMode = "fixed", myBuildings = [], ac
                       className={`${inpCls} w-[66px]`} />
                     <span className="text-[11px] text-gray-500 font-bold whitespace-nowrap">금액</span>
                     <input type="text" value={gasVal ? fmt(gasVal) : ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValues((prev: Record<string, any>) => ({ ...prev, [r.key]: { ...prev[r.key], gas: parseInt(e.target.value.replace(/,/g, "")) || 0 } }))}
-                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: gasVal ? "#FFF1F2" : "#FEF2F2", borderColor: gasVal ? "#FDA4AF" : "#FECACA" }} placeholder="0" />
+                      className={`${inpCls} w-24 !font-extrabold`} style={{ background: gasVal ? "#FFF1F2" : "var(--color-hm-danger-bg)", borderColor: gasVal ? "#FDA4AF" : "var(--color-hm-danger-border)" }} placeholder="0" />
                   </div>
                 </>}
                 <div className="ml-auto text-xs font-extrabold text-hm-text whitespace-nowrap">

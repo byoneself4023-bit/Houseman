@@ -171,7 +171,7 @@ export const DunningTemplateSettings: React.FC = () => {
       </div>
 
       {/* Description */}
-      <Card className="px-[18px] py-3.5 mb-3 bg-[#F8FAFC] border border-hm-border">
+      <Card className="px-[18px] py-3.5 mb-3 bg-hm-bg-slate border border-hm-border">
         <div className="text-xs text-hm-text-sub leading-relaxed">
           {currentType?.fixedStages ? (
             <>
@@ -295,7 +295,7 @@ export const DunningTemplateSettings: React.FC = () => {
         {!currentType?.fixedStages && stages.length > 0 && (
           <button
             onClick={addStage}
-            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-[#F8FAFC] text-hm-blue font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
+            className="px-5 py-2.5 rounded-[10px] border-[1.5px] border-dashed border-blue-200 bg-hm-bg-slate text-hm-blue font-bold text-[13px] cursor-pointer font-[inherit] transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
           >
             + 단계 추가
           </button>

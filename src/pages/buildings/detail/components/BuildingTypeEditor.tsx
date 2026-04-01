@@ -13,8 +13,8 @@ import { persistDeleteBuilding } from '../buildingDetailApi';
 const statusStyle = (status: string) => {
   switch (status) {
     case "공실": return { bg: "#FEF3C7", border: "#FDE68A", color: "#92400E", icon: "□" };
-    case "연체": return { bg: "#FEE2E2", border: "#FECACA", color: "#991B1B", icon: "!" };
-    default: return { bg: "#D1FAE5", border: "#A7F3D0", color: "#065F46", icon: "●" };
+    case "연체": return { bg: "#FEE2E2", border: "var(--color-hm-danger-border)", color: "#991B1B", icon: "!" };
+    default: return { bg: "#D1FAE5", border: "var(--color-hm-success-border)", color: "#065F46", icon: "●" };
   }
 };
 
@@ -72,7 +72,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
           <div className="fixed inset-0 bg-black/60 flex items-start justify-center z-[9999] overflow-y-auto px-5 py-10">
             <div className="bg-white rounded-2xl max-w-[800px] w-full shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
               {/* Preview Header */}
-              <div className="px-7 py-5 rounded-t-2xl flex justify-between items-center" style={{ background: "linear-gradient(135deg, #1A1D23 0%, #2D3748 100%)" }}>
+              <div className="px-7 py-5 rounded-t-2xl flex justify-between items-center" style={{ background: "linear-gradient(135deg, var(--color-hm-text) 0%, #2D3748 100%)" }}>
                 <div>
                   <div className="text-lg font-black text-white">📋 {buildingName} 미리보기</div>
                   <div className="text-[11px] text-[#A0AEC0] mt-0.5">{detailBuildingTypes.join(" + ")} · {bldg.rooms}실 · {detail.owner && `건물주: ${detail.owner}`}</div>
@@ -190,8 +190,8 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                     <div className="flex flex-wrap gap-1.5">
                       {[
                         { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
-                        { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
-                        { key: "fire", label: "소방", icon: "🔥", color: "#DC2626" },
+                        { key: "elevator", label: "승강기", icon: "🛗", color: "var(--color-hm-blue)" },
+                        { key: "fire", label: "소방", icon: "🔥", color: "var(--color-hm-danger)" },
                         { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1" },
                         { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6" },
                         { key: "custom1", label: "기타1", icon: "📋", color: "#64748B" },
@@ -355,7 +355,7 @@ export const BuildingTypeEditor: React.FC<BuildingTypeEditorProps> = ({
                       }
                       setDeleteStep(0); onBack();
                     }
-                    else if (input) { input.style.borderColor = "#DC2626"; input.style.background = "#FEF2F2"; input.placeholder = "건물명이 일치하지 않습니다"; }
+                    else if (input) { input.style.borderColor = "var(--color-hm-danger)"; input.style.background = "var(--color-hm-danger-bg)"; input.placeholder = "건물명이 일치하지 않습니다"; }
                   }} className="flex-1 py-3 rounded-[10px] border-none bg-[#7F1D1D] text-white font-extrabold text-sm cursor-pointer font-[inherit] hover:opacity-90 transition-opacity">🗑 영구 삭제</button>
                 </div>
               </>

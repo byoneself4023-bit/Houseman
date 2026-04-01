@@ -194,7 +194,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
       <SectionTitle sub={`총 ${transactions.length}건`}>🏦 입출금 관리</SectionTitle>
 
       {/* 안내 코멘트 */}
-      <Card className="mb-4 !px-[18px] !py-3.5 bg-[#F8FAFC] border border-hm-border">
+      <Card className="mb-4 !px-[18px] !py-3.5 bg-hm-bg-slate border border-hm-border">
         <div className="text-xs font-extrabold text-hm-text mb-2">a.bankda.com 연동 자동 입금 확인</div>
         <div className="text-[11px] text-hm-text-sub leading-[1.8]">
           뱅크다(a.bankda.com)와 연결되어 입출금 내역을 자동으로 확인합니다.
@@ -218,7 +218,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
           <div className="text-[10px] text-hm-text-muted font-semibold mb-1">이번달 입금</div>
           <div className="text-[22px] font-extrabold text-hm-success">{fmt(transactions.filter(t => t.type === "입금").reduce((s, t) => s + t.amount, 0))}원</div>
         </Card>
-        <Card className="bg-hm-danger-bg border border-[#FECACA]">
+        <Card className="bg-hm-danger-bg border border-hm-danger-border">
           <div className="text-[10px] text-hm-text-muted font-semibold mb-1">총 미수금</div>
           <div className="text-[22px] font-extrabold text-hm-danger">{fmt(Object.values(roomBalances).reduce((s, v) => s + v, 0))}원</div>
         </Card>
@@ -240,7 +240,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
         if (myDebts.length === 0) return null;
         return (
           <>
-            <Card className={`mb-4 cursor-pointer ${totalDebtAmt > 0 ? 'border-2 border-hm-danger bg-hm-danger-bg' : 'border-[1.5px] border-hm-border bg-[#F8FAFC]'}`} onClick={() => setShowDebtSection(!showDebtSection)}>
+            <Card className={`mb-4 cursor-pointer ${totalDebtAmt > 0 ? 'border-2 border-hm-danger bg-hm-danger-bg' : 'border-[1.5px] border-hm-border bg-hm-bg-slate'}`} onClick={() => setShowDebtSection(!showDebtSection)}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-base">🚪</span>
@@ -256,7 +256,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               </div>
             </Card>
             {showDebtSection && (
-              <Card className="mb-4 border-[1.5px] border-[#FECACA] bg-white">
+              <Card className="mb-4 border-[1.5px] border-hm-danger-border bg-white">
                 <div className="text-[13px] font-extrabold text-hm-danger mb-3">🚪 퇴실 미수금 내역</div>
                 <div className="flex gap-1.5 mb-3">
                   {["전체", "미수", "회수완료", "포기"].map(s => {
@@ -273,7 +273,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                 ) : (
                   <div className="flex flex-col gap-1.5">
                     {myDebts.map((d, i) => (
-                      <div key={d.id || i} className={`flex items-center justify-between px-3 py-2.5 rounded-lg ${d.status === "미수" ? 'bg-hm-danger-bg border border-[#FECACA]' : d.status === "회수완료" ? 'bg-hm-success-bg border border-[#BBF7D0]' : 'bg-[#F8FAFC] border border-hm-border'}`}>
+                      <div key={d.id || i} className={`flex items-center justify-between px-3 py-2.5 rounded-lg ${d.status === "미수" ? 'bg-hm-danger-bg border border-hm-danger-border' : d.status === "회수완료" ? 'bg-hm-success-bg border border-[#BBF7D0]' : 'bg-hm-bg-slate border border-hm-border'}`}>
                         <div>
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span className="text-xs font-extrabold text-hm-text">{d.building} {d.room}호</span>
@@ -391,7 +391,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               const { bankTx, score, tenant, reason, saveName, candidates } = m;
               const isManual = manualAssign === bankTx.id;
               return (
-                <div key={bankTx.id} className={`px-3.5 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-[#FECACA]'}`}>
+                <div key={bankTx.id} className={`px-3.5 py-3 rounded-[10px] border-[1.5px] ${score === 100 ? 'bg-[#F0FDF4] border-[#BBF7D0]' : score >= 50 ? 'bg-[#FFFBEB] border-[#FDE68A]' : 'bg-hm-danger-bg border-hm-danger-border'}`}>
                   {/* 뱅크다 거래 정보 */}
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
@@ -442,7 +442,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
 
                   {/* 수동 지정 패널 */}
                   {isManual && (
-                    <div className="mt-2.5 px-3 py-2.5 rounded-lg bg-[#F8FAFC] border border-hm-border">
+                    <div className="mt-2.5 px-3 py-2.5 rounded-lg bg-hm-bg-slate border border-hm-border">
                       <div className="text-[10px] font-bold text-hm-text-sub mb-2">임차인 선택</div>
                       {candidates && candidates.length > 0 && (
                         <div className="mb-2">
@@ -546,7 +546,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
                   className="px-6 py-2 rounded-lg border-none bg-hm-success text-white text-[13px] font-extrabold cursor-pointer font-[inherit] whitespace-nowrap hover:opacity-90 active:scale-95 transition-all">등록</button>
               </div>
               {formBld && formRoom && (
-                <div className="mt-2.5 px-3 py-2 rounded-md bg-[#F8FAFC] text-xs text-hm-text-sub">
+                <div className="mt-2.5 px-3 py-2 rounded-md bg-hm-bg-slate text-xs text-hm-text-sub">
                   현재 잔액: <strong className={(roomBalances[`${formBld}_${formRoom}`] || 0) > 0 ? 'text-hm-danger' : 'text-hm-success'}>{fmt(roomBalances[`${formBld}_${formRoom}`] || 0)}원</strong>
                   {formAmount && <> → 입금 후: <strong className="text-hm-success">{fmt(Math.max(0, (roomBalances[`${formBld}_${formRoom}`] || 0) - parseInt(formAmount.replace(/,/g, "") || "0")))}원</strong></>}
                 </div>

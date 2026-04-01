@@ -568,7 +568,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                 photos={photos}
                 maxPhotos={50}
                 label="퇴실사진"
-                color="#DC2626"
+                color="var(--color-hm-danger)"
                 onAdd={(newPhotos: any[]) => {
                   const merged = [...photos, ...newPhotos];
                   setActiveTenants?.((prev: any[]) => prev.map(x => x.id === pm.id ? { ...x, moveOutPhotos: merged } : x));
@@ -649,7 +649,7 @@ export const TenantsPage = ({ myBuildings = [], parkingInfo = {}, setParkingInfo
                   className="w-8 h-8 rounded-lg border border-hm-input-border bg-white cursor-pointer text-base font-[inherit] hover:bg-hm-bg-hover transition-colors">✕</button>
               </div>
               <PhotoDropZone
-                label="입주체크사진" color="#EA580C" maxPhotos={50}
+                label="입주체크사진" color="var(--color-hm-warning)" maxPhotos={50}
                 photos={cpPhotos}
                 onAdd={(newPhotos: any[]) => {
                   const updated = [...cpPhotos, ...newPhotos];

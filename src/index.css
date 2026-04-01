@@ -116,33 +116,62 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-bell-ring: bell-ring 0.6s ease-in-out;
 
-  /* Houseman custom colors */
+  /* ── Houseman Design Tokens ── */
+
+  /* Brand */
+  --color-hm-primary: #4361EE;
+  --color-hm-primary-hover: #3A56D4;
+  --color-hm-primary-light: #EEF2FF;
+
+  /* Brand alias (하위호환) */
+  --color-hm-blue: #4361EE;
+  --color-hm-blue-dark: #3A56D4;
+  --color-hm-blue-bg: #EEF2FF;
+
+  /* Semantic */
+  --color-hm-success: #16A34A;
+  --color-hm-success-bg: #F0FDF4;
+  --color-hm-success-border: #BBF7D0;
+
+  --color-hm-warning: #D97706;
+  --color-hm-warning-bg: #FFFBEB;
+  --color-hm-warning-border: #FDE68A;
+
+  --color-hm-danger: #DC2626;
+  --color-hm-danger-bg: #FEF2F2;
+  --color-hm-danger-border: #FECACA;
+
+  --color-hm-info: #0284C7;
+  --color-hm-info-bg: #F0F9FF;
+  --color-hm-info-border: #BAE6FD;
+
+  /* Gray Scale 7단계 */
+  --color-hm-gray-950: #0F172A;
+  --color-hm-gray-800: #1E293B;
+  --color-hm-gray-600: #475569;
+  --color-hm-gray-500: #64748B;
+  --color-hm-gray-300: #CBD5E1;
+  --color-hm-gray-200: #E2E8F0;
+  --color-hm-gray-100: #F1F5F9;
+  --color-hm-gray-50: #F8FAFC;
+
+  /* Semantic alias (하위호환) */
+  --color-hm-text: #1E293B;
+  --color-hm-text-muted: #64748B;
+  --color-hm-text-sub: #475569;
+  --color-hm-border: #E2E8F0;
+  --color-hm-input-border: #E2E8F0;
+  --color-hm-bg: #F8FAFC;
+  --color-hm-bg-hover: #F1F5F9;
+  --color-hm-bg-muted: #F1F5F9;
+  --color-hm-bg-slate: #F8FAFC;
+
+  /* Sidebar */
   --color-hm-sidebar: #1B1F2E;
   --color-hm-sidebar-active: #2A3352;
   --color-hm-sidebar-border: #2A2F42;
   --color-hm-sidebar-muted: #4B5563;
-  --color-hm-sidebar-text: #9CA3B0;
-  --color-hm-text: #1A1D23;
-  --color-hm-text-muted: #8F95A3;
-  --color-hm-text-sub: #5F6577;
-  --color-hm-border: #E8ECF0;
-  --color-hm-input-border: #E0E3E9;
-  --color-hm-bg: #F3F4F8;
-  --color-hm-bg-hover: #F9FAFB;
-  --color-hm-bg-muted: #F7F8FA;
-  --color-hm-bg-slate: #F8FAFC;
-  --color-hm-success: #059669;
-  --color-hm-success-bg: #ECFDF5;
-  --color-hm-success-border: #A7F3D0;
-  --color-hm-warning: #EA580C;
-  --color-hm-warning-bg: #FFF7ED;
-  --color-hm-warning-border: #FED7AA;
-  --color-hm-danger: #DC2626;
-  --color-hm-danger-bg: #FEF2F2;
-  --color-hm-danger-border: #FECACA;
-  --color-hm-blue: #3B82F6;
-  --color-hm-blue-dark: #2563EB;
-  --color-hm-blue-bg: #EFF6FF;
+  --color-hm-sidebar-text: #94A3B8;
 }
 
 /* ── Global base styles ── */

@@ -390,49 +390,49 @@ www.houseman.co.kr
         <style>{`@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css'); * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
         <div style={{ width: 380, padding: "48px 36px", borderRadius: 20, background: "#fff", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
           <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <div style={{ width: 56, height: 56, borderRadius: 14, background: "linear-gradient(135deg, #3B82F6, #2563EB)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>🏗️</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: "#1A1D23", letterSpacing: "-0.02em" }}>HOUSEMAN</div>
-            <div style={{ fontSize: 12, color: "#8F95A3", marginTop: 4 }}>건물관리 시스템</div>
+            <div style={{ width: 56, height: 56, borderRadius: 14, background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>🏗️</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: "var(--color-hm-text)", letterSpacing: "-0.02em" }}>HOUSEMAN</div>
+            <div style={{ fontSize: 12, color: "var(--color-hm-text-muted)", marginTop: 4 }}>건물관리 시스템</div>
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 6 }}>연락처 (ID)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-hm-text-sub)", marginBottom: 6 }}>연락처 (ID)</div>
             <input value={loginPhone} onChange={e => { setLoginPhone(e.target.value); setLoginError(""); }}
               placeholder="010-0000-0000"
               onKeyDown={e => e.key === "Enter" && handleLogin()}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid #E0E3E9", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
-              onFocus={e => e.target.style.borderColor = "#3B82F6"}
-              onBlur={e => e.target.style.borderColor = "#E0E3E9"} />
+              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
+              onFocus={e => e.target.style.borderColor = "var(--color-hm-blue)"}
+              onBlur={e => e.target.style.borderColor = "var(--color-hm-input-border)"} />
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#5F6577", marginBottom: 6 }}>비밀번호</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-hm-text-sub)", marginBottom: 6 }}>비밀번호</div>
             <input type="password" value={loginPw} onChange={e => { setLoginPw(e.target.value); setLoginError(""); }}
               placeholder="비밀번호 입력"
               onKeyDown={e => e.key === "Enter" && handleLogin()}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid #E0E3E9", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
-              onFocus={e => e.target.style.borderColor = "#3B82F6"}
-              onBlur={e => e.target.style.borderColor = "#E0E3E9"} />
+              style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1.5px solid var(--color-hm-input-border)", fontSize: 14, fontFamily: "inherit", outline: "none", transition: "border 0.2s" }}
+              onFocus={e => e.target.style.borderColor = "var(--color-hm-blue)"}
+              onBlur={e => e.target.style.borderColor = "var(--color-hm-input-border)"} />
           </div>
 
           {loginError && (
-            <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF2F2", border: "1px solid #FECACA", marginBottom: 16 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#DC2626" }}>⚠ {loginError}</span>
+            <div style={{ padding: "10px 14px", borderRadius: 8, background: "var(--color-hm-danger-bg)", border: "1px solid var(--color-hm-danger-border)", marginBottom: 16 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-hm-danger)" }}>⚠ {loginError}</span>
             </div>
           )}
 
           <button onClick={handleLogin}
-            style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: loginPhone && loginPw ? "linear-gradient(135deg, #3B82F6, #2563EB)" : "#D1D5DB", color: "#fff", fontSize: 15, fontWeight: 800, cursor: loginPhone && loginPw ? "pointer" : "default", fontFamily: "inherit", transition: "all 0.2s" }}>
+            style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: loginPhone && loginPw ? "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" : "#D1D5DB", color: "#fff", fontSize: 15, fontWeight: 800, cursor: loginPhone && loginPw ? "pointer" : "default", fontFamily: "inherit", transition: "all 0.2s" }}>
             로그인
           </button>
 
-          <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: 10, background: "#F8FAFC", border: "1px solid #E8ECF0" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#8F95A3", marginBottom: 8 }}>테스트 계정</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 11, color: "#5F6577" }}>
+          <div style={{ marginTop: 24, padding: "14px 16px", borderRadius: 10, background: "var(--color-hm-bg-slate)", border: "1px solid var(--color-hm-border)" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--color-hm-text-muted)", marginBottom: 8 }}>테스트 계정</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 11, color: "var(--color-hm-text-sub)" }}>
               {initialStaffMembers.map(s => (
                 <div key={s.id} onClick={() => { setLoginPhone(s.phone); setLoginPw(s.pw); setLoginError(""); }}
-                  style={{ padding: "6px 8px", borderRadius: 6, cursor: "pointer", background: "#fff", border: "1px solid #E8ECF0", transition: "all 0.15s" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#EFF6FF"}
+                  style={{ padding: "6px 8px", borderRadius: 6, cursor: "pointer", background: "#fff", border: "1px solid var(--color-hm-border)", transition: "all 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--color-hm-blue-bg)"}
                   onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
                   <span style={{ fontWeight: 700 }}>{s.name}</span>
                   <span style={{ color: "#B0B5C1", marginLeft: 4, fontSize: 9 }}>{s.pw}</span>
@@ -545,7 +545,7 @@ www.houseman.co.kr
   const mobileMoreItems = role === "admin" ? menuItems.filter(m => !mobileTabs.find(t => t.id === m.id)) : [];
 
   return (
-    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: "100vh", background: "#F3F4F8", fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: "100vh", background: "var(--color-hm-bg)", fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", overflow: "hidden" }}>
       <style>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -571,7 +571,7 @@ www.houseman.co.kr
                   로그아웃
                 </button>
                 <button onClick={() => { if(confirm("데이터를 초기화합니다. 계속?")) { localStorage.clear(); location.reload(); } }}
-                  style={{ padding: "3px 8px", borderRadius: 5, border: "1px solid #DC2626", background: "transparent", color: "#DC2626", fontSize: 9, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                  style={{ padding: "3px 8px", borderRadius: 5, border: "1px solid var(--color-hm-danger)", background: "transparent", color: "var(--color-hm-danger)", fontSize: 9, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                   리셋
                 </button>
               </div>
@@ -651,7 +651,7 @@ www.houseman.co.kr
                           {menuBadges[m.id]}
                         </span>
                       )}
-                      {active && sidebarOpen && !menuBadges[m.id] && <div style={{ marginLeft: "auto", width: 5, height: 5, borderRadius: "50%", background: "#3B82F6" }} />}
+                      {active && sidebarOpen && !menuBadges[m.id] && <div style={{ marginLeft: "auto", width: 5, height: 5, borderRadius: "50%", background: "var(--color-hm-blue)" }} />}
                     </div>
                   );
                 })}
@@ -673,25 +673,25 @@ www.houseman.co.kr
       {/* Main Content */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         {/* Top Bar */}
-        <div style={{ height: isMobile ? 48 : 56, background: "#fff", borderBottom: "1px solid #E8ECF0", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 14px" : "0 24px", flexShrink: 0 }}>
+        <div style={{ height: isMobile ? 48 : 56, background: "#fff", borderBottom: "1px solid var(--color-hm-border)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "0 14px" : "0 24px", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 12 }}>
             <span style={{ fontSize: isMobile ? 15 : 17 }}>{role === "owner" ? "🏠" : role === "homepage" ? "🌐" : menuItems.find(m => m.id === page)?.icon}</span>
-            <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 700, color: "#1A1D23" }}>
+            <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 700, color: "var(--color-hm-text)" }}>
               {role === "owner" ? "내 건물 현황" : role === "homepage" ? "공실 매물" : menuItems.find(m => m.id === page)?.label}
-              {!isMobile && role !== "owner" && selectedBuilding && <span style={{ color: "#8F95A3", fontWeight: 500 }}> › {selectedBuilding}</span>}
+              {!isMobile && role !== "owner" && selectedBuilding && <span style={{ color: "var(--color-hm-text-muted)", fontWeight: 500 }}> › {selectedBuilding}</span>}
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 16 }}>
             {!isMobile && currentStaff && (
-              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, background: isGeneral ? "#EFF6FF" : "#FEF3C7", border: `1px solid ${isGeneral ? "#BFDBFE" : "#FDE68A"}` }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: isGeneral ? "#2563EB" : "#92400E" }}>👤 {currentStaff.name}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8, background: isGeneral ? "var(--color-hm-blue-bg)" : "#FEF3C7", border: `1px solid ${isGeneral ? "#BFDBFE" : "#FDE68A"}` }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: isGeneral ? "var(--color-hm-blue-dark)" : "#92400E" }}>👤 {currentStaff.name}</span>
                 {!isGeneral && <span style={{ fontSize: 10, color: "#B45309" }}>({myBuildings.length}건물)</span>}
               </div>
             )}
-            <span style={{ fontSize: 12, color: "#8F95A3" }}>
+            <span style={{ fontSize: 12, color: "var(--color-hm-text-muted)" }}>
               {time.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" })}
             </span>
-            <span style={{ fontSize: 12, color: "#8F95A3" }}>
+            <span style={{ fontSize: 12, color: "var(--color-hm-text-muted)" }}>
               {time.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
             </span>
             <div style={{ position: "relative" }}>
@@ -699,7 +699,7 @@ www.houseman.co.kr
               <div style={{ position: "absolute", top: -2, right: -4, width: 14, height: 14, borderRadius: "50%", background: "#EF4444", color: "#fff", fontSize: 8, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>3</div>
             </div>
             {!isMobile && (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px", borderRadius: 8, background: "#F7F8FA", border: "1px solid #E8ECF0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px", borderRadius: 8, background: "var(--color-hm-bg-muted)", border: "1px solid var(--color-hm-border)" }}>
                 <span style={{ fontSize: 14 }}>{currentMode.icon}</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: currentMode.color }}>{currentMode.label}</span>
               </div>
@@ -709,7 +709,7 @@ www.houseman.co.kr
 
         {/* Staff Filter Banner */}
         {currentStaff && !isGeneral && !isMobile && (
-          <div style={{ padding: "8px 24px", background: "linear-gradient(90deg, #FEF3C7, #FFF7ED)", borderBottom: "1px solid #FDE68A", display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ padding: "8px 24px", background: "linear-gradient(90deg, #FEF3C7, var(--color-hm-warning-bg))", borderBottom: "1px solid #FDE68A", display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: "#92400E" }}>📌 {currentStaff.name} · {myBuildings.length}개 건물</span>
             <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
               {myBuildings.map(b => (
@@ -722,7 +722,7 @@ www.houseman.co.kr
         {/* Page Content */}
         <div style={{ flex: 1, overflow: "auto", padding: isMobile ? 12 : 24, paddingBottom: isMobile ? 72 : 24 }}>
           <div key={`${page}-${selectedBuilding || ''}`} style={{ animation: "fadeIn 0.3s ease", maxWidth: 1200 }}>
-            <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200 }}><span style={{ fontSize: 14, color: "#8F95A3" }}>로딩 중...</span></div>}>
+            <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200 }}><span style={{ fontSize: 14, color: "var(--color-hm-text-muted)" }}>로딩 중...</span></div>}>
               {renderPage()}
             </Suspense>
           </div>
@@ -735,33 +735,33 @@ www.houseman.co.kr
           {showMobileMore && (
             <div onClick={() => setShowMobileMore(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 998 }}>
               <div onClick={e => e.stopPropagation()} style={{ position: "absolute", bottom: 60, left: 8, right: 8, background: "#fff", borderRadius: 16, padding: "12px", boxShadow: "0 -4px 20px rgba(0,0,0,0.15)", maxHeight: "60vh", overflowY: "auto" }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#8F95A3", marginBottom: 8, padding: "0 4px" }}>전체 메뉴</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-hm-text-muted)", marginBottom: 8, padding: "0 4px" }}>전체 메뉴</div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 4 }}>
                   {menuItems.map(m => (
                     <div key={m.id} onClick={() => { setPage(m.id); setSelectedBuilding(null); setShowMobileMore(false); }}
-                      style={{ padding: "10px 4px", borderRadius: 10, background: page === m.id ? "#EFF6FF" : "#F9FAFB", textAlign: "center", cursor: "pointer" }}>
+                      style={{ padding: "10px 4px", borderRadius: 10, background: page === m.id ? "var(--color-hm-blue-bg)" : "var(--color-hm-bg-hover)", textAlign: "center", cursor: "pointer" }}>
                       <div style={{ fontSize: 20, marginBottom: 2 }}>{m.icon}</div>
-                      <div style={{ fontSize: 10, fontWeight: page === m.id ? 700 : 500, color: page === m.id ? "#2563EB" : "#5F6577" }}>{m.label}</div>
+                      <div style={{ fontSize: 10, fontWeight: page === m.id ? 700 : 500, color: page === m.id ? "var(--color-hm-blue-dark)" : "var(--color-hm-text-sub)" }}>{m.label}</div>
                     </div>
                   ))}
                 </div>
-                <div style={{ borderTop: "1px solid #E8ECF0", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "#8F95A3" }}>👤 {currentStaff?.name || "—"}</span>
+                <div style={{ borderTop: "1px solid var(--color-hm-border)", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 11, color: "var(--color-hm-text-muted)" }}>👤 {currentStaff?.name || "—"}</span>
                   <button onClick={() => { handleLogout(); setShowMobileMore(false); }}
-                    style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #E0E3E9", background: "#fff", fontSize: 11, fontWeight: 600, color: "#DC2626", cursor: "pointer", fontFamily: "inherit" }}>로그아웃</button>
+                    style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid var(--color-hm-input-border)", background: "#fff", fontSize: 11, fontWeight: 600, color: "var(--color-hm-danger)", cursor: "pointer", fontFamily: "inherit" }}>로그아웃</button>
                 </div>
               </div>
             </div>
           )}
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 56, background: "#fff", borderTop: "1px solid #E8ECF0", display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 999, paddingBottom: "env(safe-area-inset-bottom)" }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 56, background: "#fff", borderTop: "1px solid var(--color-hm-border)", display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 999, paddingBottom: "env(safe-area-inset-bottom)" }}>
             {mobileTabs.map(t => {
               const active = page === t.id;
               return (
                 <div key={t.id} onClick={() => { setPage(t.id); setSelectedBuilding(null); }}
                   style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 1, padding: "6px 0", cursor: "pointer" }}>
                   <span style={{ fontSize: 20 }}>{t.icon}</span>
-                  <span style={{ fontSize: 9, fontWeight: active ? 700 : 500, color: active ? "#2563EB" : "#8F95A3" }}>{t.label}</span>
-                  {active && <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#2563EB", marginTop: -1 }} />}
+                  <span style={{ fontSize: 9, fontWeight: active ? 700 : 500, color: active ? "var(--color-hm-blue-dark)" : "var(--color-hm-text-muted)" }}>{t.label}</span>
+                  {active && <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-hm-blue-dark)", marginTop: -1 }} />}
                 </div>
               );
             })}
@@ -769,7 +769,7 @@ www.houseman.co.kr
               <div onClick={() => setShowMobileMore(!showMobileMore)}
                 style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 1, padding: "6px 0", cursor: "pointer" }}>
                 <span style={{ fontSize: 20 }}>⋯</span>
-                <span style={{ fontSize: 9, fontWeight: 500, color: "#8F95A3" }}>더보기</span>
+                <span style={{ fontSize: 9, fontWeight: 500, color: "var(--color-hm-text-muted)" }}>더보기</span>
               </div>
             )}
           </div>

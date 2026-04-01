@@ -72,7 +72,7 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
             onBlur={() => setTimeout(() => setShowBuildingSuggestions(false), 150)}
             placeholder="건물명 검색 (초성 가능)"
             className={`${inputClassName} !py-[9px] !px-2.5 !text-xs`}
-            style={{ background: formBuilding ? "#EFF6FF" : "#fff" }} />
+            style={{ background: formBuilding ? "var(--color-hm-blue-bg)" : "#fff" }} />
           {showBuildingSuggestions && !formBuilding && (() => {
             const suggestions = BUILDING_NAMES.filter(b => !formBuildingSearch || matchKorean(b, formBuildingSearch));
             return suggestions.length > 0 ? (
@@ -114,7 +114,7 @@ export const MoveOutEventForm: React.FC<MoveOutEventFormProps> = ({
           setEvents((prev: any[]) => [...prev, newEvt]);
           closeForm();
         }}
-          className="py-[9px] px-5 rounded-lg border-none bg-[#EF4444] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-[#DC2626] transition-colors">
+          className="py-[9px] px-5 rounded-lg border-none bg-[#EF4444] text-white text-xs font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-danger transition-colors">
           퇴실 등록
         </button>
         <button onClick={closeForm}

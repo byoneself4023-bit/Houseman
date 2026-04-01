@@ -417,7 +417,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   alert(`${bs.building} 정산 내역이 출납관리에 등록되었습니다.`);
                 }}
                 className="px-5 py-2 rounded-lg border-none text-white text-[13px] font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
-                style={{ background: "linear-gradient(135deg, #10B981, #059669)" }}>
+                style={{ background: "linear-gradient(135deg, #10B981, var(--color-hm-success))" }}>
                 출납 등록
               </button>
             )}
@@ -810,7 +810,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
 
       {/* ===== 날짜별 타임라인 ===== */}
       <div className="relative">
-        <div className="absolute left-5 top-0 bottom-0 w-[3px] rounded-sm z-0" style={{ background: "linear-gradient(180deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%)" }} />
+        <div className="absolute left-5 top-0 bottom-0 w-[3px] rounded-sm z-0" style={{ background: "linear-gradient(180deg, var(--color-hm-blue) 0%, #8B5CF6 50%, #EC4899 100%)" }} />
 
         <div className="flex flex-col gap-0">
           {dateGroups.map(([dateStr, items]) => {
@@ -826,7 +826,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
               <div key={dateStr} className="relative pl-[52px] mb-2">
                 <div className="absolute left-1.5 top-1 w-8 h-8 rounded-full flex items-center justify-center z-[1]"
                   style={{
-                    background: isToday ? "linear-gradient(135deg, #3B82F6, #2563EB)" : isPast ? "#D1D5DB" : isUrgent ? "linear-gradient(135deg, #F59E0B, #EF4444)" : "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                    background: isToday ? "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" : isPast ? "#D1D5DB" : isUrgent ? "linear-gradient(135deg, #F59E0B, #EF4444)" : "linear-gradient(135deg, #8B5CF6, #6366F1)",
                     boxShadow: isToday ? "0 0 0 4px rgba(59,130,246,0.2)" : isUrgent && !isPast ? "0 0 0 4px rgba(245,158,11,0.2)" : "none",
                   }}>
                   <span className="text-[13px] font-[800] text-white">{dayNum}</span>
@@ -836,7 +836,7 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                   <span className={`text-sm font-[800] ${isToday ? 'text-hm-blue-dark' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>
                     {m}월 {dayNum}일 ({weekday})
                   </span>
-                  {isToday && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, #3B82F6, #2563EB)" }}>TODAY</span>}
+                  {isToday && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>TODAY</span>}
                   {!isPast && !isToday && isUrgent && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] text-white font-bold" style={{ background: "linear-gradient(135deg, #F59E0B, #EF4444)" }}>D-{items[0].daysUntil}</span>}
                   {!isPast && !isToday && !isUrgent && items[0].isSoon && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-hm-blue-bg text-hm-blue-dark font-bold">D-{items[0].daysUntil}</span>}
                   {isPast && <span className="text-[10px] px-2.5 py-0.5 rounded-[10px] bg-[#F3F4F6] text-[#9CA3AF] font-semibold">완료</span>}
@@ -848,9 +848,9 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                     const { bs: ibs, cfg: icfg, round, totalRounds, wasAdjusted, originalDay } = item;
                     const typeLabel = TYPE_LABELS[icfg.type] || icfg.type;
                     const isSal = icfg.feeType === "salary";
-                    const dirColor = isSal ? "#7C3AED" : "#3B82F6";
+                    const dirColor = isSal ? "#7C3AED" : "var(--color-hm-blue)";
                     const roundLabel = totalRounds > 1 ? `${round}차` : "";
-                    const roundColors = ["", "#3B82F6", "#8B5CF6", "#EC4899"];
+                    const roundColors = ["", "var(--color-hm-blue)", "#8B5CF6", "#EC4899"];
 
                     const isOpen = item.daysUntil <= 7;
 
@@ -859,12 +859,12 @@ const SettlementPageInner = ({ myBuildings = [], activeTenants = [], transaction
                         onClick={() => isOpen ? setDetailBuilding(item.building) : null}
                         className={`p-3 px-4 rounded-xl transition-all duration-150 ${isOpen ? 'cursor-pointer' : 'cursor-default'} ${!isOpen ? 'bg-hm-bg-hover border-[1.5px] border-dashed border-[#D1D5DB] opacity-60' : isPast ? 'bg-[#FAFAFA] opacity-70' : 'bg-white'} ${isOpen && !isPast ? 'hover:shadow-md hover:-translate-y-px' : ''}`}
                         style={{
-                          border: !isOpen ? undefined : isToday ? "2px solid #3B82F6" : isUrgent && !isPast ? "2px solid #F59E0B" : "1.5px solid #E8ECF0",
+                          border: !isOpen ? undefined : isToday ? "2px solid var(--color-hm-blue)" : isUrgent && !isPast ? "2px solid #F59E0B" : "1.5px solid var(--color-hm-border)",
                         }}>
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2">
                             {totalRounds > 1 && (
-                              <span className="text-[10px] px-2.5 py-[3px] rounded-md text-white font-[800] tracking-wider" style={{ background: !isOpen ? "#D1D5DB" : (roundColors[round] || "#3B82F6") }}>{roundLabel}</span>
+                              <span className="text-[10px] px-2.5 py-[3px] rounded-md text-white font-[800] tracking-wider" style={{ background: !isOpen ? "#D1D5DB" : (roundColors[round] || "var(--color-hm-blue)") }}>{roundLabel}</span>
                             )}
                             <span className={`text-[15px] font-[800] ${!isOpen ? 'text-[#9CA3AF]' : isPast ? 'text-[#9CA3AF]' : 'text-hm-text'}`}>{item.building}</span>
                             {ibs.tenantCount > 0 && <span className="text-[10px] px-2 py-0.5 rounded bg-[#F3F4F6] text-hm-text-sub font-semibold">{ibs.tenantCount}세대</span>}

@@ -49,7 +49,7 @@ export const StaffPage = () => {
                   className="py-3.5 px-3 rounded-xl text-center cursor-pointer transition-all duration-150"
                   style={{
                     background: active ? role.color : "#fff",
-                    border: `2px solid ${active ? role.color : "#E8ECF0"}`,
+                    border: `2px solid ${active ? role.color : "var(--color-hm-border)"}`,
                     boxShadow: active ? `0 4px 12px ${role.color}30` : "none",
                   }}>
                   <div className="text-[22px] mb-1">{role.icon}</div>
@@ -70,7 +70,7 @@ export const StaffPage = () => {
 
           {/* 추가 폼 */}
           {showAdd && (
-            <Card style={{ marginBottom: 16, border: "2px solid #3B82F6" }}>
+            <Card style={{ marginBottom: 16, border: "2px solid var(--color-hm-blue)" }}>
               <div className="text-xs font-extrabold text-hm-blue-dark mb-3">새 담당자 등록</div>
               <div className="grid grid-cols-3 gap-3 mb-3">
                 <div>
@@ -93,7 +93,7 @@ export const StaffPage = () => {
                     const sel = newStaff.roles.includes(r.id);
                     return <button key={r.id} onClick={() => setNewStaff(p => ({ ...p, roles: sel ? p.roles.filter(x => x !== r.id) : [...p.roles, r.id] }))}
                       className="px-3 py-1.5 rounded-md text-[11px] cursor-pointer font-[inherit] transition-colors"
-                      style={{ border: sel ? `1.5px solid ${r.color}` : "1px solid #E0E3E9", background: sel ? `${r.color}15` : "#fff", color: sel ? r.color : "#8F95A3", fontWeight: sel ? 700 : 500 }}>
+                      style={{ border: sel ? `1.5px solid ${r.color}` : "1px solid var(--color-hm-input-border)", background: sel ? `${r.color}15` : "#fff", color: sel ? r.color : "var(--color-hm-text-muted)", fontWeight: sel ? 700 : 500 }}>
                       {r.icon} {r.label}
                     </button>;
                   })}
@@ -154,7 +154,7 @@ export const StaffPage = () => {
                             const sel = editStaff.roles.includes(r.id);
                             return <button key={r.id} onClick={() => setEditStaff(p => ({ ...p, roles: sel ? p.roles.filter(x => x !== r.id) : [...p.roles, r.id] }))}
                               className="px-3 py-1.5 rounded-md text-[11px] cursor-pointer font-[inherit] transition-colors"
-                              style={{ border: sel ? `1.5px solid ${r.color}` : "1px solid #E0E3E9", background: sel ? `${r.color}15` : "#fff", color: sel ? r.color : "#8F95A3", fontWeight: sel ? 700 : 500 }}>
+                              style={{ border: sel ? `1.5px solid ${r.color}` : "1px solid var(--color-hm-input-border)", background: sel ? `${r.color}15` : "#fff", color: sel ? r.color : "var(--color-hm-text-muted)", fontWeight: sel ? 700 : 500 }}>
                               {r.icon} {r.label}
                             </button>;
                           })}

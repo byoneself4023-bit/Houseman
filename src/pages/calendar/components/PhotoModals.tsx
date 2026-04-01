@@ -27,7 +27,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
           <button onClick={() => setPhotoModalTenant(null)} className="bg-transparent border-none text-xl cursor-pointer text-hm-text-muted hover:text-hm-text transition-colors">✕</button>
         </div>
         <PhotoDropZone
-          label="퇴실사진" color="#DC2626" maxPhotos={50}
+          label="퇴실사진" color="var(--color-hm-danger)" maxPhotos={50}
           photos={photoModalTenant.moveOutPhotos || []}
           onZoom={(idx: number) => setZoomPhoto({ photos: photoModalTenant.moveOutPhotos || [], index: idx, zoom: 1 })}
           onAdd={async (newPhotos: any[]) => {

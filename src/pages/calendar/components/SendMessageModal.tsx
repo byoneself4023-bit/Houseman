@@ -36,7 +36,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
       <div className="bg-white rounded-2xl w-[480px] max-w-[95vw] max-h-[90vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
         onClick={e => e.stopPropagation()}>
         {/* 헤더 */}
-        <div className="px-6 py-[18px] text-white" style={{ background: "linear-gradient(135deg, #1E40AF, #3B82F6)" }}>
+        <div className="px-6 py-[18px] text-white" style={{ background: "linear-gradient(135deg, #1E40AF, var(--color-hm-blue))" }}>
           <div className="flex justify-between items-center">
             <div className="text-[17px] font-extrabold tracking-tight">📤 계약정보 전송</div>
             <button onClick={() => setPendingSendEvt(null)} className="w-7 h-7 rounded-md border border-white/30 bg-white/10 text-white text-sm cursor-pointer flex items-center justify-center font-[inherit] hover:bg-white/20 transition-colors">✕</button>
@@ -53,9 +53,9 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
           {/* 계약 요약 카드 */}
           <div className="grid grid-cols-3 gap-1.5 mb-3.5">
             {[
-              { label: "예치금", value: `${dep}만`, color: "#059669" },
-              { label: "월세", value: `${rent}만`, color: "#2563EB" },
-              { label: "입주금 총합", value: `${total}만`, color: "#DC2626" },
+              { label: "예치금", value: `${dep}만`, color: "var(--color-hm-success)" },
+              { label: "월세", value: `${rent}만`, color: "var(--color-hm-blue-dark)" },
+              { label: "입주금 총합", value: `${total}만`, color: "var(--color-hm-danger)" },
             ].map((s, i) => (
               <div key={i} className="py-2 px-2.5 rounded-lg text-center"
                 style={{ background: s.color + "08", border: `1px solid ${s.color}25` }}>
@@ -92,7 +92,7 @@ export const SendMessageModal: React.FC<SendMessageModalProps> = ({
           <div className="flex gap-2">
             <button onClick={() => { handleSendSMS(evt, sendMsg); setPendingSendEvt(null); }}
               className="flex-1 py-[13px] px-4 rounded-[10px] border-none text-white text-[13px] font-bold cursor-pointer font-[inherit] hover:opacity-90 transition-opacity"
-              style={{ background: "linear-gradient(135deg, #3B82F6, #2563EB)" }}>
+              style={{ background: "linear-gradient(135deg, var(--color-hm-blue), var(--color-hm-blue-dark))" }}>
               💬 문자(SMS) 전송
             </button>
             <button onClick={() => { handleSendKakao(evt, sendMsg); setPendingSendEvt(null); }}

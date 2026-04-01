@@ -12,15 +12,15 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({ filter, setFilter }) => 
       <div className="flex gap-1.5">
         {(["전체", "계약", "퇴실", "휴무"] as const).map(t => {
           const isActive = filter === t;
-          const activeColor = TYPE_COLORS[t] || "#3B82F6";
-          const activeBg = TYPE_BG[t] || "#EFF6FF";
+          const activeColor = TYPE_COLORS[t] || "var(--color-hm-blue)";
+          const activeBg = TYPE_BG[t] || "var(--color-hm-blue-bg)";
           return (
             <button key={t} onClick={() => setFilter(t)}
               className="px-4 py-1.5 rounded-lg font-semibold text-[12.5px] cursor-pointer font-[inherit] transition-colors"
               style={{
-                border: isActive ? `2px solid ${activeColor}` : "1px solid #E0E3E9",
+                border: isActive ? `2px solid ${activeColor}` : "1px solid var(--color-hm-input-border)",
                 background: isActive ? activeBg : "#fff",
-                color: isActive ? activeColor : "#5F6577",
+                color: isActive ? activeColor : "var(--color-hm-text-sub)",
               }}>
               {t !== "전체" && <span className="mr-1">{TYPE_ICON[t]}</span>}{t}
             </button>
@@ -69,7 +69,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
       {setEvents && (
         <div className="flex gap-1.5">
           {[
-            { type: "계약", label: "📦 계약등록", bg: "#3B82F6" },
+            { type: "계약", label: "📦 계약등록", bg: "var(--color-hm-blue)" },
             { type: "퇴실", label: "🚪 퇴실등록", bg: "#EF4444" },
             { type: "휴무", label: "🏖️ 휴무등록", bg: "#8B5CF6" },
           ].map(btn => {
@@ -81,7 +81,7 @@ export const MonthNavigation: React.FC<MonthNavigationProps> = ({
               }}
                 className="px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-all hover:opacity-90"
                 style={{
-                  border: isActive ? `2px solid ${btn.bg}` : "1px solid #E0E3E9",
+                  border: isActive ? `2px solid ${btn.bg}` : "1px solid var(--color-hm-input-border)",
                   background: isActive ? "#fff" : btn.bg,
                   color: isActive ? btn.bg : "#fff",
                 }}>

@@ -10,7 +10,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message = "ë¡œë”
     className="flex flex-col justify-center items-center gap-3"
     style={{ height }}
   >
-    <div className="w-7 h-7 border-3 border-[#E0E3E9] border-t-hm-blue rounded-full animate-spin" />
+    <div className="w-7 h-7 border-3 border-hm-input-border border-t-hm-blue rounded-full animate-spin" />
     <span className="text-sm text-hm-text-muted font-inherit">
       {message}
     </span>

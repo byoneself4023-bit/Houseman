@@ -67,7 +67,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
         'flex items-center gap-2.5 rounded-[9px] mb-0.5 cursor-pointer transition-all duration-150',
         sidebarOpen ? 'px-3 py-[9px]' : 'px-2 py-[9px] justify-center',
         active
-          ? 'bg-[#2A3352] border-l-[3px] border-[#3B82F6]'
+          ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
           : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
       )}
     >
@@ -110,7 +110,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
               </button>
               <button
                 onClick={() => { if (confirm('데이터를 초기화합니다. 계속?')) { localStorage.clear(); location.reload(); } }}
-                className="px-2 py-0.5 rounded-[5px] border border-[#DC2626] bg-transparent text-[#DC2626] text-[9px] font-semibold cursor-pointer hover:bg-[#DC2626]/10 transition-colors"
+                className="px-2 py-0.5 rounded-[5px] border border-hm-danger bg-transparent text-hm-danger text-[9px] font-semibold cursor-pointer hover:bg-hm-danger/10 transition-colors"
               >
                 리셋
               </button>
@@ -134,7 +134,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
                 className={cn(
                   'flex-1 py-[5px] px-0.5 rounded-md border-none text-[9px] cursor-pointer transition-colors',
                   role === r.id
-                    ? 'bg-[#2A3352] text-white font-bold border-b-2 border-b-[#3B82F6]'
+                    ? 'bg-[#2A3352] text-white font-bold border-b-2 border-b-hm-blue'
                     : 'bg-transparent text-[#6B7280] font-medium hover:bg-[#2A3352]/50',
                 )}
               >
@@ -156,7 +156,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
               className={cn(
                 'flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer transition-colors duration-150',
                 active
-                  ? 'bg-[#2A3352] border-l-[3px] border-[#3B82F6]'
+                  ? 'bg-[#2A3352] border-l-[3px] border-hm-blue'
                   : 'border-l-[3px] border-transparent hover:bg-[#22273A]',
               )}
             >
@@ -168,7 +168,7 @@ export function Sidebar({ currentStaff, isGeneral, myBuildings, menuBadges, onLo
           <div
             key={m.id}
             onClick={() => navigateTo(m.id)}
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-[#3B82F6]"
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-[9px] cursor-pointer bg-[#2A3352] border-l-[3px] border-hm-blue"
           >
             <Globe size={17} className="text-white shrink-0" />
             {sidebarOpen && <span className="text-[13px] font-bold text-white">{m.label}</span>}

@@ -29,7 +29,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
   return (
     <>
       <div className={cn(
-        'bg-white border-b border-[#E8ECF0] flex items-center justify-between shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.05)]',
+        'bg-white border-b border-hm-border flex items-center justify-between shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.05)]',
         isMobile ? 'h-12 px-3.5' : 'h-[60px] px-6',
       )}>
         {/* Left: page title */}
@@ -37,10 +37,10 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
           <span className={isMobile ? 'text-[15px]' : 'text-[17px]'}>
             {role === 'owner' ? '🏠' : role === 'homepage' ? '🌐' : menuItems.find((m) => m.id === page)?.icon}
           </span>
-          <span className={cn('font-bold text-[#1A1D23]', isMobile ? 'text-sm' : 'text-[15px]')}>
+          <span className={cn('font-bold text-hm-text', isMobile ? 'text-sm' : 'text-[15px]')}>
             {role === 'owner' ? '내 건물 현황' : role === 'homepage' ? '공실 매물' : menuItems.find((m) => m.id === page)?.label}
             {!isMobile && role !== 'owner' && selectedBuilding && (
-              <span className="text-[#8F95A3] font-medium"> › {selectedBuilding}</span>
+              <span className="text-hm-text-muted font-medium"> › {selectedBuilding}</span>
             )}
           </span>
         </div>
@@ -50,27 +50,27 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
           {!isMobile && currentStaff && (
             <div className={cn(
               'flex items-center gap-2 px-3 py-[5px] rounded-lg border',
-              isGeneral ? 'bg-[#EFF6FF] border-[#BFDBFE]' : 'bg-[#FEF3C7] border-[#FDE68A]',
+              isGeneral ? 'bg-hm-blue-bg border-[#BFDBFE]' : 'bg-[#FEF3C7] border-[#FDE68A]',
             )}>
               <Avatar className="w-7 h-7">
                 <AvatarFallback className={cn(
                   'text-[11px] font-bold',
-                  isGeneral ? 'bg-[#3B82F6] text-white' : 'bg-[#F59E0B] text-white',
+                  isGeneral ? 'bg-hm-blue text-white' : 'bg-[#F59E0B] text-white',
                 )}>
                   {currentStaff.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <span className={cn('text-[11px] font-bold', isGeneral ? 'text-[#2563EB]' : 'text-[#92400E]')}>
+              <span className={cn('text-[11px] font-bold', isGeneral ? 'text-hm-blue-dark' : 'text-[#92400E]')}>
                 {currentStaff.name}
               </span>
               {!isGeneral && <span className="text-[10px] text-[#B45309]">({myBuildings.length}건물)</span>}
             </div>
           )}
-          <span className="text-xs text-[#8F95A3]">
+          <span className="text-xs text-hm-text-muted">
             {time.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
           </span>
-          <div className="w-px h-3 bg-[#E0E3E9]" />
-          <span className="text-xs text-[#8F95A3]">
+          <div className="w-px h-3 bg-hm-input-border" />
+          <span className="text-xs text-hm-text-muted">
             {time.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
           </span>
           <div className="relative cursor-pointer hover:animate-bell-ring">
@@ -82,7 +82,7 @@ export function TopBar({ currentStaff, isGeneral, myBuildings, selectedBuilding 
 
       {/* Staff Filter Banner */}
       {currentStaff && !isGeneral && !isMobile && (
-        <div className="px-6 py-2 bg-gradient-to-r from-[#FEF3C7] to-[#FFF7ED] border-b border-[#FDE68A] flex items-center gap-2">
+        <div className="px-6 py-2 bg-gradient-to-r from-[#FEF3C7] to-hm-warning-bg border-b border-[#FDE68A] flex items-center gap-2">
           <span className="text-xs font-bold text-[#92400E]">📌 {currentStaff.name} · {myBuildings.length}개 건물</span>
           <div className="flex gap-[3px] flex-wrap">
             {myBuildings.map((b) => (

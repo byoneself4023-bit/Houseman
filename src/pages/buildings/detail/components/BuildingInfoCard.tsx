@@ -7,10 +7,10 @@ import { acctTypeBg, acctTypeColor } from '@/config/accountConfig';
 const BUILDING_TYPES = ["단기", "일반임대", "근생", "관리사무소", "기업시설관리"];
 
 const OWNER_COLORS = [
-  { bg: "#F0F4FF", border: "#BFDBFE", color: "#2563EB", label: "주" },
+  { bg: "#F0F4FF", border: "#BFDBFE", color: "var(--color-hm-blue-dark)", label: "주" },
   { bg: "#F5F3FF", border: "#DDD6FE", color: "#7C3AED", label: "부" },
-  { bg: "#FFF7ED", border: "#FED7AA", color: "#EA580C", label: "" },
-  { bg: "#F0FDF4", border: "#BBF7D0", color: "#059669", label: "" },
+  { bg: "var(--color-hm-warning-bg)", border: "var(--color-hm-warning-border)", color: "var(--color-hm-warning)", label: "" },
+  { bg: "#F0FDF4", border: "#BBF7D0", color: "var(--color-hm-success)", label: "" },
 ];
 
 interface BuildingInfoCardProps {
@@ -87,7 +87,7 @@ export const BuildingInfoCard: React.FC<BuildingInfoCardProps> = ({
                     <div key={ti} className="flex items-center gap-1">
                       <select value={t} onChange={e => { const updated = [...detailBuildingTypes]; updated[ti] = e.target.value; setDetailBuildingTypes(updated); }}
                         className={`${inputClassName} !px-2 !py-[5px] !text-[11px] !font-bold !cursor-pointer`}
-                        style={{ background: acctTypeBg[acctKey] || "#F3F4F6", color: acctTypeColor[acctKey] || "#5F6577", borderColor: (acctTypeColor[acctKey] || "#E0E3E9") + "60" }}>
+                        style={{ background: acctTypeBg[acctKey] || "#F3F4F6", color: acctTypeColor[acctKey] || "var(--color-hm-text-sub)", borderColor: (acctTypeColor[acctKey] || "var(--color-hm-input-border)") + "60" }}>
                         {BUILDING_TYPES.map(bt => (
                           <option key={bt} value={bt} disabled={bt !== t && detailBuildingTypes.includes(bt)}>{bt === "일반임대" ? "일반임대(주택)" : bt}</option>
                         ))}

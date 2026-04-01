@@ -136,12 +136,12 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                 <td className="px-1.5 py-1 text-center font-mono">{(r as any).commFee || "—"}</td>
                 <td className="px-1.5 py-1 text-right">{fmt(r.deposit)}</td>
                 <td className="px-1.5 py-1 text-right">{fmt(r.rent)}</td>
-                <td className="px-1.5 py-1 text-right font-bold" style={{ color: r.nego < r.rent ? "#DC2626" : "#000" }}>{fmt(r.nego)}</td>
+                <td className="px-1.5 py-1 text-right font-bold" style={{ color: r.nego < r.rent ? "var(--color-hm-danger)" : "#000" }}>{fmt(r.nego)}</td>
                 <td className="px-1.5 py-1 text-right">{r.mgmt > 0 ? fmt(r.mgmt) : "—"}</td>
                 <td className="px-1.5 py-1 text-center text-[10px]">{r.water || "—"}</td>
                 <td className="px-1.5 py-1 text-center text-[10px]">{r.cable || "—"}</td>
                 <td className="px-1.5 py-1 text-right">{r.exitFee > 0 ? r.exitFee : "—"}</td>
-                <td className="px-1.5 py-1 text-right" style={{ fontWeight: r.days > 30 ? 800 : 400, color: r.days > 30 ? "#DC2626" : "#000" }}>{r.days > 0 ? r.days : ""}</td>
+                <td className="px-1.5 py-1 text-right" style={{ fontWeight: r.days > 30 ? 800 : 400, color: r.days > 30 ? "var(--color-hm-danger)" : "#000" }}>{r.days > 0 ? r.days : ""}</td>
               </tr>
             ))}
           </tbody>
@@ -163,7 +163,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       <style>{`
         @keyframes sparkle {
           0%, 100% { background-color: #F3F4F6; }
-          50% { background-color: #FEE2E2; border-color: #EF4444; color: #DC2626; }
+          50% { background-color: #FEE2E2; border-color: #EF4444; color: var(--color-hm-danger); }
         }
         .sparkle-btn { animation: sparkle 1.5s ease-in-out infinite; }
       `}</style>
@@ -256,11 +256,11 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
       <div className="flex gap-2 mb-4 flex-wrap">
         {types.map(t => {
           const count = t === "전체" ? myVacancies.length : myVacancies.filter((v: Vacancy) => getStatus(v) === t).length;
-          const colors: Record<string, string> = { "전체": "#1A1D23", "점검/청소중": "#6B7280", "홍보중": "#3B82F6", "임차인연결": "#DC2626", "계약서입력": "#F59E0B" };
+          const colors: Record<string, string> = { "전체": "var(--color-hm-text)", "점검/청소중": "#6B7280", "홍보중": "var(--color-hm-blue)", "임차인연결": "var(--color-hm-danger)", "계약서입력": "#F59E0B" };
           return (
             <button key={t} onClick={() => setTab(t)}
               className="px-4 py-[7px] rounded-lg font-semibold text-[12.5px] cursor-pointer font-[inherit] transition-colors"
-              style={{ border: tab === t ? `2px solid ${colors[t]}` : "1px solid #E0E3E9", background: tab === t ? `${colors[t]}10` : "#fff", color: tab === t ? colors[t] : "#5F6577" }}>
+              style={{ border: tab === t ? `2px solid ${colors[t]}` : "1px solid var(--color-hm-input-border)", background: tab === t ? `${colors[t]}10` : "#fff", color: tab === t ? colors[t] : "var(--color-hm-text-sub)" }}>
               {t} <span className="font-extrabold">{count}</span>
             </button>
           );
@@ -337,7 +337,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                   {[
                     { field: "deposit", value: r.deposit, num: true },
                     { field: "rent", value: r.rent, num: true },
-                    { field: "nego", value: r.nego, num: true, extra: { fontWeight: 700, background: negoDiscount ? "#FEF2F2" : "transparent", color: negoDiscount ? "#DC2626" : "#1A1D23" } },
+                    { field: "nego", value: r.nego, num: true, extra: { fontWeight: 700, background: negoDiscount ? "var(--color-hm-danger-bg)" : "transparent", color: negoDiscount ? "var(--color-hm-danger)" : "var(--color-hm-text)" } },
                     { field: "mgmt", value: r.mgmt, num: true },
                     { field: "water", value: r.water, num: false },
                     { field: "cable", value: r.cable, num: false },
@@ -347,7 +347,7 @@ export const VacancyPage = ({ myBuildings = [], calendarEvts = [], setCalendarEv
                     <td key={fi} className="px-1 py-1"><input id={`ve-${rk}-${f.field}`} defaultValue={f.value ?? ""} className={`${inpCls} text-right`} /></td>
                   ) : (
                     <td key={fi} className={`px-2 py-2.5 text-right ${!f.num ? "text-[11px]" : ""}`} style={{ textDecoration: cellDeco, opacity: cellOpacity, ...(f.extra || {}) }}>
-                      {f.field === "days" ? (Number(f.value) > 0 ? <span className="font-bold" style={{ color: Number(f.value) > 30 ? "#DC2626" : Number(f.value) > 14 ? "#EA580C" : "#1A1D23" }}>{f.value}</span> : <span className="text-emerald-500 font-semibold text-[11px]">신규</span>) : renderVal(f.value, f.num)}
+                      {f.field === "days" ? (Number(f.value) > 0 ? <span className="font-bold" style={{ color: Number(f.value) > 30 ? "var(--color-hm-danger)" : Number(f.value) > 14 ? "var(--color-hm-warning)" : "var(--color-hm-text)" }}>{f.value}</span> : <span className="text-emerald-500 font-semibold text-[11px]">신규</span>) : renderVal(f.value, f.num)}
                     </td>
                   ))}
                   {/* 상태 버튼 (맨뒤) */}

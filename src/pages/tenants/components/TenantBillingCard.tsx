@@ -80,9 +80,9 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
   }
 
   const slotColors = [
-    { bg: "#FFF7ED", border: "#FDBA74", text: "#EA580C", light: "#92400E" },
+    { bg: "var(--color-hm-warning-bg)", border: "#FDBA74", text: "var(--color-hm-warning)", light: "#92400E" },
     { bg: "#FFFBEB", border: "#FDE68A", text: "#92400E", light: "#78716C" },
-    { bg: "#EFF6FF", border: "#93C5FD", text: "#2563EB", light: "#1E40AF" },
+    { bg: "var(--color-hm-blue-bg)", border: "#93C5FD", text: "var(--color-hm-blue-dark)", light: "#1E40AF" },
   ];
 
   const bal = roomBalances[`${t.building}_${t.room}`] || 0;
@@ -112,10 +112,10 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
 
   return (
     <>
-      <div className="text-[11px] font-extrabold text-hm-danger mb-2 pb-1.5" style={{ borderBottom: "1.5px solid #FECACA" }}>🚨 청구/미납현황</div>
+      <div className="text-[11px] font-extrabold text-hm-danger mb-2 pb-1.5" style={{ borderBottom: "1.5px solid var(--color-hm-danger-border)" }}>🚨 청구/미납현황</div>
       <div className="flex flex-col gap-1.5 mb-3">
         {/* 흐름 안내 */}
-        {flow && <div className="text-[9px] text-hm-text-muted mb-0.5 px-2 py-1 bg-[#F8FAFC] rounded-md">💰 {flow}</div>}
+        {flow && <div className="text-[9px] text-hm-text-muted mb-0.5 px-2 py-1 bg-hm-bg-slate rounded-md">💰 {flow}</div>}
         {/* 청구①②③ 슬롯 (수금관리와 동일) */}
         {slots.map((slot, si) => {
           const c = slotColors[si % slotColors.length];
@@ -139,7 +139,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
         })}
         {/* 미납 잔액 (roomBalances 기반) */}
         {bal > 0 && (
-          <div className="px-2.5 py-2 rounded-lg bg-hm-danger-bg border border-[#FECACA]">
+          <div className="px-2.5 py-2 rounded-lg bg-hm-danger-bg border border-hm-danger-border">
             <div className="flex justify-between">
               <span className="text-[10px] font-bold text-hm-danger">미납 잔액</span>
               <span className="text-[13px] font-extrabold text-hm-danger">{bal.toLocaleString()}원</span>
@@ -155,7 +155,7 @@ export const TenantBillingCard: React.FC<TenantBillingCardProps> = ({
       <div className="mb-3">
         <button onClick={() => setBillOpen(!billOpen)}
           className={`w-full px-3.5 py-2.5 rounded-[10px] cursor-pointer font-[inherit] flex items-center justify-between transition-colors hover:opacity-90 ${billOpen ? "bg-[#FFFBEB]" : "bg-white"}`}
-          style={{ border: billOpen ? "2px solid #F59E0B" : "1.5px solid #E8ECF0" }}>
+          style={{ border: billOpen ? "2px solid #F59E0B" : "1.5px solid var(--color-hm-border)" }}>
           <div className="flex items-center gap-2">
             <span className="text-[13px]">🧾</span>
             <span className="text-xs font-extrabold text-[#92400E]">가상퇴실계산</span>

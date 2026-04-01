@@ -2,7 +2,7 @@ import type { ViewMode, MenuSection, MenuItem } from '../types';
 
 // 뷰 모드 (사이드바 하단 전환)
 export const viewModes: ViewMode[] = [
-  { id: 'admin', icon: '🏗️', label: '관리', color: '#3B82F6' },
+  { id: 'admin', icon: '🏗️', label: '관리', color: 'var(--color-hm-blue)' },
   { id: 'owner', icon: '🏠', label: '건물주', color: '#A855F7' },
   { id: 'cleaning', icon: '🧹', label: '청소', color: '#EC4899' },
   { id: 'homepage', icon: '🌐', label: '홈페이지', color: '#06B6D4' },

@@ -152,7 +152,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                     ✅ 승인
                   </button>
                   <button onClick={() => handleApproval(a.id, "rejected")}
-                    className="flex-1 py-2.5 rounded-lg border-[1.5px] border-[#FECACA] bg-hm-danger-bg text-hm-danger font-bold text-xs cursor-pointer font-[inherit] hover:bg-[#FEE2E2] active:scale-[0.98] transition-all">
+                    className="flex-1 py-2.5 rounded-lg border-[1.5px] border-hm-danger-border bg-hm-danger-bg text-hm-danger font-bold text-xs cursor-pointer font-[inherit] hover:bg-[#FEE2E2] active:scale-[0.98] transition-all">
                     ❌ 반려
                   </button>
                 </div>
@@ -164,7 +164,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
 
       {/* Overdue */}
       {filteredOverdue.length > 0 && (
-        <Card className="mb-4 border-[1.5px] border-[#FECACA]">
+        <Card className="mb-4 border-[1.5px] border-hm-danger-border">
           <div className="flex items-center justify-between mb-2.5">
             <div className="text-[10px] font-bold text-hm-danger tracking-wider">🚨 연체 현황</div>
             <span className="text-sm font-extrabold text-hm-danger">{fmt(filteredOverdue.reduce((s, t) => s + t.overdue, 0))}원</span>
@@ -216,12 +216,12 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
         {/* Cost breakdown */}
         {asTotalCost > 0 && (
           <div className="flex gap-2.5 mb-3.5">
-            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-[#FECACA]">
+            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-danger-bg text-center border border-hm-danger-border">
               <div className="text-[9px] text-hm-text-muted mb-0.5">유상 (세입자부담)</div>
               <div className="text-sm font-extrabold text-hm-danger">{fmt(asCostPaid)}원</div>
               <div className="text-[10px] text-hm-danger">{filteredAS.filter(a => a.paid === "유상").length}건</div>
             </div>
-            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-success-bg text-center border border-[#A7F3D0]">
+            <div className="flex-1 px-3.5 py-2.5 rounded-lg bg-hm-success-bg text-center border border-hm-success-border">
               <div className="text-[9px] text-hm-text-muted mb-0.5">무상 (건물주부담)</div>
               <div className="text-sm font-extrabold text-hm-success">{fmt(asCostFree)}원</div>
               <div className="text-[10px] text-hm-success">{filteredAS.filter(a => a.paid === "무상" && (a.cost || 0) > 0).length}건</div>
@@ -241,7 +241,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
           </div>
           <div className="flex flex-col gap-3">
             {filteredAS.map((a, i) => (
-              <div key={i} className={`p-4 rounded-xl ${a.status === "완료" ? 'bg-hm-bg-hover border border-hm-border' : a.status === "진행중" ? 'bg-hm-warning-bg border border-[#FED7AA]' : 'bg-[#F0F4FF] border border-[#C7D2FE]'}`}>
+              <div key={i} className={`p-4 rounded-xl ${a.status === "완료" ? 'bg-hm-bg-hover border border-hm-border' : a.status === "진행중" ? 'bg-hm-warning-bg border border-hm-warning-border' : 'bg-[#F0F4FF] border border-[#C7D2FE]'}`}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -306,7 +306,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
             if (!latestRec && !bldgP) return null;
             return (
               <div key={bName} onClick={() => setSelectedBldg(bName)}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-[#F0F2F5]'}`}>
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${latestRec?.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-[#F0F2F5]'}`}>
                 <div className="flex items-center gap-2.5">
                   <span className="text-[13px] font-extrabold text-hm-text">{bName}</span>
                   {latestRec && (
@@ -354,7 +354,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                   <div className="text-[9px] text-hm-text-muted mb-0.5">마지막 순회</div>
                   <div className="text-[13px] font-extrabold text-hm-text">{bldgPatrol.lastDate ? bldgPatrol.lastDate.slice(5) : "—"}</div>
                 </div>
-                <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA]' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
+                <div className={`flex-1 px-3.5 py-2.5 rounded-lg text-center ${bldgPatrol.lastStatus === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
                   <div className="text-[9px] text-hm-text-muted mb-0.5">최근 상태</div>
                   <div className={`text-[13px] font-extrabold ${bldgPatrol.lastStatus === "이상발견" ? 'text-hm-danger' : 'text-hm-success'}`}>{bldgPatrol.lastStatus || "—"}</div>
                 </div>
@@ -378,7 +378,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ activeTenants = 
                     </div>
                     {expandedPatrol !== i && <div className="text-[11px] text-hm-text-muted mt-1 overflow-hidden text-ellipsis whitespace-nowrap">{rec.comment}</div>}
                     {expandedPatrol === i && (
-                      <div className="mt-2 px-3 py-2.5 bg-[#F8FAFC] rounded-lg border border-hm-border">
+                      <div className="mt-2 px-3 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
                         {rec.checklist && rec.checklist.length > 0 && (
                           <div className="mb-2">
                             <div className="text-[10px] font-bold text-hm-blue mb-1">시설 점검 결과</div>

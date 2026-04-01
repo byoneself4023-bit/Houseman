@@ -90,7 +90,7 @@ export const BrokerPage = ({ calendarEvts = [] }: { calendarEvts?: any[] }) => {
       </div>
 
       {showAdd && (
-        <Card style={{ marginBottom: 16, border: "2px solid #3B82F6" }}>
+        <Card style={{ marginBottom: 16, border: "2px solid var(--color-hm-blue)" }}>
           <div className="text-xs font-extrabold text-hm-blue-dark mb-3">새 부동산 등록</div>
           <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-3 mb-3`}>
             <div>

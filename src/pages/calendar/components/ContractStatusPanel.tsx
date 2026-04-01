@@ -65,7 +65,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   ? 'bg-[#F3F4F6] border-b border-[#D1D5DB]'
                   : 'border-b border-[#BFDBFE]'
               }`}
-                style={{ background: allDone ? undefined : "linear-gradient(90deg, #EFF6FF, #F8FAFF)" }}>
+                style={{ background: allDone ? undefined : "linear-gradient(90deg, var(--color-hm-blue-bg), #F8FAFF)" }}>
                 <div className={`text-[11px] font-bold mr-1.5 whitespace-nowrap ${allDone ? 'text-[#9CA3AF]' : 'text-hm-blue'}`}>{ev.building} {ev.room}호</div>
                 {ev.registeredSource === "broker"
                   ? <span className="text-[9px] font-bold py-0.5 px-1.5 bg-[#EC4899] text-white rounded-[3px] mr-1.5 whitespace-nowrap">부동산</span>
@@ -80,9 +80,9 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                         <div className="flex flex-col items-center gap-0.5 min-w-[56px]">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300"
                             style={{
-                              background: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#fff" : "#E5E7EB",
-                              color: stepDone ? "#fff" : isActive ? "#3B82F6" : "#9CA3AF",
-                              border: isActive && !stepDone ? "2px solid #3B82F6" : "2px solid transparent",
+                              background: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-blue)") : isActive ? "#fff" : "#E5E7EB",
+                              color: stepDone ? "#fff" : isActive ? "var(--color-hm-blue)" : "#9CA3AF",
+                              border: isActive && !stepDone ? "2px solid var(--color-hm-blue)" : "2px solid transparent",
                               boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(59,130,246,0.2)" : "none",
                               animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
                             }}>
@@ -91,13 +91,13 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                           <span className="text-[9px] whitespace-nowrap"
                             style={{
                               fontWeight: stepDone || isActive ? 700 : 500,
-                              color: stepDone ? (allDone ? "#9CA3AF" : "#3B82F6") : isActive ? "#1D4ED8" : "#9CA3AF",
+                              color: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-blue)") : isActive ? "#1D4ED8" : "#9CA3AF",
                               animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
                             }}>{step.label}</span>
                         </div>
                         {si < cSteps.length - 1 && (
                           <div className="flex-1 h-0.5 mx-1 mb-4 rounded-[1px] transition-colors duration-300"
-                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "#3B82F6") : "#E5E7EB" }} />
+                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "var(--color-hm-blue)") : "#E5E7EB" }} />
                         )}
                       </div>
                     );
@@ -164,7 +164,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.balanceConfirmed
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
-                      : 'text-hm-success border border-[#A7F3D0] bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
+                      : 'text-hm-success border border-hm-success-border bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
                   }`}>
                   {ev.balanceConfirmed ? "✔ 잔금확인" : "잔금확인"}
                 </span>
@@ -218,7 +218,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                   className={`text-[10px] font-bold py-1 px-2.5 rounded-md whitespace-nowrap transition-colors ${
                     ev.brokerFeeSent
                       ? 'text-[#9CA3AF] border border-[#D1D5DB] bg-[#F3F4F6] cursor-default line-through'
-                      : 'text-hm-success border border-[#A7F3D0] bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
+                      : 'text-hm-success border border-hm-success-border bg-hm-success-bg cursor-pointer hover:bg-[#D1FAE5]'
                   }`}>
                   {ev.brokerFeeSent ? "✔ 중개료" : "중개료송금"}
                 </span>
@@ -273,7 +273,7 @@ export const ContractStatusPanel: React.FC<ContractStatusPanelProps> = ({
                     setActiveVacancies?.((prev: any[]) => prev.map((v: any) => v.building === ev.building && String(v.room) === String(ev.room) ? { ...v, status: "홍보중" } : v));
                     setBreakReport({ ev, owners, msgText: msgLines.join("\n") });
                   }}
-                    className="text-[10px] font-bold text-hm-danger py-1 px-2.5 rounded-md border border-[#FECACA] bg-hm-danger-bg cursor-pointer whitespace-nowrap hover:bg-[#FEE2E2] transition-colors">
+                    className="text-[10px] font-bold text-hm-danger py-1 px-2.5 rounded-md border border-hm-danger-border bg-hm-danger-bg cursor-pointer whitespace-nowrap hover:bg-[#FEE2E2] transition-colors">
                     계약파기
                   </span>
                 )}

@@ -176,7 +176,7 @@ export const PayrollPage = () => {
           return (
             <Card key={staff.id}
               className={isPaid ? "opacity-80" : ""}
-              style={{ border: isPaid ? "1.5px solid #A7F3D0" : "1.5px solid #E8ECF0" }}>
+              style={{ border: isPaid ? "1.5px solid var(--color-hm-success-border)" : "1.5px solid var(--color-hm-border)" }}>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2.5">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-base ${isPaid ? "bg-hm-success-bg" : "bg-hm-blue-bg"}`}>

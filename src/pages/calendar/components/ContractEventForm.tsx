@@ -101,7 +101,7 @@ export const ContractEventForm: React.FC<ContractEventFormProps> = ({
                   <div className="text-[9px] font-bold text-hm-danger mb-[3px]">연락처 *</div>
                   <input value={vacancyEdits.brokerPhone ?? ""} onChange={e => setVacancyEdits((prev: any) => ({ ...prev, brokerPhone: e.target.value }))}
                     placeholder="010-0000-0000" className={`${inputClassName} !py-[7px] !px-2.5 !text-xs !bg-white`}
-                    style={{ borderColor: !(vacancyEdits.brokerPhone) ? "#FECACA" : undefined }} />
+                    style={{ borderColor: !(vacancyEdits.brokerPhone) ? "var(--color-hm-danger-border)" : undefined }} />
                 </div>
               </div>
               <div className={`grid ${isMobile ? 'grid-cols-[1fr_auto_1fr]' : 'grid-cols-[1fr_auto_1fr_1fr]'} gap-2`}>

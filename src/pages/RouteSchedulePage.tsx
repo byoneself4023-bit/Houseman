@@ -23,7 +23,7 @@ const REGION_KEYS = Object.keys(REGIONS);
 // ── 태스크 유형별 색상 ──
 const TASK_COLORS: Record<string, string> = {
   as: '#EF4444',
-  patrol: '#3B82F6',
+  patrol: 'var(--color-hm-blue)',
   meter: '#F59E0B',
   moveinout: '#10B981',
 };
@@ -138,7 +138,7 @@ function optimizeRoute(buildings: BuildingTask[]): BuildingTask[] {
 }
 
 // ── 요일별 색상 ──
-const DAY_COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
+const DAY_COLORS = ['#EF4444', '#F59E0B', '#10B981', 'var(--color-hm-blue)', '#8B5CF6'];
 
 // ── 시간 슬롯 생성 ──
 function timeSlots(count: number, start = '09:30'): string[] {
@@ -704,7 +704,7 @@ export function RouteSchedulePage({ myBuildings = [], buildingData = {}, activeT
               <div
                 key={idx}
                 className="bg-white rounded-xl border border-hm-border p-4 mb-3 cursor-pointer transition-shadow hover:shadow-md"
-                style={{ borderLeft: `4px solid ${totalTasks > 0 ? '#3B82F6' : '#E5E7EB'}` }}
+                style={{ borderLeft: `4px solid ${totalTasks > 0 ? 'var(--color-hm-blue)' : '#E5E7EB'}` }}
                 onClick={() => isMobile && toggleDay(idx)}
               >
                 {/* Day Header */}

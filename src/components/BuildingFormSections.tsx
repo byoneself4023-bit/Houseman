@@ -35,7 +35,7 @@ const FInput = ({ data, field, onChange, placeholder, type, style: extraStyle, r
     <div className="relative">
       <input type={type || "text"} value={data[field] ?? ""} onChange={e => { !readOnly && onChange({ [field]: e.target.value }); if (touched) { const v = validator; if (v) { const r = v(e.target.value); setError(r.valid ? "" : r.message); } else { setError(""); } } }}
         onBlur={handleBlur} readOnly={readOnly} placeholder={placeholder}
-        className={`${inputClassName} px-3 py-2 text-xs ${readOnly ? 'bg-[#F8FAFC] cursor-default' : 'bg-white cursor-text'} ${hasError ? 'border-red-500' : ''} ${extraClassName || ''}`}
+        className={`${inputClassName} px-3 py-2 text-xs ${readOnly ? 'bg-hm-bg-slate cursor-default' : 'bg-white cursor-text'} ${hasError ? 'border-red-500' : ''} ${extraClassName || ''}`}
         style={extraStyle} {...rest} />
       {hasError && <div className="text-[9px] text-red-500 mt-0.5">{error}</div>}
     </div>
@@ -44,7 +44,7 @@ const FInput = ({ data, field, onChange, placeholder, type, style: extraStyle, r
 
 const FSelect = ({ data, field, onChange, options, style: extraStyle, readOnly }) => (
   <select value={data[field] || ""} onChange={e => !readOnly && onChange({ [field]: e.target.value })} disabled={readOnly}
-    className={`${inputClassName} px-3 py-2 text-xs ${readOnly ? 'cursor-default bg-[#F8FAFC]' : 'cursor-pointer bg-white'}`}
+    className={`${inputClassName} px-3 py-2 text-xs ${readOnly ? 'cursor-default bg-hm-bg-slate' : 'cursor-pointer bg-white'}`}
     style={extraStyle}>
     <option value="">선택</option>
     {options.map(o => typeof o === "string" ? <option key={o} value={o}>{o}</option> : <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -61,7 +61,7 @@ const FCheck = ({ data, field, onChange, label, readOnly }) => (
 const FTextarea = ({ data, field, onChange, placeholder, rows, readOnly }) => (
   <textarea value={data[field] || ""} onChange={e => !readOnly && onChange({ [field]: e.target.value })}
     readOnly={readOnly} placeholder={placeholder} rows={rows || 3}
-    className={`${inputClassName} px-3 py-2 text-xs min-h-[60px] w-full resize-y ${readOnly ? 'bg-[#F8FAFC]' : 'bg-white'}`} />
+    className={`${inputClassName} px-3 py-2 text-xs min-h-[60px] w-full resize-y ${readOnly ? 'bg-hm-bg-slate' : 'bg-white'}`} />
 );
 
 /* ── Collapsible section header ── */
@@ -107,7 +107,7 @@ const FFileUpload = ({ data, field, label, onChange, setFullScreenFile, readOnly
       <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={handleUpload} className="hidden" />
       {!value ? (
         readOnly ? (
-          <div className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-[#F8FAFC] text-gray-400 text-[11px] font-[inherit] text-center">
+          <div className="w-full py-5 px-3 rounded-lg border-[1.5px] border-dashed border-gray-300 bg-hm-bg-slate text-gray-400 text-[11px] font-[inherit] text-center">
             첨부된 파일 없음
           </div>
         ) : (
@@ -160,11 +160,11 @@ function useVisibility(data) {
 export function BuildingTypeCards({ data, onChange, locked, onUnlock, onLock, editMode = true }) {
   const { anyTypeChecked } = useVisibility(data);
   const typeConfigs = [
-    { field: "isShortTermRental", label: "단기임대", icon: "\u{1F3E0}", color: "#3B82F6", bg: "#EFF6FF", border: "#BFDBFE" },
-    { field: "isLongTermRental", label: "일반임대", icon: "\u{1F3E2}", color: "#059669", bg: "#ECFDF5", border: "#A7F3D0" },
+    { field: "isShortTermRental", label: "단기임대", icon: "\u{1F3E0}", color: "var(--color-hm-blue)", bg: "var(--color-hm-blue-bg)", border: "#BFDBFE" },
+    { field: "isLongTermRental", label: "일반임대", icon: "\u{1F3E2}", color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", border: "var(--color-hm-success-border)" },
     { field: "isCommercial", label: "근생", icon: "\u{1F3EA}", color: "#D97706", bg: "#FFFBEB", border: "#FDE68A" },
     { field: "isManagementAgency", label: "관리사무소대행", icon: "\u{1F3D7}\uFE0F", color: "#7C3AED", bg: "#F5F3FF", border: "#DDD6FE" },
-    { field: "isCorporateFacility", label: "기업시설관리", icon: "\u{1F3ED}", color: "#DC2626", bg: "#FEF2F2", border: "#FECACA" },
+    { field: "isCorporateFacility", label: "기업시설관리", icon: "\u{1F3ED}", color: "var(--color-hm-danger)", bg: "var(--color-hm-danger-bg)", border: "var(--color-hm-danger-border)" },
   ];
 
   return (
@@ -215,7 +215,7 @@ export function BuildingTypeCards({ data, onChange, locked, onUnlock, onLock, ed
               className="relative flex-1 min-w-[130px] py-3.5 px-4 rounded-xl text-center transition-all duration-200"
               style={{
                 cursor: disabled ? (isLocked ? "default" : "not-allowed") : "pointer",
-                background: active ? t.bg : "#F9FAFB",
+                background: active ? t.bg : "var(--color-hm-bg-hover)",
                 border: `2.5px solid ${active ? t.color : "#E5E7EB"}`,
                 opacity: disabled ? (isLocked && active ? 0.85 : isLocked ? 0.3 : 0.25) : active ? 1 : 0.5,
                 boxShadow: active ? `0 0 0 2px ${t.color}30` : "none",
@@ -261,7 +261,7 @@ export function BuildingInfoSection({ data, onChange, editMode = true, isMobile,
             <div>
               <FLabel label="도로명 주소" />
               <div className="flex gap-1.5 items-center">
-                <input value={data.addressRoad || ""} onChange={e => !ro && onChange({ addressRoad: e.target.value })} readOnly={ro} placeholder="주소 검색 또는 직접 입력" className={`${inputClassName} py-1.5 px-2 text-[11px] flex-1 ${ro ? 'bg-[#F8FAFC]' : 'bg-white'}`} />
+                <input value={data.addressRoad || ""} onChange={e => !ro && onChange({ addressRoad: e.target.value })} readOnly={ro} placeholder="주소 검색 또는 직접 입력" className={`${inputClassName} py-1.5 px-2 text-[11px] flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                 {!ro && <button onClick={() => {
                   new window.daum.Postcode({
                     oncomplete: (d) => {
@@ -398,7 +398,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                     }
                   }).open();
                 }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
-                <input value={data.ownerHomeAddressDetail || ""} onChange={e => !ro && onChange({ ownerHomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-[#F8FAFC]' : 'bg-white'}`} />
+                <input value={data.ownerHomeAddressDetail || ""} onChange={e => !ro && onChange({ ownerHomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
               </div>
             </div>}
           </div>
@@ -418,8 +418,8 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                 </div>
               </div>
               {/* 정산 계좌 2 */}
-              <div className="p-2.5 px-3 rounded-lg" style={{ background: data.settlementAccount2 ? "#ECFDF5" : "#F7F8FA", border: `1px solid ${data.settlementAccount2 ? "#A7F3D0" : "#E5E8EB"}` }}>
-                <div className="text-[11px] font-[800] mb-2" style={{ color: data.settlementAccount2 ? "#059669" : "#8B95A1" }}>정산 계좌 ②</div>
+              <div className="p-2.5 px-3 rounded-lg" style={{ background: data.settlementAccount2 ? "var(--color-hm-success-bg)" : "var(--color-hm-bg-muted)", border: `1px solid ${data.settlementAccount2 ? "var(--color-hm-success-border)" : "#E5E8EB"}` }}>
+                <div className="text-[11px] font-[800] mb-2" style={{ color: data.settlementAccount2 ? "var(--color-hm-success)" : "#8B95A1" }}>정산 계좌 ②</div>
                 <div className="grid grid-cols-[1fr_2fr_1fr] gap-1.5">
                   <div><FLabel label="은행" /><FInput readOnly={ro} data={data} field="settlementAccount2Bank" onChange={onChange} placeholder="은행" /></div>
                   <div><FLabel label="계좌번호" /><FInput readOnly={ro} data={data} field="settlementAccount2" onChange={onChange} placeholder="계좌번호" /></div>
@@ -450,7 +450,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
           )}
 
           {/* 사업자 정보 */}
-          <div className="p-2 px-2.5 bg-[#F8FAFC] rounded-lg border border-hm-border mb-2.5">
+          <div className="p-2 px-2.5 bg-hm-bg-slate rounded-lg border border-hm-border mb-2.5">
             <div className="text-xs font-bold text-indigo-500 mb-1.5">사업자 정보</div>
             <div className="grid grid-cols-3 gap-3 mb-1.5 hm-form-grid-3">
               <div><FLabel label="사업자등록번호" /><FInput readOnly={ro} data={data} field="ownerBusinessRegistrationNumber" onChange={onChange} placeholder="000-00-00000" className="font-mono" /></div>
@@ -505,7 +505,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                         }
                       }).open();
                     }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
-                    <input value={data.owner2HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner2HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-[#F8FAFC]' : 'bg-white'}`} />
+                    <input value={data.owner2HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner2HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
               </div>
@@ -545,7 +545,7 @@ export function OwnerSection({ data, onChange, editMode = true, defaultOpen = tr
                         }
                       }).open();
                     }} className="px-3.5 py-2 rounded-md border-none bg-hm-blue text-white text-[11px] font-bold cursor-pointer font-[inherit] whitespace-nowrap hover:bg-hm-blue-dark transition-colors">검색</button>}
-                    <input value={data.owner3HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner3HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-[#F8FAFC]' : 'bg-white'}`} />
+                    <input value={data.owner3HomeAddressDetail || ""} onChange={e => !ro && onChange({ owner3HomeAddressDetail: e.target.value })} readOnly={ro} placeholder="상세주소" className={`${inputClassName} px-3 py-2 text-xs flex-1 ${ro ? 'bg-hm-bg-slate' : 'bg-white'}`} />
                   </div>
                 </div>
               </div>
@@ -917,10 +917,10 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
               const allItems = [
                 { field: "depositAccountTarget", label: "🔑 예치금 (보증금)", color: "#7C3AED", bg: "#F5F3FF", border: "#DDD6FE", desc: "입주 시 1회 납부. 퇴실 시 정산 후 반환" },
-                { field: "rentAccountTarget", label: "💰 월세 (임대료)", color: "#DC2626", bg: "#FEF2F2", border: "#FECACA", desc: "임차인이 납부하는 월 임대료" },
-                { field: "managementFeeAccountTarget", label: "🏠 관리비", color: "#2563EB", bg: "#EFF6FF", border: "#BFDBFE", desc: "월 관리비 (고정분)" },
-                { field: "utilityAccountTarget", label: "💧 공과금 (수도/인터넷)", color: "#059669", bg: "#ECFDF5", border: "#A7F3D0", desc: "수도, 인터넷, 케이블 등" },
-                { field: "electricGasAccountTarget", label: "⚡ 전기+가스", color: "#EA580C", bg: "#FFF7ED", border: "#FED7AA", desc: "전기, 가스 (공과금과 별도)" },
+                { field: "rentAccountTarget", label: "💰 월세 (임대료)", color: "var(--color-hm-danger)", bg: "var(--color-hm-danger-bg)", border: "var(--color-hm-danger-border)", desc: "임차인이 납부하는 월 임대료" },
+                { field: "managementFeeAccountTarget", label: "🏠 관리비", color: "var(--color-hm-blue-dark)", bg: "var(--color-hm-blue-bg)", border: "#BFDBFE", desc: "월 관리비 (고정분)" },
+                { field: "utilityAccountTarget", label: "💧 공과금 (수도/인터넷)", color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", border: "var(--color-hm-success-border)", desc: "수도, 인터넷, 케이블 등" },
+                { field: "electricGasAccountTarget", label: "⚡ 전기+가스", color: "var(--color-hm-warning)", bg: "var(--color-hm-warning-bg)", border: "var(--color-hm-warning-border)", desc: "전기, 가스 (공과금과 별도)" },
               ];
 
               const shortItems = allItems;
@@ -933,8 +933,8 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                 : i
               );
               const itemsByType = { "단기": shortItems, "일반임대": longTermItems, "근생": commercialItems, "관리사무소": [allItems[2]] };
-              const typeColors = { "단기": "#2563EB", "일반임대": "#059669", "근생": "#EA580C", "관리사무소": "#7C3AED" };
-              const typeBgs = { "단기": "#EFF6FF", "일반임대": "#ECFDF5", "근생": "#FFF7ED", "관리사무소": "#F5F3FF" };
+              const typeColors = { "단기": "var(--color-hm-blue-dark)", "일반임대": "var(--color-hm-success)", "근생": "var(--color-hm-warning)", "관리사무소": "#7C3AED" };
+              const typeBgs = { "단기": "var(--color-hm-blue-bg)", "일반임대": "var(--color-hm-success-bg)", "근생": "var(--color-hm-warning-bg)", "관리사무소": "#F5F3FF" };
 
               const billingTypes = derivedTypes.filter(t => itemsByType[t]);
               const isMultiType = billingTypes.length > 1;
@@ -945,7 +945,7 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
 
                 return (
                   <div key={bType} className={isMultiType ? "mb-4 p-3.5 rounded-[10px]" : "mb-4"} style={{ background: isMultiType ? typeBgs[bType] : "transparent", border: isMultiType ? `1.5px solid ${typeColors[bType]}30` : "none" }}>
-                    <div className="text-[11px] font-[800] mb-2 pb-1.5" style={{ color: isMultiType ? typeColors[bType] : "#191F28", borderBottom: `1.5px solid ${isMultiType ? typeColors[bType] + "40" : "#E8ECF0"}` }}>
+                    <div className="text-[11px] font-[800] mb-2 pb-1.5" style={{ color: isMultiType ? typeColors[bType] : "#191F28", borderBottom: `1.5px solid ${isMultiType ? typeColors[bType] + "40" : "var(--color-hm-border)"}` }}>
                       📦 {isMultiType ? `${bType} 호실` : ""} 항목별 입금 계좌 지정
                     </div>
                     {!isMultiType && <div className="text-[9px] text-[#8B95A1] mb-2.5">각 항목이 어느 계좌로 입금되는지 지정하세요. 레고 블럭처럼 자유롭게 조합.</div>}
@@ -953,13 +953,13 @@ export function SettlementBillingSection({ data, onChange, editMode = true, isMo
                       {items.map(item => {
                         const val = data[item.field] || "";
                         return (
-                          <div key={item.field} className="p-3 px-3.5 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "#F9FAFB", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
+                          <div key={item.field} className="p-3 px-3.5 rounded-[10px] transition-all duration-150" style={{ background: val ? item.bg : "var(--color-hm-bg-hover)", border: `1.5px solid ${val ? item.border : "#E5E8EB"}` }}>
                             <div className="flex items-center gap-1.5 mb-1.5">
                               <span className="text-xs font-bold" style={{ color: item.color }}>{item.label}</span>
                               {val && <span className="text-[9px] font-semibold" style={{ color: item.color }}>✓</span>}
                             </div>
                             <select value={val} onChange={e => onChange({ [item.field]: e.target.value || (editMode ? "" : null) })} disabled={ro}
-                              className={`${inputClassName} py-[7px] px-2.5 text-xs ${editMode ? 'cursor-pointer bg-white' : 'cursor-default bg-[#F8FAFC]'} ${val ? 'font-semibold' : 'font-normal'}`}>
+                              className={`${inputClassName} py-[7px] px-2.5 text-xs ${editMode ? 'cursor-pointer bg-white' : 'cursor-default bg-hm-bg-slate'} ${val ? 'font-semibold' : 'font-normal'}`}>
                               <option value="">-- 계좌 선택 --</option>
                               <option value="no_billing">🚫 청구안함</option>
                               {acctOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -1034,9 +1034,9 @@ export function ContractSpecialTermsSection({ data, onChange, editMode = true, d
   const ro = !editMode;
 
   const types = [
-    { field: "contractSpecialTermsShortTerm", label: "🏠 단기임대 특약사항", show: !!data.isShortTermRental, color: "#2563EB", bg: "#EFF6FF", border: "#BFDBFE" },
-    { field: "contractSpecialTermsLongTerm", label: "🏢 일반임대 특약사항", show: !!data.isLongTermRental, color: "#059669", bg: "#ECFDF5", border: "#A7F3D0" },
-    { field: "contractSpecialTermsCommercial", label: "🏪 근생 특약사항", show: !!data.isCommercial, color: "#EA580C", bg: "#FFF7ED", border: "#FED7AA" },
+    { field: "contractSpecialTermsShortTerm", label: "🏠 단기임대 특약사항", show: !!data.isShortTermRental, color: "var(--color-hm-blue-dark)", bg: "var(--color-hm-blue-bg)", border: "#BFDBFE" },
+    { field: "contractSpecialTermsLongTerm", label: "🏢 일반임대 특약사항", show: !!data.isLongTermRental, color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)", border: "var(--color-hm-success-border)" },
+    { field: "contractSpecialTermsCommercial", label: "🏪 근생 특약사항", show: !!data.isCommercial, color: "var(--color-hm-warning)", bg: "var(--color-hm-warning-bg)", border: "var(--color-hm-warning-border)" },
   ].filter(t => t.show);
 
   if (types.length === 0) return null;

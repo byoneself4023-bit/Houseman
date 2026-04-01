@@ -239,8 +239,8 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
         const settlement = t.deposit + totalRefund - totalDeduct;
         const SRow = ({ label, sub, value, color, bold }: { label: string; sub?: string; value: number | string; color?: string; bold?: boolean }) => (
           <div className="flex justify-between items-center py-[5px] border-b border-[#F3F4F6]">
-            <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "#5F6577" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
-            <span className={`text-xs ${bold ? 'font-[800]' : 'font-semibold'}`} style={{ color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
+            <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "var(--color-hm-text-sub)" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
+            <span className={`text-xs ${bold ? 'font-[800]' : 'font-semibold'}`} style={{ color: color || "var(--color-hm-text)" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
           </div>
         );
         const moveOutPhotos = t.moveOutPhotos || [];
@@ -286,7 +286,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               <div className="text-xs text-hm-text-muted mt-1">{t.building} {t.room}호 · {t.name} · {t.phone}</div>
             </div>
             <div className={`px-[18px] py-2 rounded-lg text-sm font-[800] ${isEarlyMoveout ? 'bg-hm-danger-bg text-hm-danger' : 'bg-[#F0FDF4] text-hm-success'}`}
-              style={{ border: `1.5px solid ${isEarlyMoveout ? "#FECACA" : "#BBF7D0"}` }}>
+              style={{ border: `1.5px solid ${isEarlyMoveout ? "var(--color-hm-danger-border)" : "#BBF7D0"}` }}>
               {isEarlyMoveout ? "만기전퇴실" : "만기퇴실"}
             </div>
           </div>
@@ -296,8 +296,8 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
             <div>
               <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">입주자 정보</div>
               <div className="grid grid-cols-2 gap-2 mb-2">
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold">{t.name}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.phone}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold">{t.name}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.phone}</div></div>
               </div>
               <div className="grid gap-0.5 mb-3 items-center" style={{ gridTemplateColumns: "20px auto 30px 1fr 30px 60px" }}>
                 <div className="text-[9px] text-hm-text-muted">은행</div>
@@ -312,22 +312,22 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {showProRata && <>
               <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">사용 기간</div>
               <div className="grid grid-cols-3 gap-2 mb-3">
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{moveInStr || "-"}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.expiry}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{moveInStr || "-"}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
                 <div><div className="text-[9px] text-hm-text-muted mb-0.5">사용기간</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0F4FF] text-xs font-bold text-hm-blue-dark text-center">{usagePeriod}</div></div>
               </div>
 
               <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">계약 정보 (자동)</div>
               <div className="grid grid-cols-3 gap-2 mb-2">
                 <div><div className="text-[9px] text-hm-text-muted mb-0.5">{depositLabel}</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F0FDF4] text-xs font-bold text-hm-success text-right">{fmt(t.deposit)}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold text-right">{fmt(t.rent)}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs font-semibold text-right">{fmt(t.mgmt || 0)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세 <span className={`text-[8px] ${isRentPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isRentPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.rent)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비 <span className={`text-[8px] ${isMgmtPrepaid ? 'text-hm-success' : 'text-hm-danger'}`}>({isMgmtPrepaid ? "선불" : "후불"})</span></div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs font-semibold text-right">{fmt(t.mgmt || 0)}</div></div>
               </div>
               <div className="gap-2 mb-3" style={{ display: "grid", gridTemplateColumns: showCleanFee ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr" }}>
                 {showCleanFee && <div><div className="text-[9px] text-hm-text-muted mb-0.5">퇴실청소비</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-danger-bg text-xs font-semibold text-right text-hm-danger">{fmt(cleanFee)}</div></div>}
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs text-right">{fmt(waterAmt)}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs text-right">{fmt(internetAmt)}</div></div>
-                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-[#F8FAFC] text-xs">{t.expiry}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">수도</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(waterAmt)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">TV/인터넷</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs text-right">{fmt(internetAmt)}</div></div>
+                <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기일</div><div className="px-2.5 py-[7px] rounded-lg bg-hm-bg-slate text-xs">{t.expiry}</div></div>
               </div>
               </>}
 
@@ -371,7 +371,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               </label>
               <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">보증금 반환</div>
               <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
-                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
+                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "var(--color-hm-danger-border)"}` }}>
                 <div className="flex justify-between items-center">
                   <div>
                     <span className={`text-sm font-[800] ${settlement >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
@@ -391,11 +391,11 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {/* 반환 항목 */}
               <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-[#BBF7D0]">
                 <div className="text-[10px] font-bold text-hm-success mb-1">반환 항목</div>
-                <SRow label={depositLabel} value={t.deposit} color="#059669" bold />
-                {netRent < 0 && <SRow label="월세 환불" sub={`${daysInMonth - usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={-netRent} color="#059669" />}
-                {netMgmt < 0 && <SRow label="관리비 환불" sub={`${daysInMonth - usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={-netMgmt} color="#059669" />}
-                {netWater < 0 && <SRow label="수도 환불" sub={`${daysInMonth - usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={-netWater} color="#059669" />}
-                {netInternet < 0 && <SRow label="TV/인터넷 환불" sub={`${daysInMonth - usedDays}일분${unpaidInternet > 0 ? " · 미납반영" : ""}`} value={-netInternet} color="#059669" />}
+                <SRow label={depositLabel} value={t.deposit} color="var(--color-hm-success)" bold />
+                {netRent < 0 && <SRow label="월세 환불" sub={`${daysInMonth - usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={-netRent} color="var(--color-hm-success)" />}
+                {netMgmt < 0 && <SRow label="관리비 환불" sub={`${daysInMonth - usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={-netMgmt} color="var(--color-hm-success)" />}
+                {netWater < 0 && <SRow label="수도 환불" sub={`${daysInMonth - usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={-netWater} color="var(--color-hm-success)" />}
+                {netInternet < 0 && <SRow label="TV/인터넷 환불" sub={`${daysInMonth - usedDays}일분${unpaidInternet > 0 ? " · 미납반영" : ""}`} value={-netInternet} color="var(--color-hm-success)" />}
                 <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-[#BBF7D0]">
                   <span className="text-xs font-[800] text-[#065F46]">반환소계</span>
                   <span className="text-sm font-[900] text-hm-success">{fmt(t.deposit + totalRefund)}</span>
@@ -405,23 +405,23 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
               {/* 공제 항목 */}
               <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
                 <div className="text-[10px] font-bold text-hm-danger mb-1">공제 항목</div>
-                {netRent > 0 && <SRow label="월세" sub={`${usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={netRent} color="#DC2626" />}
-                {netMgmt > 0 && <SRow label="관리비" sub={`${usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={netMgmt} color="#DC2626" />}
-                {netWater > 0 && <SRow label="수도" sub={`${usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={netWater} color="#DC2626" />}
-                {netInternet > 0 && <SRow label="TV/인터넷" sub={`${usedDays}일분${unpaidInternet > 0 ? " · 미납반영" : ""}`} value={netInternet} color="#DC2626" />}
-                {showCleanFee && <SRow label="퇴실청소비" value={cleanFee} color="#DC2626" />}
-                {showManualInputs && manElec.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`e${i}`} label={`전기${r.period ? ` (${r.period})` : ` ${i+1}`}`} value={parseNum(r.amt)} color="#DC2626" />)}
-                {showManualInputs && manGas.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`g${i}`} label={`가스${r.period ? ` (${r.period})` : ` ${i+1}`}`} value={parseNum(r.amt)} color="#DC2626" />)}
-                {showManualInputs && parseNum(manRepair) > 0 && <SRow label={`애완동물 ${manRepairDesc ? `(${manRepairDesc})` : ""}`} value={parseNum(manRepair)} color="#DC2626" />}
-                {showManualInputs && parseNum(manWaste) > 0 && <SRow label={`공제1 ${manWasteDesc ? `(${manWasteDesc})` : ""}`} value={parseNum(manWaste)} color="#DC2626" />}
-                {showManualInputs && manOther.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`o${i}`} label={`공제${i+2}${r.desc ? ` (${r.desc})` : ""}`} value={parseNum(r.amt)} color="#DC2626" />)}
+                {netRent > 0 && <SRow label="월세" sub={`${usedDays}일분${unpaidRent > 0 ? " · 미납반영" : ""}`} value={netRent} color="var(--color-hm-danger)" />}
+                {netMgmt > 0 && <SRow label="관리비" sub={`${usedDays}일분${unpaidMgmt > 0 ? " · 미납반영" : ""}`} value={netMgmt} color="var(--color-hm-danger)" />}
+                {netWater > 0 && <SRow label="수도" sub={`${usedDays}일분${unpaidWater > 0 ? " · 미납반영" : ""}`} value={netWater} color="var(--color-hm-danger)" />}
+                {netInternet > 0 && <SRow label="TV/인터넷" sub={`${usedDays}일분${unpaidInternet > 0 ? " · 미납반영" : ""}`} value={netInternet} color="var(--color-hm-danger)" />}
+                {showCleanFee && <SRow label="퇴실청소비" value={cleanFee} color="var(--color-hm-danger)" />}
+                {showManualInputs && manElec.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`e${i}`} label={`전기${r.period ? ` (${r.period})` : ` ${i+1}`}`} value={parseNum(r.amt)} color="var(--color-hm-danger)" />)}
+                {showManualInputs && manGas.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`g${i}`} label={`가스${r.period ? ` (${r.period})` : ` ${i+1}`}`} value={parseNum(r.amt)} color="var(--color-hm-danger)" />)}
+                {showManualInputs && parseNum(manRepair) > 0 && <SRow label={`애완동물 ${manRepairDesc ? `(${manRepairDesc})` : ""}`} value={parseNum(manRepair)} color="var(--color-hm-danger)" />}
+                {showManualInputs && parseNum(manWaste) > 0 && <SRow label={`공제1 ${manWasteDesc ? `(${manWasteDesc})` : ""}`} value={parseNum(manWaste)} color="var(--color-hm-danger)" />}
+                {showManualInputs && manOther.map((r,i) => parseNum(r.amt) > 0 && <SRow key={`o${i}`} label={`공제${i+2}${r.desc ? ` (${r.desc})` : ""}`} value={parseNum(r.amt)} color="var(--color-hm-danger)" />)}
                 {showRestoration && parseNum(manRestoration) > 0 && <SRow label={`원상복구비 ${manRestorationDesc ? `(${manRestorationDesc})` : ""}`} value={parseNum(manRestoration)} color="#7C3AED" />}
                 {showPenalty && penaltyTotal > 0 && <>
                   <div className="h-px bg-hm-danger-border my-1" />
-                  {penalty7 > 0 && <SRow label="7일패널티" sub={`귀속: ${penaltyRecipient}`} value={penalty7} color="#DC2626" />}
-                  {penaltyComm > 0 && <SRow label="중개수수료" value={penaltyComm} color="#DC2626" />}
+                  {penalty7 > 0 && <SRow label="7일패널티" sub={`귀속: ${penaltyRecipient}`} value={penalty7} color="var(--color-hm-danger)" />}
+                  {penaltyComm > 0 && <SRow label="중개수수료" value={penaltyComm} color="var(--color-hm-danger)" />}
                 </>}
-                {lateFee > 0 && <SRow label="연체수수료" sub="임대료 월 5%" value={lateFee} color="#DC2626" />}
+                {lateFee > 0 && <SRow label="연체수수료" sub="임대료 월 5%" value={lateFee} color="var(--color-hm-danger)" />}
                 {lateFeeOverrides[`${t.building}_${t.room}`]?.type === "exclude" && (
                   <div className="text-[10px] text-hm-success font-bold text-right py-0.5">수금관리에서 연체수수료 제외 처리됨</div>
                 )}
@@ -430,7 +430,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                 )}
                 {prevUnpaid > 0 && <>
                   <div className="h-px bg-hm-danger-border my-1" />
-                  <SRow label="전월 미납금" value={prevUnpaid} color="#DC2626" bold />
+                  <SRow label="전월 미납금" value={prevUnpaid} color="var(--color-hm-danger)" bold />
                 </>}
                 <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-danger-border">
                   <span className="text-xs font-[800] text-[#991B1B]">공제소계</span>
@@ -440,7 +440,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
 
               {/* 최종 정산 */}
               <div className={`rounded-[10px] px-[18px] py-3.5 ${settlement >= 0 ? 'bg-[#F0FDF4]' : 'bg-hm-danger-bg'}`}
-                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "#FECACA"}` }}>
+                style={{ border: `2px solid ${settlement >= 0 ? "#BBF7D0" : "var(--color-hm-danger-border)"}` }}>
                 <div className="flex justify-between items-center">
                   <span className={`text-sm font-[800] ${settlement >= 0 ? 'text-[#065F46]' : 'text-[#991B1B]'}`}>{settlement >= 0 ? "반환금액" : "추가청구"}</span>
                   <span className={`text-2xl font-[900] ${settlement >= 0 ? 'text-hm-success' : 'text-hm-danger'}`}>{settlement < 0 ? `-${fmt(Math.abs(settlement))}` : fmt(settlement)}<span className="text-xs">원</span></span>
@@ -565,10 +565,10 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
                       <button key={s} onClick={() => setRestorationStatus(s)}
                         className="flex-1 py-2 px-1 rounded-lg text-[11px] font-bold cursor-pointer font-[inherit] transition-colors"
                         style={{
-                          border: restorationStatus === s ? "2px solid" : "1.5px solid #E0E3E9",
-                          background: restorationStatus === s ? (s === "확인완료" ? "#F0FDF4" : s === "진행중" ? "#FEF3C7" : "#FEF2F2") : "#fff",
-                          color: restorationStatus === s ? (s === "확인완료" ? "#059669" : s === "진행중" ? "#92400E" : "#DC2626") : "#8F95A3",
-                          borderColor: restorationStatus === s ? (s === "확인완료" ? "#BBF7D0" : s === "진행중" ? "#FDE68A" : "#FECACA") : "#E0E3E9",
+                          border: restorationStatus === s ? "2px solid" : "1.5px solid var(--color-hm-input-border)",
+                          background: restorationStatus === s ? (s === "확인완료" ? "#F0FDF4" : s === "진행중" ? "#FEF3C7" : "var(--color-hm-danger-bg)") : "#fff",
+                          color: restorationStatus === s ? (s === "확인완료" ? "var(--color-hm-success)" : s === "진행중" ? "#92400E" : "var(--color-hm-danger)") : "var(--color-hm-text-muted)",
+                          borderColor: restorationStatus === s ? (s === "확인완료" ? "#BBF7D0" : s === "진행중" ? "#FDE68A" : "var(--color-hm-danger-border)") : "var(--color-hm-input-border)",
                         }}>
                         {s === "미확인" ? "미확인" : s === "진행중" ? "진행중" : "확인완료"}
                       </button>
@@ -674,7 +674,7 @@ export const MoveOutModal: React.FC<MoveOutModalProps> = ({
       {actionMode === "renew" && (
         <Card>
           <div className="text-base font-[800] text-hm-blue mb-4 flex items-center gap-2">📝 연장계약 <span className="text-xs font-medium text-hm-text-muted">{t.building} {t.room}호 {t.name}</span></div>
-          <div className="px-4 py-3 bg-[#F8FAFC] rounded-[10px] border border-hm-border mb-4">
+          <div className="px-4 py-3 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
             <div className="text-[10px] font-bold text-hm-text-muted mb-2">현재 계약</div>
             <div className="flex gap-5 text-xs flex-wrap">
               <div><span className="text-hm-text-muted">월세</span> <span className="font-bold">{fmt(t.rent)}원</span></div>

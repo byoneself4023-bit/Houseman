@@ -8,9 +8,9 @@ interface FieldProps {
 
 export const Field: React.FC<FieldProps> = ({ label, children, required }) => (
   <div className="mb-3.5">
-    <div className="text-[11px] font-bold text-[#5F6577] mb-[5px]">
+    <div className="text-[11px] font-bold text-hm-text-sub mb-[5px]">
       {label}
-      {required && <span className="text-[#DC2626]"> *</span>}
+      {required && <span className="text-hm-danger"> *</span>}
     </div>
     {children}
   </div>
@@ -20,7 +20,7 @@ export const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '9px 12px',
   borderRadius: 8,
-  border: '1.5px solid #E0E3E9',
+  border: '1.5px solid var(--color-hm-input-border)',
   fontSize: 13,
   fontFamily: 'inherit',
   outline: 'none',

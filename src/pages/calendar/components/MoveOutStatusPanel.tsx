@@ -168,7 +168,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
               onDoubleClick={() => { if (setEvents) openEditEvent(ev); }}>
               {/* 스텝 인디케이터 */}
               <div className={`px-4 py-2.5 flex items-center gap-0 ${allDone ? 'bg-gray-100 border-b border-gray-300' : 'border-b border-red-200'}`}
-                style={!allDone ? { background: "linear-gradient(90deg, #FEF2F2, #FFF8F8)" } : undefined}>
+                style={!allDone ? { background: "linear-gradient(90deg, var(--color-hm-danger-bg), #FFF8F8)" } : undefined}>
                 <div className="flex flex-col mr-3 whitespace-nowrap">
                   <span className={`text-[11px] font-bold ${allDone ? 'text-gray-400' : 'text-hm-danger'}`}>{ev.building} {ev.room}호
                     <span className="text-[9px] font-bold px-1.5 py-px rounded ml-1 align-middle"
@@ -189,9 +189,9 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                         <div className={`flex flex-col items-center gap-0.5 min-w-[52px] relative ${step.onClick ? 'cursor-pointer' : 'cursor-default'}`}>
                           <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-[800] transition-all duration-300"
                             style={{
-                              background: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#fff" : "#E5E7EB",
-                              color: stepDone ? "#fff" : isActive ? "#DC2626" : "#9CA3AF",
-                              border: isActive && !stepDone ? "2px solid #DC2626" : "2px solid transparent",
+                              background: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-danger)") : isActive ? "#fff" : "#E5E7EB",
+                              color: stepDone ? "#fff" : isActive ? "var(--color-hm-danger)" : "#9CA3AF",
+                              border: isActive && !stepDone ? "2px solid var(--color-hm-danger)" : "2px solid transparent",
                               boxShadow: isActive && !stepDone ? "0 0 0 3px rgba(220,38,38,0.2)" : "none",
                               animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
                             }}>
@@ -200,7 +200,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                           <span className="text-[9px] whitespace-nowrap"
                             style={{
                               fontWeight: stepDone || isActive ? 700 : 500,
-                              color: stepDone ? (allDone ? "#9CA3AF" : "#DC2626") : isActive ? "#B91C1C" : "#9CA3AF",
+                              color: stepDone ? (allDone ? "#9CA3AF" : "var(--color-hm-danger)") : isActive ? "#B91C1C" : "#9CA3AF",
                               animation: isActive && !stepDone && !allDone ? "hm-blink 1.2s ease-in-out infinite" : "none",
                             }}>{step.label}</span>
                           {step.sentStatus && (
@@ -224,7 +224,7 @@ export const MoveOutStatusPanel: React.FC<MoveOutStatusPanelProps> = ({
                         </div>
                         {si < mSteps.length - 1 && (
                           <div className="flex-1 h-0.5 mx-0.5 mb-4 rounded-sm transition-colors duration-300"
-                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "#DC2626") : "#E5E7EB" }} />
+                            style={{ background: stepDone ? (allDone ? "#D1D5DB" : "var(--color-hm-danger)") : "#E5E7EB" }} />
                         )}
                       </div>
                     );

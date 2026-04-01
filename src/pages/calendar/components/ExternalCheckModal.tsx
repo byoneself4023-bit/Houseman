@@ -11,10 +11,10 @@ import { persistUpdate, persistUploadPhotos } from '../calendarApi';
 import { api } from '@/lib/api';
 
 const ISSUE_ITEMS = [
-  { key: "외부업체", label: "외부업체 수리 필요", color: "#DC2626" },
-  { key: "교체", label: "가구/설비 교체 필요", color: "#EA580C" },
+  { key: "외부업체", label: "외부업체 수리 필요", color: "var(--color-hm-danger)" },
+  { key: "교체", label: "가구/설비 교체 필요", color: "var(--color-hm-warning)" },
   { key: "도배", label: "도배/장판 필요", color: "#7C3AED" },
-  { key: "누수", label: "누수/배관 이슈", color: "#2563EB" },
+  { key: "누수", label: "누수/배관 이슈", color: "var(--color-hm-blue-dark)" },
   { key: "기타", label: "기타 이슈", color: "#6B7280" },
 ];
 
@@ -119,7 +119,7 @@ export const ExternalCheckModal = ({
               photos={ecTm?.moveOutPhotos || []}
               maxPhotos={50}
               label="퇴실사진"
-              color="#DC2626"
+              color="var(--color-hm-danger)"
               onAdd={async (newPhotos: string[]) => {
                 const uploadedUrls = await persistUploadPhotos(newPhotos, ecEv.building, ecEv.room, "move-out");
                 const merged = [...(ecTm?.moveOutPhotos || []), ...(uploadedUrls.length > 0 ? uploadedUrls : newPhotos)];
@@ -236,7 +236,7 @@ export const ExternalCheckModal = ({
                   <label key={item.key} className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer border-[1.5px] transition-colors ${checked ? 'bg-hm-danger-bg border-red-200' : 'bg-hm-bg-hover border-gray-200'}`}>
                     <input type="checkbox" checked={checked} onChange={() => setIssues(prev => ({ ...prev, [item.key]: !checked }))}
                       className="w-4 h-4" style={{ accentColor: item.color }} />
-                    <span className="text-xs" style={{ fontWeight: checked ? 700 : 500, color: checked ? item.color : "#5F6577" }}>{item.label}</span>
+                    <span className="text-xs" style={{ fontWeight: checked ? 700 : 500, color: checked ? item.color : "var(--color-hm-text-sub)" }}>{item.label}</span>
                     {checked && item.key === "기타" && (
                       <input value={issueEtcText} onChange={e => { e.stopPropagation(); setIssueEtcText(e.target.value); }}
                         onClick={e => e.stopPropagation()} placeholder="내용 입력"

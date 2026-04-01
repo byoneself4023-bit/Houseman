@@ -3,9 +3,9 @@ import { buildings } from '@/data';
 // 애니메이션 keyframes
 export const WOBBLE_KEYFRAME = `@keyframes hm-wobble { 0%,100% { transform:rotate(0deg); } 25% { transform:rotate(10deg); } 50% { transform:rotate(-5deg); } 75% { transform:rotate(7deg); } }`;
 
-export const TYPE_COLORS: Record<string, string> = { "계약": "#3B82F6", "퇴실": "#EF4444", "휴무": "#8B5CF6" };
-export const TYPE_BG: Record<string, string> = { "계약": "#EFF6FF", "퇴실": "#FEF2F2", "휴무": "#F5F3FF" };
-export const TYPE_BORDER: Record<string, string> = { "계약": "#BFDBFE", "퇴실": "#FECACA", "휴무": "#DDD6FE" };
+export const TYPE_COLORS: Record<string, string> = { "계약": "var(--color-hm-blue)", "퇴실": "#EF4444", "휴무": "#8B5CF6" };
+export const TYPE_BG: Record<string, string> = { "계약": "var(--color-hm-blue-bg)", "퇴실": "var(--color-hm-danger-bg)", "휴무": "#F5F3FF" };
+export const TYPE_BORDER: Record<string, string> = { "계약": "#BFDBFE", "퇴실": "var(--color-hm-danger-border)", "휴무": "#DDD6FE" };
 export const TYPE_ICON: Record<string, string> = { "계약": "📦", "퇴실": "🚪", "휴무": "🏖️" };
 export const STATIC_BUILDING_NAMES: string[] = buildings.map((b: any) => b.name);
 

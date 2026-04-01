@@ -502,8 +502,8 @@ export const RoomDetailPanel: React.FC<RoomDetailPanelProps> = ({
                       ) : (
                         <div className={`px-1.5 py-1 bg-white rounded-[5px] text-[10px] ${isOverridden ? 'font-semibold' : 'font-normal'}`}
                           style={{
-                            border: isOverridden ? `1.5px solid ${sr.color}` : "1px solid #E0E3E9",
-                            color: isOverridden ? sr.color : "#5F6577"
+                            border: isOverridden ? `1.5px solid ${sr.color}` : "1px solid var(--color-hm-input-border)",
+                            color: isOverridden ? sr.color : "var(--color-hm-text-sub)"
                           }}>
                           {roomMgr || bMgr || "미배정"}
                           {isOverridden && <span className="text-[7px] ml-1" style={{ color: sr.color }}>개별</span>}

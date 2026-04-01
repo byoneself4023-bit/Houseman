@@ -590,7 +590,7 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
       {/* Toggle header */}
-      <div className="flex justify-between items-center px-4 py-2.5 cursor-pointer bg-[#F8FAFC] border-b border-gray-200 select-none hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
+      <div className="flex justify-between items-center px-4 py-2.5 cursor-pointer bg-hm-bg-slate border-b border-gray-200 select-none hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
         <span className="text-sm font-bold text-blue-800">AI 어시스턴트</span>
         <span className="text-xs text-gray-500">{open ? '접기' : '펼치기'}</span>
       </div>

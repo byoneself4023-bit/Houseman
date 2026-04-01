@@ -745,11 +745,11 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
             <p className="text-[13px] text-hm-text-sub leading-[1.7] mb-4">
               통합관리대장 엑셀 파일(.xlsx)을 그대로 올리면 모든 데이터가 자동으로 들어갑니다.
             </p>
-            <div className="bg-[#F8FAFC] rounded-[10px] p-4 mb-4">
+            <div className="bg-hm-bg-slate rounded-[10px] p-4 mb-4">
               <div className="text-xs font-bold mb-2">자동 인식하는 시트:</div>
               <div className="flex gap-2 flex-wrap">
                 {[
-                  { name: "■입주정보", desc: "→ 임차인 + 공실", color: "#3B82F6" },
+                  { name: "■입주정보", desc: "→ 임차인 + 공실", color: "var(--color-hm-blue)" },
                   { name: "◆건물정보", desc: "→ 건물 상세", color: "#10B981" },
                   { name: "관리건물_목록", desc: "→ 건물 목록", color: "#8B5CF6" },
                   { name: "■퇴실정보", desc: "→ 퇴실 기록", color: "#F59E0B" },
@@ -786,7 +786,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
                   { label: "퇴실 기록", count: ledgerResult.pastTenants, icon: "📦" },
                   { label: "호실 관리", count: ledgerResult.rooms, icon: "🚪" },
                 ].map(item => (
-                  <div key={item.label} className="p-4 rounded-[10px] bg-[#F8FAFC] text-center">
+                  <div key={item.label} className="p-4 rounded-[10px] bg-hm-bg-slate text-center">
                     <div className="text-xl mb-1">{item.icon}</div>
                     <div className="text-[22px] font-extrabold text-hm-text">{item.count}</div>
                     <div className="text-[11px] text-hm-text-muted">{item.label}</div>
@@ -821,7 +821,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
         </h3>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2">
           {columns.map(c => (
-            <div key={c.key} className="px-3 py-2 rounded-lg bg-[#F8FAFC] border border-hm-border">
+            <div key={c.key} className="px-3 py-2 rounded-lg bg-hm-bg-slate border border-hm-border">
               <span className="text-xs font-bold text-hm-text">{c.label}</span>
               {c.required && <span className="text-red-500 ml-1 text-[10px]">필수</span>}
               {c.note && <div className="text-[10px] text-hm-text-muted mt-0.5">{c.note}</div>}
@@ -875,7 +875,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
               <thead>
                 <tr>
                   {Object.keys(preview[0]).map(k => (
-                    <th key={k} className="px-2.5 py-2 bg-[#F8FAFC] border-b-2 border-hm-border text-left font-bold whitespace-nowrap">{k}</th>
+                    <th key={k} className="px-2.5 py-2 bg-hm-bg-slate border-b-2 border-hm-border text-left font-bold whitespace-nowrap">{k}</th>
                   ))}
                 </tr>
               </thead>
@@ -913,7 +913,7 @@ export function DataUploadPage({ allBuildings, setAllBuildings, buildingData, se
       </>}
 
       {/* 전체 초기화 */}
-      <div className="bg-hm-danger-bg rounded-xl border border-[#FECACA] p-5 mb-4">
+      <div className="bg-hm-danger-bg rounded-xl border border-hm-danger-border p-5 mb-4">
         <h3 className="text-[13px] font-bold text-[#991B1B] mb-2">🗑️ 데이터 초기화</h3>
         <p className="text-xs text-[#7F1D1D] mb-3">localStorage의 모든 데이터를 삭제하고 기본 더미 데이터로 되돌립니다.</p>
         <button onClick={() => {

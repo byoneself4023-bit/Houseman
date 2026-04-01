@@ -116,17 +116,17 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
   const paidCost = myAS.filter(a => a.paid === "유상").reduce((s, a) => s + (a.cost || 0), 0);
 
   const actionColors: Record<string, { bg: string; color: string; icon: string }> = {
-    "접수": { bg: "#EFF6FF", color: "#2563EB", icon: "📋" },
-    "현장확인": { bg: "#FFF7ED", color: "#EA580C", icon: "🔍" },
-    "현장출동": { bg: "#FFF7ED", color: "#EA580C", icon: "🚗" },
+    "접수": { bg: "var(--color-hm-blue-bg)", color: "var(--color-hm-blue-dark)", icon: "📋" },
+    "현장확인": { bg: "var(--color-hm-warning-bg)", color: "var(--color-hm-warning)", icon: "🔍" },
+    "현장출동": { bg: "var(--color-hm-warning-bg)", color: "var(--color-hm-warning)", icon: "🚗" },
     "부품발주": { bg: "#F5F3FF", color: "#7C3AED", icon: "📦" },
     "견적전달": { bg: "#FFFBEB", color: "#D97706", icon: "💰" },
-    "수리완료": { bg: "#ECFDF5", color: "#059669", icon: "✅" },
-    "완료확인": { bg: "#ECFDF5", color: "#059669", icon: "👍" },
-    "진행시작": { bg: "#FFF7ED", color: "#EA580C", icon: "▶️" },
+    "수리완료": { bg: "var(--color-hm-success-bg)", color: "var(--color-hm-success)", icon: "✅" },
+    "완료확인": { bg: "var(--color-hm-success-bg)", color: "var(--color-hm-success)", icon: "👍" },
+    "진행시작": { bg: "var(--color-hm-warning-bg)", color: "var(--color-hm-warning)", icon: "▶️" },
     "건물주승인요청": { bg: "#FFFBEB", color: "#D97706", icon: "📩" },
-    "건물주승인": { bg: "#ECFDF5", color: "#059669", icon: "✅" },
-    "건물주반려": { bg: "#FEF2F2", color: "#DC2626", icon: "❌" },
+    "건물주승인": { bg: "var(--color-hm-success-bg)", color: "var(--color-hm-success)", icon: "✅" },
+    "건물주반려": { bg: "var(--color-hm-danger-bg)", color: "var(--color-hm-danger)", icon: "❌" },
   };
 
   const today = new Date().toISOString().slice(0, 10);
@@ -198,8 +198,8 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
     if (!status) return null;
     const cfg: Record<string, { label: string; bg: string; color: string; border: string }> = {
       pending: { label: "승인대기", bg: "#FFFBEB", color: "#D97706", border: "#FDE68A" },
-      approved: { label: "승인완료", bg: "#ECFDF5", color: "#059669", border: "#A7F3D0" },
-      rejected: { label: "반려", bg: "#FEF2F2", color: "#DC2626", border: "#FECACA" },
+      approved: { label: "승인완료", bg: "var(--color-hm-success-bg)", color: "var(--color-hm-success)", border: "var(--color-hm-success-border)" },
+      rejected: { label: "반려", bg: "var(--color-hm-danger-bg)", color: "var(--color-hm-danger)", border: "var(--color-hm-danger-border)" },
     };
     const c = cfg[status];
     if (!c) return null;
@@ -233,10 +233,10 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         {/* Status + Cost Quick Bar */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
           {[
-            ...(as_.priority === "높음" ? [{ label: "긴급도", value: "높음", bg: "#FEF2F2", color: "#DC2626" }] : []),
-            { label: "유/무상", value: as_.paid, bg: as_.paid === "유상" ? "#FEF2F2" : "#ECFDF5", color: as_.paid === "유상" ? "#DC2626" : "#059669" },
-            { label: "비용", value: as_.cost > 0 ? `${fmt(as_.cost)}원` : "없음", bg: as_.cost > 0 ? "#FEF2F2" : "#F3F4F6", color: as_.cost > 0 ? "#DC2626" : "#8F95A3" },
-            { label: "담당", value: as_.assignee, bg: "#EFF6FF", color: "#2563EB" },
+            ...(as_.priority === "높음" ? [{ label: "긴급도", value: "높음", bg: "var(--color-hm-danger-bg)", color: "var(--color-hm-danger)" }] : []),
+            { label: "유/무상", value: as_.paid, bg: as_.paid === "유상" ? "var(--color-hm-danger-bg)" : "var(--color-hm-success-bg)", color: as_.paid === "유상" ? "var(--color-hm-danger)" : "var(--color-hm-success)" },
+            { label: "비용", value: as_.cost > 0 ? `${fmt(as_.cost)}원` : "없음", bg: as_.cost > 0 ? "var(--color-hm-danger-bg)" : "#F3F4F6", color: as_.cost > 0 ? "var(--color-hm-danger)" : "var(--color-hm-text-muted)" },
+            { label: "담당", value: as_.assignee, bg: "var(--color-hm-blue-bg)", color: "var(--color-hm-blue-dark)" },
             ...(as_.source ? [{ label: "접수경로", value: as_.source, bg: "#F5F3FF", color: "#7C3AED" }] : []),
           ].map((chip, i) => (
             <div key={i} className="shrink-0 px-3.5 py-2.5 rounded-[10px] text-center min-w-[80px]" style={{ background: chip.bg }}>
@@ -280,10 +280,10 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
         <Card className="mb-4">
           <div className="text-[10px] font-bold text-hm-blue tracking-wider mb-3">📸 현장 사진</div>
           <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2.5`}>
-            <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="#DC2626"
+            <PhotoDropZone photos={asBeforePhotos} maxPhotos={30} label="수리 전 사진" color="var(--color-hm-danger)"
               onAdd={(dataUrls: string[]) => setAsBeforePhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(pi: number) => setAsBeforePhotos(prev => prev.filter((_, i) => i !== pi))} />
-            <PhotoDropZone photos={asAfterPhotos} maxPhotos={30} label="수리 후 사진" color="#059669"
+            <PhotoDropZone photos={asAfterPhotos} maxPhotos={30} label="수리 후 사진" color="var(--color-hm-success)"
               onAdd={(dataUrls: string[]) => setAsAfterPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(pi: number) => setAsAfterPhotos(prev => prev.filter((_, i) => i !== pi))} />
           </div>
@@ -295,12 +295,12 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           <div className="relative pl-6">
             <div className="absolute left-[9px] top-2 bottom-2 w-0.5 bg-gray-200" />
             {steps.map((step, i) => {
-              const ac = actionColors[step.action] || { bg: "#F3F4F6", color: "#5F6577", icon: "📌" };
+              const ac = actionColors[step.action] || { bg: "#F3F4F6", color: "var(--color-hm-text-sub)", icon: "📌" };
               const isLast = i === steps.length - 1;
               return (
                 <div key={i} className={`relative ${i < steps.length - 1 ? 'mb-4' : ''}`}>
                   <div className="absolute w-4 h-4 rounded-full z-[1]" style={{ left: -20, top: 6, background: isLast ? ac.color : "#fff", border: `2.5px solid ${ac.color}` }} />
-                  <div className="px-3 py-2.5 rounded-[10px]" style={{ background: isLast ? ac.bg : "#fff", border: `1px solid ${isLast ? ac.color + "40" : "#E8ECF0"}` }}>
+                  <div className="px-3 py-2.5 rounded-[10px]" style={{ background: isLast ? ac.bg : "#fff", border: `1px solid ${isLast ? ac.color + "40" : "var(--color-hm-border)"}` }}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm">{ac.icon}</span>
@@ -576,7 +576,7 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
           {/* Photos */}
           <div className="mb-3.5">
             <div className="text-[11px] font-bold text-hm-text-sub mb-1">사진</div>
-            <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="#3B82F6"
+            <PhotoDropZone photos={newPhotos} maxPhotos={10} label="접수 사진" color="var(--color-hm-blue)"
               onAdd={(dataUrls: string[]) => setNewPhotos(prev => [...prev, ...dataUrls].slice(0, 10))}
               onRemove={(pi: number) => setNewPhotos(prev => prev.filter((_, i) => i !== pi))} />
           </div>
@@ -741,13 +741,13 @@ export const ASPage: React.FC<ASPageProps> = ({ myBuildings = [] }) => {
       <div className={`grid ${isMobile ? 'grid-cols-2 gap-1.5' : 'grid-cols-4 gap-3'} ${isMobile ? 'mb-2.5' : 'mb-5'}`}>
         {[
           { label: "대기", count: allAsItems.filter(a => a.status === "대기").length, color: "#4F46E5", bg: "#F0F4FF" },
-          { label: "진행중", count: allAsItems.filter(a => a.status === "진행중").length, color: "#EA580C", bg: "#FFF7ED" },
-          { label: "완료", count: allAsItems.filter(a => a.status === "완료").length, color: "#059669", bg: "#ECFDF5" },
-          { label: "유상", count: paidCount, sub: `${fmt(paidCost)}원`, color: "#DC2626", bg: "#FEF2F2" },
+          { label: "진행중", count: allAsItems.filter(a => a.status === "진행중").length, color: "var(--color-hm-warning)", bg: "var(--color-hm-warning-bg)" },
+          { label: "완료", count: allAsItems.filter(a => a.status === "완료").length, color: "var(--color-hm-success)", bg: "var(--color-hm-success-bg)" },
+          { label: "유상", count: paidCount, sub: `${fmt(paidCost)}원`, color: "var(--color-hm-danger)", bg: "var(--color-hm-danger-bg)" },
         ].map((s, i) => (
           <Card key={i} onClick={() => setTab(s.label === "유상" ? "전체" : s.label)}
             className={`text-center flex flex-col justify-center items-center cursor-pointer transition-all hover:shadow-md ${isMobile ? 'px-2.5 py-2' : ''}`}
-            style={{ background: tab === s.label ? s.bg : "#fff", border: tab === s.label ? `2px solid ${s.color}` : "1px solid #E8ECF0" }}>
+            style={{ background: tab === s.label ? s.bg : "#fff", border: tab === s.label ? `2px solid ${s.color}` : "1px solid var(--color-hm-border)" }}>
             <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} text-hm-text-muted font-semibold mb-1`}>{s.label}</div>
             <div className={`${isMobile ? 'text-[22px]' : 'text-[28px]'} font-extrabold`} style={{ color: s.color }}>{s.count}</div>
             {s.sub && <div className={`${isMobile ? 'text-[10px]' : 'text-[11px]'} font-semibold mt-0.5`} style={{ color: s.color }}>{s.sub}</div>}

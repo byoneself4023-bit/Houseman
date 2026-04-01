@@ -2,12 +2,12 @@ import type { StaffRole, Staff } from '../types';
 
 // 담당자 역할 정의
 export const staffRoles: StaffRole[] = [
-  { id: 'internal', label: '내부팀', icon: '🏢', color: '#3B82F6', desc: '사내 관리 담당' },
+  { id: 'internal', label: '내부팀', icon: '🏢', color: 'var(--color-hm-blue)', desc: '사내 관리 담당' },
   { id: 'external', label: '외부팀', icon: '🔧', color: '#10B981', desc: '외부 위탁 담당' },
   { id: 'collection', label: '수금팀', icon: '💰', color: '#F59E0B', desc: '수금 전담 담당' },
 
   { id: 'contract', label: '계약팀', icon: '📝', color: '#8B5CF6', desc: '계약·재계약 담당' },
-  { id: 'general', label: '총괄', icon: '👑', color: '#DC2626', desc: '전체 총괄 책임자' },
+  { id: 'general', label: '총괄', icon: '👑', color: 'var(--color-hm-danger)', desc: '전체 총괄 책임자' },
 ];
 
 // 담당자 인원 데이터

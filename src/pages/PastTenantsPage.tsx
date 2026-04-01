@@ -7,9 +7,9 @@ import { Card, SectionTitle, Table } from '@/components';
 import { inputClassName } from '@/components/Field';
 
 const REASON_COLORS: Record<string, { bg: string; c: string }> = {
-  "만기퇴실": { bg: "#F0FDF4", c: "#059669" },
-  "만기전퇴실": { bg: "#FEF2F2", c: "#DC2626" },
-  "재계약": { bg: "#EFF6FF", c: "#2563EB" },
+  "만기퇴실": { bg: "var(--color-hm-success-bg)", c: "var(--color-hm-success)" },
+  "만기전퇴실": { bg: "var(--color-hm-danger-bg)", c: "var(--color-hm-danger)" },
+  "재계약": { bg: "var(--color-hm-blue-bg)", c: "var(--color-hm-blue-dark)" },
 };
 
 interface PastTenantRecord {
@@ -131,7 +131,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
     return { total: allRecords.length, moveout, renew };
   }, [allRecords]);
 
-  const getReasonStyle = (reason: string) => REASON_COLORS[reason] || { bg: "#F3F4F6", c: "#5F6577" };
+  const getReasonStyle = (reason: string) => REASON_COLORS[reason] || { bg: "#F3F4F6", c: "var(--color-hm-text-sub)" };
 
   // 정산서 이미지 캡처 & 다운로드
   const handleCapture = () => {
@@ -160,8 +160,8 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
 
     const SRow: React.FC<SRowProps> = ({ label, sub, value, color, bold }) => (
       <div className="flex justify-between items-center py-[5px] border-b border-gray-100">
-        <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "#5F6577" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
-        <span className={`text-xs ${bold ? 'font-extrabold' : 'font-semibold'}`} style={{ color: color || "#1A1D23" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
+        <div><span className={`text-[11px] ${bold ? 'font-bold' : 'font-normal'}`} style={{ color: color || "var(--color-hm-text-sub)" }}>{label}</span>{sub && <span className="text-[9px] text-[#B0B5C1] ml-1.5">{sub}</span>}</div>
+        <span className={`text-xs ${bold ? 'font-extrabold' : 'font-semibold'}`} style={{ color: color || "var(--color-hm-text)" }}>{typeof value === "number" ? (value < 0 ? `-${fmt(Math.abs(value))}` : fmt(value)) : value}</span>
       </div>
     );
 
@@ -506,11 +506,11 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     {/* 반환 */}
                     <div className="bg-[#F0FDF4] rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-success-border">
                       <div className="text-[10px] font-bold text-hm-success mb-1">반환 항목</div>
-                      <SRow label={depositLabel} value={r.deposit} color="#059669" bold />
-                      {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="#059669" />}
-                      {(r.netMgmt ?? 0) < 0 && <SRow label="관리비 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netMgmt!} color="#059669" />}
-                      {(r.netWater ?? 0) < 0 && <SRow label="수도 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netWater!} color="#059669" />}
-                      {(r.netInternet ?? 0) < 0 && <SRow label="TV/인터넷 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netInternet!} color="#059669" />}
+                      <SRow label={depositLabel} value={r.deposit} color="var(--color-hm-success)" bold />
+                      {(r.netRent ?? 0) < 0 && <SRow label="월세 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netRent!} color="var(--color-hm-success)" />}
+                      {(r.netMgmt ?? 0) < 0 && <SRow label="관리비 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netMgmt!} color="var(--color-hm-success)" />}
+                      {(r.netWater ?? 0) < 0 && <SRow label="수도 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netWater!} color="var(--color-hm-success)" />}
+                      {(r.netInternet ?? 0) < 0 && <SRow label="TV/인터넷 환불" sub={`${r.daysInMonth! - r.usedDays!}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={-r.netInternet!} color="var(--color-hm-success)" />}
                       <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-success-border">
                         <span className="text-xs font-extrabold text-[#065F46]">반환소계</span>
                         <span className="text-sm font-black text-hm-success">{fmt(r.deposit + (r.totalRefund || 0))}</span>
@@ -520,26 +520,26 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
                     {/* 공제 */}
                     <div className="bg-hm-danger-bg rounded-[10px] px-3.5 py-2.5 mb-2.5 border border-hm-danger-border">
                       <div className="text-[10px] font-bold text-hm-danger mb-1">공제 항목</div>
-                      {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="#DC2626" />}
-                      {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="#DC2626" />}
-                      {(r.netWater ?? 0) > 0 && <SRow label="수도" sub={`${r.usedDays}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netWater!} color="#DC2626" />}
-                      {(r.netInternet ?? 0) > 0 && <SRow label="TV/인터넷" sub={`${r.usedDays}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netInternet!} color="#DC2626" />}
-                      {(r.cleanFee ?? 0) > 0 && <SRow label="퇴실청소비" value={r.cleanFee!} color="#DC2626" />}
-                      {(r.manElec||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`e${i}`} label={`전기${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
-                      {(r.manGas||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`g${i}`} label={`가스${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="#DC2626" />)}
-                      {(r.manRepair ?? 0) > 0 && <SRow label={`수리비${r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}`} value={r.manRepair!} color="#DC2626" />}
-                      {(r.manWaste ?? 0) > 0 && <SRow label={`폐기물${r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}`} value={r.manWaste!} color="#DC2626" />}
-                      {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`o${i}`} label={`기타${i+1}${row.desc ? ` (${row.desc})` : ""}`} value={pn(row.amt)} color="#DC2626" />)}
+                      {(r.netRent ?? 0) > 0 && <SRow label="월세" sub={`${r.usedDays}일분${(r.unpaidRent ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netRent!} color="var(--color-hm-danger)" />}
+                      {(r.netMgmt ?? 0) > 0 && <SRow label="관리비" sub={`${r.usedDays}일분${(r.unpaidMgmt ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netMgmt!} color="var(--color-hm-danger)" />}
+                      {(r.netWater ?? 0) > 0 && <SRow label="수도" sub={`${r.usedDays}일분${(r.unpaidWater ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netWater!} color="var(--color-hm-danger)" />}
+                      {(r.netInternet ?? 0) > 0 && <SRow label="TV/인터넷" sub={`${r.usedDays}일분${(r.unpaidInternet ?? 0) > 0 ? " · 미납반영" : ""}`} value={r.netInternet!} color="var(--color-hm-danger)" />}
+                      {(r.cleanFee ?? 0) > 0 && <SRow label="퇴실청소비" value={r.cleanFee!} color="var(--color-hm-danger)" />}
+                      {(r.manElec||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`e${i}`} label={`전기${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="var(--color-hm-danger)" />)}
+                      {(r.manGas||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`g${i}`} label={`가스${row.period ? ` (${row.period})` : ` ${i+1}`}`} value={pn(row.amt)} color="var(--color-hm-danger)" />)}
+                      {(r.manRepair ?? 0) > 0 && <SRow label={`수리비${r.manRepairDesc ? ` (${r.manRepairDesc})` : ""}`} value={r.manRepair!} color="var(--color-hm-danger)" />}
+                      {(r.manWaste ?? 0) > 0 && <SRow label={`폐기물${r.manWasteDesc ? ` (${r.manWasteDesc})` : ""}`} value={r.manWaste!} color="var(--color-hm-danger)" />}
+                      {(r.manOther||[]).map((row: any,i: number) => pn(row.amt) > 0 && <SRow key={`o${i}`} label={`기타${i+1}${row.desc ? ` (${row.desc})` : ""}`} value={pn(row.amt)} color="var(--color-hm-danger)" />)}
                       {(r.manRestoration ?? 0) > 0 && <SRow label={`원상복구비${r.manRestorationDesc ? ` (${r.manRestorationDesc})` : ""}`} value={r.manRestoration!} color="#7C3AED" />}
                       {((r.penalty7 ?? 0) > 0 || (r.penaltyComm ?? 0) > 0) && <>
                         <div className="h-px bg-hm-danger-border my-1" />
-                        {(r.penalty7 ?? 0) > 0 && <SRow label="7일패널티" value={r.penalty7!} color="#DC2626" />}
-                        {(r.penaltyComm ?? 0) > 0 && <SRow label="중개수수료" value={r.penaltyComm!} color="#DC2626" />}
+                        {(r.penalty7 ?? 0) > 0 && <SRow label="7일패널티" value={r.penalty7!} color="var(--color-hm-danger)" />}
+                        {(r.penaltyComm ?? 0) > 0 && <SRow label="중개수수료" value={r.penaltyComm!} color="var(--color-hm-danger)" />}
                       </>}
-                      {(r.lateFee ?? 0) > 0 && <SRow label="연체수수료" sub="미납임대료 5%" value={r.lateFee!} color="#DC2626" />}
+                      {(r.lateFee ?? 0) > 0 && <SRow label="연체수수료" sub="미납임대료 5%" value={r.lateFee!} color="var(--color-hm-danger)" />}
                       {(r.prevUnpaid ?? 0) > 0 && <>
                         <div className="h-px bg-hm-danger-border my-1" />
-                        <SRow label="전월 미납금" value={r.prevUnpaid!} color="#DC2626" bold />
+                        <SRow label="전월 미납금" value={r.prevUnpaid!} color="var(--color-hm-danger)" bold />
                       </>}
                       <div className="flex justify-between py-1.5 mt-1 border-t-[1.5px] border-hm-danger-border">
                         <span className="text-xs font-extrabold text-[#991B1B]">공제소계</span>
@@ -571,7 +571,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
   }
 
   // ── List view ──
-  const reasonColors: Record<string, string> = { "전체": "#1A1D23", "만기퇴실": "#059669", "만기전퇴실": "#DC2626", "재계약": "#2563EB" };
+  const reasonColors: Record<string, string> = { "전체": "var(--color-hm-text)", "만기퇴실": "var(--color-hm-success)", "만기전퇴실": "var(--color-hm-danger)", "재계약": "var(--color-hm-blue-dark)" };
   const reasonCounts: Record<string, number> = { "전체": allRecords.length, "만기퇴실": stats.moveout - allRecords.filter(r => r.reason === "만기전퇴실").length, "만기전퇴실": allRecords.filter(r => r.reason === "만기전퇴실").length, "재계약": stats.renew };
 
   return (
@@ -585,7 +585,7 @@ export const PastTenantsPage: React.FC<PastTenantsPageProps> = ({ myBuildings = 
         {reasons.map(r => (
           <button key={r} onClick={() => setFilterReason(r)}
             className="px-4 py-[7px] rounded-lg font-semibold text-[12.5px] cursor-pointer font-[inherit] transition-all hover:shadow-sm"
-            style={{ border: filterReason === r ? `2px solid ${reasonColors[r]}` : "1px solid #E0E3E9", background: filterReason === r ? `${reasonColors[r]}10` : "#fff", color: filterReason === r ? reasonColors[r] : "#5F6577" }}>
+            style={{ border: filterReason === r ? `2px solid ${reasonColors[r]}` : "1px solid var(--color-hm-input-border)", background: filterReason === r ? `${reasonColors[r]}10` : "#fff", color: filterReason === r ? reasonColors[r] : "var(--color-hm-text-sub)" }}>
             {r} <span className="font-extrabold">{reasonCounts[r]}</span>
           </button>
         ))}

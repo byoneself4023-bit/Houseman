@@ -54,8 +54,8 @@ const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   as: { bg: '#FCE7F3', color: '#9D174D' },
   vacancy: { bg: '#F3E8FF', color: '#6B21A8' },
   movein: { bg: '#CCFBF1', color: '#134E4A' },
-  moveout: { bg: '#FFF7ED', color: '#9A3412' },
-  billing: { bg: '#FEF2F2', color: '#DC2626' },
+  moveout: { bg: 'var(--color-hm-warning-bg)', color: '#9A3412' },
+  billing: { bg: 'var(--color-hm-danger-bg)', color: 'var(--color-hm-danger)' },
   custom: { bg: '#EDE9FE', color: '#7C3AED' },
 };
 
@@ -72,12 +72,12 @@ const SORT_OPTIONS = [
 ];
 
 const STAFF_COLORS = [
-  { bg: '#EFF6FF', border: '#3B82F6', badge: '#3B82F6' },
+  { bg: 'var(--color-hm-blue-bg)', border: 'var(--color-hm-blue)', badge: 'var(--color-hm-blue)' },
   { bg: '#F0FDF4', border: '#22C55E', badge: '#16A34A' },
-  { bg: '#FFF7ED', border: '#F97316', badge: '#EA580C' },
+  { bg: 'var(--color-hm-warning-bg)', border: '#F97316', badge: 'var(--color-hm-warning)' },
   { bg: '#FDF4FF', border: '#A855F7', badge: '#9333EA' },
-  { bg: '#FEF2F2', border: '#EF4444', badge: '#DC2626' },
-  { bg: '#ECFDF5', border: '#10B981', badge: '#059669' },
+  { bg: 'var(--color-hm-danger-bg)', border: '#EF4444', badge: 'var(--color-hm-danger)' },
+  { bg: 'var(--color-hm-success-bg)', border: '#10B981', badge: 'var(--color-hm-success)' },
   { bg: '#FFFBEB', border: '#F59E0B', badge: '#D97706' },
   { bg: '#F0F9FF', border: '#0EA5E9', badge: '#0284C7' },
 ];
@@ -654,7 +654,7 @@ export function TaskDriverPage({
   const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')} (${dayName})`;
 
   return (
-    <div className="p-6 bg-[#F8FAFC] min-h-screen font-[Pretendard,-apple-system,BlinkMacSystemFont,sans-serif]">
+    <div className="p-6 bg-hm-bg-slate min-h-screen font-[Pretendard,-apple-system,BlinkMacSystemFont,sans-serif]">
       {/* Header */}
       <div className="flex justify-between items-start flex-wrap gap-3 mb-5">
         <div className="flex flex-col gap-1">
@@ -798,7 +798,7 @@ export function TaskDriverPage({
         {[
           { count: overdueTasks.length, label: '미완료 (지연)', color: '#EF4444' },
           { count: todayTasks.length, label: '오늘 할 일', color: '#F59E0B' },
-          { count: weekTasks.length, label: '이번 주 예정', color: '#3B82F6' },
+          { count: weekTasks.length, label: '이번 주 예정', color: 'var(--color-hm-blue)' },
           { count: completedCount, label: '완료', color: '#10B981' },
         ].map(card => (
           <div key={card.label} className="bg-white border border-hm-border rounded-xl p-4 flex flex-col items-center gap-1" style={{ borderBottom: `3px solid ${card.color}` }}>

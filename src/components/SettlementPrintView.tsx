@@ -305,7 +305,7 @@ export const SettlementPrintView: React.FC<SettlementPrintViewProps> = ({ data, 
                   <td className="r neg">{r.fee > 0 ? `-${fmt(r.fee)}` : '—'}</td>
                   <td className="r b">{fmt(r.settlementAmt)}</td>
                   {cfg.includeMgmt && <td className="r">{fmt(r.mgmt)}</td>}
-                  <td className="r" style={{ color: (r.delinquent || 0) > 0 ? '#dc2626' : '#999' }}>
+                  <td className="r" style={{ color: (r.delinquent || 0) > 0 ? 'var(--color-hm-danger)' : '#999' }}>
                     {(r.delinquent || 0) > 0 ? fmt(r.delinquent) : '—'}
                   </td>
                 </tr>
@@ -380,7 +380,7 @@ export const SettlementPrintView: React.FC<SettlementPrintViewProps> = ({ data, 
                         marginLeft: '3mm',
                         fontSize: '8.5pt',
                         fontWeight: 500,
-                        color: mt.reason === '조기퇴실' ? '#dc2626' : '#059669',
+                        color: mt.reason === '조기퇴실' ? 'var(--color-hm-danger)' : 'var(--color-hm-success)',
                       }}
                     >
                       ({mt.reason || '퇴실'})
@@ -424,7 +424,7 @@ export const SettlementPrintView: React.FC<SettlementPrintViewProps> = ({ data, 
                         <td
                           colSpan={6}
                           style={{
-                            background: '#fef2f2',
+                            background: 'var(--color-hm-danger-bg)',
                             fontWeight: 700,
                             color: '#991b1b',
                             fontSize: '9pt',
@@ -449,7 +449,7 @@ export const SettlementPrintView: React.FC<SettlementPrintViewProps> = ({ data, 
                         <td style={{ background: '#f5f5f5', fontWeight: 600 }}>위약금(7일)</td>
                         <td
                           className="r"
-                          style={{ color: mt.penalty7 > 0 ? '#dc2626' : undefined }}
+                          style={{ color: mt.penalty7 > 0 ? 'var(--color-hm-danger)' : undefined }}
                         >
                           {mt.penalty7 > 0 ? fmt(mt.penalty7) : '—'}
                         </td>
@@ -478,7 +478,7 @@ export const SettlementPrintView: React.FC<SettlementPrintViewProps> = ({ data, 
                           className="r b"
                           style={{
                             fontSize: '10pt',
-                            color: mt.finalRefund >= 0 ? '#059669' : '#dc2626',
+                            color: mt.finalRefund >= 0 ? 'var(--color-hm-success)' : 'var(--color-hm-danger)',
                           }}
                         >
                           {fmt(mt.finalRefund)}원

@@ -180,7 +180,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
               <div className="text-[10px] font-bold text-hm-blue mb-2">✅ 시설 점검 결과</div>
               <div className="flex flex-col gap-1">
                 {rec.checklist.map((c, i) => (
-                  <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.status === "이상" ? 'bg-hm-danger-bg border border-[#FECACA]' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
+                  <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.status === "이상" ? 'bg-hm-danger-bg border border-hm-danger-border' : 'bg-[#F0FDF4] border border-[#BBF7D0]'}`}>
                     <span className="text-sm">{c.status === "정상" ? "✅" : "⚠️"}</span>
                     <span className="text-[13px] font-bold text-hm-text flex-1">{c.item}</span>
                     <span className={`text-[11px] font-bold ${c.status === "이상" ? 'text-hm-danger' : 'text-hm-success'}`}>{c.status}</span>
@@ -191,12 +191,12 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             </div>
           )}
 
-          <div className="px-4 py-3.5 bg-[#F8FAFC] rounded-[10px] border border-hm-border mb-4">
+          <div className="px-4 py-3.5 bg-hm-bg-slate rounded-[10px] border border-hm-border mb-4">
             <div className="text-[10px] font-bold text-hm-blue mb-1.5">📝 순회 코멘트</div>
             <div className="text-[13px] text-hm-text leading-[1.8]">{rec.comment}</div>
           </div>
           <div>
-            <PhotoDropZone photos={rec.photos} maxPhotos={30} label={`현장 사진 (${rec.photos.length}장)`} color="#3B82F6" />
+            <PhotoDropZone photos={rec.photos} maxPhotos={30} label={`현장 사진 (${rec.photos.length}장)`} color="var(--color-hm-blue)" />
           </div>
         </Card>
       </div>
@@ -240,7 +240,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           {/* Date */}
           <div className="mb-3.5">
             <div className="text-[11px] font-bold text-hm-text-sub mb-1.5">순회일자</div>
-            <div className="px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] bg-[#F8FAFC] text-hm-text font-semibold">{todayStr}</div>
+            <div className="px-3 py-2.5 rounded-lg border-[1.5px] border-hm-input-border text-[13px] bg-hm-bg-slate text-hm-text font-semibold">{todayStr}</div>
           </div>
 
           {/* Facility Checklist */}
@@ -248,7 +248,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             <div className="text-[11px] font-bold text-hm-text-sub mb-2">시설 점검 체크리스트</div>
             <div className="flex flex-col gap-1.5">
               {formChecklist.map((c, i) => (
-                <div key={i} className={`px-3 py-2.5 rounded-lg border-[1.5px] transition-all ${c.status === "이상" ? 'bg-hm-danger-bg border-[#FECACA]' : 'bg-[#F0FDF4] border-[#BBF7D0]'}`}>
+                <div key={i} className={`px-3 py-2.5 rounded-lg border-[1.5px] transition-all ${c.status === "이상" ? 'bg-hm-danger-bg border-hm-danger-border' : 'bg-[#F0FDF4] border-[#BBF7D0]'}`}>
                   <div className="flex items-center gap-2.5">
                     <span className="text-[13px] font-bold text-hm-text flex-1">{c.item}</span>
                     <div className="flex gap-1">
@@ -266,7 +266,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
                     <div className="mt-2">
                       <input value={c.comment} onChange={e => { const u = [...formChecklist]; u[i] = { ...u[i], comment: e.target.value }; setFormChecklist(u); }}
                         placeholder="이상 내용을 입력하세요..."
-                        className="w-full px-2.5 py-2 rounded-md border-[1.5px] border-[#FECACA] text-xs font-[inherit] outline-none box-border bg-white focus:ring-2 focus:ring-ring transition-colors" />
+                        className="w-full px-2.5 py-2 rounded-md border-[1.5px] border-hm-danger-border text-xs font-[inherit] outline-none box-border bg-white focus:ring-2 focus:ring-ring transition-colors" />
                     </div>
                   )}
                 </div>
@@ -287,7 +287,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
 
           {/* Photos */}
           <div className="mb-3.5">
-            <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="#3B82F6"
+            <PhotoDropZone photos={formPhotos} maxPhotos={30} label="현장 사진 (20장 이상 권장)" color="var(--color-hm-blue)"
               onAdd={(dataUrls: string[]) => setFormPhotos(prev => [...prev, ...dataUrls].slice(0, 30))}
               onRemove={(idx: number) => setFormPhotos(formPhotos.filter((_, i) => i !== idx))} />
           </div>
@@ -366,7 +366,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
             <div className="flex flex-col gap-2">
               {records.map((rec, i) => (
                 <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-                  className={`flex items-center justify-between px-3.5 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-hm-bg-hover'}`}>
+                  className={`flex items-center justify-between px-3.5 py-3 rounded-[10px] cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
                   <div className="flex items-center gap-2.5">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                     <div>
@@ -442,7 +442,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
           const done = remain <= 0;
           // 색상: 초과=적색, 임박=녹색, 완료=연녹색, 그 외=무색
           const bgClass = overdue ? 'bg-hm-danger-bg' : approaching ? 'bg-[#F0FDF4]' : done ? 'bg-[#F0FDF4]' : 'bg-white';
-          const bdClass = overdue ? 'border-[#FECACA]' : approaching ? 'border-[#BBF7D0]' : done ? 'border-[#BBF7D0]' : 'border-hm-border';
+          const bdClass = overdue ? 'border-hm-danger-border' : approaching ? 'border-[#BBF7D0]' : done ? 'border-[#BBF7D0]' : 'border-hm-border';
           return (
             <Card key={i} onClick={() => setSelectedBuilding(b.building)}
               className={`cursor-pointer border-[1.5px] ${bgClass} ${bdClass} hover:shadow-md transition-shadow`}>
@@ -461,7 +461,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-1.5">
                   <div className="w-10 h-[5px] bg-[#E5E7EB] rounded-sm overflow-hidden">
-                    <div className="h-full rounded-sm" style={{ width: `${(b.doneCount / b.freq) * 100}%`, background: done ? "#10B981" : "#3B82F6" }} />
+                    <div className="h-full rounded-sm" style={{ width: `${(b.doneCount / b.freq) * 100}%`, background: done ? "#10B981" : "var(--color-hm-blue)" }} />
                   </div>
                   <span className="text-[11px] font-bold text-hm-text-sub">{b.doneCount}/{b.freq}</span>
                 </div>
@@ -507,7 +507,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
                 <div className="flex flex-wrap gap-1.5">
                   {overdueList.map((a, i) => (
                     <div key={i} onClick={() => setSelectedBuilding(a.building)}
-                      className="px-3 py-1.5 rounded-lg bg-hm-danger-bg border border-[#FECACA] cursor-pointer flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors">
+                      className="px-3 py-1.5 rounded-lg bg-hm-danger-bg border border-hm-danger-border cursor-pointer flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors">
                       <span className="text-xs font-bold text-hm-text">{a.building}</span>
                       <span className="text-[10px] font-bold text-hm-danger">+{Math.abs(a.daysLeft)}일</span>
                       <span className="text-[9px] text-hm-text-muted">월{a.freq}회</span>
@@ -541,7 +541,7 @@ export const PatrolPage: React.FC<PatrolPageProps> = ({ myBuildings = [], buildi
         <div className="flex flex-col gap-1.5">
           {allRecords.slice(0, 20).map((rec, i) => (
             <div key={rec.id || i} onClick={() => setSelectedRecord(rec)}
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-[#FECACA] hover:bg-[#FEE2E2]' : 'bg-[#F8FAFC] border border-hm-border hover:bg-hm-bg-hover'}`}>
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors ${rec.status === "이상발견" ? 'bg-hm-danger-bg border border-hm-danger-border hover:bg-[#FEE2E2]' : 'bg-hm-bg-slate border border-hm-border hover:bg-hm-bg-hover'}`}>
               <div className="flex items-center gap-2.5">
                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${rec.status === "이상발견" ? 'bg-[#FEE2E2] text-hm-danger' : 'bg-[#D1FAE5] text-hm-success'}`}>{rec.status}</span>
                 <div>

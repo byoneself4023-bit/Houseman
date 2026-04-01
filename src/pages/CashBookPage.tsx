@@ -9,14 +9,14 @@ const TYPE_LABELS: Record<string, string> = {
   "manual": "수동입력",
 };
 const TYPE_COLORS: Record<string, { bg: string; color: string; border: string }> = {
-  "settlement": { bg: "#EFF6FF", color: "#2563EB", border: "#BFDBFE" },
+  "settlement": { bg: "var(--color-hm-blue-bg)", color: "var(--color-hm-blue-dark)", border: "#BFDBFE" },
   "moveout": { bg: "#FEF3C7", color: "#92400E", border: "#FDE68A" },
-  "manual": { bg: "#F3F4F6", color: "#5F6577", border: "#E0E3E9" },
+  "manual": { bg: "#F3F4F6", color: "var(--color-hm-text-sub)", border: "var(--color-hm-input-border)" },
 };
 const STATUS_MAP: Record<string, { bg: string; color: string; label: string }> = {
   "대기": { bg: "#FEF3C7", color: "#92400E", label: "송금 대기" },
-  "완료": { bg: "#ECFDF5", color: "#059669", label: "송금 완료" },
-  "보류": { bg: "#FEF2F2", color: "#DC2626", label: "보류" },
+  "완료": { bg: "var(--color-hm-success-bg)", color: "var(--color-hm-success)", label: "송금 완료" },
+  "보류": { bg: "var(--color-hm-danger-bg)", color: "var(--color-hm-danger)", label: "보류" },
 };
 
 interface CashbookEntry {

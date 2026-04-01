@@ -73,25 +73,25 @@ export function AuthGate() {
       {/* Logo — mobile only */}
       {isMobile && (
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3B82F6] to-[#2563EB] inline-flex items-center justify-center mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-hm-blue to-hm-blue-dark inline-flex items-center justify-center mb-4">
             <Building2 size={28} className="text-white" />
           </div>
-          <div className="text-[22px] font-black text-[#1A1D23] tracking-tight">HOUSEMAN</div>
-          <div className="text-xs text-[#8F95A3] mt-1">건물관리 시스템</div>
+          <div className="text-[22px] font-black text-hm-text tracking-tight">HOUSEMAN</div>
+          <div className="text-xs text-hm-text-muted mt-1">건물관리 시스템</div>
         </div>
       )}
 
       {/* Heading — desktop only */}
       {!isMobile && (
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-[#1A1D23] tracking-tight">로그인</h1>
-          <p className="text-sm text-[#8F95A3] mt-1">계정 정보를 입력해 주세요</p>
+          <h1 className="text-2xl font-black text-hm-text tracking-tight">로그인</h1>
+          <p className="text-sm text-hm-text-muted mt-1">계정 정보를 입력해 주세요</p>
         </div>
       )}
 
       {/* Phone input */}
       <div className="mb-4">
-        <label className="block text-[11px] font-bold text-[#5F6577] mb-1.5">연락처 (ID)</label>
+        <label className="block text-[11px] font-bold text-hm-text-sub mb-1.5">연락처 (ID)</label>
         <Input
           value={loginPhone}
           onChange={(e) => { setLoginPhone(e.target.value); setLoginError(''); }}
@@ -104,7 +104,7 @@ export function AuthGate() {
 
       {/* Password input */}
       <div className="mb-6">
-        <label className="block text-[11px] font-bold text-[#5F6577] mb-1.5">비밀번호</label>
+        <label className="block text-[11px] font-bold text-hm-text-sub mb-1.5">비밀번호</label>
         <Input
           type="password"
           value={loginPw}
@@ -118,8 +118,8 @@ export function AuthGate() {
 
       {/* Error message */}
       {loginError && (
-        <div className="px-3.5 py-2.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] mb-4">
-          <span className="text-xs font-semibold text-[#DC2626]">{loginError}</span>
+        <div className="px-3.5 py-2.5 rounded-lg bg-hm-danger-bg border border-hm-danger-border mb-4">
+          <span className="text-xs font-semibold text-hm-danger">{loginError}</span>
         </div>
       )}
 
@@ -130,7 +130,7 @@ export function AuthGate() {
         className={cn(
           'w-full h-12 text-[15px] font-extrabold rounded-[10px] transition-all duration-200',
           loginPhone && loginPw && !isLoading
-            ? 'bg-gradient-to-br from-[#3B82F6] to-[#2563EB] hover:shadow-lg hover:brightness-110'
+            ? 'bg-gradient-to-br from-hm-blue to-hm-blue-dark hover:shadow-lg hover:brightness-110'
             : '',
         )}
       >
@@ -138,14 +138,14 @@ export function AuthGate() {
       </Button>
 
       {/* Test accounts */}
-      <div className="mt-6 p-4 rounded-xl bg-[#F8FAFC] border border-[#E8ECF0]">
-        <div className="text-[10px] font-bold text-[#8F95A3] mb-2.5">테스트 계정</div>
-        <div className="grid grid-cols-2 gap-1.5 text-[11px] text-[#5F6577]">
+      <div className="mt-6 p-4 rounded-xl bg-hm-bg-slate border border-hm-border">
+        <div className="text-[10px] font-bold text-hm-text-muted mb-2.5">테스트 계정</div>
+        <div className="grid grid-cols-2 gap-1.5 text-[11px] text-hm-text-sub">
           {initialStaffMembers.map((s) => (
             <div
               key={s.id}
               onClick={() => { setLoginPhone(s.phone); setLoginPw(s.pw); setLoginError(''); }}
-              className="px-2.5 py-2 rounded-lg cursor-pointer bg-white border border-[#E8ECF0] transition-all duration-150 hover:border-[#3B82F6] hover:bg-[#EFF6FF]"
+              className="px-2.5 py-2 rounded-lg cursor-pointer bg-white border border-hm-border transition-all duration-150 hover:border-hm-blue hover:bg-hm-blue-bg"
             >
               <span className="font-bold">{s.name}</span>
               <span className="text-[#B0B5C1] ml-1 text-[9px]">{s.pw}</span>
@@ -173,7 +173,7 @@ export function AuthGate() {
       {/* Left brand panel */}
       <div className="w-[480px] shrink-0 bg-gradient-to-br from-[#1B1F2E] to-[#2A3352] flex flex-col items-center justify-center relative">
         <div className="text-center">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#3B82F6] to-[#2563EB] inline-flex items-center justify-center mb-6 shadow-[0_8px_32px_rgba(59,130,246,0.3)]">
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-hm-blue to-hm-blue-dark inline-flex items-center justify-center mb-6 shadow-[0_8px_32px_rgba(59,130,246,0.3)]">
             <Building2 size={40} className="text-white" />
           </div>
           <div className="text-3xl font-black text-white tracking-tight mb-2">HOUSEMAN</div>

@@ -150,7 +150,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                     </div>
                     <div className="text-right">
                       <div className="text-[9px] text-hm-text-muted">잔여</div>
-                      <div className="text-base font-black" style={{ color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
+                      <div className="text-base font-black" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
                         {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                       </div>
                     </div>
@@ -305,7 +305,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
                   </div>
                   <div className="text-right">
                     <div className="text-[9px] text-hm-text-muted mb-0.5">잔여</div>
-                    <div className="text-lg font-black" style={{ color: remain < 0 ? "#DC2626" : remain === 0 ? "#D97706" : "#059669" }}>
+                    <div className="text-lg font-black" style={{ color: remain < 0 ? "var(--color-hm-danger)" : remain === 0 ? "#D97706" : "var(--color-hm-success)" }}>
                       {remain}<span className="text-[10px] text-hm-text-muted ml-0.5">대</span>
                     </div>
                   </div>

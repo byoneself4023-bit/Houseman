@@ -43,7 +43,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
       {showMobileMore && (
         <div onClick={() => setShowMobileMore(false)} className="fixed inset-0 bg-black/30 z-[998]">
           <div onClick={(e) => e.stopPropagation()} className="absolute bottom-[60px] left-2 right-2 bg-white rounded-2xl p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] max-h-[60vh] overflow-y-auto">
-            <div className="text-xs font-bold text-[#8F95A3] mb-2 px-1">전체 메뉴</div>
+            <div className="text-xs font-bold text-hm-text-muted mb-2 px-1">전체 메뉴</div>
             <div className={cn('grid gap-1', isMobile ? 'grid-cols-2' : 'grid-cols-4')}>
               {menuItems.map((m) => (
                 <div
@@ -51,19 +51,19 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
                   onClick={() => { navigateTo(m.id); setShowMobileMore(false); }}
                   className={cn(
                     'py-2.5 px-1 rounded-[10px] text-center cursor-pointer transition-colors',
-                    page === m.id ? 'bg-[#EFF6FF]' : 'bg-[#F9FAFB] hover:bg-[#F0F2F5]',
+                    page === m.id ? 'bg-hm-blue-bg' : 'bg-hm-bg-hover hover:bg-[#F0F2F5]',
                   )}
                 >
                   <div className="text-xl mb-0.5">{m.icon}</div>
-                  <div className={cn('text-[10px]', page === m.id ? 'font-bold text-[#2563EB]' : 'font-medium text-[#5F6577]')}>{m.label}</div>
+                  <div className={cn('text-[10px]', page === m.id ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-sub')}>{m.label}</div>
                 </div>
               ))}
             </div>
-            <div className="border-t border-[#E8ECF0] mt-2 pt-2 flex justify-between items-center">
-              <span className="text-[11px] text-[#8F95A3]">👤 {currentStaff?.name || '—'}</span>
+            <div className="border-t border-hm-border mt-2 pt-2 flex justify-between items-center">
+              <span className="text-[11px] text-hm-text-muted">👤 {currentStaff?.name || '—'}</span>
               <button
                 onClick={() => { onLogout(); setShowMobileMore(false); }}
-                className="px-3.5 py-1.5 rounded-md border border-[#E0E3E9] bg-white text-[11px] font-semibold text-[#DC2626] cursor-pointer hover:bg-[#FEF2F2] transition-colors"
+                className="px-3.5 py-1.5 rounded-md border border-hm-input-border bg-white text-[11px] font-semibold text-hm-danger cursor-pointer hover:bg-hm-danger-bg transition-colors"
               >
                 로그아웃
               </button>
@@ -73,7 +73,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
       )}
 
       {/* Bottom tab bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-[#E8ECF0] flex items-center justify-around z-[999]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-hm-border flex items-center justify-around z-[999]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {mobileTabs.map((t) => {
           const active = page === t.id;
           return (
@@ -83,8 +83,8 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
               className="flex-1 flex flex-col items-center gap-0.5 py-1.5 cursor-pointer active:scale-95 transition-transform duration-100"
             >
               <span className="text-xl">{t.icon}</span>
-              <span className={cn('text-[9px]', active ? 'font-bold text-[#2563EB]' : 'font-medium text-[#8F95A3]')}>{t.label}</span>
-              {active && <div className="w-1 h-1 rounded-full bg-[#2563EB] -mt-0.5" />}
+              <span className={cn('text-[9px]', active ? 'font-bold text-hm-blue-dark' : 'font-medium text-hm-text-muted')}>{t.label}</span>
+              {active && <div className="w-1 h-1 rounded-full bg-hm-blue-dark -mt-0.5" />}
             </div>
           );
         })}
@@ -94,7 +94,7 @@ export function MobileNav({ menuBadges, currentStaff, onLogout }: MobileNavProps
             className="flex-1 flex flex-col items-center gap-0.5 py-1.5 cursor-pointer active:scale-95 transition-transform duration-100"
           >
             <span className="text-xl">⋯</span>
-            <span className="text-[9px] font-medium text-[#8F95A3]">더보기</span>
+            <span className="text-[9px] font-medium text-hm-text-muted">더보기</span>
           </div>
         )}
       </div>

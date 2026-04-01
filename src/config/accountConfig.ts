@@ -108,15 +108,15 @@ export const banks: string[] = [
   '우체국',
 ];
 export const acctTypeBg: Record<string, string> = {
-  단기: '#EFF6FF',
+  단기: 'var(--color-hm-blue-bg)',
   일반임대: '#F0FDF4',
-  근생: '#FFF7ED',
+  근생: 'var(--color-hm-warning-bg)',
   관리사무소: '#F5F3FF',
 };
 export const acctTypeColor: Record<string, string> = {
-  단기: '#2563EB',
-  일반임대: '#059669',
-  근생: '#EA580C',
+  단기: 'var(--color-hm-blue-dark)',
+  일반임대: 'var(--color-hm-success)',
+  근생: 'var(--color-hm-warning)',
   관리사무소: '#7C3AED',
 };
 export const defaultHousemanAccount: string = '하나은행 225-910048-15704 박종호(하우스맨)';

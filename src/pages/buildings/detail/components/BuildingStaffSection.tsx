@@ -278,8 +278,8 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
         <div className="flex flex-wrap gap-1.5 mb-3 px-3.5 py-2.5 bg-hm-bg-slate rounded-lg border border-hm-border">
           {[
             { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981" },
-            { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6" },
-            { key: "fire", label: "소방", icon: "🔥", color: "#DC2626" },
+            { key: "elevator", label: "승강기", icon: "🛗", color: "var(--color-hm-blue)" },
+            { key: "fire", label: "소방", icon: "🔥", color: "var(--color-hm-danger)" },
             { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1" },
             { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6" },
             { key: "custom1", label: "기타1", icon: "📋", color: "#64748B" },
@@ -289,8 +289,8 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
               className={`flex items-center gap-[5px] px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-150 ${sec4Edit ? 'cursor-pointer' : 'cursor-default'} ${!sec4Edit ? 'opacity-70' : ''}`}
               style={{
                 background: vendorEnabled[v.key] ? (v.color + "15") : "#fff",
-                border: `1.5px solid ${vendorEnabled[v.key] ? v.color : "#E0E3E9"}`,
-                color: vendorEnabled[v.key] ? v.color : "#8F95A3",
+                border: `1.5px solid ${vendorEnabled[v.key] ? v.color : "var(--color-hm-input-border)"}`,
+                color: vendorEnabled[v.key] ? v.color : "var(--color-hm-text-muted)",
               }}>
               <input type="checkbox" checked={vendorEnabled[v.key]} readOnly
                 className={`${sec4Edit ? 'cursor-pointer' : 'cursor-default'}`}
@@ -304,8 +304,8 @@ export const BuildingStaffSection: React.FC<BuildingStaffSectionProps> = ({
         <div className="flex flex-col gap-1.5">
           {[
             { key: "cleaning", label: "청소", icon: "🧹", color: "#10B981", type: "simple" },
-            { key: "elevator", label: "승강기", icon: "🛗", color: "#3B82F6", person: "승강기안전관리자", type: "withManager" },
-            { key: "fire", label: "소방", icon: "🔥", color: "#DC2626", person: "소방안전관리자", type: "withManager" },
+            { key: "elevator", label: "승강기", icon: "🛗", color: "var(--color-hm-blue)", person: "승강기안전관리자", type: "withManager" },
+            { key: "fire", label: "소방", icon: "🔥", color: "var(--color-hm-danger)", person: "소방안전관리자", type: "withManager" },
             { key: "mechElevator", label: "기계식승강기", icon: "⚙️", color: "#6366F1", person: "기계식승강기안전관리자", type: "withManager" },
             { key: "disinfect", label: "소독", icon: "🧴", color: "#8B5CF6", type: "simple" },
             { key: "custom1", label: "custom1", icon: "📋", color: "#64748B", type: "simple" },

@@ -58,7 +58,7 @@ const RoCell = ({ label, value, color = "#8B95A1", style: extraStyle = {} }) => 
 );
 
 /* ── Edit input cell ── */
-const EditCell = ({ label, color = "#8F95A3", children }) => (
+const EditCell = ({ label, color = "var(--color-hm-text-muted)", children }) => (
   <div>
     <div className="text-[11px] mb-[3px]" style={{ color }}>{label}</div>
     {children}
@@ -103,10 +103,10 @@ export function RoomFormSection({
 
   const allBlockItems = [
     { field: "depositAccountTarget", label: isShort ? "🔑 예치금" : "🔑 보증금", color: "#7C3AED", show: !isAgency },
-    { field: "rentAccountTarget", label: "💰 월세", color: "#DC2626", show: !isAgency },
-    { field: "managementFeeAccountTarget", label: "🏠 관리비", color: "#2563EB", show: true },
-    { field: "utilityAccountTarget", label: isComm ? "💧 변동관리비" : "💧 공과금", color: "#059669", show: !isAgency },
-    { field: "electricGasAccountTarget", label: "⚡ 전기+가스", color: "#EA580C", show: isShort },
+    { field: "rentAccountTarget", label: "💰 월세", color: "var(--color-hm-danger)", show: !isAgency },
+    { field: "managementFeeAccountTarget", label: "🏠 관리비", color: "var(--color-hm-blue-dark)", show: true },
+    { field: "utilityAccountTarget", label: isComm ? "💧 변동관리비" : "💧 공과금", color: "var(--color-hm-success)", show: !isAgency },
+    { field: "electricGasAccountTarget", label: "⚡ 전기+가스", color: "var(--color-hm-warning)", show: isShort },
   ].filter(i => i.show);
 
   const roomOverrides = {};
@@ -179,35 +179,35 @@ export function RoomFormSection({
           <>
             <div className="text-[11px] font-[800] text-hm-success mb-2">💰 금액</div>
             <div className="grid grid-cols-5 gap-1.5 mb-1.5">
-              <EditCell label="예치금" color="#059669">
+              <EditCell label="예치금" color="var(--color-hm-success)">
                 <input value={d.standardDeposit || ""} onChange={e => set("standardDeposit", e.target.value)} placeholder="0" className={sInputRightCn} />
               </EditCell>
-              <EditCell label="임대료" color="#059669">
+              <EditCell label="임대료" color="var(--color-hm-success)">
                 <input value={d.standardRent || ""} onChange={e => set("standardRent", e.target.value)} placeholder="0" className={sInputRightCn} />
               </EditCell>
-              <EditCell label="할인임대료" color="#DC2626">
+              <EditCell label="할인임대료" color="var(--color-hm-danger)">
                 <input value={d.rentDiscountLimit || ""} onChange={e => set("rentDiscountLimit", e.target.value)} placeholder="0"
                   className={`${sInputRightCn} bg-hm-danger-bg border-[1.5px] border-red-200`} />
               </EditCell>
-              <EditCell label="관리비" color="#059669">
+              <EditCell label="관리비" color="var(--color-hm-success)">
                 <input value={d.standardManagementFee || ""} onChange={e => set("standardManagementFee", e.target.value)} placeholder="0" className={sInputRightCn} />
               </EditCell>
-              <EditCell label="수도" color="#059669">
+              <EditCell label="수도" color="var(--color-hm-success)">
                 <input value={d.standardWaterFee || ""} onChange={e => set("standardWaterFee", e.target.value)} placeholder="0" className={sInputRightCn} />
               </EditCell>
             </div>
             <div className="grid grid-cols-4 gap-1.5 mb-3">
               {isShort && (
-                <EditCell label="인터넷" color="#059669">
+                <EditCell label="인터넷" color="var(--color-hm-success)">
                   <input value={d.standardInternetFee || ""} onChange={e => set("standardInternetFee", e.target.value)} placeholder="0" className={sInputRightCn} />
                 </EditCell>
               )}
               {(isShort || isLong) && (
-                <EditCell label="퇴실청소비" color="#059669">
+                <EditCell label="퇴실청소비" color="var(--color-hm-success)">
                   <input value={d.standardCleaningFee || ""} onChange={e => set("standardCleaningFee", e.target.value)} placeholder="0" className={sInputRightCn} />
                 </EditCell>
               )}
-              <EditCell label="주차여부" color="#059669">
+              <EditCell label="주차여부" color="var(--color-hm-success)">
                 <select value={d.standardParkingType || ""} onChange={e => { set("standardParkingType", e.target.value); setShowParkingFee(e.target.value === "paid"); }} className={sSelectCn}>
                   <option value="">선택</option>
                   <option value="remote">주차리모컨</option>
@@ -217,7 +217,7 @@ export function RoomFormSection({
                 </select>
               </EditCell>
               {showParkingFee && (
-                <EditCell label="주차요금" color="#059669">
+                <EditCell label="주차요금" color="var(--color-hm-success)">
                   <input value={d.standardParkingFee || ""} onChange={e => set("standardParkingFee", e.target.value)} placeholder="0" className={sInputRightCn} />
                 </EditCell>
               )}
@@ -229,7 +229,7 @@ export function RoomFormSection({
         {isAgency ? null : <>
         <div className="text-xs font-bold text-violet-600 mb-1.5">⚡ 선후불 설정</div>
         <div className={`grid ${isShort ? 'grid-cols-3' : 'grid-cols-1'} gap-1.5 mb-3`}>
-          <EditCell label="관리비 선후불" color="#8F95A3">
+          <EditCell label="관리비 선후불" color="var(--color-hm-text-muted)">
             <select value={d.mgmtBillingTypeOverride || ""} onChange={e => set("managementFeeBillingTypeOverride", e.target.value)} className={sSelectCn}>
               <option value="">{billingTypeLabel(saved.mgmtBillingType || "prepaid")} (건물)</option>
               <option value="prepaid">선불</option>
@@ -237,7 +237,7 @@ export function RoomFormSection({
             </select>
           </EditCell>
           {isShort && (
-            <EditCell label="수도비 선후불" color="#8F95A3">
+            <EditCell label="수도비 선후불" color="var(--color-hm-text-muted)">
               <select value={d.waterBillingTypeOverride || ""} onChange={e => set("waterBillingTypeOverride", e.target.value)} className={sSelectCn}>
                 <option value="">{billingTypeLabel(saved.waterBillingType || "prepaid")} (건물)</option>
                 <option value="prepaid">선불</option>
@@ -246,7 +246,7 @@ export function RoomFormSection({
             </EditCell>
           )}
           {isShort && (
-            <EditCell label="인터넷,TV 선후불" color="#8F95A3">
+            <EditCell label="인터넷,TV 선후불" color="var(--color-hm-text-muted)">
               <select value={d.internetBillingTypeOverride || ""} onChange={e => set("internetBillingTypeOverride", e.target.value)} className={sSelectCn}>
                 <option value="">{billingTypeLabel(saved.internetBillingType || "prepaid")} (건물)</option>
                 <option value="prepaid">선불</option>
@@ -283,7 +283,7 @@ export function RoomFormSection({
         <div className="grid grid-cols-3 gap-1.5 mb-3">
           {/* 수도 납부방식 - 일반임대만 */}
           {isLong && (
-            <EditCell label="수도 납부방식" color="#8F95A3">
+            <EditCell label="수도 납부방식" color="var(--color-hm-text-muted)">
               <select value={d.waterPaymentType || ""} onChange={e => set("waterPaymentType", e.target.value)} className={sSelectCn}>
                 <option value="">기본 (하우스맨 청구)</option>
                 <option value="tenant_direct">임차인 직접 납부</option>
@@ -368,18 +368,18 @@ export function RoomFormSection({
         <>
           <div className="text-[11px] font-[800] text-hm-success mb-2">💰 금액</div>
           <div className="grid grid-cols-5 gap-1.5 mb-1.5">
-            <RoCell label="예치금" value={d.standardDeposit} color="#059669" />
-            <RoCell label="임대료" value={d.standardRent} color="#059669" />
-            <RoCell label="할인임대료" value={d.rentDiscountLimit} color="#DC2626"
-              style={d.rentDiscountLimit ? { background: "#FEF2F2", border: "1.5px solid #FECACA" } : {}} />
+            <RoCell label="예치금" value={d.standardDeposit} color="var(--color-hm-success)" />
+            <RoCell label="임대료" value={d.standardRent} color="var(--color-hm-success)" />
+            <RoCell label="할인임대료" value={d.rentDiscountLimit} color="var(--color-hm-danger)"
+              style={d.rentDiscountLimit ? { background: "var(--color-hm-danger-bg)", border: "1.5px solid var(--color-hm-danger-border)" } : {}} />
             <RoCell label="관리비" value={d.standardManagementFee} color="#059679" />
-            <RoCell label="수도" value={d.standardWaterFee} color="#059669" />
+            <RoCell label="수도" value={d.standardWaterFee} color="var(--color-hm-success)" />
           </div>
           <div className="grid grid-cols-4 gap-1.5 mb-3">
-            {isShort && <RoCell label="인터넷" value={d.standardInternetFee} color="#059669" />}
-            {(isShort || isLong) && <RoCell label="퇴실청소비" value={d.standardCleaningFee} color="#059669" />}
-            <RoCell label="주차여부" value={standardParkingTypeLabels[d.standardParkingType]} color="#059669" />
-            {d.standardParkingType === "paid" && <RoCell label="주차요금" value={d.standardParkingFee} color="#059669" />}
+            {isShort && <RoCell label="인터넷" value={d.standardInternetFee} color="var(--color-hm-success)" />}
+            {(isShort || isLong) && <RoCell label="퇴실청소비" value={d.standardCleaningFee} color="var(--color-hm-success)" />}
+            <RoCell label="주차여부" value={standardParkingTypeLabels[d.standardParkingType]} color="var(--color-hm-success)" />
+            {d.standardParkingType === "paid" && <RoCell label="주차요금" value={d.standardParkingFee} color="var(--color-hm-success)" />}
           </div>
         </>
       )}
@@ -481,7 +481,7 @@ export function RoomFormSection({
 /* ── Account Settings Display (building level, read-only) ── */
 function AccountSettingsDisplay({ saved }) {
   return (
-    <div className="p-2.5 px-3 bg-[#F8FAFC] rounded-lg border border-hm-border mt-2 mb-3">
+    <div className="p-2.5 px-3 bg-hm-bg-slate rounded-lg border border-hm-border mt-2 mb-3">
       <div className="text-[11px] font-bold text-hm-blue-dark mb-1.5">
         💳 계좌 설정 <span className="text-[9px] text-[#8B95A1] font-medium">(건물 설정 기준)</span>
       </div>

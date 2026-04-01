@@ -132,17 +132,17 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
   const alert65Tenants = tenants.filter(t => t.daysLeft >= 60 && t.daysLeft <= 70);
 
   const filters: FilterItem[] = [
-    { id: "전체", label: `전체 (${tenants.length})`, bg: "#F3F4F6", activeBg: "#1A1D23", color: "#5F6577", activeColor: "#fff" },
-    { id: "묵시적갱신", label: `묵시적갱신 (${tacitCount})`, bg: "#FEF2F2", activeBg: "#DC2626", color: "#DC2626", activeColor: "#fff" },
-    { id: "1개월", label: `1개월이내 (${within1m})`, bg: "#FFF7ED", activeBg: "#EA580C", color: "#EA580C", activeColor: "#fff" },
+    { id: "전체", label: `전체 (${tenants.length})`, bg: "#F3F4F6", activeBg: "var(--color-hm-text)", color: "var(--color-hm-text-sub)", activeColor: "#fff" },
+    { id: "묵시적갱신", label: `묵시적갱신 (${tacitCount})`, bg: "var(--color-hm-danger-bg)", activeBg: "var(--color-hm-danger)", color: "var(--color-hm-danger)", activeColor: "#fff" },
+    { id: "1개월", label: `1개월이내 (${within1m})`, bg: "var(--color-hm-warning-bg)", activeBg: "var(--color-hm-warning)", color: "var(--color-hm-warning)", activeColor: "#fff" },
     { id: "2개월", label: `2개월이내 (${within2m})`, bg: "#FFFBEB", activeBg: "#F59E0B", color: "#B45309", activeColor: "#fff" },
-    { id: "3개월", label: `3개월이내 (${within3m})`, bg: "#DBEAFE", activeBg: "#2563EB", color: "#1D4ED8", activeColor: "#fff" },
+    { id: "3개월", label: `3개월이내 (${within3m})`, bg: "#DBEAFE", activeBg: "var(--color-hm-blue-dark)", color: "#1D4ED8", activeColor: "#fff" },
   ];
 
   const getExpiryColor = (daysLeft: number): string => {
-    if (daysLeft <= 30) return "#EA580C";
+    if (daysLeft <= 30) return "var(--color-hm-warning)";
     if (daysLeft <= 60) return "#F59E0B";
-    return "#2563EB";
+    return "var(--color-hm-blue-dark)";
   };
 
   const getExpiryLabel = (daysLeft: number, tacit?: boolean): string => {
@@ -251,7 +251,7 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
 
       {/* 65일 알림 배너 */}
       {alert65Tenants.length > 0 && (
-        <Card style={{ padding: "14px 18px", marginBottom: 12, background: "linear-gradient(135deg, #FFF7ED, #FFFBEB)", border: "2px solid #F59E0B" }}>
+        <Card style={{ padding: "14px 18px", marginBottom: 12, background: "linear-gradient(135deg, var(--color-hm-warning-bg), #FFFBEB)", border: "2px solid #F59E0B" }}>
           <div className="flex items-center gap-2.5">
             <div className="text-[22px] leading-none">{"\u26A0\uFE0F"}</div>
             <div className="flex-1">
@@ -402,7 +402,7 @@ export const RenewalPage: React.FC<RenewalPageProps> = ({ myBuildings = [], acti
               fontSize: f.emphasized ? 11 : 10, fontWeight: f.emphasized ? 800 : 700,
               background: rangeFilter === f.id ? f.activeBg : f.bg,
               color: rangeFilter === f.id ? f.activeColor : f.color,
-              border: `1.5px solid ${rangeFilter === f.id ? f.activeBg : f.emphasized ? f.color : "#E0E3E9"}`,
+              border: `1.5px solid ${rangeFilter === f.id ? f.activeBg : f.emphasized ? f.color : "var(--color-hm-input-border)"}`,
               boxShadow: f.emphasized && rangeFilter !== f.id ? "0 0 0 1px " + f.color + "40" : "none" }}>
             {f.label}
           </button>

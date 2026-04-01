@@ -78,7 +78,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
       </div>
 
       {/* 건물/호실 정보 */}
-      <div style={{ background: '#F7F8FA', borderRadius: 8, padding: '14px 16px', marginBottom: 20 }}>
+      <div style={{ background: 'var(--color-hm-bg-muted)', borderRadius: 8, padding: '14px 16px', marginBottom: 20 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
           <div>
             <span style={{ color: '#888', fontWeight: 600 }}>건물</span>
@@ -146,7 +146,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
                   </td>
                 </tr>
               ))}
-              <tr style={{ borderTop: '1px solid #FECACA' }}>
+              <tr style={{ borderTop: '1px solid var(--color-hm-danger-border)' }}>
                 <td style={{ padding: '8px 0', fontWeight: 700, color: '#991B1B' }}>미납 소계</td>
                 <td style={{ padding: '8px 0', textAlign: 'right', fontWeight: 700, color: '#E52528', fontVariantNumeric: 'tabular-nums' }}>
                   {fmtMoney(record.prev_unpaid_total)}원
@@ -168,7 +168,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
           </span>
         </div>
         {record.total_after_due > record.total_within_due && (
-          <div style={{ background: '#FEF2F2', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'var(--color-hm-danger-bg)', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, fontWeight: 600, color: '#991B1B' }}>
               납기후 ({fmtDate(record.late_fee_apply_date)} 이후)
             </span>
@@ -181,7 +181,7 @@ const BillingInvoiceTemplate = forwardRef<HTMLDivElement, BillingInvoiceTemplate
 
       {/* 입금 계좌 */}
       {accountInfo?.account && (
-        <div style={{ background: '#F7F8FA', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>
+        <div style={{ background: 'var(--color-hm-bg-muted)', borderRadius: 8, padding: '14px 16px', marginBottom: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#888', marginBottom: 6 }}>입금 계좌</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>
             {accountInfo.bank} {accountInfo.account}

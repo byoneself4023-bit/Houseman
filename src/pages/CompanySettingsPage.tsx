@@ -235,9 +235,9 @@ export const CompanySettingsPage = () => {
                       className="font-[inherit] transition-colors"
                       style={{
                         padding: "7px 14px", borderRadius: 7, fontSize: 11, fontWeight: 700,
-                        border: acc.isPrimary ? "1.5px solid #2563EB" : "1px solid #E0E3E9",
-                        background: acc.isPrimary ? "#EFF6FF" : "#fff",
-                        color: acc.isPrimary ? "#2563EB" : "#8F95A3",
+                        border: acc.isPrimary ? "1.5px solid var(--color-hm-blue-dark)" : "1px solid var(--color-hm-input-border)",
+                        background: acc.isPrimary ? "var(--color-hm-blue-bg)" : "#fff",
+                        color: acc.isPrimary ? "var(--color-hm-blue-dark)" : "var(--color-hm-text-muted)",
                         cursor: acc.isPrimary ? "default" : "pointer",
                       }}
                     >
@@ -256,9 +256,9 @@ export const CompanySettingsPage = () => {
                             className="flex-1 font-[inherit] cursor-pointer transition-colors"
                             style={{
                               padding: "7px 8px", borderRadius: 7, fontSize: 11, fontWeight: selected ? 700 : 500,
-                              border: selected ? `1.5px solid ${opt.color}` : "1px solid #E0E3E9",
+                              border: selected ? `1.5px solid ${opt.color}` : "1px solid var(--color-hm-input-border)",
                               background: selected ? opt.bg : "#fff",
-                              color: selected ? opt.color : "#8F95A3",
+                              color: selected ? opt.color : "var(--color-hm-text-muted)",
                             }}
                           >
                             {opt.label}

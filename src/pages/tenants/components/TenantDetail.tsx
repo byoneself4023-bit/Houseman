@@ -128,7 +128,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
               const toggleLock = () => setBuildingData((prev: any) => ({ ...prev, [listingLockKey]: !isLocked }));
               return (
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-[10px]" style={{ border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "#FEF2F2" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
+                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-[10px]" style={{ border: `1.5px solid ${te.is_listing ? "#FCA5A5" : "#F3E8E8"}`, background: te.is_listing ? "var(--color-hm-danger-bg)" : "#FDF8F8", opacity: isLocked ? 0.7 : 1 }}>
                     <label className={`flex items-center gap-1.5 ${isLocked ? "cursor-default" : "cursor-pointer"}`}>
                       <input type="checkbox" defaultChecked={!!te.is_listing} disabled={isLocked}
                         onChange={e => {
@@ -149,7 +149,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                     </div>
                   </div>
                   <button type="button" onClick={toggleLock}
-                    className={`px-2 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-sm leading-none cursor-pointer transition-colors hover:opacity-80 ${isLocked ? "bg-[#F8FAFC]" : "bg-hm-danger-bg"}`}
+                    className={`px-2 py-1.5 rounded-lg border-[1.5px] border-hm-input-border text-sm leading-none cursor-pointer transition-colors hover:opacity-80 ${isLocked ? "bg-hm-bg-slate" : "bg-hm-danger-bg"}`}
                     title={isLocked ? "잠금 해제" : "잠금"}>{isLocked ? "\uD83D\uDD12" : "\uD83D\uDD13"}</button>
                 </div>
               );
@@ -209,25 +209,25 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
           <div>
             <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">기본 정보</div>
             <div className="grid grid-cols-1 gap-2 mb-2">
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자명</div><input id="td-name" defaultValue={t.name} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">입주자명</div><input id="td-name" defaultValue={t.name} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-2">
-              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>입주일</div><input id="td-movein" type="date" defaultValue={t.moveIn || ""} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} /></div>
-              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>만기일</div><input id="td-expiry" type="date" defaultValue={t.expiry} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={{ color: renewEditMode ? "#DC2626" : daysToExpiry < 30 ? "#DC2626" : "#1A1D23", fontWeight: renewEditMode || daysToExpiry < 30 ? 700 : 400 }} /></div>
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>입주일</div><input id="td-movein" type="date" defaultValue={t.moveIn || ""} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} style={renewEditMode ? {} : { color: "var(--color-hm-text)" }} /></div>
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>만기일</div><input id="td-expiry" type="date" defaultValue={t.expiry} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger" : detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} style={{ color: renewEditMode ? "var(--color-hm-danger)" : daysToExpiry < 30 ? "var(--color-hm-danger)" : "var(--color-hm-text)", fontWeight: renewEditMode || daysToExpiry < 30 ? 700 : 400 }} /></div>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-2">
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세일(납부일) <span className="text-[8px] text-[#B0B5C1]">미입력시 입주일</span></div><input id="td-rentday" type="number" min="1" max="31" defaultValue={t.rentDay || ""} placeholder={t.moveIn ? new Date(t.moveIn).getDate() + "일" : "입주일"} readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비납부일 <span className="text-[8px] text-[#B0B5C1]">미입력시 월세일</span></div><input id="td-mgmtday" type="number" min="1" max="31" defaultValue={t.mgmtDay || ""} placeholder="월세일과 동일" readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">월세일(납부일) <span className="text-[8px] text-[#B0B5C1]">미입력시 입주일</span></div><input id="td-rentday" type="number" min="1" max="31" defaultValue={t.rentDay || ""} placeholder={t.moveIn ? new Date(t.moveIn).getDate() + "일" : "입주일"} readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">관리비납부일 <span className="text-[8px] text-[#B0B5C1]">미입력시 월세일</span></div><input id="td-mgmtday" type="number" min="1" max="31" defaultValue={t.mgmtDay || ""} placeholder="월세일과 동일" readOnly={!detailEdit} className={`${tdInputBase} text-center font-bold ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
             </div>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처1</div><input id="td-phone" defaultValue={t.phone} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처2</div><input id="td-phone2" defaultValue={t.phone2 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처3</div><input id="td-phone3" defaultValue={t.phone3 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처1</div><input id="td-phone" defaultValue={t.phone} readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처2</div><input id="td-phone2" defaultValue={t.phone2 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">연락처3</div><input id="td-phone3" defaultValue={t.phone3 || ""} placeholder="010-0000-0000" readOnly={!detailEdit} className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
             </div>
             <div className="grid grid-cols-3 gap-2 mb-3">
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">주민등록번호</div><input id="td-ssn" defaultValue={t.ssn || ""} placeholder="000000-0000000" readOnly={!detailEdit} className={`${tdInputBase} font-mono ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">주민등록번호</div><input id="td-ssn" defaultValue={t.ssn || ""} placeholder="000000-0000000" readOnly={!detailEdit} className={`${tdInputBase} font-mono ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
               <div><div className="text-[9px] text-hm-text-muted mb-0.5">전입신고</div>
-                <select id="td-resident" defaultValue={t.resident || ""} disabled={!detailEdit} className={`${tdInputBase} ${detailEdit ? "cursor-pointer bg-white" : "cursor-default bg-[#F8FAFC]"}`}>
+                <select id="td-resident" defaultValue={t.resident || ""} disabled={!detailEdit} className={`${tdInputBase} ${detailEdit ? "cursor-pointer bg-white" : "cursor-default bg-hm-bg-slate"}`}>
                   <option value="">미확인</option><option value="완료">완료</option><option value="미신고">미신고</option>
                 </select>
               </div>
@@ -235,7 +235,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
 
             <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">💰 금액 정보</div>
             <div className="grid grid-cols-3 gap-2 mb-2">
-              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>{depositLabel}</div><input id="td-deposit" defaultValue={(t.deposit || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} /></div>
+              <div><div className={`text-[9px] mb-0.5 ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>{depositLabel}</div><input id="td-deposit" defaultValue={(t.deposit || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} style={renewEditMode ? {} : { color: "var(--color-hm-text)" }} /></div>
               <div>
                 <div className="flex items-center justify-between mb-0.5">
                   <span className={`text-[9px] ${renewEditMode ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>임대료</span>
@@ -244,7 +244,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                     <span className={`text-[8px] ${t.rentPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-rent" defaultValue={(t.rent || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} />
+                <input id="td-rent" defaultValue={(t.rent || 0).toLocaleString()} readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} style={renewEditMode ? {} : { color: "var(--color-hm-text)" }} />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-0.5">
@@ -254,7 +254,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                     <span className={`text-[8px] ${t.mgmtPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-mgmt" defaultValue={t.mgmt > 0 ? (t.mgmt || 0).toLocaleString() : ""} placeholder="0" readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} style={renewEditMode ? {} : { color: "#1A1D23" }} />
+                <input id="td-mgmt" defaultValue={t.mgmt > 0 ? (t.mgmt || 0).toLocaleString() : ""} placeholder="0" readOnly={!detailEdit && !renewEditMode} className={`${tdInputBase} text-right ${renewEditMode ? "bg-hm-danger-bg border-2 border-hm-danger text-hm-danger font-bold" : detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} style={renewEditMode ? {} : { color: "var(--color-hm-text)" }} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
@@ -266,7 +266,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                     <span className={`text-[8px] ${t.waterPayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-water" defaultValue={t.waterAmount || ""} placeholder="10,000" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} />
+                <input id="td-water" defaultValue={t.waterAmount || ""} placeholder="10,000" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} />
               </div>
               <div>
                 <div className="flex items-center justify-between mb-0.5">
@@ -276,7 +276,7 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
                     <span className={`text-[8px] ${t.cablePayType === "후불" ? "text-hm-danger font-bold" : "text-hm-text-muted font-normal"}`}>후불</span>
                   </label>
                 </div>
-                <input id="td-cable" defaultValue={t.cableAmount || ""} placeholder="0" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} />
+                <input id="td-cable" defaultValue={t.cableAmount || ""} placeholder="0" readOnly={!detailEdit} className={`${tdInputBase} text-right ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} />
               </div>
             </div>
 
@@ -388,9 +388,9 @@ export const TenantDetail: React.FC<TenantDetailProps> = ({
 
             <div className="text-[11px] font-[800] text-hm-text mb-2 pb-1.5 border-b-[1.5px] border-hm-border">📌 기타</div>
             <div className="grid grid-cols-2 gap-2 mb-2">
-              <div><div className="text-[9px] text-hm-text-muted mb-0.5">애완동물 신고</div><input id="td-pet" defaultValue={t.pet || ""} readOnly={!detailEdit} placeholder="애완동물 신고 내용" className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-[#F8FAFC]"}`} /></div>
+              <div><div className="text-[9px] text-hm-text-muted mb-0.5">애완동물 신고</div><input id="td-pet" defaultValue={t.pet || ""} readOnly={!detailEdit} placeholder="애완동물 신고 내용" className={`${tdInputBase} ${detailEdit ? "bg-white" : "bg-hm-bg-slate"}`} /></div>
               <div><div className="text-[9px] text-hm-text-muted mb-0.5">만기</div>
-                <div className="px-[10px] py-[7px] rounded-lg text-[13px] font-[800] text-center" style={{ background: daysToExpiry < 30 ? "#FEF2F2" : daysToExpiry < 90 ? "#FFFBEB" : "#F0FDF4", color: daysToExpiry < 30 ? "#DC2626" : daysToExpiry < 90 ? "#D97706" : "#059669" }}>
+                <div className="px-[10px] py-[7px] rounded-lg text-[13px] font-[800] text-center" style={{ background: daysToExpiry < 30 ? "var(--color-hm-danger-bg)" : daysToExpiry < 90 ? "#FFFBEB" : "#F0FDF4", color: daysToExpiry < 30 ? "var(--color-hm-danger)" : daysToExpiry < 90 ? "#D97706" : "var(--color-hm-success)" }}>
                   {daysToExpiry > 0 ? `${daysToExpiry}일 남음` : `${Math.abs(daysToExpiry)}일 경과`}
                 </div>
               </div>

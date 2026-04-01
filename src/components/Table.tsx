@@ -28,15 +28,15 @@ export const Table = <T extends Record<string, any>>({
   onRowClick,
   groupBy,
 }: TableProps<T>): React.ReactElement => (
-  <div className="overflow-x-auto rounded-[10px] border border-[#E8ECF0]">
+  <div className="overflow-x-auto rounded-[10px] border border-hm-border">
     <table className="w-full border-collapse text-xs table-fixed">
       <thead>
-        <tr className="bg-[#F7F8FA]">
+        <tr className="bg-hm-bg-muted">
           {columns.map((col, i) => (
             <th
               key={i}
               className={cn(
-                'px-0.5 py-[5px] font-bold text-[11px] text-[#5F6577] border-b border-[#E8ECF0] whitespace-nowrap',
+                'px-0.5 py-[5px] font-bold text-[11px] text-hm-text-sub border-b border-hm-border whitespace-nowrap',
                 alignClass[col.align || 'left'],
               )}
               style={{ width: col.width || 'auto' }}
@@ -54,7 +54,7 @@ export const Table = <T extends Record<string, any>>({
               <tr key={`g-${ri}`}>
                 <td
                   colSpan={columns.length}
-                  className="px-3 py-2 bg-[#F0F2F5] font-extrabold text-xs text-[#1A1D23] border-b-2 border-[#D1D5DB]"
+                  className="px-3 py-2 bg-[#F0F2F5] font-extrabold text-xs text-hm-text border-b-2 border-[#D1D5DB]"
                 >
                   {groupBy!(row)}
                 </td>
@@ -66,7 +66,7 @@ export const Table = <T extends Record<string, any>>({
               className={cn(
                 'border-b border-[#F0F2F5] transition-colors duration-100',
                 onRowClick && 'cursor-pointer',
-                'hover:bg-[#F9FAFB]',
+                'hover:bg-hm-bg-hover',
               )}
             >
               {columns.map((col, ci) => (

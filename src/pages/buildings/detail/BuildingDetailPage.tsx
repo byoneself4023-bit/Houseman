@@ -253,7 +253,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
       {/* Summary Cards */}
       <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2.5 mb-2`}>
         {[
-          { label: "전체", value: bldg.rooms, unit: "실", color: "#3B82F6" },
+          { label: "전체", value: bldg.rooms, unit: "실", color: "var(--color-hm-blue)" },
           { label: "입주", value: bldg.occupied, unit: "실", color: "#10B981" },
           { label: "공실", value: bldgVacancies.length, unit: "실", color: "#F59E0B" },
           { label: "연체", value: overdueCount, unit: "건", color: "#EF4444" },
@@ -264,7 +264,7 @@ export const BuildingDetailPageInner: React.FC<BuildingDetailPageInnerProps> = (
           </Card>
         ))}
       </div>
-      <div className="flex gap-2 mb-5 px-3 py-2 bg-[#F8FAFC] rounded-lg border border-hm-border">
+      <div className="flex gap-2 mb-5 px-3 py-2 bg-hm-bg-slate rounded-lg border border-hm-border">
         <span className="text-[11px] text-hm-text-muted font-semibold">유형별:</span>
         {Object.entries(typeCounts).filter(([,v]) => v > 0).map(([t, v]) => (
           <span key={t} className="text-[11px] font-bold px-2 py-0.5 rounded" style={{ background: rtCfg(t).bg, color: rtCfg(t).c }}>{t} {v}</span>

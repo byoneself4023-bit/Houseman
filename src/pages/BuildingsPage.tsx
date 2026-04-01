@@ -812,9 +812,9 @@ export const BuildingsPage = ({
                                 <button key={at} onClick={() => updateRoom(idx, "buildingType", at)}
                                   className="py-[5px] px-3.5 rounded-md text-[10px] font-bold cursor-pointer font-[inherit] transition-colors"
                                   style={{
-                                    border: (r.buildingType || acctTypes[0]) === at ? `1.5px solid ${acctTypeColor[at]}` : "1px solid #E0E3E9",
+                                    border: (r.buildingType || acctTypes[0]) === at ? `1.5px solid ${acctTypeColor[at]}` : "1px solid var(--color-hm-input-border)",
                                     background: (r.buildingType || acctTypes[0]) === at ? acctTypeBg[at] : "#fff",
-                                    color: (r.buildingType || acctTypes[0]) === at ? acctTypeColor[at] : "#8F95A3"
+                                    color: (r.buildingType || acctTypes[0]) === at ? acctTypeColor[at] : "var(--color-hm-text-muted)"
                                   }}>
                                   {at}
                                 </button>
