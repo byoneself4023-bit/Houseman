@@ -374,6 +374,33 @@ export const BuildingsPage = ({
               <SearchInput value={searchText} onChange={setSearchText} placeholder="건물 검색 (초성 가능: ㅅㅌ → 스타빌, ㄷㅎ → 더힐하우스)" />
             </div>
           </div>
+          {/* KPI 요약 */}
+          {(() => {
+            const totalRooms = filteredBuildings.reduce((s, b) => s + (b.rooms || 0), 0);
+            const totalOccupied = activeTenants.filter(t => filteredBuildings.some(b => b.name === t.building)).length;
+            const totalVacant = activeVacancies.filter(v => filteredBuildings.some(b => b.name === v.building)).length;
+            return (
+              <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 mb-4`}>
+                <Card className="!p-4 text-center">
+                  <div className="text-2xl font-bold text-hm-gray-950">{filteredBuildings.length}</div>
+                  <div className="text-xs text-hm-gray-500">총 건물</div>
+                </Card>
+                <Card className="!p-4 text-center">
+                  <div className="text-2xl font-bold text-hm-primary">{totalRooms}</div>
+                  <div className="text-xs text-hm-gray-500">총 호실</div>
+                </Card>
+                <Card className="!p-4 text-center">
+                  <div className="text-2xl font-bold text-hm-success">{totalOccupied}</div>
+                  <div className="text-xs text-hm-gray-500">입주 중</div>
+                </Card>
+                <Card className="!p-4 text-center">
+                  <div className="text-2xl font-bold text-hm-warning">{totalVacant}</div>
+                  <div className="text-xs text-hm-gray-500">공실</div>
+                </Card>
+              </div>
+            );
+          })()}
+
           {(() => {
             const bd = buildingData || {};
             const visibleBuildings = filteredBuildings.filter(b => matchKorean(b.name, searchText));
