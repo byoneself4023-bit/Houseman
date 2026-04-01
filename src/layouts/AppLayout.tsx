@@ -11,6 +11,7 @@ import { MobileNav } from './MobileNav';
 import { queryClient } from '@/lib/queryClient';
 import { useSse } from '@/hooks/useSse';
 import { AiChatBot } from '@/components/AiChatBot';
+import { PageErrorBoundary } from '@/components/PageErrorBoundary';
 import type { AppData } from '@/types/appContext';
 
 export function AppLayout() {
@@ -59,9 +60,11 @@ export function AppLayout() {
 
         <div className={`flex-1 overflow-auto ${isMobile ? 'p-3 pb-[72px]' : 'p-6'}`}>
           <div key={pathname} className="max-w-[1600px] mx-auto" style={{ animation: 'fadeIn 0.2s ease' }}>
-            <Suspense fallback={<div className="flex justify-center items-center h-[200px]"><span className="text-sm text-hm-text-muted">로딩 중...</span></div>}>
-              <Outlet context={outletContext} />
-            </Suspense>
+            <PageErrorBoundary>
+              <Suspense fallback={<div className="flex justify-center items-center h-[200px]"><span className="text-sm text-hm-text-muted">로딩 중...</span></div>}>
+                <Outlet context={outletContext} />
+              </Suspense>
+            </PageErrorBoundary>
           </div>
         </div>
       </div>

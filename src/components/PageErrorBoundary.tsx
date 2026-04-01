@@ -1,24 +1,26 @@
 import React from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
-    <div className="p-10 text-center font-['Pretendard',-apple-system,BlinkMacSystemFont,sans-serif]">
-      <div className="w-14 h-14 rounded-[14px] bg-red-50 inline-flex items-center justify-center text-2xl mb-4">
-        {"\u26A0\uFE0F"}
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-12 h-12 rounded-xl bg-hm-danger-bg flex items-center justify-center mb-4">
+        <AlertTriangle size={24} className="text-hm-danger" />
       </div>
-      <h2 className="text-lg font-bold text-hm-text mb-2">
-        페이지 오류가 발생했습니다
-      </h2>
-      <p className="text-sm text-hm-text-muted max-w-[400px] mx-auto mb-5">
+      <h3 className="text-sm font-semibold text-hm-text mb-1">
+        문제가 발생했습니다
+      </h3>
+      <p className="text-sm text-hm-text-muted max-w-[320px] mb-2">
         {error instanceof Error ? error.message : String(error)}
       </p>
-      <button
-        onClick={resetErrorBoundary}
-        className="px-6 py-2.5 rounded-lg border-none bg-hm-blue text-white text-sm font-bold cursor-pointer font-inherit hover:opacity-90 transition-opacity"
-      >
+      <p className="text-sm text-hm-text-muted max-w-[320px] mb-4">
+        페이지를 새로고침하거나 잠시 후 다시 시도해 주세요.
+      </p>
+      <Button variant="outline" size="sm" onClick={resetErrorBoundary}>
         다시 시도
-      </button>
+      </Button>
     </div>
   );
 }
