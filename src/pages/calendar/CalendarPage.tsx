@@ -3,6 +3,8 @@ import { toast } from 'sonner';
 import { calendarEvents as defaultEvents, buildingFloors } from '@/data';
 import { persistUpdate, persistDelete } from './calendarApi';
 import { Card, SectionTitle } from '@/components';
+import { useIsMobile } from '@/utils';
+import { Calendar, DoorOpen, Clock, CheckCircle } from 'lucide-react';
 import { MSG_TEMPLATES, fillBuildingContractMsg, STATIC_BUILDING_NAMES } from './constants';
 
 // Sub-components
@@ -42,6 +44,7 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
     return [...set].sort();
   }, [allBuildings, activeTenants, activeVacancies]);
 
+  const isMobile = useIsMobile();
   const calendarEvents = propEvents || defaultEvents;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [filter, setFilter] = useState("전체");
@@ -189,6 +192,54 @@ export const CalendarPage = ({ events: propEvents, setEvents, currentStaff, acti
   return (
     <div>
       <SectionTitle sub="입퇴실 일정 & 직원 휴무 관리">📅 입퇴실일정</SectionTitle>
+
+      {/* KPI 요약 */}
+      {(() => {
+        const contractCount = monthEvents.filter((e: any) => e.type === '계약').length;
+        const moveOutCount = monthEvents.filter((e: any) => e.type === '퇴실').length;
+        const vacationCount = monthEvents.filter((e: any) => e.type === '휴무').length;
+        const totalEvents = monthEvents.length;
+        return (
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 mb-4`}>
+            <Card className="!p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-hm-primary/10 flex items-center justify-center">
+                <Calendar size={16} className="text-hm-primary" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-hm-gray-950">{contractCount}</div>
+                <div className="text-xs text-hm-gray-500">계약</div>
+              </div>
+            </Card>
+            <Card className="!p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-hm-danger/10 flex items-center justify-center">
+                <DoorOpen size={16} className="text-hm-danger" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-hm-danger">{moveOutCount}</div>
+                <div className="text-xs text-hm-gray-500">퇴실</div>
+              </div>
+            </Card>
+            <Card className="!p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-hm-warning/10 flex items-center justify-center">
+                <Clock size={16} className="text-hm-warning" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-hm-warning">{vacationCount}</div>
+                <div className="text-xs text-hm-gray-500">휴무</div>
+              </div>
+            </Card>
+            <Card className="!p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-hm-success/10 flex items-center justify-center">
+                <CheckCircle size={16} className="text-hm-success" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-hm-success">{totalEvents}</div>
+                <div className="text-xs text-hm-gray-500">전체</div>
+              </div>
+            </Card>
+          </div>
+        );
+      })()}
 
       {/* 계약현황 */}
       <ContractStatusPanel
