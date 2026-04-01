@@ -323,7 +323,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
           <div className="text-sm font-semibold">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
         </Card>
       ) : (
-        <Card className="overflow-auto">
+        <Card className="overflow-auto max-w-[800px]">
           <Table columns={columns} data={displayList} />
         </Card>
       )}
