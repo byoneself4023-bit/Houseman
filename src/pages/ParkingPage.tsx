@@ -350,7 +350,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
 
       {/* Table with search */}
       <Card className="overflow-auto">
-        <div className="p-4 pb-0">
+        <div className="px-2 pt-3 pb-2">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
             className="w-full px-4 py-2.5 rounded-lg border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
