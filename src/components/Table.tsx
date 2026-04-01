@@ -31,12 +31,12 @@ export const Table = <T extends Record<string, any>>({
   <div className="overflow-x-auto rounded-lg border border-hm-border">
     <table className="w-full border-collapse text-xs table-fixed">
       <thead>
-        <tr className="bg-hm-gray-100">
+        <tr className="bg-hm-gray-50">
           {columns.map((col, i) => (
             <th
               key={i}
               className={cn(
-                'px-2 py-2 font-semibold text-xs text-hm-gray-600 border-b border-hm-border whitespace-nowrap',
+                'px-2 py-2 font-semibold text-xs text-hm-gray-600 border-b-2 border-hm-gray-200 whitespace-nowrap',
                 alignClass[col.align || 'left'],
               )}
               style={{ width: col.width || 'auto' }}
@@ -66,14 +66,14 @@ export const Table = <T extends Record<string, any>>({
               className={cn(
                 'border-b border-hm-gray-100 transition-colors duration-100',
                 onRowClick && 'cursor-pointer',
-                'hover:bg-hm-bg-hover',
+                'hover:bg-hm-primary/5',
               )}
             >
               {columns.map((col, ci) => (
                 <td
                   key={ci}
                   className={cn(
-                    'px-2 py-1.5 text-hm-gray-800 whitespace-nowrap',
+                    'px-2 py-1.5 text-hm-gray-800 whitespace-nowrap tabular-nums',
                     alignClass[col.align || 'left'],
                   )}
                   style={{ width: col.width || 'auto' }}
