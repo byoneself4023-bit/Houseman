@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useIsMobile, fmt } from '@/utils';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Card } from '@/components';
 
 const TOTAL_PAYROLL = 25000000;
 const REPAIR_MARGIN_RATE = 0.30;
@@ -478,11 +480,66 @@ export function ProfitDashboardPage({ myBuildings = [], activeTenants = [], acti
     );
   };
 
+  const CHART_COLORS = ['#4361EE', '#16A34A', '#D97706', '#DC2626', '#0284C7', '#7C3AED', '#EC4899', '#14B8A6'];
+
+  const chartData = useMemo(() =>
+    buildingProfitData
+      .filter(b => !b.needsReview)
+      .slice(0, 10)
+      .map(b => ({ name: b.name.length > 6 ? b.name.slice(0, 6) + '..' : b.name, profit: b.netProfit })),
+    [buildingProfitData]
+  );
+
+  const revenueVsCostData = useMemo(() =>
+    buildingProfitData
+      .filter(b => !b.needsReview)
+      .slice(0, 8)
+      .map(b => ({ name: b.name.length > 5 ? b.name.slice(0, 5) + '..' : b.name, 매출: b.revenue.total, 비용: b.cost.total })),
+    [buildingProfitData]
+  );
+
   return (
     <div className={`${isMobile ? 'p-4' : 'p-6'} bg-slate-50 min-h-screen`}>
       <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-slate-800 mb-5`}>수익 대시보드</div>
       {renderMonthSelector()}
       {renderSummaryCards()}
+
+      {/* 차트 영역 */}
+      {chartData.length > 0 && (
+        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4 mb-6`}>
+          <Card className="!p-4">
+            <div className="text-sm font-bold text-hm-gray-800 mb-4">건물별 순수익</div>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748B' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} tickFormatter={(v: number) => `${(v/10000).toFixed(0)}만`} />
+                <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString()}원`, '순수익']} contentStyle={{ borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 12 }} />
+                <Bar dataKey="profit" radius={[4, 4, 0, 0]}>
+                  {chartData.map((entry, i) => (
+                    <Cell key={i} fill={entry.profit >= 0 ? '#4361EE' : '#DC2626'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+
+          <Card className="!p-4">
+            <div className="text-sm font-bold text-hm-gray-800 mb-4">건물별 매출 vs 비용</div>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={revenueVsCostData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748B' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} tickFormatter={(v: number) => `${(v/10000).toFixed(0)}만`} />
+                <Tooltip formatter={(value: any) => [`${Number(value).toLocaleString()}원`]} contentStyle={{ borderRadius: 8, border: '1px solid #E2E8F0', fontSize: 12 }} />
+                <Bar dataKey="매출" fill="#4361EE" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="비용" fill="#D97706" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      )}
+
       {renderViewTabs()}
       {viewMode === 'summary' && (
         <>
