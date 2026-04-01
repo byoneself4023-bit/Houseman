@@ -13,6 +13,13 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/api/bankda': {
+        target: 'https://a.bankda.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/bankda/, '/dtsvc'),
+      },
+    },
   },
   build: {
     rollupOptions: {

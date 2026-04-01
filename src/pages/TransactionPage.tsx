@@ -1,43 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { buildings } from '@/data';
 import { useIsMobile, fmt } from '@/utils';
 import { Card, SectionTitle, Table } from '@/components';
 import { inputClassName } from '@/components/Field';
 import { useLocalStorage } from '@/utils/useLocalStorage';
-
-// 뱅크다 시뮬레이션 데이터 (실제로는 a.bankda.com API에서 가져옴)
-const sampleBankData = [
-  { id: "B001", date: "2026-03-15", depositor: "한유진", amount: 1280000, bank: "국민", memo: "" },
-  { id: "B002", date: "2026-03-15", depositor: "박성윤", amount: 780000, bank: "신한", memo: "" },
-  { id: "B003", date: "2026-03-15", depositor: "김세아", amount: 780000, bank: "우리", memo: "" },
-  { id: "B004", date: "2026-03-14", depositor: "윤슬기", amount: 720000, bank: "국민", memo: "" },
-  { id: "B005", date: "2026-03-14", depositor: "김도경", amount: 1400000, bank: "하나", memo: "" },
-  { id: "B006", date: "2026-03-14", depositor: "황현호", amount: 730000, bank: "신한", memo: "" },
-  { id: "B007", date: "2026-03-13", depositor: "박유빈", amount: 1280000, bank: "국민", memo: "" },
-  { id: "B008", date: "2026-03-13", depositor: "정은혜", amount: 680000, bank: "우리", memo: "" },
-  { id: "B009", date: "2026-03-13", depositor: "홍윤미", amount: 710000, bank: "신한", memo: "" },
-  { id: "B010", date: "2026-03-12", depositor: "김태오", amount: 1330000, bank: "하나", memo: "" },
-  { id: "B011", date: "2026-03-12", depositor: "권영우", amount: 1300000, bank: "국민", memo: "" },
-  { id: "B012", date: "2026-03-12", depositor: "박유림", amount: 780000, bank: "신한", memo: "" },
-  // 이름이 약간 다른 케이스 (별명, 가족 대납 등)
-  { id: "B013", date: "2026-03-11", depositor: "이지현A", amount: 710000, bank: "우리", memo: "" },
-  { id: "B014", date: "2026-03-11", depositor: "신현식", amount: 1350000, bank: "국민", memo: "" },
-  { id: "B015", date: "2026-03-11", depositor: "김소희", amount: 780000, bank: "하나", memo: "" },
-  { id: "B016", date: "2026-03-10", depositor: "고영희", amount: 780000, bank: "신한", memo: "" },
-  { id: "B017", date: "2026-03-10", depositor: "정현민", amount: 1280000, bank: "우리", memo: "" },
-  { id: "B018", date: "2026-03-10", depositor: "박정미", amount: 1400000, bank: "국민", memo: "" },
-  // 금액이 다른 케이스 (분납 등)
-  { id: "B019", date: "2026-03-09", depositor: "주여울", amount: 400000, bank: "신한", memo: "" },
-  { id: "B020", date: "2026-03-09", depositor: "송예준", amount: 500000, bank: "하나", memo: "" },
-  { id: "B021", date: "2026-03-08", depositor: "이준우", amount: 700000, bank: "국민", memo: "" },
-  // 이름만 비슷한 케이스
-  { id: "B022", date: "2026-03-08", depositor: "김혜서(모)", amount: 830000, bank: "우리", memo: "" },
-  { id: "B023", date: "2026-03-07", depositor: "차민철", amount: 1770000, bank: "신한", memo: "" },
-  { id: "B024", date: "2026-03-07", depositor: "박현진", amount: 780000, bank: "국민", memo: "" },
-  // 완전 매칭 안되는 케이스
-  { id: "B025", date: "2026-03-06", depositor: "최영수", amount: 500000, bank: "하나", memo: "" },
-  { id: "B026", date: "2026-03-06", depositor: "강미래", amount: 350000, bank: "국민", memo: "" },
-];
+import { fetchBankdaTransactions, toBankdaLocal } from '@/services/bankdaService';
+import { toast } from 'sonner';
 
 interface MatchResult {
   score: number;
@@ -149,6 +117,44 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
   const [editDepKey, setEditDepKey] = useState("");
   const [editDepVal, setEditDepVal] = useState("");
 
+  // 뱅크다 실거래 데이터
+  const today = new Date().toISOString().slice(0, 10);
+  const [bankdaFrom, setBankdaFrom] = useState(today);
+  const [bankdaTo, setBankdaTo] = useState(today);
+  const [bankdaData, setBankdaData] = useState<ReturnType<typeof toBankdaLocal>[]>([]);
+  const [bankdaLoading, setBankdaLoading] = useState(false);
+  const [bankdaError, setBankdaError] = useState<string | null>(null);
+  const [bankdaRecord, setBankdaRecord] = useState(0);
+
+  const loadBankda = useCallback(async () => {
+    setBankdaLoading(true);
+    setBankdaError(null);
+    try {
+      const res = await fetchBankdaTransactions({
+        datefrom: bankdaFrom.replace(/-/g, ''),
+        dateto: bankdaTo.replace(/-/g, ''),
+        istest: 'n',
+      });
+      if (res.response.description) {
+        setBankdaError(res.response.description);
+        setBankdaData([]);
+        setBankdaRecord(0);
+      } else {
+        const converted = (res.response.bank || []).map(toBankdaLocal);
+        // 입금만 매칭 대상 (출금은 매칭 불필요)
+        setBankdaData(converted);
+        setBankdaRecord(res.response.record);
+        toast.success(`뱅크다 거래내역 ${res.response.record}건 조회 완료`);
+      }
+    } catch (e: any) {
+      setBankdaError(e.message);
+      setBankdaData([]);
+      setBankdaRecord(0);
+      toast.error(`뱅크다 조회 실패: ${e.message}`);
+    }
+    setBankdaLoading(false);
+  }, [bankdaFrom, bankdaTo]);
+
   const myTenants = useMemo(() => myBuildings.length > 0 ? activeTenants.filter(t => myBuildings.includes(t.building)) : activeTenants, [myBuildings, activeTenants]);
   const buildingNames = useMemo(() => ["전체", ...new Set(myTenants.map(t => t.building))], [myTenants]);
   const filtered = useMemo(() => filterBld === "전체" ? transactions : transactions.filter(tx => tx.building === filterBld), [filterBld, transactions]);
@@ -156,13 +162,15 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
   const overdueRooms = useMemo(() => myTenants.filter(t => (roomBalances[`${t.building}_${t.room}`] || 0) > 0), [myTenants, roomBalances]);
   const roomsForBld = useMemo(() => formBld ? [...new Set(myTenants.filter(t => t.building === formBld).map(t => t.room))] : [], [formBld, myTenants]);
 
-  // 뱅크다 매칭 계산
+  // 뱅크다 매칭 계산 (입금 건만 매칭)
   const bankMatches = useMemo(() => {
-    return sampleBankData.filter(b => !matchedItems[b.id]).map(bankTx => {
-      const result = calcMatch(bankTx, myTenants, nameAliases, depositNames, transactions);
-      return { bankTx, ...result };
-    });
-  }, [myTenants, transactions, matchedItems, nameAliases, depositNames]);
+    return bankdaData
+      .filter(b => b.type === '입금' && !matchedItems[b.id])
+      .map(bankTx => {
+        const result = calcMatch(bankTx, myTenants, nameAliases, depositNames, transactions);
+        return { bankTx, ...result };
+      });
+  }, [bankdaData, myTenants, transactions, matchedItems, nameAliases, depositNames]);
 
   const auto100 = bankMatches.filter(m => m.score === 100);
   const manualNeeded = bankMatches.filter(m => m.score < 100);
@@ -315,7 +323,7 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               <span className="text-base">🏦</span>
               <div>
                 <div className="text-sm font-bold text-[#7C3AED]">뱅크다 입금 매칭</div>
-                <div className="text-xs text-hm-text-muted">a.bankda.com 거래내역</div>
+                <div className="text-xs text-hm-text-muted">a.bankda.com 실거래내역 ({bankdaRecord}건 조회됨)</div>
               </div>
             </div>
             <div className="flex gap-1.5">
@@ -327,6 +335,29 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
               </button>
             </div>
           </div>
+
+          {/* 날짜 범위 + 조회 */}
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <input type="date" value={bankdaFrom} onChange={e => setBankdaFrom(e.target.value)}
+              className="px-2.5 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors" />
+            <span className="text-xs text-hm-text-muted">~</span>
+            <input type="date" value={bankdaTo} onChange={e => setBankdaTo(e.target.value)}
+              className="px-2.5 py-1.5 rounded-md border-[1.5px] border-hm-input-border text-xs font-[inherit] outline-none focus:ring-2 focus:ring-ring transition-colors" />
+            <button onClick={loadBankda} disabled={bankdaLoading}
+              className={`px-4 py-1.5 rounded-md border-none text-white text-xs font-bold cursor-pointer font-[inherit] hover:opacity-90 active:scale-95 transition-all ${bankdaLoading ? 'bg-gray-400' : 'bg-[#7C3AED]'}`}>
+              {bankdaLoading ? '조회 중...' : '🏦 거래내역 조회'}
+            </button>
+            {bankdaData.length > 0 && (
+              <span className="text-xs text-hm-text-muted">
+                입금 {bankdaData.filter(d => d.type === '입금').length}건 / 출금 {bankdaData.filter(d => d.type === '출금').length}건
+              </span>
+            )}
+          </div>
+          {bankdaError && (
+            <div className="mb-3 px-3 py-2 rounded-md bg-hm-danger-bg border border-hm-danger-border text-xs text-hm-danger font-semibold">
+              {bankdaError}
+            </div>
+          )}
 
           {/* 지정 입금자명 관리 */}
           {showDepositNames && (
@@ -474,9 +505,56 @@ export const TransactionPage = ({ myBuildings = [], activeTenants = [], transact
             })}
           </div>
 
-          {bankMatches.length === 0 && (
+          {bankMatches.length === 0 && bankdaData.length > 0 && (
+            <div className="text-center py-4 text-hm-text-muted text-sm">
+              모든 입금 거래가 매칭 완료되었습니다
+            </div>
+          )}
+
+          {bankdaData.length === 0 && !bankdaLoading && !bankdaError && (
             <div className="text-center py-8 text-hm-text-muted text-sm">
-              모든 거래가 매칭 완료되었습니다
+              날짜를 선택하고 [거래내역 조회]를 클릭하세요
+            </div>
+          )}
+
+          {/* 전체 거래내역 테이블 (입금+출금) */}
+          {bankdaData.length > 0 && (
+            <div className="mt-4 border-t border-[#E9D5FF] pt-3">
+              <div className="text-xs font-bold text-[#7C3AED] mb-2">전체 거래내역 ({bankdaData.length}건)</div>
+              <div className="flex gap-3 mb-3 text-xs">
+                <span className="text-hm-success font-bold">총 입금: {fmt(bankdaData.filter(d => d.type === '입금').reduce((s, d) => s + d.amount, 0))}원</span>
+                <span className="text-hm-danger font-bold">총 출금: {fmt(bankdaData.filter(d => d.type === '출금').reduce((s, d) => s + d.amount, 0))}원</span>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-[#F5F3FF] text-left">
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED]">일자</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED]">시간</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED]">은행</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED]">계좌</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED]">적요</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED] text-right">입금</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED] text-right">출금</th>
+                      <th className="px-2 py-1.5 font-semibold text-[#7C3AED] text-right">잔액</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bankdaData.map(d => (
+                      <tr key={d.id} className="border-t border-[#F0E7FF] hover:bg-[#FEFBFF]">
+                        <td className="px-2 py-1.5">{d.date.slice(5)}</td>
+                        <td className="px-2 py-1.5 text-hm-text-muted">{d.time || '-'}</td>
+                        <td className="px-2 py-1.5">{d.bank}</td>
+                        <td className="px-2 py-1.5 text-hm-text-muted font-mono text-[10px]">{d.accountnum || '-'}</td>
+                        <td className="px-2 py-1.5 font-semibold">{d.depositor}</td>
+                        <td className={`px-2 py-1.5 text-right font-bold ${d.type === '입금' ? 'text-hm-success' : ''}`}>{d.type === '입금' ? fmt(d.amount) : '-'}</td>
+                        <td className={`px-2 py-1.5 text-right font-bold ${d.type === '출금' ? 'text-hm-danger' : ''}`}>{d.type === '출금' ? fmt(d.amount) : '-'}</td>
+                        <td className="px-2 py-1.5 text-right text-hm-text-muted">{fmt(d.balance)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </Card>
