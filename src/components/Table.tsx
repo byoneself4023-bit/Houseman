@@ -14,6 +14,7 @@ interface TableProps<T> {
   data: T[];
   onRowClick?: (row: T) => void;
   groupBy?: (row: T) => string;
+  tableClassName?: string;
 }
 
 const alignClass = {
@@ -27,9 +28,10 @@ export const Table = <T extends Record<string, any>>({
   data,
   onRowClick,
   groupBy,
+  tableClassName,
 }: TableProps<T>): React.ReactElement => (
   <div className="overflow-x-auto rounded-lg border border-hm-border">
-    <table className="w-full border-collapse text-xs table-fixed">
+    <table className={cn("w-full border-collapse text-xs table-fixed", tableClassName)}>
       <thead>
         <tr className="bg-hm-gray-50">
           {columns.map((col, i) => (
