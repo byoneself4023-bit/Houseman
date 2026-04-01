@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import * as XLSX from 'xlsx';
 import { api } from '@/lib/api';
+import { USE_API } from '@/lib/featureFlag';
 import { truncate10 } from '@/data';
 
 interface MeterUploadProps {
@@ -25,9 +26,30 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
   const [uploadType, setUploadType] = useState<'elec' | 'gas'>('elec');
 
   // ── rooms 테이블에서 고객번호 매핑 로드 ──
-  // TODO Phase 6: API endpoint 필요 (GET /api/rooms?withCustomerNumber=true)
-  const loadCustomerMap = useCallback(async (_type: 'elec' | 'gas') => {
-    return {} as Record<string, any[]>;
+  const loadCustomerMap = useCallback(async (type: 'elec' | 'gas') => {
+    if (!USE_API) return {} as Record<string, any[]>;
+
+    // 전체 건물 → 호실 조회 후 고객번호로 그룹핑
+    const buildings = await api.get<any>('/api/buildings');
+    const allBuildings: any[] = buildings.data ?? buildings ?? [];
+    const map: Record<string, any[]> = {};
+
+    for (const bldg of allBuildings) {
+      const rooms = await api.get<any>(`/api/buildings/${bldg.id}/rooms`);
+      const roomList: any[] = rooms.data ?? rooms ?? [];
+      for (const room of roomList) {
+        const customerNo = type === 'elec' ? room.elecNo : room.gasNo;
+        if (!customerNo) continue;
+        if (!map[customerNo]) map[customerNo] = [];
+        map[customerNo].push({
+          buildingId: bldg.id,
+          buildingName: bldg.name,
+          roomId: room.id,
+          roomNumber: room.roomNumber,
+        });
+      }
+    }
+    return map;
   }, []);
 
   // ── 엑셀 컬럼 자동 감지 ──
@@ -172,6 +194,7 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
       const matched: any[] = [];
       const unmatched: any[] = [];
       const errors: string[] = [];
+      const readings: any[] = [];
 
       for (const row of parsed) {
         const rooms = (customerMap as Record<string, any[]>)[row.customerNumber];
@@ -188,29 +211,31 @@ export default function MeterUpload({ billingMonth, onComplete }: MeterUploadPro
           const readingDate = normalizeDate(row.periodEnd) || new Date().toISOString().slice(0, 10);
 
           const record = {
-            building_id: room.buildingId,
-            room_id: room.roomId,
+            buildingId: room.buildingId,
+            roomId: room.roomId,
             type: uploadType,
-            reading_date: readingDate,
-            reading_value: row.currReading,
+            readingDate: readingDate,
+            readingValue: row.currReading,
             usage: sharedUsage,
             amount: sharedAmount,
-            period_start: normalizeDate(row.periodStart),
-            period_end: normalizePeriodEnd(row.periodEnd),
-            billing_month: billingMonth,
-            customer_number: row.customerNumber,
-            is_meter_replaced: false,
+            periodStart: normalizeDate(row.periodStart),
+            periodEnd: normalizePeriodEnd(row.periodEnd),
+            billingMonth: billingMonth,
+            customerNumber: row.customerNumber,
+            isMeterReplaced: false,
             source: 'upload',
           };
+          readings.push(record);
+          matched.push({ ...room, amount: sharedAmount, usage: sharedUsage });
+        }
+      }
 
-          // TODO Phase 6: API endpoint 필요 (POST /api/meter-readings)
-          const error = null as any;
-
-          if (error) {
-            errors.push(`${room.buildingName} ${room.roomNumber}: API not implemented`);
-          } else {
-            matched.push({ ...room, amount: sharedAmount, usage: sharedUsage });
-          }
+      // 4. bulk POST to API
+      if (USE_API && readings.length > 0) {
+        try {
+          await api.post('/api/meter-readings', { readings });
+        } catch (err: any) {
+          errors.push(`API 저장 실패: ${err.message}`);
         }
       }
 
