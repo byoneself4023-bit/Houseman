@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Bot, ChevronUp, ChevronDown } from 'lucide-react';
+import { Bot, X } from 'lucide-react';
 import { useBuildingStore } from '@/stores/useBuildingStore';
 import { useTenantStore } from '@/stores/useTenantStore';
 import { useCalendarStore } from '@/stores/useCalendarStore';
@@ -588,65 +588,71 @@ export function AiChatBot({ sidePanel = false }: AiChatBotProps) {
     );
   }
 
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed bottom-20 right-6 z-[998] w-12 h-12 rounded-full bg-gradient-to-r from-hm-primary to-[#5B7FFF] shadow-lg flex items-center justify-center cursor-pointer hover:scale-110 hover:shadow-xl transition-all duration-200"
+      >
+        <Bot size={22} className="text-white" />
+      </button>
+    );
+  }
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg mb-4 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
-      {/* Toggle header */}
-      <div className="flex justify-between items-center px-4 py-2.5 cursor-pointer bg-hm-bg-slate border-b border-gray-200 select-none hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
+    <div className="fixed bottom-20 right-6 z-[998] w-[380px] max-h-[500px] bg-white rounded-2xl shadow-2xl border border-hm-gray-200 flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 py-3 border-b border-hm-gray-200 shrink-0">
         <div className="flex items-center gap-2">
-          <Bot size={16} className="text-hm-primary" />
-          <span className="text-sm font-bold text-hm-gray-800">{open ? 'AI 어시스턴트' : 'AI'}</span>
+          <Bot size={18} className="text-hm-primary" />
+          <span className="text-sm font-bold text-hm-gray-800">AI 어시스턴트</span>
         </div>
-        {open ? <ChevronDown size={14} className="text-hm-gray-500" /> : <ChevronUp size={14} className="text-hm-gray-500" />}
+        <button onClick={() => setOpen(false)} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-hm-gray-100 transition-colors cursor-pointer">
+          <X size={16} className="text-hm-gray-500" />
+        </button>
       </div>
 
-      {open && (
-        <div className="flex flex-col">
-          {/* Messages */}
-          <div ref={scrollRef} className={`overflow-y-auto px-3 py-2 flex flex-col gap-1.5 transition-[max-height] duration-300 ease-in-out ${messages.length > 0 ? 'max-h-[400px]' : 'max-h-[150px]'}`}>
-            {messages.length === 0 && (
-              <div className="text-xs text-gray-400 text-center py-4 leading-[1.6]">
-                건물 정보를 자연어로 조회/수정할 수 있습니다.
-                <br />
-                예: &quot;제이앤제이 현관 비번 1234로 바꿔줘&quot;
-              </div>
-            )}
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={msgClassName(msg)}
-              >
-                <span className="text-sm whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
-              </div>
-            ))}
-            {loading && (
-              <div className={MSG_CLS.assistant}>
-                <span className="text-sm text-gray-500 italic">응답 대기중...</span>
-              </div>
-            )}
+      {/* Messages */}
+      <div ref={scrollRef} className={`overflow-y-auto px-3 py-2 flex flex-col gap-1.5 ${messages.length > 0 ? 'max-h-[340px]' : 'max-h-[150px]'}`}>
+        {messages.length === 0 && (
+          <div className="text-xs text-gray-400 text-center py-4 leading-[1.6]">
+            건물 정보를 자연어로 조회/수정할 수 있습니다.
+            <br />
+            예: &quot;제이앤제이 현관 비번 1234로 바꿔줘&quot;
           </div>
+        )}
+        {messages.map((msg, i) => (
+          <div key={i} className={msgClassName(msg)}>
+            <span className="text-sm whitespace-pre-wrap break-words leading-[1.5]">{msg.content}</span>
+          </div>
+        ))}
+        {loading && (
+          <div className={MSG_CLS.assistant}>
+            <span className="text-sm text-gray-500 italic">응답 대기중...</span>
+          </div>
+        )}
+      </div>
 
-          {/* Input */}
-          <div className="flex gap-2 px-3 pt-2 pb-2.5 border-t border-gray-200">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="건물 정보 조회/수정 명령을 입력하세요..."
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm outline-none focus:ring-2 focus:ring-[#346aff]/30 transition-shadow"
-              disabled={loading}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className={`px-4 py-2 rounded-lg border-none bg-[#346aff] text-white font-bold text-sm cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}
-            >
-              전송
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Input */}
+      <div className="flex gap-2 px-3 pt-2 pb-2.5 border-t border-hm-gray-200 shrink-0">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="명령을 입력하세요..."
+          className="flex-1 px-3 py-2 rounded-lg border border-hm-gray-200 text-sm outline-none focus:ring-2 focus:ring-hm-primary/30 transition-shadow"
+          disabled={loading}
+        />
+        <button
+          onClick={sendMessage}
+          disabled={loading || !input.trim()}
+          className={`px-4 py-2 rounded-lg border-none bg-gradient-to-r from-hm-primary to-[#5B7FFF] text-white font-bold text-sm cursor-pointer whitespace-nowrap hover:opacity-90 transition-opacity ${loading || !input.trim() ? 'opacity-50' : 'opacity-100'}`}
+        >
+          전송
+        </button>
+      </div>
     </div>
   );
 }
