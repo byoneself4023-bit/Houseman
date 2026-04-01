@@ -4,6 +4,7 @@ import { useIsMobile } from '@/utils';
 import { matchKorean, getChosung, CHOSUNG } from '@/utils/koreanSearch';
 import { Card, SectionTitle, Table } from '@/components';
 import { inputClassName } from '@/components/Field';
+import { Car, Building2, AlertCircle } from 'lucide-react';
 
 interface ParkingPageProps {
   myBuildings?: string[];
@@ -225,13 +226,18 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     );
   }
 
+  // KPI data
+  const totalCars = tenantsWithCars.length;
+  const topBuilding = Object.entries(buildingCarCounts).sort((a, b) => b[1] - a[1])[0];
+  const buildingsWithNoCars = buildingNames.filter(b => !buildingCarCounts[b]).length;
+
   // Desktop layout
   const columns = [
-    { label: "건물", key: "building", width: "5%" },
-    { label: "호실", key: "room", width: "3%" },
-    { label: "입주자", key: "name", width: "3%" },
-    { label: "연락처", key: "phone", width: "5%", render: (row: Record<string, any>) => <span className="text-xs text-hm-text-sub">{row.phone || "-"}</span> },
-    { label: "차번호", key: "carNumber", width: "5%", render: (row: Record<string, any>) => {
+    { label: "건물", key: "building", width: "15%" },
+    { label: "호실", key: "room", width: "8%" },
+    { label: "입주자", key: "name", width: "12%" },
+    { label: "연락처", key: "phone", width: "15%", render: (row: Record<string, any>) => <span className="text-xs text-hm-text-sub">{row.phone || "-"}</span> },
+    { label: "차번호", key: "carNumber", width: "15%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarNumber} onChange={e => setEditCarNumber(e.target.value)}
           placeholder="123가 4567" autoFocus
@@ -240,7 +246,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const car = getCar(row);
       return <span className="font-bold tracking-wide">{car.carNumber || <span className="text-gray-300">-</span>}</span>;
     }},
-    { label: "차종", key: "carType", width: "5%", render: (row: Record<string, any>) => {
+    { label: "차종", key: "carType", width: "20%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return <input value={editCarType} onChange={e => setEditCarType(e.target.value)}
           placeholder="현대 아반떼"
@@ -249,7 +255,7 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
       const car = getCar(row);
       return car.carType || <span className="text-gray-300">-</span>;
     }},
-    { label: "", key: "action", width: "3%", render: (row: Record<string, any>) => {
+    { label: "", key: "action", width: "15%", render: (row: Record<string, any>) => {
       if (editingId === row.id) {
         return (
           <div className="flex gap-1">
@@ -279,11 +285,37 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
     <div>
       <SectionTitle sub={`등록 차량 ${tenantsWithCars.length}대`}>🅿️ 주차 관리</SectionTitle>
 
-      {/* Search */}
-      <div className="mb-4">
-        <input value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
-          className="w-[300px] px-4 py-2.5 rounded-lg border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+      {/* KPI Cards */}
+      <div className="grid grid-cols-3 gap-4 mb-5">
+        <Card className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-hm-primary/10 flex items-center justify-center shrink-0">
+            <Car size={20} className="text-hm-primary" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-gray-950">{totalCars}</div>
+            <div className="text-xs text-hm-gray-500">총 등록 차량</div>
+          </div>
+        </Card>
+        <Card className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+            <Building2 size={20} className="text-emerald-600" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-gray-950">
+              {topBuilding ? topBuilding[1] : 0}<span className="text-sm font-normal text-hm-gray-500 ml-1">대</span>
+            </div>
+            <div className="text-xs text-hm-gray-500">{topBuilding ? topBuilding[0] : '-'} (최다)</div>
+          </div>
+        </Card>
+        <Card className="p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+            <AlertCircle size={20} className="text-amber-600" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-hm-gray-950">{buildingsWithNoCars}</div>
+            <div className="text-xs text-hm-gray-500">미등록 건물</div>
+          </div>
+        </Card>
       </div>
 
       {/* Stats — search matched buildings */}
@@ -316,17 +348,22 @@ export const ParkingPage = ({ myBuildings = [], activeTenants = [], parkingInfo,
         </div>
       )}
 
-      {/* Table */}
-      {displayList.length === 0 ? (
-        <Card className="text-center py-12 text-hm-text-muted">
-          <div className="text-[40px] mb-3">🅿️</div>
-          <div className="text-sm font-semibold">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
-        </Card>
-      ) : (
-        <Card className="overflow-auto max-w-[1000px]">
+      {/* Table with search */}
+      <Card className="overflow-auto">
+        <div className="p-4 pb-0">
+          <input value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="차번호, 이름, 건물, 호실 검색 (초성 가능)..."
+            className="w-[300px] px-4 py-2.5 rounded-lg border border-hm-input-border text-sm outline-none font-[inherit] bg-hm-bg-hover focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors" />
+        </div>
+        {displayList.length === 0 ? (
+          <div className="text-center py-12 text-hm-text-muted">
+            <div className="text-[40px] mb-3">🅿️</div>
+            <div className="text-sm font-semibold">{search ? "검색 결과가 없습니다" : "등록된 차량이 없습니다"}</div>
+          </div>
+        ) : (
           <Table columns={columns} data={displayList} />
-        </Card>
-      )}
+        )}
+      </Card>
     </div>
   );
 };
