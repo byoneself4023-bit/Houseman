@@ -1,6 +1,7 @@
 package com.houseman.repository
 
 import com.houseman.domain.billing.BillingRecord
+import com.houseman.domain.billing.BillingStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
@@ -11,7 +12,7 @@ interface BillingRecordRepository : JpaRepository<BillingRecord, Long> {
         periodMonth: Int,
     ): List<BillingRecord>
 
-    fun findByStatus(status: String): List<BillingRecord>
+    fun findByStatus(status: BillingStatus): List<BillingRecord>
 
     @Query("SELECT br FROM BillingRecord br JOIN FETCH br.building JOIN FETCH br.room ORDER BY br.periodYear DESC, br.periodMonth DESC")
     fun findAllWithBuildingAndRoom(): List<BillingRecord>

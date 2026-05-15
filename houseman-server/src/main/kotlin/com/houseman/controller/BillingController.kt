@@ -4,6 +4,7 @@ import com.houseman.domain.billing.dto.BillingConfigResponse
 import com.houseman.domain.billing.dto.BillingRecordResponse
 import com.houseman.domain.billing.dto.BillingStatusResponse
 import com.houseman.domain.billing.dto.GenerateBillingRequest
+import com.houseman.domain.billing.dto.MarkPaidRequest
 import com.houseman.domain.billing.dto.SettlementMasterResponse
 import com.houseman.global.dto.ApiResponse
 import com.houseman.service.BillingService
@@ -11,6 +12,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -45,6 +47,14 @@ class BillingController(
     @PutMapping("/api/billing/{id}/send")
     fun send(@PathVariable id: Long): ResponseEntity<ApiResponse<BillingRecordResponse>> =
         ResponseEntity.ok(ApiResponse.success(billingService.send(id)))
+
+    // C1-a: pays_for 관계 — 단독 결제 처리 (transaction 없이 수동 paid).
+    @PatchMapping("/api/billing/{id}/paid")
+    fun markPaid(
+        @PathVariable id: Long,
+        @Valid @RequestBody request: MarkPaidRequest,
+    ): ResponseEntity<ApiResponse<BillingRecordResponse>> =
+        ResponseEntity.ok(ApiResponse.success(billingService.markPaid(id, request.paidAmount)))
 
     @GetMapping("/api/billing/status")
     fun getStatus(

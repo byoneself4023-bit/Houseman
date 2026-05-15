@@ -6,6 +6,8 @@ import com.houseman.domain.contract.Contract
 import com.houseman.domain.room.Room
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
@@ -39,8 +41,12 @@ class BillingRecord(
     var lateFee: Long = 0,
     var total: Long = 0,
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    var status: String = "DRAFT",
+    var status: BillingStatus = BillingStatus.DRAFT,
+
+    var paidAmount: Long = 0,
+    var paidAt: OffsetDateTime? = null,
 
     var confirmedAt: OffsetDateTime? = null,
     var sentAt: OffsetDateTime? = null,

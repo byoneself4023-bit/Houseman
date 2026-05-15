@@ -21,6 +21,9 @@ class TransactionService(
     private val buildingRepository: BuildingRepository,
     private val roomRepository: RoomRepository,
     private val sseEmitterManager: SseEmitterManager,
+    // C1-a: pays_for 관계 정식화 — 입금 transaction 생성 시 BillingRecord 자동 markPaid 호출.
+    // 단방향 의존 (BillingService → TransactionService 의존 0 유지).
+    private val billingService: BillingService,
 ) {
 
     fun findAll(buildingId: Long?): List<TransactionResponse> {
@@ -53,6 +56,11 @@ class TransactionService(
         val saved = TransactionResponse.from(transactionRepository.save(transaction))
 
         if (request.type == "입금") {
+            // C1-a: pays_for 관계 — billingId 지정 시 BillingRecord 자동 markPaid.
+            // 기존 호출자(billingId 미지정)는 무영향 후방호환.
+            if (request.billingId != null) {
+                billingService.markPaid(request.billingId, request.amount)
+            }
             try {
                 sseEmitterManager.broadcast(
                     SseEventType.PAYMENT_RECEIVED,
