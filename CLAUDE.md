@@ -776,7 +776,7 @@ houseman/
 
 ## 아키텍처
 - props → Zustand 전환 안 함. wrapper + props 패턴 유지.
-- Supabase 호출은 VITE_USE_API feature flag로 분기.
+- BE API 호출(Spring Boot)은 VITE_USE_API feature flag로 분기. USE_API=true면 /api/*, false면 localStorage repository.
 - 캘린더 이벤트 수정/생성/삭제 시 반드시 persistUpdate/persistInsert/persistDelete 호출.
 - 페이지 추가 시: App.tsx 라우팅 + 사이드바 메뉴 + wrapper(필요시) 모두 확인.
 
@@ -802,6 +802,16 @@ houseman/
 - 페이지 이동 후 waitForLoadState('networkidle') 또는 특정 요소 toBeVisible({ timeout: 10_000 }) 대기.
 - 모달은 page 레벨에서 검색 (fixed position이라 콘텐츠 영역 밖).
 - 테스트 간 localStorage 격리: 각 테스트에서 독립적으로 시드 주입.
+
+## Agent Harness 운영
+- #20 Subagent 호출 규칙: planner(Read only) / implementer(전체) / reviewer(Read+Bash) 위임 default. orchestrator 직접 코드 작성 금지. 상세: `.claude/agents/*.md` (Sub-2).
+- #21 Hook 동작: SessionStart→AGENTS.md 주입 / PostToolUse(Edit|Write)→test / PostToolUse(Edit)→critical-rules / Stop→save-plan. 상세: `.claude/settings.json` (Sub-3).
+- #22 plans/ 저장 규칙: 카드 1개 = 파일 1개 (`plans/YYYY-MM-DD-카드명.md`). 동일 카드 재실행 시 덮어쓰기. Stop hook 자동 호출.
+- #23 Critical 룰 자동 차단: `.claude/hooks/critical-rules-check.sh` 6개 검사 (Sub-3에서 구현). 위반 시 exit 1. 검사: alert/confirm/prompt 사용 / persist 호출 누락 / 도메인 로직 직접 수정 / wrapper props 패턴 위반 / vacantConfirmed 전 퇴실 이벤트 삭제 / billingMaster 등 config 파일 수정.
+- #24 Think Before Coding: planner subagent는 작업 전 6 섹션 출력 필수 — (a) 가정 (b) 영향 범위 (c) 옵션 ≥2개 (d) 트레이드오프 (e) 실패 모드 (f) 검증 방법. 상세: `docs/Karpathy.md §[3].2` + `docs/Apply.md §[3]`.
+- #25 Simplicity First: implementer subagent는 1차 구현 후 자가 점검 — "200줄 → 50줄 가능?" "이 추상화 정말 필요?" "기존 함수로 가능?". 상세: `docs/Karpathy.md §[3].2`.
+- #26 Surgical Changes: diff에 작업 카드와 직접 연결 없는 변경 금지. PostToolUse(Edit) hook이 git diff 분석하여 카드 범위 외 파일 수정 시 차단. 상세: `docs/Apply.md §[3] #26`.
+- #27 Goal-Driven Execution: 작업 흐름 = 테스트 먼저 작성 → 통과 → 회귀 확인 → 보고. PostToolUse(Edit|Write) hook이 자동 테스트 실행. 상세: `docs/Apply.md §[3] #27` + Phase 1→2 게이트 5조건 (`docs/Apply.md §[4] L328~337`).
 
 ---
 

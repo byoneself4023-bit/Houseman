@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {"matcher": "*", "hooks": [{"type": "command", "command": "cat /Users/kuka/Houseman/AGENTS.md"}]}
+    ],
+    "PostToolUse": [
+      {"matcher": "Edit|Write", "hooks": [{"type": "command", "command": "bash /Users/kuka/Houseman/scripts/run-related-tests.sh \"$CLAUDE_TOOL_INPUT_FILE_PATH\""}]},
+      {"matcher": "Edit|Write", "hooks": [{"type": "command", "command": "bash /Users/kuka/Houseman/scripts/critical-rules-check.sh"}]}
+    ],
+    "Stop": [
+      {"matcher": "*", "hooks": [{"type": "command", "command": "bash /Users/kuka/Houseman/scripts/save-plan.sh"}]}
+    ]
+  }
+}
