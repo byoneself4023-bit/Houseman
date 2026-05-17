@@ -6,6 +6,7 @@ import com.houseman.domain.billing.dto.BillingConfigResponse
 import com.houseman.domain.billing.dto.BillingRecordResponse
 import com.houseman.domain.billing.dto.BillingStatusResponse
 import com.houseman.domain.billing.dto.GenerateBillingRequest
+import com.houseman.domain.billing.dto.RetroFitReport
 import com.houseman.domain.billing.dto.SettlementMasterResponse
 import com.houseman.global.exception.BusinessException
 import com.houseman.global.exception.ErrorCode
@@ -17,8 +18,10 @@ import com.houseman.repository.BillingRecordRepository
 import com.houseman.repository.BuildingRepository
 import com.houseman.repository.ContractRepository
 import com.houseman.repository.SettlementMasterRepository
+import com.houseman.repository.TransactionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.OffsetDateTime
 
 @Service
@@ -29,6 +32,7 @@ class BillingService(
     private val contractRepository: ContractRepository,
     private val settlementMasterRepository: SettlementMasterRepository,
     private val buildingRepository: BuildingRepository,
+    private val transactionRepository: TransactionRepository,
     private val sseEmitterManager: SseEmitterManager,
 ) {
 
@@ -174,6 +178,82 @@ class BillingService(
         } catch (_: Exception) { }
 
         return saved
+    }
+
+    /**
+     * C1-b: SENT/PARTIAL billing_records ↔ 입금 transactions 매칭 백필.
+     *
+     * 매칭 룰: room.id + date 범위(periodYear/Month [1일, +1월 1일)) + type='입금'.
+     * Transaction 엔티티에 billingId FK 부재 → room + 기간 + type 으로 추정 매칭.
+     *
+     * 누적/멱등성: markPaid 재호출 (residual = txnSum - paidAmount).
+     *   - residual <= 0: 이미 충분히 paid → skippedAlreadyPaid (멱등성 자연 보장)
+     *   - residual > 0: markPaid 호출 (>= total ? PAID : PARTIAL)
+     *   - markPaid 중 IllegalStateException (concurrent PAID 진입) → skippedAlreadyPaid
+     *
+     * overmatch: txnSum > total + txns.size > 1 — 리포트만 (cap 미적용, 운영자 가시성 우선).
+     *
+     * @param buildingId null = 전체 건물, 지정 시 해당 건물만
+     * @param dryRun true = 분류만 (markPaid 미호출, DB 무변경)
+     */
+    @Transactional
+    fun retroFitPayments(buildingId: Long? = null, dryRun: Boolean = true): RetroFitReport {
+        val statuses = listOf(BillingStatus.SENT, BillingStatus.PARTIAL)
+        val records = if (buildingId != null) {
+            billingRecordRepository.findByStatusInAndBuildingId(statuses, buildingId)
+        } else {
+            billingRecordRepository.findByStatusIn(statuses)
+        }
+
+        val paidApplied = mutableListOf<Long>()
+        val partialApplied = mutableListOf<Long>()
+        val skippedAlreadyPaid = mutableListOf<Long>()
+        val unmatchedNoTransaction = mutableListOf<Long>()
+        val overmatchedMultiple = mutableListOf<Long>()
+
+        for (record in records) {
+            val recordId = record.id
+            val roomId = record.room.id
+            val fromInclusive = LocalDate.of(record.periodYear, record.periodMonth, 1)
+            val toExclusive = fromInclusive.plusMonths(1)
+            val txns = transactionRepository.findByRoomIdAndDateRangeAndType(
+                roomId, fromInclusive, toExclusive, "입금",
+            )
+            if (txns.isEmpty()) {
+                unmatchedNoTransaction += recordId
+                continue
+            }
+            val txnSum = txns.sumOf { it.amount }
+            val residual = txnSum - record.paidAmount
+            if (residual <= 0) {
+                // residual == 0: 이미 충분히 paid (멱등성)
+                // residual < 0: txnSum < paidAmount (data inconsistency, 운영자 추적 필요)
+                skippedAlreadyPaid += recordId
+                continue
+            }
+            if (!dryRun) {
+                try {
+                    markPaid(recordId, residual)
+                } catch (_: IllegalStateException) {
+                    // concurrent PAID 전이 (markPaid 내부 Already paid hardstop)
+                    skippedAlreadyPaid += recordId
+                    continue
+                }
+            }
+            val newPaid = record.paidAmount + residual
+            if (newPaid >= record.total) paidApplied += recordId else partialApplied += recordId
+            if (txns.size > 1 && txnSum > record.total) overmatchedMultiple += recordId
+        }
+
+        return RetroFitReport(
+            totalScanned = records.size,
+            paidApplied = paidApplied,
+            partialApplied = partialApplied,
+            skippedAlreadyPaid = skippedAlreadyPaid,
+            unmatchedNoTransaction = unmatchedNoTransaction,
+            overmatchedMultiple = overmatchedMultiple,
+            dryRun = dryRun,
+        )
     }
 
     fun getStatus(buildingId: Long?, year: Int?, month: Int?): BillingStatusResponse {
