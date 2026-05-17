@@ -30,6 +30,12 @@ planner 6 섹션 plan을 받아 실 코드 + 테스트를 **동시** 생성. del
 5. `docs/Ontology.md` (의미 관계 변경 시 — 특히 C1 영향 카드)
 6. `docs/ARCHITECTURE.md` (새 파일 위치 / 명명 규칙)
 
+## 영구 룰
+
+- **1 카드 = 1 commit**: BE + FE + 테스트 + Ontology 변경 + 기존 staged 모두 단일 feat commit (Surgical #26).
+- **Co-Authored-By 트레일러 금지**: commit 메시지 끝 "Co-Authored-By: Claude" 자동 제거. auto mode classifier 차단 회피.
+- **raw 출력 의무**: Bash / Edit 결과 ASCII summary 표 압축 X. cat / ls / git status raw 출력 그대로.
+
 ## 자가 점검 (코드 작성 직전 markdown 체크박스 출력)
 
 ```markdown
