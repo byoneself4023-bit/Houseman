@@ -5,6 +5,7 @@ import com.houseman.domain.billing.dto.BillingRecordResponse
 import com.houseman.domain.billing.dto.BillingStatusResponse
 import com.houseman.domain.billing.dto.GenerateBillingRequest
 import com.houseman.domain.billing.dto.MarkPaidRequest
+import com.houseman.domain.billing.dto.RetroFitReport
 import com.houseman.domain.billing.dto.SettlementMasterResponse
 import com.houseman.global.dto.ApiResponse
 import com.houseman.service.BillingService
@@ -55,6 +56,14 @@ class BillingController(
         @Valid @RequestBody request: MarkPaidRequest,
     ): ResponseEntity<ApiResponse<BillingRecordResponse>> =
         ResponseEntity.ok(ApiResponse.success(billingService.markPaid(id, request.paidAmount)))
+
+    // C1-b: SENT/PARTIAL billing_records 백필. dryRun default true (안전).
+    @PostMapping("/api/billing/retro-fit")
+    fun retroFitPayments(
+        @RequestParam(required = false) buildingId: Long?,
+        @RequestParam(defaultValue = "true") dryRun: Boolean,
+    ): ResponseEntity<ApiResponse<RetroFitReport>> =
+        ResponseEntity.ok(ApiResponse.success(billingService.retroFitPayments(buildingId, dryRun)))
 
     @GetMapping("/api/billing/status")
     fun getStatus(
