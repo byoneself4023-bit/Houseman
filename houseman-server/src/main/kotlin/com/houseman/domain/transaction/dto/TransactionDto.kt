@@ -41,4 +41,7 @@ data class CreateTransactionRequest(
     @field:NotBlank val category: String,
     @field:NotNull val amount: Long,
     val description: String = "",
+    // C1-a: pays_for 관계 정식화 — 입금(INFLOW) 시 BillingRecord 자동 markPaid 호출용.
+    // null 이면 기존 동작 그대로 (후방호환).
+    val billingId: Long? = null,
 )

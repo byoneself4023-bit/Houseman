@@ -2,6 +2,7 @@ package com.houseman.domain.billing.dto
 
 import com.houseman.domain.billing.BillingRecord
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Positive
 import java.time.OffsetDateTime
 
 data class BillingRecordResponse(
@@ -23,6 +24,8 @@ data class BillingRecordResponse(
     val lateFee: Long,
     val total: Long,
     val status: String,
+    val paidAmount: Long,
+    val paidAt: OffsetDateTime?,
     val confirmedAt: OffsetDateTime?,
     val sentAt: OffsetDateTime?,
     val notes: String?,
@@ -46,13 +49,23 @@ data class BillingRecordResponse(
             internet = record.internet,
             lateFee = record.lateFee,
             total = record.total,
-            status = record.status,
+            status = record.status.name,
+            paidAmount = record.paidAmount,
+            paidAt = record.paidAt,
             confirmedAt = record.confirmedAt,
             sentAt = record.sentAt,
             notes = record.notes,
         )
     }
 }
+
+/**
+ * C1-a: PATCH /api/billing/{id}/paid 요청 DTO.
+ * paidAmount만 받음 (transactionId는 별도 카드 C1-b retro-fit 영역).
+ */
+data class MarkPaidRequest(
+    @field:NotNull @field:Positive val paidAmount: Long,
+)
 
 data class GenerateBillingRequest(
     @field:NotNull val buildingId: Long,
