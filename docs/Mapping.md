@@ -44,3 +44,28 @@
 ## 후속 작업
 - **Phase 1 진입 전 재확인**: 카드 시작 시점에 `grep -ri "TextParser\|ExitSettle\|RuleEngine\|ContractStatus" houseman-server/src/main/kotlin/` 재실행. 0건 유지 시 표 그대로, 1건 이상 검출 시 "명칭 변경 의심" 행으로 이동.
 - **C3 해소 우선순위**: ExitSettlementCalculator 포팅 = Phase 1→2 게이트 5조건 중 하나 (Apply.md §[4] L328~337).
+
+---
+
+## §[5] 단일 진실 공급원 매핑 (Source of Truth)
+
+> D1-Infra 회고 채택 결정 #19/#20 본문. 운영자가 "이 영역의 source는 어디?" 질문 시 즉시 추적 가능.
+> 영구 룰: source 본문 변경 시 인용 파일도 동시 갱신 (Ontology §[6] 동일 패턴).
+
+| 영역 | Source of Truth (실 파일) | 인용 문서 | 영구 룰 |
+|---|---|---|---|
+| 4원칙 (#24~#27) | `CLAUDE.md` L791~814 | `docs/Apply.md §[3]` + `AGENTS.md §15` | Apply.md 본문 = CLAUDE.md 본문 1:1 |
+| 19 규칙 (CLAUDE.md #1~#19) | `CLAUDE.md` L668~790 | `docs/Apply.md §[3]` + `.claude/agents/implementer.md` | 변경 시 implementer 정독 7 docs 갱신 |
+| Critical 3건 (C1/C2/C3) | `docs/Apply.md §[1]` | `AGENTS.md §9` + `docs/Mapping.md §미포팅` + `docs/Domain_Analysis.md` | 본문 변경 시 reviewer 검사 카테고리 B 갱신 |
+| Phase 게이트 5조건 | `docs/Apply.md §[4]` (L328~337 영역) | `docs/Mapping.md L46` + `AGENTS.md §14` | 5조건 변경 시 plans/ source 1:1 갱신 |
+| 도메인 의미 관계 (16+ 노드) | `src/data/domainOntology.ts` (코드) | `docs/Ontology.md` (1:1 변환) + `AGENTS.md §11` | ts 변경 시 md 동시 갱신, AGENTS.md 수치 동반 |
+| 자동화 룰 (회고 채택 6) | `docs/Automation.md §[3]` | `AGENTS.md §10` + planner/implementer/reviewer 영구 룰 영역 | 룰 추가 시 본 표 + 해당 agent.md 동시 갱신 |
+| 영구 룰 3건 (1 카드 = 1 commit 등) | `.claude/agents/implementer.md §영구 룰` | `docs/Apply.md §[5]` + `docs/Automation.md` | 룰 추가 시 implementer.md = 본 매핑 1:1 |
+| 운영 결정 라운드 양식 | `.claude/agents/planner.md §7` | `docs/Apply.md §[3]` (예정) | planner 6→7 섹션 확장 (D1-Infra 회고) |
+| Hook 4종 + 검사 | `.claude/settings.json` + `scripts/*.sh` + `.claude/hooks/*.sh` | `docs/Hooks.md` + `docs/Automation.md §[1]` | Hook 추가 시 settings.json + Hooks.md 동시 갱신 |
+| Subagent 3종 본질 | `.claude/agents/{planner,implementer,reviewer}.md` | `docs/Subagents.md` + `docs/Review.md` (reviewer 8 카테고리) | agent.md 변경 시 Subagents/Review 동반 |
+| 수치 (BE API / @Test / FE spec) | 실 코드 grep | `docs/Review.md §7` + `AGENTS.md §1/§13` | 카드 머지 시 §7 갱신, AGENTS.md 동반 |
+
+**검증 영역**: `.claude/hooks/agents-md-integrity.sh` (SessionStart) — AGENTS.md 인용 정합 자동 확인.
+
+**향후 확장**: 본 §[5] 표 row 추가 시 영구 룰 1줄 명시 (인용 ↔ source 동시 갱신 의무).
