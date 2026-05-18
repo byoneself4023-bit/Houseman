@@ -1,7 +1,8 @@
 {
   "hooks": {
     "SessionStart": [
-      {"matcher": "*", "hooks": [{"type": "command", "command": "cat /Users/kuka/Houseman/AGENTS.md"}]}
+      {"matcher": "*", "hooks": [{"type": "command", "command": "cat /Users/kuka/Houseman/AGENTS.md"}]},
+      {"matcher": "*", "hooks": [{"type": "command", "command": "bash /Users/kuka/Houseman/.claude/hooks/agents-md-integrity.sh"}]}
     ],
     "PostToolUse": [
       {"matcher": "Edit|Write", "hooks": [{"type": "command", "command": "bash /Users/kuka/Houseman/scripts/run-related-tests.sh \"$CLAUDE_TOOL_INPUT_FILE_PATH\""}]},
