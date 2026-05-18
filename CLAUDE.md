@@ -793,7 +793,7 @@ houseman/
 
 ## 빌드
 - 매 수정마다 npx tsc --noEmit + npm run build 확인.
-- BuildingsWrapper TS 에러는 기존 허용. 그 외 새 에러 발생 시 즉시 수정.
+- 모든 TS 에러 즉시 수정 (CI tsc --noEmit 강제).
 
 ## E2E 테스트 (Playwright)
 - 데이터 주입은 반드시 addInitScript 사용. page.evaluate로 주입하면 useAppData 초기화에 덮어씌워짐.
